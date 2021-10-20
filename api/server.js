@@ -15,8 +15,10 @@ app.use(
     name: 'session_id',
     resave: true,
     saveUninitialized: true,
-    sameSite: true,
-    secure: true,
+    cookie: {
+      sameSite: true,
+      secure: true,
+    },
   })
 );
 
