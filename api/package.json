@@ -5,5 +5,11 @@
   "repository": "https://github.com/OpenTree-Education/rhizone-lms",
   "author": "OpenTree Education",
   "license": "UNLICENSED",
-  "private": true
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
