@@ -1,0 +1,9 @@
+{
+  "name": "rhizone-lms-api",
+  "version": "1.0.0",
+  "description": "Web API for Rhizone LMS",
+  "repository": "https://github.com/OpenTree-Education/rhizone-lms",
+  "author": "OpenTree Education",
+  "license": "UNLICENSED",
+  "private": true
+}
