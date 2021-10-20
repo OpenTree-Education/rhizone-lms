@@ -7,15 +7,20 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "dev": "tsc -w & pm2-dev dist/server.js"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
-    "helmet": "^4.6.0"
+    "helmet": "^4.6.0",
+    "pm2": "^5.1.2"
   },
   "devDependencies": {
-    "prettier": "^2.4.1"
+    "@types/express": "^4.17.13",
+    "@types/express-session": "^1.17.4",
+    "@types/node": "^16.11.1",
+    "prettier": "^2.4.1",
+    "typescript": "^4.4.4"
   }
 }

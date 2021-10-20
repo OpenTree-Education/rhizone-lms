@@ -1,7 +1,7 @@
-const bodyParser = require('body-parser');
-const express = require('express');
-const helmet = require('helmet');
-const session = require('express-session');
+import * as bodyParser from 'body-parser';
+import express from 'express';
+import helmet from 'helmet';
+import session from 'express-session';
 
 const app = express();
 
@@ -22,7 +22,7 @@ app.use(
   })
 );
 
-app.get('/', (req, res) => {
+app.get('/', (_, res) => {
   res.json({});
 });
 
