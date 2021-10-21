@@ -1,6 +1,6 @@
 import querystring from 'querystring';
 import request from 'superagent';
-import Router from 'express';
+import { Router } from 'express';
 
 import dbPool from './dbPool';
 
