@@ -8,6 +8,12 @@ import session from 'express-session';
 
 import authRouter from './authRouter';
 
+declare module 'express-session' {
+  interface Session {
+    principalId: number;
+  }
+}
+
 const app = express();
 
 app.set('host', process.env.HOST || 'api.development.rhizone');
