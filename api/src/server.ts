@@ -7,6 +7,7 @@ import helmet from 'helmet';
 import session from 'express-session';
 
 import authRouter from './authRouter';
+import journalEntriesRouter from "./journalEntriesRouter";
 
 declare module 'express-session' {
   interface Session {
@@ -40,6 +41,7 @@ app.use(
 );
 
 app.use(authRouter);
+app.use('/journalentries', journalEntriesRouter);
 
 app.get('/', (_, res) => {
   res.json({});
