@@ -7,7 +7,8 @@ import helmet from 'helmet';
 import session from 'express-session';
 
 import authRouter from './authRouter';
-import journalEntriesRouter from "./journalEntriesRouter";
+import journalEntriesRouter from './journalEntriesRouter';
+import { loggedIn } from './authMiddleware';
 
 declare module 'express-session' {
   interface Session {
@@ -35,13 +36,13 @@ app.use(
     saveUninitialized: true,
     cookie: {
       sameSite: true,
-      secure: true,
+      secure: app.get('scheme') === 'https',
     },
   })
 );
 
 app.use(authRouter);
-app.use('/journalentries', journalEntriesRouter);
+app.use('/journalentries', loggedIn, journalEntriesRouter);
 
 app.get('/', (_, res) => {
   res.json({});
