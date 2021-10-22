@@ -6,6 +6,12 @@ import dbPool from './dbPool';
 
 const authRouter = Router();
 
+authRouter.get('/auth/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.redirect(process.env.WEBAPP_ORIGIN);
+  });
+});
+
 authRouter.get('/auth/github/login', (req, res) => {
   res.redirect(
     `https://github.com/login/oauth/authorize?${querystring.stringify({
