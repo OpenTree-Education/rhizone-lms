@@ -4,7 +4,8 @@
 
 1. Add a line in `/etc/hosts` that resolves the domain `api.development.rhizone`
     to `127.0.0.1`
-3. Create a file named `.env`
+2. Create a file named `.env`
+3. Add `WEBAPP_ORIGIN` to `.env`
 
 ### Auth
 
