@@ -1,10 +1,10 @@
-import { Container } from '@mui/material';
+import { Box, Container, Grid, Typography } from '@mui/material';
 import React, { Component } from 'react';
 
 import CreateJournalEntryForm from './CreateJournalEntryForm';
-import JournalEntriesTable from './JournalEntriesTable';
+import JournalEntriesList from './JournalEntriesList';
 import { JournalEntry } from '../types/api';
-import Navbar from "./Navbar";
+import Navbar from './Navbar';
 
 interface AppState {
   loggedIn: boolean | null;
@@ -45,13 +45,26 @@ class App extends Component<AppProps, AppState> {
       <Container fixed>
         <Navbar loggedIn={this.state.loggedIn} />
         {this.state.loggedIn === true && (
-          <>
-            <CreateJournalEntryForm
-              onJournalEntryCreated={this.fetchJournalEntries}
-            />
-            <JournalEntriesTable journalEntries={this.state.journalEntries} />
-          </>
+          <Grid container justifyContent="center">
+            <Grid item md={6}>
+              <Box sx={{ my: 8 }}>
+                <CreateJournalEntryForm
+                  onJournalEntryCreated={this.fetchJournalEntries}
+                />
+              </Box>
+              {this.state.journalEntries.length > 0 && (
+                <JournalEntriesList
+                  journalEntries={this.state.journalEntries}
+                />
+              )}
+            </Grid>
+          </Grid>
         )}
+        <Box sx={{ my: 12 }}>
+          <Typography align="center">
+            <small>© OpenTree Education Inc.</small>
+          </Typography>
+        </Box>
       </Container>
     );
   }
