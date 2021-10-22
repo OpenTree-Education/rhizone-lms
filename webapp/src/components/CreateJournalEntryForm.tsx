@@ -1,6 +1,7 @@
 import React, { ChangeEventHandler, Component, FormEventHandler } from 'react';
 
 import { CreationResponseEnvelope } from '../types/api';
+import {Button, TextField} from '@mui/material';
 
 interface CreateJournalEntryFormProps {
   onJournalEntryCreated?: (response: CreationResponseEnvelope) => void;
@@ -43,14 +44,17 @@ class CreateJournalEntryForm extends Component<
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
+        <h2>Write a new journal entry</h2>
+        <TextField
+          fullWidth
+          label="How is it going?"
+          minRows={4}
+          multiline
+          onChange={this.handleChangeJournalEntryText}
+          value={this.state.journalEntryText}
+        />
         <p>
-          <textarea
-            value={this.state.journalEntryText}
-            onChange={this.handleChangeJournalEntryText}
-          />
-        </p>
-        <p>
-          <button>Save</button>
+          <Button type="submit" variant="contained">Save</Button>
         </p>
       </form>
     );
