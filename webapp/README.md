@@ -4,9 +4,12 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Setup
 
-1. Create a file named `.env.development.local`
-   1. Set the `HOST` variable to the local development domain name
-   2. Set the `REACT_APP_API_ORIGIN` variable to the origin of the api server
+1. Add a line in `/etc/hosts` that resolves the domain `app.development.rhizone`
+    to `127.0.0.1`
+2. Create a file named `.env.development.local`
+   1. Set the `HOST` variable to `app.development.rhizone`
+   2. Set the `REACT_APP_API_ORIGIN` variable to
+        `http://api.development.rhizone:8491`
 
 ## Available Scripts
 
