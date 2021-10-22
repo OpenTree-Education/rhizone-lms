@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import session from 'express-session';
@@ -42,7 +43,10 @@ app.use(
 );
 
 app.use(authRouter);
-app.use('/journalentries', loggedIn, journalEntriesRouter);
+
+const withCors = cors({ credentials: true, origin: process.env.WEBAPP_ORIGIN });
+
+app.use('/journalentries', withCors, loggedIn, journalEntriesRouter);
 
 app.get('/', (_, res) => {
   res.json({});

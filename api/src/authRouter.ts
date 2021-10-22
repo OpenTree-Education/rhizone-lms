@@ -6,6 +6,12 @@ import dbPool from './dbPool';
 
 const authRouter = Router();
 
+authRouter.get('/auth/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.redirect(process.env.WEBAPP_ORIGIN);
+  });
+});
+
 authRouter.get('/auth/github/login', (req, res) => {
   res.redirect(
     `https://github.com/login/oauth/authorize?${querystring.stringify({
@@ -35,7 +41,6 @@ authRouter.get(`/auth/github/callback`, async (req, res) => {
     .set('Authorization', `token ${accessTokenResponse.body.access_token}`);
   const client = await dbPool.connect();
   let principalId;
-  let isNewUser = false;
   try {
     await client.query('BEGIN');
     const githubId = ghUserResponse.body.id;
@@ -46,7 +51,6 @@ authRouter.get(`/auth/github/callback`, async (req, res) => {
     if (findGhUser.rows.length) {
       principalId = findGhUser.rows[0].principal_id;
     } else {
-      isNewUser = true;
       const insertPrincipal = await client.query(
         'INSERT INTO principals(entity_type) VALUES($1) RETURNING id',
         ['user']
@@ -65,11 +69,7 @@ authRouter.get(`/auth/github/callback`, async (req, res) => {
     client.release();
   }
   req.session.principalId = principalId;
-  if (isNewUser) {
-    res.sendStatus(201);
-  } else {
-    res.sendStatus(200);
-  }
+  res.redirect(process.env.WEBAPP_ORIGIN);
 });
 
 export default authRouter;
