@@ -1,8 +1,10 @@
+import { Container } from '@mui/material';
 import React, { Component } from 'react';
 
 import CreateJournalEntryForm from './CreateJournalEntryForm';
 import JournalEntriesTable from './JournalEntriesTable';
 import { JournalEntry } from '../types/api';
+import Navbar from "./Navbar";
 
 interface AppState {
   loggedIn: boolean | null;
@@ -40,29 +42,17 @@ class App extends Component<AppProps, AppState> {
 
   render() {
     return (
-      <div className="App">
-        {this.state.loggedIn === false && (
-          <p>
-            <a href={`${process.env.REACT_APP_API_ORIGIN}/auth/github/login`}>
-              Sign In
-            </a>
-          </p>
-        )}
+      <Container fixed>
+        <Navbar loggedIn={this.state.loggedIn} />
         {this.state.loggedIn === true && (
           <>
-            <p>
-              <a href={`${process.env.REACT_APP_API_ORIGIN}/auth/logout`}>
-                Sign Out
-              </a>
-            </p>
-            <h1>Rhizone</h1>
             <CreateJournalEntryForm
               onJournalEntryCreated={this.fetchJournalEntries}
             />
             <JournalEntriesTable journalEntries={this.state.journalEntries} />
           </>
         )}
-      </div>
+      </Container>
     );
   }
 }
