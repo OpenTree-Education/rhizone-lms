@@ -2,7 +2,7 @@ import querystring from 'querystring';
 import request from 'superagent';
 import { Router } from 'express';
 
-import dbPool from './dbPool';
+import db from './db';
 
 const authRouter = Router();
 
@@ -39,35 +39,26 @@ authRouter.get(`/auth/github/callback`, async (req, res) => {
     .get('https://api.github.com/user')
     .set('User-Agent', 'Rhizone LMS')
     .set('Authorization', `token ${accessTokenResponse.body.access_token}`);
-  const client = await dbPool.connect();
   let principalId;
-  try {
-    await client.query('BEGIN');
+  await db.transaction(async trx => {
     const githubId = ghUserResponse.body.id;
-    const findGhUser = await client.query(
-      'SELECT principal_id FROM github_users WHERE github_id = $1',
-      [githubId]
-    );
-    if (findGhUser.rows.length) {
-      principalId = findGhUser.rows[0].principal_id;
+    const findGhUser = await trx('github_users')
+      .select('principal_id')
+      .where({ github_id: githubId });
+    if (findGhUser.length) {
+      principalId = findGhUser[0].principal_id;
     } else {
-      const insertPrincipal = await client.query(
-        'INSERT INTO principals(entity_type) VALUES($1) RETURNING id',
-        ['user']
+      const insertPrincipal = await trx('principals').insert(
+        { entity_type: 'user' },
+        ['id']
       );
-      principalId = insertPrincipal.rows[0].id;
-      await client.query(
-        'INSERT INTO github_users(github_id, principal_id) VALUES($1, $2)',
-        [githubId, principalId]
-      );
+      principalId = insertPrincipal[0];
+      await trx('github_users').insert({
+        github_id: githubId,
+        principal_id: principalId,
+      });
     }
-    await client.query('COMMIT');
-  } catch (e) {
-    await client.query('ROLLBACK');
-    throw e;
-  } finally {
-    client.release();
-  }
+  });
   req.session.principalId = principalId;
   res.redirect(process.env.WEBAPP_ORIGIN);
 });

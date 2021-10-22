@@ -1,7 +1,10 @@
 CREATE TABLE journal_entries (
-  id BIGSERIAL PRIMARY KEY,
+  id BIGINT NOT NULL AUTO_INCREMENT,
   raw_text TEXT NOT NULL,
-  principal_id BIGINT NOT NULL REFERENCES principals(id),
-  created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT current_timestamp,
-  updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT current_timestamp
+  principal_id BIGINT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX journal_entries_principal_id (principal_id),
+  FOREIGN KEY (principal_id) REFERENCES principals(id)
 );

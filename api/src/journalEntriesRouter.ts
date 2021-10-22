@@ -1,32 +1,25 @@
 import { Router } from 'express';
 
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
-import dbPool from './dbPool';
-import paginationValues from "./paginationValues";
+import db from './db';
+import paginationValues from './paginationValues';
 
 const journalEntriesRouter = Router();
 
 journalEntriesRouter.get('/', async (req, res) => {
   const { principalId } = req.session;
   const { limit, offset } = paginationValues(req.query.page, req.query.perpage);
-  let journalEntries;
-  let totalCount;
-  const client = await dbPool.connect();
-  try {
-    const listJournalEntries = await client.query(
-      'SELECT * FROM journal_entries WHERE principal_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3',
-      [principalId, limit, offset]
-    );
-    journalEntries = listJournalEntries.rows;
-    const countJournalEntries = await client.query(
-      'select count(*) as total_count from journal_entries where principal_id = $1',
-      [principalId]
-    );
-    totalCount = countJournalEntries.rows[0].total_count;
-  } finally {
-    client.release();
-  }
-  res.json(collectionEnvelope(journalEntries, totalCount));
+  const journalEntries = await db('journal_entries')
+    .select('id', 'raw_text')
+    .where({ principal_id: principalId })
+    .orderBy('created_at', 'desc')
+    .limit(limit)
+    .offset(offset);
+  const countAlias = 'total_count';
+  const totalCounts = await db('journal_entries')
+    .count({ [countAlias]: '*' })
+    .where({ principal_id: principalId });
+  res.json(collectionEnvelope(journalEntries, totalCounts[0][countAlias]));
 });
 
 journalEntriesRouter.get('/:id', async (req, res) => {
@@ -36,22 +29,14 @@ journalEntriesRouter.get('/:id', async (req, res) => {
     res.sendStatus(400);
     return;
   }
-  let journalEntry;
-  const client = await dbPool.connect();
-  try {
-    const findJournalEntry = await client.query(
-      'SELECT * FROM journal_entries WHERE id = $1 AND principal_id = $2',
-      [id, principalId]
-    );
-    journalEntry = findJournalEntry.rows[0];
-  } finally {
-    client.release();
-  }
-  if (!journalEntry) {
+  const journalEntry = await db('journal_entries')
+    .where({ principal_id: principalId, id })
+    .limit(1);
+  if (!journalEntry.length) {
     res.sendStatus(404);
     return;
   }
-  res.json(itemEnvelope(journalEntry));
+  res.json(itemEnvelope(journalEntry[0]));
 });
 
 journalEntriesRouter.post('/', async (req, res) => {
@@ -61,18 +46,11 @@ journalEntriesRouter.post('/', async (req, res) => {
     res.sendStatus(400);
     return;
   }
-  let journalEntry;
-  const client = await dbPool.connect();
-  try {
-    const insertJournalEntry = await client.query(
-      'INSERT INTO journal_entries(raw_text, principal_id) VALUES($1, $2) RETURNING id',
-      [rawText, principalId]
-    );
-    journalEntry = insertJournalEntry.rows[0];
-  } finally {
-    client.release();
-  }
-  res.status(201).json(itemEnvelope(journalEntry));
+  const insertedJournalEntryIds = await db('journal_entries').insert({
+    raw_text: rawText,
+    principal_id: principalId,
+  });
+  res.status(201).json(itemEnvelope({ id: insertedJournalEntryIds[0] }));
 });
 
 export default journalEntriesRouter;
