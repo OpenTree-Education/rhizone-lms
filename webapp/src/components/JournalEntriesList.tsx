@@ -3,11 +3,11 @@ import React from 'react';
 
 import { JournalEntry } from '../types/api';
 
-interface JournalEntriesTableProps {
+interface JournalEntriesListProps {
   journalEntries: JournalEntry[];
 }
 
-const JournalEntriesList = ({ journalEntries }: JournalEntriesTableProps) => (
+const JournalEntriesList = ({ journalEntries }: JournalEntriesListProps) => (
   <>
     <h2>Your previous entries</h2>
     <Stack spacing={2}>
