@@ -2,6 +2,12 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Setup
+
+1. Create a file named `.env.development.local`
+   1. Set the `HOST` variable to the local development domain name
+   2. Set the `REACT_APP_API_ORIGIN` variable to the origin of the api server
+
 ## Available Scripts
 
 In the project directory, you can run:
