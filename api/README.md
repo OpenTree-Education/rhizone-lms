@@ -15,4 +15,5 @@
 ### Database
 
 1. Follow instructions in `/db/README.md`
-2. Add `PGDATABASE`, `PGHOST`, `PGPASSWORD`, `PGPORT`, and `PGUSER` to `.env`
+2. Add `MYSQL_DATABASE`, `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER`, and
+    `MYSQL_PASSWORD` to `.env`
