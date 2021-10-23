@@ -10,7 +10,8 @@
 ### Auth
 
 1. Create a GitHub OAuth application for development
-2. Add `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` to `.env`
+2. Add `GITHUB_REDIRECT_URI`, `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` to
+    `.env`
 
 ### Database
 
