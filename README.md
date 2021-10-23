@@ -3,10 +3,6 @@
 This monorepo contains the applications and services that constitute the Rhizone
 Learning Management System.
 
-## `/webapp`
-
-The `/webapp` folder contains a React app that enables user functionality and communicates with the api.
-
 ## `/api`
 
 The `/api` folder contains an [Express.js](https://expressjs.com/) server that
@@ -16,3 +12,13 @@ database and third-party services like GitHub.
 ## `/db`
 
 The `/db` folder contains scripts and migrations for the database.
+
+## `/nginx`
+
+The `/nginx` folder contains configuration files for Nginx for different
+environments.
+
+## `/webapp`
+
+The `/webapp` folder contains a React app that enables user functionality and
+communicates with the api.
