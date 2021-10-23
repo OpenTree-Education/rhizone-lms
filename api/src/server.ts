@@ -29,6 +29,8 @@ app.use(helmet());
 
 app.use(bodyParser.json());
 
+app.set('trust proxy', 1);
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'default session secret',
