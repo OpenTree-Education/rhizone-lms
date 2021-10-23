@@ -16,9 +16,7 @@ authRouter.get('/auth/github/login', (req, res) => {
   res.redirect(
     `https://github.com/login/oauth/authorize?${querystring.stringify({
       client_id: process.env.GITHUB_CLIENT_ID,
-      redirect_uri: `${req.app.get('scheme')}://${req.app.get(
-        'host'
-      )}:${req.app.get('port')}/auth/github/callback`,
+      redirect_uri: process.env.GITHUB_REDIRECT_URI,
     })}`
   );
 });
