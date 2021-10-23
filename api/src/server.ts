@@ -23,7 +23,7 @@ app.set('host', process.env.HOST || 'api.development.rhizone');
 
 app.set('port', process.env.PORT || 8491);
 
-app.set('scheme', process.env.SCHEME || 'http');
+app.set('secure', process.env.SECURE === 'true');
 
 app.use(helmet());
 
@@ -37,7 +37,7 @@ app.use(
     saveUninitialized: true,
     cookie: {
       sameSite: true,
-      secure: app.get('scheme') === 'https',
+      secure: app.get('secure'),
     },
   })
 );
@@ -53,8 +53,7 @@ app.get('/', (_, res) => {
 });
 
 app.listen(app.get('port'), app.get('host'), () => {
-  const scheme = app.get('scheme');
   const host = app.get('host');
   const port = app.get('port');
-  console.log(`api listening on port ${scheme}://${host}:${port}`);
+  console.log(`api listening on port ${host}:${port}`);
 });
