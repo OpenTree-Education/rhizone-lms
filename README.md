@@ -22,3 +22,8 @@ environments.
 
 The `/webapp` folder contains a React app that enables user functionality and
 communicates with the api.
+
+## Hints and troubleshooting
+
+1. `cd` into each module's directory before running commands. They won't work
+    the same from the project root.

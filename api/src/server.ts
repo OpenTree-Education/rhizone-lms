@@ -19,7 +19,7 @@ declare module 'express-session' {
 
 const app = express();
 
-app.set('host', process.env.HOST || 'api.development.rhizone');
+app.set('host', process.env.HOST || 'api.rhi.zone-development');
 
 app.set('port', process.env.PORT || 8491);
 
