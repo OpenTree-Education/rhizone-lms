@@ -1,15 +1,13 @@
-# Getting Started with Create React App
+# Rhizone LMS Web App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Setup
 
-1. Add a line in `/etc/hosts` that resolves the domain `app.development.rhizone`
-    to `127.0.0.1`
-2. Create a file named `.env.development.local`
-   1. Set the `HOST` variable to `app.development.rhizone`
-   2. Set the `REACT_APP_API_ORIGIN` variable to
-        `http://api.development.rhizone:8491`
+1. Install dependencies with `yarn`.
+1. Follow the instructions in `nginx/README.md`.
+2. Create a file named `.env.development.local`.
+   1. Set `REACT_APP_API_ORIGIN` to `http://api.rhi.zone-development`.
 
 ## Available Scripts
 
