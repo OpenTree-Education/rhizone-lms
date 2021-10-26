@@ -13,7 +13,7 @@ _Describe what you expect the code to do..._
 
 ## Actual behaviour
 
-_Describe the what the code currently does..._
+_Describe what the code currently does..._
 
 ## Steps to reproduce
 
