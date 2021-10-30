@@ -19,11 +19,11 @@ jobs:
           cache: yarn
 
       - name: Install API dependencies
-        if: success()
+        if: always()
         working-directory: api
         run: yarn install
       - name: Check API formatting
-        if: success()
+        if: always()
         working-directory: api
         run: yarn prettier --check src/**/*.ts
       - name: Check API lint
@@ -40,7 +40,7 @@ jobs:
         working-directory: webapp
         run: yarn install
       - name: Check web app formatting
-        if: success()
+        if: always()
         working-directory: webapp
         run: yarn prettier --check src/**/*.{ts,tsx,css}
       - name: Check web app lint
