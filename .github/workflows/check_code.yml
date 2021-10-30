@@ -17,6 +17,9 @@ jobs:
         with:
           node-version: 16
           cache: yarn
+          cache-dependency-path: |
+            api/yarn.lock
+            webapp/yarn.lock
 
       - name: Install API dependencies
         if: always()
