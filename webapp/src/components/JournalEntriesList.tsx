@@ -16,7 +16,16 @@ const JournalEntriesList = ({ journalEntries }: JournalEntriesListProps) => (
 
         return (  
           <Card key={id}>
-            <CardContent>{new Intl.DateTimeFormat([], { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }).format(date)}</CardContent>
+            <CardContent>
+              {new Intl.DateTimeFormat([], 
+              { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric', 
+                hour: 'numeric', 
+                minute: 'numeric', 
+              }).format(date)}
+            </CardContent>
             <CardContent>{rawText}</CardContent>
           </Card>
         )
