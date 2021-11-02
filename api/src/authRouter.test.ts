@@ -68,7 +68,7 @@ describe('authRouter', () => {
         } else if (sql === 'COMMIT;') {
           response(null);
         } else {
-          throw new Error(`Unrecognized query "${sql}"`);
+          done(new Error(`Unrecognized query "${sql}"`));
         }
       });
       request(app)
@@ -108,7 +108,7 @@ describe('authRouter', () => {
         } else if (sql === 'COMMIT;') {
           response(null);
         } else {
-          throw new Error(`Unrecognized query "${sql}"`);
+          done(new Error(`Unrecognized query "${sql}"`));
         }
       });
       request(app)
