@@ -1,8 +1,8 @@
 import querystring from 'querystring';
-import request from 'superagent';
 import { Router } from 'express';
 
 import db from './db';
+import { getGithubAccessToken, getGithubUser } from './githubApi';
 
 const authRouter = Router();
 
@@ -22,24 +22,16 @@ authRouter.get('/auth/github/login', (req, res) => {
 });
 
 authRouter.get(`/auth/github/callback`, async (req, res) => {
-  if (!req.query.code) {
+  const { code } = req.query;
+  if (!code) {
     res.sendStatus(400);
     return;
   }
-  const accessTokenResponse = await request.post(
-    `https://github.com/login/oauth/access_token?${querystring.stringify({
-      client_id: process.env.GITHUB_CLIENT_ID,
-      client_secret: process.env.GITHUB_CLIENT_SECRET,
-      code: String(req.query.code),
-    })}`
-  );
-  const ghUserResponse = await request
-    .get('https://api.github.com/user')
-    .set('User-Agent', 'Rhizone LMS')
-    .set('Authorization', `token ${accessTokenResponse.body.access_token}`);
+  const accessToken = await getGithubAccessToken(String(code));
+  const githubUser = await getGithubUser(accessToken);
   let principalId;
   await db.transaction(async trx => {
-    const githubId = ghUserResponse.body.id;
+    const githubId = githubUser.id;
     const findGhUser = await trx('github_users')
       .select('principal_id')
       .where({ github_id: githubId });
