@@ -43,12 +43,19 @@ describe('authRouter', () => {
   });
 
   describe('GET /auth/github/callback', () => {
+    beforeEach(() => {
+      tracker.install();
+    });
+
+    afterEach(() => {
+      tracker.uninstall();
+    });
+
     it('should respond to requests without a code in the query string with Bad Request', done => {
       request(app).get('/auth/github/callback').expect(400, done);
     });
 
     it('should redirect to the web app for a principal with a known GitHub user id', done => {
-      tracker.install();
       tracker.on('query', ({ bindings, response, sql }) => {
         if (
           sql ===
@@ -70,13 +77,11 @@ describe('authRouter', () => {
         .expect(302, () => {
           expect(mockGetGithubAccessToken).toBeCalledWith('MOCK_CODE');
           expect(mockGetGithubUser).toBeCalledWith('MOCK_ACCESS_TOKEN');
-          tracker.uninstall();
           done();
         });
     });
 
     it('should insert a new principal and GitHub user and then redirect to the web app for a principal with an unknown GitHub user id', done => {
-      tracker.install();
       tracker.on('query', ({ bindings, response, sql, transacting }) => {
         if (
           sql ===
@@ -112,7 +117,6 @@ describe('authRouter', () => {
         .expect(302, () => {
           expect(mockGetGithubAccessToken).toBeCalledWith('MOCK_CODE');
           expect(mockGetGithubUser).toBeCalledWith('MOCK_ACCESS_TOKEN');
-          tracker.uninstall();
           done();
         });
     });
