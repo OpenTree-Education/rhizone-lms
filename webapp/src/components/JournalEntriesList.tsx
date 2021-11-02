@@ -12,11 +12,11 @@ const JournalEntriesList = ({ journalEntries }: JournalEntriesListProps) => (
     <h2>Your previous entries</h2>
     <Stack spacing={2}>
       {journalEntries.map(({ id, raw_text: rawText, created_at: createdAt }) => {
-        
+        const date = new Date(createdAt);
+
         return (  
           <Card key={id}>
-            <CardContent>{createdAt}</CardContent>
-            <CardContent>{new Intl.DateTimeFormat([], { dateStyle: 'full', timeStyle: 'full' }).format(parseInt(createdAt))}</CardContent>
+            <CardContent>{new Intl.DateTimeFormat([], { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }).format(date)}</CardContent>
             <CardContent>{rawText}</CardContent>
           </Card>
         )
