@@ -1,5 +1,5 @@
-import request from "superagent";
-import querystring from "querystring";
+import request from 'superagent';
+import querystring from 'querystring';
 
 export const getGithubAccessToken = async (code: string) => {
   const response = await request.post(
@@ -10,12 +10,12 @@ export const getGithubAccessToken = async (code: string) => {
     })}`
   );
   return response.body.access_token;
-}
+};
 
 export const getGithubUser = async (accessToken: string) => {
   const response = await request
-    .get("https://api.github.com/user")
-    .set("User-Agent", "Rhizone LMS")
-    .set("Authorization", `token ${accessToken}`);
+    .get('https://api.github.com/user')
+    .set('User-Agent', 'Rhizone LMS')
+    .set('Authorization', `token ${accessToken}`);
   return response.body;
 };
