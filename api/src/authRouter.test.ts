@@ -97,7 +97,7 @@ describe('authRouter', () => {
         ) {
           expect(bindings).toEqual([1000, 1]);
           expect(transacting).toEqual(true);
-          response(null);
+          response([1]);
         } else if (sql === 'BEGIN;') {
           response(null);
         } else if (sql === 'COMMIT;') {
