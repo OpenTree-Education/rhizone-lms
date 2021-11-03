@@ -13,7 +13,13 @@ const JournalEntriesList = ({ journalEntries }: JournalEntriesListProps) => (
     <Stack spacing={2}>
       {journalEntries.map(({ id, raw_text: rawText }) => (
         <Card key={id}>
-          <CardContent>{rawText}</CardContent>
+          <CardContent
+            sx={{
+              whiteSpace: 'pre-wrap',
+            }}
+          >
+            {rawText}
+          </CardContent>
         </Card>
       ))}
     </Stack>
