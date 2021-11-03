@@ -1,9 +1,9 @@
 export const formatDateTime = (date: string, locale: any = null) => {
   const dateObj = new Date(date);
-  const localeArr = []
+  let localeArr = [];
 
   if (locale) {
-    localeArr.push(locale);
+    localeArr = locale;
   }
 
   return new Intl.DateTimeFormat(localeArr, {
