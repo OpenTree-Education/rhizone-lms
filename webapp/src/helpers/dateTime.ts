@@ -1,7 +1,12 @@
-export const formatDateTime = (date: string) => {
+export const formatDateTime = (date: string, locale: any = null) => {
   const dateObj = new Date(date);
+  const localeArr = []
 
-  return new Intl.DateTimeFormat([], {
+  if (locale) {
+    localeArr.push(locale);
+  }
+
+  return new Intl.DateTimeFormat(localeArr, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
