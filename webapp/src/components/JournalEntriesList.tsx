@@ -1,5 +1,6 @@
 import { Card, CardContent, Stack } from '@mui/material';
 import React from 'react';
+import { formatDateTime } from '../helpers/dateTime';
 
 import { JournalEntry } from '../types/api';
 
@@ -11,25 +12,16 @@ const JournalEntriesList = ({ journalEntries }: JournalEntriesListProps) => (
   <>
     <h2>Your previous entries</h2>
     <Stack spacing={2}>
-      {journalEntries.map(({ id, raw_text: rawText, created_at: createdAt }) => {
-        const date = new Date(createdAt);
-
-        return (  
-          <Card key={id}>
-            <CardContent>
-              {new Intl.DateTimeFormat([], 
-              { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric', 
-                hour: 'numeric', 
-                minute: 'numeric', 
-              }).format(date)}
-            </CardContent>
-            <CardContent>{rawText}</CardContent>
-          </Card>
-        )
-      })}
+      {journalEntries.map(
+        ({ id, raw_text: rawText, created_at: createdAt }) => {
+          return (
+            <Card key={id}>
+              <CardContent>{formatDateTime(createdAt)}</CardContent>
+              <CardContent>{rawText}</CardContent>
+            </Card>
+          );
+        }
+      )}
     </Stack>
   </>
 );
