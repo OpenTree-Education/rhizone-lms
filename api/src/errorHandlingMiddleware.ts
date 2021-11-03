@@ -1,4 +1,4 @@
-   import { ErrorRequestHandler, RequestHandler } from 'express';
+import { ErrorRequestHandler, RequestHandler } from 'express';
 
 import { errorEnvelope } from './responseEnvelope';
 import { HttpError, InternalServerError, NotFoundError } from './httpErrors';

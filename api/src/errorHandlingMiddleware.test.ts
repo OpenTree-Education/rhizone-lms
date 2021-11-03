@@ -90,4 +90,21 @@ describe('errorHandlingMiddleware.ts', () => {
       });
     });
   });
+  describe('handleNotFound', () => {
+    it('should send a response with a default not found error', () => {
+      const status = jest.fn();
+      const json = jest.fn();
+      const next = jest.fn();
+      handleNotFound(
+        {} as Request,
+        { status, json } as unknown as Response,
+        next
+      );
+      expect(next).not.toHaveBeenCalled();
+      expect(status).toHaveBeenCalledWith(NotFoundError.prototype.status);
+      expect(json).toHaveBeenCalledWith({
+        error: { message: NotFoundError.prototype.message },
+      });
+    });
+  });
 });

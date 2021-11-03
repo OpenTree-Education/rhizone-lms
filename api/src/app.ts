@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import session from 'express-session';
 
 import authRouter from './authRouter';
-import { handleErrors, handleNotFound } from "./errorHandlingMiddleware";
+import { handleErrors, handleNotFound } from './errorHandlingMiddleware';
 import journalEntriesRouter from './journalEntriesRouter';
 import { loggedIn } from './authMiddleware';
 
@@ -54,7 +54,7 @@ app.get('/', (_, res) => {
 
 // This must come after all route handling middleware so that it can deal with
 // requests for routes that aren't defined.
-app.use(handleNotFound)
+app.use(handleNotFound);
 
 // This error handler must come after all other middleware so that errors in all
 // middlewares and request handlers are handled consistently.
