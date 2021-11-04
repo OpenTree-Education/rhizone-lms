@@ -1,8 +1,9 @@
 import { Card, CardContent, Stack } from '@mui/material';
 import React from 'react';
-import { formatDateTime } from '../helpers/dateTime';
 
 import { JournalEntry } from '../types/api';
+
+import { formatDateTime } from '../helpers/dateTime';
 
 interface JournalEntriesListProps {
   journalEntries: JournalEntry[];

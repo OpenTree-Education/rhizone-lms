@@ -1,6 +1,6 @@
-export const formatDateTime = (date: string, locale: any = null) => {
+export const formatDateTime = (date: string, locale: string | null = null) => {
   const dateObj = new Date(date);
-  let localeArr = [];
+  let localeArr: [] | string = [];
 
   if (locale) {
     localeArr = locale;
