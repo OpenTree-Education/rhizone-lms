@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
 import db from './db';
 import paginationValues from './paginationValues';
+import { nextTick } from 'process';
 
 const journalEntriesRouter = Router();
 
@@ -39,18 +40,32 @@ journalEntriesRouter.get('/:id', async (req, res) => {
   res.json(itemEnvelope(journalEntry[0]));
 });
 
-journalEntriesRouter.post('/', async (req, res) => {
+journalEntriesRouter.post('/', async (req, res, next) => {
   const { principalId } = req.session;
   const rawText = req.body.raw_text;
   if (!rawText) {
     res.sendStatus(400);
     return;
   }
-  const insertedJournalEntryIds = await db('journal_entries').insert({
-    raw_text: rawText,
-    principal_id: principalId,
-  });
-  res.status(201).json(itemEnvelope({ id: insertedJournalEntryIds[0] }));
+
+  let insertedJournalEntryIds: number[] = [];
+  try{
+    await db.transaction(async trx => {
+      const insertedReflectionIds = await trx('reflections').insert({
+        principal_id: principalId,
+      });
+      insertedJournalEntryIds = await trx('journal_entries').insert({
+        raw_text: rawText,
+        reflection_id: insertedReflectionIds[0],
+        principal_id: principalId,
+      });
+    });
+    res.status(201).json(itemEnvelope({ id: insertedJournalEntryIds[0] }));
+  }
+  catch(err){
+    console.log(err);
+    next(err);
+  }
 });
 
 export default journalEntriesRouter;
