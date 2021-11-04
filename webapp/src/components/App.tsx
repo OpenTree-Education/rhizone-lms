@@ -22,8 +22,18 @@ class App extends Component<AppProps, AppState> {
     };
   }
 
-  componentDidMount() {
-    this.fetchJournalEntries();
+  async componentDidMount() {
+    const fetchSessionInfo = await fetch(
+      `${process.env.REACT_APP_API_ORIGIN}/auth/session`,
+      { credentials: 'include' }
+    );
+    if (fetchSessionInfo.ok) {
+      const { data: sessionInfo } = await fetchSessionInfo.json();
+      this.setState({ loggedIn: sessionInfo.authenticated });
+      if (sessionInfo.authenticated) {
+        this.fetchJournalEntries();
+      }
+    }
   }
 
   fetchJournalEntries = async () => {
