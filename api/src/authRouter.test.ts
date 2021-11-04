@@ -21,6 +21,17 @@ const mockGetGithubAccessToken = getGithubAccessToken as MockedFunction<
 const mockGetGithubUser = getGithubUser as MockedFunction<typeof getGithubUser>;
 
 describe('authRouter', () => {
+  describe('GET /auth/session', () => {
+    it('should respond with false if the session is not authenticated', done => {
+      request(app)
+        .get('/auth/session')
+        .expect(res => {
+          expect(res.body.data.authenticated).toEqual(false);
+        })
+        .expect(200, done);
+    });
+  });
+
   describe('GET /auth/github/login', () => {
     it('should redirect to GitHub OAuth authorize endpoint with client ID and redirect URI', done => {
       request(app)
