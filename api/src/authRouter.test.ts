@@ -85,10 +85,10 @@ describe('authRouter', () => {
       request(app)
         .get('/auth/github/callback?code=MOCK_CODE')
         .expect('Location', 'TEST_WEBAPP_ORIGIN')
-        .expect(302, () => {
+        .expect(302, err => {
           expect(mockGetGithubAccessToken).toBeCalledWith('MOCK_CODE');
           expect(mockGetGithubUser).toBeCalledWith('MOCK_ACCESS_TOKEN');
-          done();
+          done(err);
         });
     });
 
@@ -125,10 +125,10 @@ describe('authRouter', () => {
       request(app)
         .get('/auth/github/callback?code=MOCK_CODE')
         .expect('Location', 'TEST_WEBAPP_ORIGIN')
-        .expect(302, () => {
+        .expect(302, err => {
           expect(mockGetGithubAccessToken).toBeCalledWith('MOCK_CODE');
           expect(mockGetGithubUser).toBeCalledWith('MOCK_ACCESS_TOKEN');
-          done();
+          done(err);
         });
     });
   });
