@@ -18,7 +18,13 @@ const JournalEntriesList = ({ journalEntries }: JournalEntriesListProps) => (
           return (
             <Card key={id}>
               <CardContent>{formatDateTime(createdAt)}</CardContent>
-              <CardContent>{rawText}</CardContent>
+              <CardContent
+                sx={{
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
+                {rawText}
+              </CardContent>
             </Card>
           );
         }
