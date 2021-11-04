@@ -1,5 +1,5 @@
 import { MockedFunction } from 'ts-jest/dist/utils/testing';
-import request from 'supertest';
+import request, { agent } from 'supertest';
 import mockKnex from 'mock-knex';
 
 import app from './app';
@@ -25,10 +25,7 @@ describe('authRouter', () => {
     it('should respond with false if the session is not authenticated', done => {
       request(app)
         .get('/auth/session')
-        .expect(res => {
-          expect(res.body.data.authenticated).toEqual(false);
-        })
-        .expect(200, done);
+        .expect(200, { data: { authenticated: false } }, done);
     });
   });
 
@@ -66,7 +63,7 @@ describe('authRouter', () => {
       request(app).get('/auth/github/callback').expect(400, done);
     });
 
-    it('should redirect to the web app for a principal with a known GitHub user id', done => {
+    it('should redirect to the web app with an authenticated session for a principal with a known GitHub user id', done => {
       tracker.on('query', ({ bindings, response, sql }) => {
         if (
           sql ===
@@ -82,17 +79,21 @@ describe('authRouter', () => {
           done(new Error(`Unrecognized query "${sql}"`));
         }
       });
-      request(app)
+      const appAgent = agent(app);
+      appAgent
         .get('/auth/github/callback?code=MOCK_CODE')
         .expect('Location', 'TEST_WEBAPP_ORIGIN')
         .expect(302, err => {
+          if (err) return done(err);
           expect(mockGetGithubAccessToken).toBeCalledWith('MOCK_CODE');
           expect(mockGetGithubUser).toBeCalledWith('MOCK_ACCESS_TOKEN');
-          done(err);
+          appAgent
+            .get('/auth/session')
+            .expect(200, { data: { authenticated: true } }, done);
         });
     });
 
-    it('should insert a new principal and GitHub user and then redirect to the web app for a principal with an unknown GitHub user id', done => {
+    it('should insert a new principal and GitHub user and then redirect to the web app with an authenticated session for a principal with an unknown GitHub user id', done => {
       tracker.on('query', ({ bindings, response, sql, transacting }) => {
         if (
           sql ===
@@ -122,13 +123,17 @@ describe('authRouter', () => {
           done(new Error(`Unrecognized query "${sql}"`));
         }
       });
-      request(app)
+      const appAgent = agent(app);
+      appAgent
         .get('/auth/github/callback?code=MOCK_CODE')
         .expect('Location', 'TEST_WEBAPP_ORIGIN')
         .expect(302, err => {
+          if (err) return done(err);
           expect(mockGetGithubAccessToken).toBeCalledWith('MOCK_CODE');
           expect(mockGetGithubUser).toBeCalledWith('MOCK_ACCESS_TOKEN');
-          done(err);
+          appAgent
+            .get('/auth/session')
+            .expect(200, { data: { authenticated: true } }, done);
         });
     });
   });
