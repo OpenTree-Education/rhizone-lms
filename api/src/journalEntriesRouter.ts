@@ -10,7 +10,7 @@ journalEntriesRouter.get('/', async (req, res) => {
   const { principalId } = req.session;
   const { limit, offset } = paginationValues(req.query.page, req.query.perpage);
   const journalEntries = await db('journal_entries')
-    .select('id', 'raw_text', 'created_at')
+    .select('id', 'raw_text')
     .where({ principal_id: principalId })
     .orderBy('created_at', 'desc')
     .limit(limit)
