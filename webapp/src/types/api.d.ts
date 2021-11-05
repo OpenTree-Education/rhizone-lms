@@ -7,4 +7,5 @@ export interface CreationResponseEnvelope {
 export interface JournalEntry {
   id: number;
   raw_text: string;
+  created_at: string;
 }
