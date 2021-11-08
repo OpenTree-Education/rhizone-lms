@@ -42,9 +42,9 @@ app.use(
   })
 );
 
-app.use(authRouter);
-
 const withCors = cors({ credentials: true, origin: process.env.WEBAPP_ORIGIN });
+
+app.use(withCors, authRouter);
 
 app.use('/journalentries', withCors, loggedIn, journalEntriesRouter);
 

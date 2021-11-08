@@ -3,8 +3,13 @@ import { Router } from 'express';
 
 import db from './db';
 import { getGithubAccessToken, getGithubUser } from './githubApi';
+import { itemEnvelope } from './responseEnvelope';
 
 const authRouter = Router();
+
+authRouter.get('/auth/session', (req, res) => {
+  res.json(itemEnvelope({ authenticated: !!req.session.principalId }));
+});
 
 authRouter.get('/auth/logout', (req, res) => {
   req.session.destroy(() => {
