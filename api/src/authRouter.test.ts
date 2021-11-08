@@ -100,7 +100,6 @@ describe('authRouter', () => {
           'select `principal_id` from `github_users` where `github_id` = ?'
         ) {
           expect(bindings).toEqual([1000]);
-          expect(transacting).toEqual(true);
           response([]);
         } else if (
           sql === 'insert into `principals` (`entity_type`) values (?)'
