@@ -54,3 +54,29 @@ export const loginFirstTime = (
       onLogin(appAgent);
     });
 };
+
+export const loginExistingUser = (
+  onLogin: (appAgent: SuperAgentTest) => unknown,
+  done: (error?: unknown) => unknown
+) => {
+  tracker.on('query', ({ bindings, response, sql }) => {
+    if (
+      sql ===
+      'select `principal_id` from `github_users` where `github_id` = ?'
+    ) {
+      expect(bindings).toEqual([1000]);
+      response([{ principal_id: 1 }]);
+    }
+  });
+  const appAgent = agent(app);
+  appAgent
+    .get('/auth/github/callback?code=MOCK_CODE')
+    .expect('Location', 'TEST_WEBAPP_ORIGIN')
+    .expect(302, err => {
+      if (err) return done(err);
+      expect(mockGetGithubAccessToken).toBeCalledWith('MOCK_CODE');
+      expect(mockGetGithubUser).toBeCalledWith('MOCK_ACCESS_TOKEN');
+      onLogin(appAgent);
+    });
+};
+
