@@ -1,4 +1,4 @@
-import { agent } from 'supertest';
+import { agent, SuperAgentTest } from 'supertest';
 import { MockedFunction } from 'ts-jest/dist/utils/testing';
 
 import app from './app';
@@ -17,7 +17,7 @@ const mockGetGithubAccessToken = getGithubAccessToken as MockedFunction<
 const mockGetGithubUser = getGithubUser as MockedFunction<typeof getGithubUser>;
 
 export const loginFirstTime = (
-  onLogin: () => unknown,
+  onLogin: (appAgent: SuperAgentTest) => unknown,
   done: (error?: unknown) => unknown
 ) => {
   tracker.on('query', ({ bindings, response, sql, transacting }) => {
@@ -51,6 +51,6 @@ export const loginFirstTime = (
       if (err) return done(err);
       expect(mockGetGithubAccessToken).toBeCalledWith('MOCK_CODE');
       expect(mockGetGithubUser).toBeCalledWith('MOCK_ACCESS_TOKEN');
-      onLogin();
+      onLogin(appAgent);
     });
 };
