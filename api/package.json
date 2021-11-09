@@ -8,7 +8,8 @@
   "private": true,
   "scripts": {
     "dev": "tsc -w & pm2-dev dist/server.js",
-    "fix": "yarn prettier --write src/**/*.ts & yarn eslint src/**/*.ts"
+    "fix": "yarn prettier --write src/**/*.ts & yarn eslint src/**/*.ts",
+    "check": "yarn prettier --check 'src/**/*.ts' 'src/*.ts' & yarn eslint src/**/*.ts"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
