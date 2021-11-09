@@ -2,9 +2,6 @@ import request from 'supertest';
 
 import app from './app';
 import { loginExistingUser, loginFirstTime } from './loginHelpers';
-import { tracker } from './mockDb';
-
-jest.mock('./githubApi');
 
 describe('authRouter', () => {
   describe('GET /auth/session', () => {
@@ -37,14 +34,6 @@ describe('authRouter', () => {
   });
 
   describe('GET /auth/github/callback', () => {
-    beforeEach(() => {
-      tracker.install();
-    });
-
-    afterEach(() => {
-      tracker.uninstall();
-    });
-
     it('should respond to requests without a code in the query string with Bad Request', done => {
       request(app).get('/auth/github/callback').expect(400, done);
     });
