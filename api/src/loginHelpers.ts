@@ -1,20 +1,8 @@
 import { agent, SuperAgentTest } from 'supertest';
-import { MockedFunction } from 'ts-jest/dist/utils/testing';
 
 import app from './app';
 import { getGithubAccessToken, getGithubUser } from './githubApi';
 import { tracker } from './mockDb';
-
-jest.mock('./githubApi', () => ({
-  __esModule: true,
-  getGithubAccessToken: jest.fn(() => 'MOCK_ACCESS_TOKEN'),
-  getGithubUser: jest.fn(() => ({ id: 1000 })),
-}));
-
-const mockGetGithubAccessToken = getGithubAccessToken as MockedFunction<
-  typeof getGithubAccessToken
->;
-const mockGetGithubUser = getGithubUser as MockedFunction<typeof getGithubUser>;
 
 export const loginFirstTime = (
   onLogin: (appAgent: SuperAgentTest) => unknown,
@@ -49,8 +37,8 @@ export const loginFirstTime = (
     .expect('Location', 'TEST_WEBAPP_ORIGIN')
     .expect(302, err => {
       if (err) return done(err);
-      expect(mockGetGithubAccessToken).toBeCalledWith('MOCK_CODE');
-      expect(mockGetGithubUser).toBeCalledWith('MOCK_ACCESS_TOKEN');
+      expect(getGithubAccessToken).toBeCalledWith('MOCK_CODE');
+      expect(getGithubUser).toBeCalledWith('MOCK_ACCESS_TOKEN');
       onLogin(appAgent);
     });
 };
@@ -61,8 +49,7 @@ export const loginExistingUser = (
 ) => {
   tracker.on('query', ({ bindings, response, sql }) => {
     if (
-      sql ===
-      'select `principal_id` from `github_users` where `github_id` = ?'
+      sql === 'select `principal_id` from `github_users` where `github_id` = ?'
     ) {
       expect(bindings).toEqual([1000]);
       response([{ principal_id: 1 }]);
@@ -74,9 +61,8 @@ export const loginExistingUser = (
     .expect('Location', 'TEST_WEBAPP_ORIGIN')
     .expect(302, err => {
       if (err) return done(err);
-      expect(mockGetGithubAccessToken).toBeCalledWith('MOCK_CODE');
-      expect(mockGetGithubUser).toBeCalledWith('MOCK_ACCESS_TOKEN');
+      expect(getGithubAccessToken).toBeCalledWith('MOCK_CODE');
+      expect(getGithubUser).toBeCalledWith('MOCK_ACCESS_TOKEN');
       onLogin(appAgent);
     });
 };
-
