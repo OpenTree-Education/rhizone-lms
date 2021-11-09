@@ -49,7 +49,7 @@ journalEntriesRouter.post('/', async (req, res, next) => {
   }
 
   let insertedJournalEntryIds: number[] = [];
-  try{
+  try {
     await db.transaction(async trx => {
       const insertedReflectionIds = await trx('reflections').insert({
         principal_id: principalId,
@@ -61,8 +61,7 @@ journalEntriesRouter.post('/', async (req, res, next) => {
       });
     });
     res.status(201).json(itemEnvelope({ id: insertedJournalEntryIds[0] }));
-  }
-  catch(err){
+  } catch (err) {
     console.log(err);
     next(err);
   }
