@@ -8,6 +8,8 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 1. Follow the instructions in `nginx/README.md`.
 2. Create a file named `.env.development.local`.
    1. Set `REACT_APP_API_ORIGIN` to `http://api.rhi.zone-development`.
+   2. Set `BROWSER` to `none` to override browser's default behaviour. Instead Nginx will be used to reverse proxy requests to dev servers and resolve dev domains to Nginx.
+   See docs here: https://create-react-app.dev/docs/advanced-configuration/
 
 ## Available Scripts
 
