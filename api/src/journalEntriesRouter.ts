@@ -39,6 +39,9 @@ journalEntriesRouter.get('/:id', async (req, res) => {
   res.json(itemEnvelope(journalEntry[0]));
 });
 
+/**
+ * @deprecated This api endpoint should not be used
+ */
 journalEntriesRouter.post('/', async (req, res) => {
   const { principalId } = req.session;
   const rawText = req.body.raw_text;
