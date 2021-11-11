@@ -40,7 +40,8 @@ journalEntriesRouter.get('/:id', async (req, res) => {
 });
 
 /**
- * @deprecated This api endpoint should not be used
+ * @deprecated This api endpoint should not be used,
+ * Please use /reflection endpoint
  */
 journalEntriesRouter.post('/', async (req, res) => {
   const { principalId } = req.session;
