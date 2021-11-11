@@ -28,7 +28,7 @@ describe('reflectionsRouter', () => {
             response([process.env.MOCK_PRINCIPAL_ID]);
           } else if (
             sql ===
-            'insert into `journal_entries` (`principal_id`, `raw_text`) values (?, ?)'
+            'insert into `journal_entries` (`principal_id`, `raw_text`, `reflection_id`) values (?, ?, ?)'
           ) {
             expect(bindings).toEqual([
               process.env.MOCK_PRINCIPAL_ID,
