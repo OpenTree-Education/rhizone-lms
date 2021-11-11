@@ -29,7 +29,7 @@ class CreateJournalEntryForm extends Component<
   handleSubmit: FormEventHandler = async event => {
     event.preventDefault();
     const createJournalEntry = await fetch(
-      `${process.env.REACT_APP_API_ORIGIN}/journalentries`,
+      `${process.env.REACT_APP_API_ORIGIN}/reflections`,
       {
         method: 'POST',
         credentials: 'include',
