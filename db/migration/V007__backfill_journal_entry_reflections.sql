@@ -1,14 +1,13 @@
 CREATE PROCEDURE createReflectionsAndAssignToJournalEntries()
 BEGIN
-    iterate:
-    LOOP
+    loopLabel: LOOP
         SET @countUnassignedJournalEntries = (
             SELECT COUNT(*)
                 FROM journal_entries
                 WHERE reflection_id IS NULL
         );
         IF (@countUnassignedJournalEntries = 0) THEN
-            LEAVE iterate;
+            LEAVE loopLabel;
         END IF;
         INSERT INTO reflections (principal_id)
             SELECT principal_id
@@ -21,7 +20,7 @@ BEGIN
             WHERE reflection_id IS NULL
             ORDER BY journal_entries.id
             LIMIT 1;
-    END LOOP iterate;
+    END LOOP loopLabel;
 END;
 
 CALL createReflectionsAndAssignToJournalEntries();
