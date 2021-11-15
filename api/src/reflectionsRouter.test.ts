@@ -1,7 +1,7 @@
 import { loginExistingUser } from './loginHelpers';
 import { errorEnvelope, itemEnvelope } from './responseEnvelope';
 import { tracker } from './mockDb';
-import { BadRequestError } from './httpErrors';
+import { BadRequestError, InternalServerError } from './httpErrors';
 
 const MOCK_REFLECTION_ID = 2;
 const MOCK_JOURNAL_ENTRY_ID = 3;
@@ -57,6 +57,19 @@ describe('reflectionsRouter', () => {
           .post('/reflections')
           .send({ raw_text: 'Hello! I feel good today' })
           .expect(201, itemEnvelope({ id: MOCK_REFLECTION_ID }), done);
+      }, done);
+    });
+
+    it('should throw 500 error if something goes wrong in the server', done => {
+      loginExistingUser(appAgent => {
+        tracker.on('query', ({ reject }) => {
+          reject(new InternalServerError());
+        });
+
+        appAgent
+          .post('/reflections')
+          .send({ raw_text: 'some text' })
+          .expect(InternalServerError.prototype.status, done);
       }, done);
     });
   });
