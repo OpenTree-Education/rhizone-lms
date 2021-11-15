@@ -4,7 +4,6 @@ import { BadRequestError } from './httpErrors';
 import { itemEnvelope } from './responseEnvelope';
 import db from './db';
 
-
 const reflectionsRouter = Router();
 
 reflectionsRouter.post('/', async (req, res, next) => {
@@ -32,6 +31,7 @@ reflectionsRouter.post('/', async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+    return;
   }
   res.status(201).json(itemEnvelope({ id: insertedReflectionId[0] }));
 });
