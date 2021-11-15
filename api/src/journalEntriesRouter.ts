@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
 import db from './db';
 import paginationValues from './paginationValues';
-import { nextTick } from 'process';
+import { BadRequestError } from './httpErrors';
 
 const journalEntriesRouter = Router();
 
@@ -44,11 +44,15 @@ journalEntriesRouter.post('/', async (req, res, next) => {
   const { principalId } = req.session;
   const rawText = req.body.raw_text;
   if (!rawText) {
-    res.sendStatus(400);
+    next(
+      new BadRequestError(
+        'At least one option or journal entry must be present to complete this request'
+      )
+    );
     return;
   }
 
-  let insertedJournalEntryIds: number[] = [];
+  let insertedJournalEntryIds: number[];
   try {
     await db.transaction(async trx => {
       const insertedReflectionIds = await trx('reflections').insert({
@@ -60,11 +64,10 @@ journalEntriesRouter.post('/', async (req, res, next) => {
         principal_id: principalId,
       });
     });
-    res.status(201).json(itemEnvelope({ id: insertedJournalEntryIds[0] }));
   } catch (err) {
-    console.log(err);
     next(err);
   }
+  res.status(201).json(itemEnvelope({ id: insertedJournalEntryIds[0] }));
 });
 
 export default journalEntriesRouter;
