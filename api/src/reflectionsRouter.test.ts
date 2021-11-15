@@ -1,6 +1,10 @@
 import { loginExistingUser } from './loginHelpers';
 import { errorEnvelope, itemEnvelope } from './responseEnvelope';
 import { tracker } from './mockDb';
+import { BadRequestError } from './httpErrors';
+
+const MOCK_REFLECTION_ID = 2;
+const MOCK_JOURNAL_ENTRY_ID = 3;
 
 describe('reflectionsRouter', () => {
   describe('POST /reflections', () => {
@@ -10,7 +14,7 @@ describe('reflectionsRouter', () => {
           .post('/reflections')
           .send({ raw_text: '' })
           .expect(
-            400,
+            BadRequestError.prototype.status,
             errorEnvelope(
               'At least one option or journal entry must be present to complete this request'
             ),
@@ -25,7 +29,7 @@ describe('reflectionsRouter', () => {
           if (sql === 'insert into `reflections` (`principal_id`) values (?)') {
             expect(bindings).toEqual([process.env.MOCK_PRINCIPAL_ID]);
             expect(transacting).toEqual(true);
-            response([process.env.MOCK_PRINCIPAL_ID]);
+            response([MOCK_REFLECTION_ID]);
           } else if (
             sql ===
             'insert into `journal_entries` (`principal_id`, `raw_text`, `reflection_id`) values (?, ?, ?)'
@@ -33,14 +37,16 @@ describe('reflectionsRouter', () => {
             expect(bindings).toEqual([
               process.env.MOCK_PRINCIPAL_ID,
               'Hello! I feel good today',
-              process.env.MOCK_REFLECTION_ID,
+              MOCK_REFLECTION_ID,
             ]);
             expect(transacting).toEqual(true);
-            response([process.env.MOCK_REFLECTION_ID]);
+            response([MOCK_JOURNAL_ENTRY_ID]);
           } else if (sql === 'BEGIN;') {
             response(null);
           } else if (sql === 'COMMIT;') {
             response(null);
+          } else if (sql === 'ROLLBACK') {
+            done(`Something went wrong, transaction failed`);
           } else {
             done(
               `Didn't match any known SQL statement cases. Recieved SQL statement: ${sql}`
@@ -50,11 +56,7 @@ describe('reflectionsRouter', () => {
         appAgent
           .post('/reflections')
           .send({ raw_text: 'Hello! I feel good today' })
-          .expect(
-            201,
-            itemEnvelope({ id: process.env.MOCK_REFLECTION_ID }),
-            done
-          );
+          .expect(201, itemEnvelope({ id: MOCK_REFLECTION_ID }), done);
       }, done);
     });
   });
