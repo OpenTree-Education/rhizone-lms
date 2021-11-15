@@ -1,0 +1,7 @@
+CREATE TABLE settings (
+  id BIGINT AUTO_INCREMENT,
+  property VARCHAR(255) NOT NULL,
+  content VARCHAR(255) NOT NULL,
+  category VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id)
+);

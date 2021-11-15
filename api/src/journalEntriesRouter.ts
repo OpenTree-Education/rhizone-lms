@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
 import db from './db';
 import paginationValues from './paginationValues';
+import { BadRequestError } from './httpErrors';
 
 const journalEntriesRouter = Router();
 
@@ -43,17 +44,33 @@ journalEntriesRouter.get('/:id', async (req, res) => {
  * @deprecated This api endpoint should not be used,
  * Please use /reflection endpoint
  */
-journalEntriesRouter.post('/', async (req, res) => {
+journalEntriesRouter.post('/', async (req, res, next) => {
   const { principalId } = req.session;
   const rawText = req.body.raw_text;
   if (!rawText) {
-    res.sendStatus(400);
+    next(
+      new BadRequestError(
+        'At least one option or journal entry must be present to complete this request'
+      )
+    );
     return;
   }
-  const insertedJournalEntryIds = await db('journal_entries').insert({
-    raw_text: rawText,
-    principal_id: principalId,
-  });
+
+  let insertedJournalEntryIds: number[];
+  try {
+    await db.transaction(async trx => {
+      const insertedReflectionIds = await trx('reflections').insert({
+        principal_id: principalId,
+      });
+      insertedJournalEntryIds = await trx('journal_entries').insert({
+        raw_text: rawText,
+        reflection_id: insertedReflectionIds[0],
+        principal_id: principalId,
+      });
+    });
+  } catch (err) {
+    next(err);
+  }
   res.status(201).json(itemEnvelope({ id: insertedJournalEntryIds[0] }));
 });
 
