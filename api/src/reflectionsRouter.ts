@@ -6,9 +6,14 @@ import db from './db';
 
 const reflectionsRouter = Router();
 
+interface Option {
+  id: number;
+}
+
 reflectionsRouter.post('/', async (req, res, next) => {
   const { principalId } = req.session;
   const rawText = req.body.raw_text;
+  const options: Array<Option> | [] = req.body.options ? req.body.options : [];
   if (!rawText) {
     next(
       new BadRequestError(
@@ -28,6 +33,18 @@ reflectionsRouter.post('/', async (req, res, next) => {
         principal_id: principalId,
         reflection_id: insertedReflectionId[0],
       });
+
+      // for(let option of  options){
+      await trx('responses').insert(
+        options.map(option => {
+          return {
+            option_id: option.id,
+            reflection_id: insertedReflectionId[0],
+            principal_id: principalId,
+          };
+        })
+      );
+      // }
     });
   } catch (error) {
     next(error);
