@@ -34,17 +34,19 @@ reflectionsRouter.post('/', async (req, res, next) => {
         reflection_id: insertedReflectionId[0],
       });
 
-      // for(let option of  options){
-      await trx('responses').insert(
-        options.map(option => {
-          return {
-            option_id: option.id,
-            reflection_id: insertedReflectionId[0],
-            principal_id: principalId,
-          };
-        })
-      );
-      // }
+
+      if (options.length > 0) {
+        await trx('responses').insert(
+          options.map(option => {
+            return {
+              option_id: option.id,
+              reflection_id: insertedReflectionId[0],
+              principal_id: principalId,
+            };
+          })
+        );
+      }
+
     });
   } catch (error) {
     next(error);
