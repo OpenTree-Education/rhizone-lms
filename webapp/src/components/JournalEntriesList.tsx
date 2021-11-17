@@ -1,4 +1,4 @@
-import { Card, CardContent, Stack } from '@mui/material';
+import { Card, CardContent, Stack, Chip } from '@mui/material';
 import React from 'react';
 
 import { JournalEntry } from '../types/api';
@@ -17,7 +17,13 @@ const JournalEntriesList = ({ journalEntries }: JournalEntriesListProps) => (
         ({ id, raw_text: rawText, created_at: createdAt }) => {
           return (
             <Card key={id}>
-              <CardContent>{formatDateTime(createdAt)}</CardContent>
+              <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                <CardContent>{formatDateTime(createdAt)}</CardContent>
+                <span style={{display: 'flex', alignItems: 'center'}}>
+                  <CardContent style={{ padding: '10px'}}>OUTLOOK</CardContent>
+                  <Chip label="HARD CODED ANSWER" variant="outlined" style={{ marginRight: '16px' }}/>
+                </span>
+              </div>
               <CardContent
                 sx={{
                   whiteSpace: 'pre-wrap',
