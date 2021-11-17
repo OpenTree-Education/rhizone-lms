@@ -44,7 +44,7 @@ function trackerHelper(done: jest.DoneCallback) {
         MOCK_OPTION_ID,
         process.env.MOCK_PRINCIPAL_ID,
         MOCK_REFLECTION_ID,
-				MOCK_OPTION_ID + 1,
+        MOCK_OPTION_ID + 1,
         process.env.MOCK_PRINCIPAL_ID,
         MOCK_REFLECTION_ID,
       ]);

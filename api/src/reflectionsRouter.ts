@@ -34,7 +34,6 @@ reflectionsRouter.post('/', async (req, res, next) => {
         reflection_id: insertedReflectionId[0],
       });
 
-
       if (options.length > 0) {
         await trx('responses').insert(
           options.map(option => {
@@ -46,7 +45,6 @@ reflectionsRouter.post('/', async (req, res, next) => {
           })
         );
       }
-
     });
   } catch (error) {
     next(error);
