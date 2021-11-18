@@ -9,6 +9,7 @@ import { handleErrors, handleNotFound } from './errorHandlingMiddleware';
 import journalEntriesRouter from './journalEntriesRouter';
 import reflectionsRouter from './reflectionsRouter';
 import { loggedIn } from './authMiddleware';
+import settingsRouter from './settingsRouter';
 
 declare module 'express-session' {
   interface Session {
@@ -51,6 +52,8 @@ app.use('/journalentries', withCors, loggedIn, journalEntriesRouter);
 
 
 app.use('/reflections', withCors, loggedIn, reflectionsRouter);
+
+app.use('/settings', withCors, loggedIn, settingsRouter)
 
 app.get('/', (_, res) => {
   res.json({});
