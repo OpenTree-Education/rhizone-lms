@@ -1,7 +1,6 @@
 import { Router } from 'express';
 
-import { BadRequestError } from './httpErrors';
-import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
+import { collectionEnvelope } from './responseEnvelope';
 import db from './db';
 
 const settingsRouter = Router();
