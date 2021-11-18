@@ -14,23 +14,44 @@ const JournalEntriesList = ({ journalEntries }: JournalEntriesListProps) => (
     <h2>Your previous entries</h2>
     <Stack spacing={2}>
       {journalEntries.map(
-        ({ id, raw_text: rawText, created_at: createdAt }) => {
+        ({
+          id,
+          created_at: createdAt,
+          journal_entries: journalEntriesPlaceholder,
+          responses,
+        }) => {
           return (
             <Card key={id}>
-              <div style={{display: 'flex', justifyContent: 'space-between'}}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <CardContent>{formatDateTime(createdAt)}</CardContent>
-                <span style={{display: 'flex', alignItems: 'center'}}>
-                  <CardContent style={{ padding: '10px'}}>OUTLOOK</CardContent>
-                  <Chip label="HARD CODED ANSWER" variant="outlined" style={{ marginRight: '16px' }}/>
-                </span>
+                {responses[0]['id'] !== null &&
+                  responses.map(response => {
+                    return (
+                      <span style={{ display: 'flex', alignItems: 'center' }}>
+                        <CardContent style={{ padding: '10px' }}>
+                          {response['option']['prompt']['label']}
+                        </CardContent>
+                        <Chip
+                          label={response['option']['label']}
+                          variant="outlined"
+                          style={{ marginRight: '16px' }}
+                        />
+                      </span>
+                    );
+                  })}
               </div>
-              <CardContent
-                sx={{
-                  whiteSpace: 'pre-wrap',
-                }}
-              >
-                {rawText}
-              </CardContent>
+              {journalEntriesPlaceholder[0]['id'] !== null &&
+                journalEntriesPlaceholder.map(journalEntry => {
+                  return (
+                    <CardContent
+                      sx={{
+                        whiteSpace: 'pre-wrap',
+                      }}
+                    >
+                      {journalEntry['raw_text']}
+                    </CardContent>
+                  );
+                })}
             </Card>
           );
         }

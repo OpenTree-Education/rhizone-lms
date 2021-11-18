@@ -6,6 +6,24 @@ export interface CreationResponseEnvelope {
 
 export interface JournalEntry {
   id: number;
-  raw_text: string;
   created_at: string;
+  journal_entries: [
+    {
+      id: number;
+      raw_text: string;
+    }
+  ];
+  responses: [
+    {
+      id: number;
+      option: {
+        id: number;
+        label: string;
+        prompt: {
+          id: number;
+          label: string;
+        };
+      };
+    }
+  ];
 }
