@@ -38,7 +38,7 @@ class App extends Component<AppProps, AppState> {
 
   fetchJournalEntries = async () => {
     const fetchJournalEntries = await fetch(
-      `${process.env.REACT_APP_API_ORIGIN}/journalentries`,
+      `${process.env.REACT_APP_API_ORIGIN}/reflections`,
       { credentials: 'include' }
     );
     if (fetchJournalEntries.status === 401) {

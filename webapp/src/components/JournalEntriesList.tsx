@@ -1,4 +1,4 @@
-import { Card, CardContent, Stack } from '@mui/material';
+import { Card, CardContent, Stack, Chip } from '@mui/material';
 import React from 'react';
 
 import { JournalEntry } from '../types/api';
@@ -14,17 +14,44 @@ const JournalEntriesList = ({ journalEntries }: JournalEntriesListProps) => (
     <h2>Your previous entries</h2>
     <Stack spacing={2}>
       {journalEntries.map(
-        ({ id, raw_text: rawText, created_at: createdAt }) => {
+        ({
+          id,
+          created_at: createdAt,
+          journal_entries: journalEntriesPlaceholder,
+          responses,
+        }) => {
           return (
             <Card key={id}>
-              <CardContent>{formatDateTime(createdAt)}</CardContent>
-              <CardContent
-                sx={{
-                  whiteSpace: 'pre-wrap',
-                }}
-              >
-                {rawText}
-              </CardContent>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <CardContent>{formatDateTime(createdAt)}</CardContent>
+                {responses[0]['id'] !== null &&
+                  responses.map(response => {
+                    return (
+                      <span style={{ display: 'flex', alignItems: 'center' }}>
+                        <CardContent style={{ padding: '10px' }}>
+                          {response['option']['prompt']['label']}
+                        </CardContent>
+                        <Chip
+                          label={response['option']['label']}
+                          variant="outlined"
+                          style={{ marginRight: '16px' }}
+                        />
+                      </span>
+                    );
+                  })}
+              </div>
+              {journalEntriesPlaceholder[0]['id'] !== null &&
+                journalEntriesPlaceholder.map(journalEntry => {
+                  return (
+                    <CardContent
+                      sx={{
+                        whiteSpace: 'pre-wrap',
+                      }}
+                    >
+                      {journalEntry['raw_text']}
+                    </CardContent>
+                  );
+                })}
             </Card>
           );
         }
