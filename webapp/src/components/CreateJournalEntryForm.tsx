@@ -1,7 +1,23 @@
 import React, { ChangeEventHandler, Component, FormEventHandler } from 'react';
 
 import { CreationResponseEnvelope } from '../types/api';
-import { Button, TextField } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  Snackbar,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 
 interface CreateJournalEntryFormProps {
   onJournalEntryCreated?: (response: CreationResponseEnvelope) => void;
@@ -9,6 +25,11 @@ interface CreateJournalEntryFormProps {
 
 interface CreateJournalEntryFormState {
   journalEntryText: string;
+  selectedOptions: null | number;
+  rows: number;
+  loading: boolean;
+  errorVisibility: boolean;
+  successVisibility: boolean;
 }
 
 class CreateJournalEntryForm extends Component<
@@ -19,6 +40,11 @@ class CreateJournalEntryForm extends Component<
     super(props);
     this.state = {
       journalEntryText: '',
+      selectedOptions: null,
+      rows: 1,
+      loading: false,
+      errorVisibility: false,
+      successVisibility: false,
     };
   }
   handleChangeJournalEntryText: ChangeEventHandler<HTMLTextAreaElement> =
@@ -28,36 +54,168 @@ class CreateJournalEntryForm extends Component<
 
   handleSubmit: FormEventHandler = async event => {
     event.preventDefault();
-    const createJournalEntry = await fetch(
-      `${process.env.REACT_APP_API_ORIGIN}/reflections`,
-      {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ raw_text: this.state.journalEntryText }),
+    this.setState({ loading: true });
+
+    try {
+      const createJournalEntry = await fetch(
+        `${process.env.REACT_APP_API_ORIGIN}/reflections`,
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            raw_text: this.state.journalEntryText,
+            options: [{ id: this.state.selectedOptions }],
+          }),
+        }
+      );
+      if (createJournalEntry.ok && this.props.onJournalEntryCreated) {
+        this.props.onJournalEntryCreated(await createJournalEntry.json());
+
+        this.setState({
+          successVisibility: true,
+          errorVisibility: false,
+          journalEntryText: '',
+        });
+      } else {
+        this.setState({ errorVisibility: true });
       }
-    );
-    if (createJournalEntry.ok && this.props.onJournalEntryCreated) {
-      this.props.onJournalEntryCreated(await createJournalEntry.json());
+    } catch (err) {
+      this.setState({ errorVisibility: true });
     }
+    this.setState({ loading: false });
   };
+
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <h2>Write a new journal entry</h2>
-        <TextField
-          fullWidth
-          label="How is it going?"
-          minRows={4}
-          multiline
-          onChange={this.handleChangeJournalEntryText}
-          value={this.state.journalEntryText}
-        />
-        <p>
-          <Button type="submit" variant="contained">
-            Save
-          </Button>
-        </p>
+        <Card sx={{ maxWidth: 1000 }}>
+          <CardContent>
+            <Typography variant="h4" component="h1" sx={{ mb: 5 }}>
+              New Reflection
+            </Typography>
+            <Typography variant="inherit" component="h2">
+              Outlook
+            </Typography>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">
+                How are you feeling about your current endevours?
+              </FormLabel>
+              <RadioGroup
+                row
+                aria-label="mood"
+                name="row-radio-buttons-group"
+                onChange={event =>
+                  this.setState({
+                    selectedOptions: +event.target.value,
+                  })
+                }
+              >
+                <Stack direction="row" sx={{ my: 3, textAlign: 'center' }}>
+                  <FormControlLabel
+                    value="1"
+                    control={<Radio />}
+                    label="Very discouraged"
+                    labelPlacement="bottom"
+                  />
+                  <FormControlLabel
+                    value="2"
+                    control={<Radio />}
+                    label="A little discouraged"
+                    labelPlacement="bottom"
+                  />
+                  <FormControlLabel
+                    value="3"
+                    control={<Radio />}
+                    label="I don't know"
+                    labelPlacement="bottom"
+                  />
+                  <FormControlLabel
+                    value="4"
+                    control={<Radio />}
+                    label="A little hopeful"
+                    labelPlacement="bottom"
+                  />
+                  <FormControlLabel
+                    value="5"
+                    control={<Radio />}
+                    label="Very hopeful"
+                    labelPlacement="bottom"
+                  />
+                </Stack>
+              </RadioGroup>
+            </FormControl>
+          </CardContent>
+          <CardContent sx={{ paddingBottom: 0 }}>
+            <Typography variant="inherit" component="h2">
+              Journal
+            </Typography>
+            <Typography sx={{ mb: 1.5 }} color="text.secondary">
+              Write a new journal entry (optional)
+            </Typography>
+            <TextField
+              fullWidth
+              label="How is it going?"
+              onFocus={() => {
+                this.setState({ rows: 4 });
+              }}
+              minRows={this.state.rows}
+              multiline
+              onChange={this.handleChangeJournalEntryText}
+              value={this.state.journalEntryText}
+            />
+          </CardContent>
+          <CardContent>
+            {this.state.successVisibility && (
+              <Snackbar
+                open={true}
+                autoHideDuration={6000}
+                onClose={() => {
+                  this.setState({ successVisibility: false });
+                }}
+                message="Reflection created"
+              >
+                <Alert
+                  onClose={() => {
+                    this.setState({ successVisibility: false });
+                  }}
+                  severity="success"
+                  sx={{ width: '100%' }}
+                >
+                  Reflection created
+                </Alert>
+              </Snackbar>
+            )}
+            {this.state.errorVisibility && (
+              <Alert
+                onClose={() => {
+                  this.setState({ errorVisibility: false });
+                }}
+                severity="error"
+                sx={{ mb: 2 }}
+              >
+                Reflection was not saved!
+              </Alert>
+            )}
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                width: 220,
+              }}
+            >
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={this.state.loading}
+              >
+                Save reflection
+              </Button>
+              {this.state.loading && <CircularProgress />}
+            </Box>
+          </CardContent>
+        </Card>
       </form>
     );
   }
