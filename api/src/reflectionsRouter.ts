@@ -97,7 +97,7 @@ reflectionsRouter.get('/', async (req, res) => {
   }
 
   const newReflectionsObject = reflections.map(reflection => {
-    let newReflection: Reflection = {
+    const newReflection: Reflection = {
       id: reflection.id,
       created_at: reflection.created_at,
       journal_entries: null,

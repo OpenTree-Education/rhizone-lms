@@ -28,11 +28,11 @@ jobs:
       - name: Check API formatting
         if: always()
         working-directory: api
-        run: yarn prettier --check src/**/*.ts
+        run: yarn prettier --check 'src/**/*.ts'
       - name: Check API lint
         if: always()
         working-directory: api
-        run: yarn eslint src/**/*.ts
+        run: yarn eslint 'src/**/*.ts'
       - name: Run API tests
         if: always()
         working-directory: api
@@ -45,11 +45,11 @@ jobs:
       - name: Check web app formatting
         if: always()
         working-directory: webapp
-        run: yarn prettier --check src/**/*.{ts,tsx,css}
+        run: yarn prettier --check 'src/**/*.{ts,tsx,css}'
       - name: Check web app lint
         if: always()
         working-directory: webapp
-        run: yarn eslint src/**/*.{ts,tsx}
+        run: yarn eslint 'src/**/*.{ts,tsx}'
       - name: Run web app tests
         if: always()
         working-directory: webapp
