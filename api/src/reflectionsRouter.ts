@@ -76,7 +76,7 @@ reflectionsRouter.get('/', async (req, res) => {
       'journal_entries.reflection_id'
     )
     .leftJoin('responses', 'reflections.id', 'responses.reflection_id')
-    .orderBy('reflections.id')
+    .orderBy('reflections.id', 'desc')
     .leftJoin('options', 'responses.option_id', 'options.id')
     .leftJoin('prompts', 'options.prompt_id', 'prompts.id')
     .where({ 'reflections.principal_id': principalId })
@@ -90,19 +90,24 @@ reflectionsRouter.get('/', async (req, res) => {
     .where({ principal_id: principalId });
 
   interface Reflection {
-    id: number,
-    created_at: string,
-    journal_entries: object[],
-    responses: object[]
+    id: number;
+    created_at: string;
+    journal_entries: object[];
+    responses: object[];
   }
 
   const newReflectionsObject = reflections.map(reflection => {
-    let newReflection: Reflection = { id: reflection.id, created_at: reflection.created_at, journal_entries: null, responses: null };
+    let newReflection: Reflection = {
+      id: reflection.id,
+      created_at: reflection.created_at,
+      journal_entries: null,
+      responses: null,
+    };
 
     newReflection.journal_entries = [
       { id: reflection.journal_entry_id, raw_text: reflection.raw_text },
     ];
-  
+
     newReflection.responses = [
       {
         id: reflection.response_id,
