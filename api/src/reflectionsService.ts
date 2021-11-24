@@ -20,61 +20,54 @@ export const listReflections = async (
     .orderBy('created_at', 'desc')
     .limit(limit)
     .offset(offset);
+  if (reflections.length === 0) {
+    return [];
+  }
   const reflectionIds = reflections.map(({ id }) => id);
-  const [journalEntries, responseOptionPrompts] = await Promise.all([
+  const [journalEntries, responses] = await Promise.all([
     builder('journal_entries')
       .select('id', 'raw_text', 'reflection_id')
       .whereIn('reflection_id', reflectionIds)
       .orderBy('id'),
     builder('responses')
       .select({
-        responseId: 'responses.id',
-        responseReflectionId: 'responses.reflection_id',
-        optionId: 'options.id',
-        optionLabel: 'options.label',
-        promptId: 'prompts.id',
-        promptLabel: 'prompts.label',
+        id: 'responses.id',
+        reflection_id: 'reflection_id',
+        option_id: 'option_id',
+        option_label: 'options.label',
+        prompt_id: 'prompt_id',
+        prompt_label: 'prompts.label',
       })
       .join('options', 'responses.option_id', 'options.id')
       .join('prompts', 'options.prompt_id', 'prompts.id')
       .whereIn('reflection_id', reflectionIds)
       .orderBy('prompts.sort_order'),
   ]);
-  const reflectionsById = reflections.reduce(
-    (byId, reflection) =>
-      byId.set(reflection.id, {
-        ...reflection,
-        journal_entries: [],
-        responses: [],
-      }),
-    new Map()
-  );
-  journalEntries.forEach(journalEntry => {
+  const reflectionsById = new Map();
+  for (const reflection of reflections) {
+    reflectionsById.set(reflection.id, {
+      ...reflection,
+      journal_entries: [],
+      responses: [],
+    });
+  }
+  for (const journalEntry of journalEntries) {
     reflectionsById
       .get(journalEntry.reflection_id)
       .journal_entries.push(journalEntry);
-  });
-  responseOptionPrompts.forEach(
-    ({
-      responseId,
-      responseReflectionId,
-      optionId,
-      optionLabel,
-      promptId,
-      promptLabel,
-    }) => {
-      reflectionsById.get(responseReflectionId).responses.push({
-        id: responseId,
-        option: {
-          id: optionId,
-          label: optionLabel,
-          prompt: {
-            id: promptId,
-            label: promptLabel,
-          },
+  }
+  for (const response of responses) {
+    reflectionsById.get(response.reflection_id).responses.push({
+      id: response.id,
+      option: {
+        id: response.option_id,
+        label: response.option_label,
+        prompt: {
+          id: response.prompt_id,
+          label: response.prompt_label,
         },
-      });
-    }
-  );
+      },
+    });
+  }
   return Array.from(reflectionsById.values());
 };
