@@ -1,9 +1,10 @@
 import { Router } from 'express';
 
 import { BadRequestError } from './httpErrors';
-import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
-import paginationValues from './paginationValues';
+import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
 import db from './db';
+import { listReflections, countReflections } from './reflectionsService';
+import paginationValues from './paginationValues';
 
 const reflectionsRouter = Router();
 
@@ -54,77 +55,23 @@ reflectionsRouter.post('/', async (req, res, next) => {
   res.status(201).json(itemEnvelope({ id: insertedReflectionId[0] }));
 });
 
-reflectionsRouter.get('/', async (req, res) => {
+reflectionsRouter.get('/', async (req, res, next) => {
   const { principalId } = req.session;
   const { limit, offset } = paginationValues(req.query.page, req.query.perpage);
-
-  const reflections = await db('reflections')
-    .select(
-      'reflections.id',
-      'reflections.created_at',
-      'journal_entries.id AS journal_entry_id',
-      'journal_entries.raw_text',
-      'responses.id AS response_id',
-      'options.id AS option_id',
-      'options.label AS option_label',
-      'prompts.id AS prompt_id',
-      'prompts.label AS prompt_label'
-    )
-    .leftJoin(
-      'journal_entries',
-      'reflections.id',
-      'journal_entries.reflection_id'
-    )
-    .leftJoin('responses', 'reflections.id', 'responses.reflection_id')
-    .orderBy('reflections.id', 'desc')
-    .leftJoin('options', 'responses.option_id', 'options.id')
-    .leftJoin('prompts', 'options.prompt_id', 'prompts.id')
-    .where({ 'reflections.principal_id': principalId })
-    .orderBy('prompts.sort_order')
-    .limit(limit)
-    .offset(offset);
-
-  const countAlias = 'total_count';
-  const totalCounts = await db('reflections')
-    .count({ [countAlias]: '*' })
-    .where({ principal_id: principalId });
-
-  interface Reflection {
-    id: number;
-    created_at: string;
-    journal_entries: object[];
-    responses: object[];
+  let reflections;
+  let reflectionsCount;
+  try {
+    await db.transaction(async trx => {
+      [reflections, reflectionsCount] = await Promise.all([
+        listReflections(principalId, limit, offset, trx),
+        countReflections(principalId, trx),
+      ]);
+    });
+  } catch (err) {
+    next(err);
+    return;
   }
-
-  const newReflectionsObject = reflections.map(reflection => {
-    const newReflection: Reflection = {
-      id: reflection.id,
-      created_at: reflection.created_at,
-      journal_entries: null,
-      responses: null,
-    };
-
-    newReflection.journal_entries = [
-      { id: reflection.journal_entry_id, raw_text: reflection.raw_text },
-    ];
-
-    newReflection.responses = [
-      {
-        id: reflection.response_id,
-        option: {
-          id: reflection.option_id,
-          label: reflection.option_label,
-          prompt: { id: reflection.prompt_id, label: reflection.prompt_label },
-        },
-      },
-    ];
-
-    return newReflection;
-  });
-
-  res.json(
-    collectionEnvelope(newReflectionsObject, totalCounts[0][countAlias])
-  );
+  res.json(collectionEnvelope(reflections, reflectionsCount));
 });
 
 export default reflectionsRouter;
