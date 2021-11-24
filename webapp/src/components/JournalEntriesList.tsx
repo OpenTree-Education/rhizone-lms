@@ -24,34 +24,32 @@ const JournalEntriesList = ({ journalEntries }: JournalEntriesListProps) => (
             <Card key={id}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <CardContent>{formatDateTime(createdAt)}</CardContent>
-                {responses[0]['id'] !== null &&
-                  responses.map(response => {
-                    return (
-                      <span style={{ display: 'flex', alignItems: 'center' }}>
-                        <CardContent style={{ padding: '10px' }}>
-                          {response['option']['prompt']['label']}
-                        </CardContent>
-                        <Chip
-                          label={response['option']['label']}
-                          variant="outlined"
-                          style={{ marginRight: '16px' }}
-                        />
-                      </span>
-                    );
-                  })}
-              </div>
-              {journalEntriesPlaceholder[0]['id'] !== null &&
-                journalEntriesPlaceholder.map(journalEntry => {
+                {responses.map(response => {
                   return (
-                    <CardContent
-                      sx={{
-                        whiteSpace: 'pre-wrap',
-                      }}
-                    >
-                      {journalEntry['raw_text']}
-                    </CardContent>
+                    <span style={{ display: 'flex', alignItems: 'center' }}>
+                      <CardContent style={{ padding: '10px' }}>
+                        {response['option']['prompt']['label']}
+                      </CardContent>
+                      <Chip
+                        label={response['option']['label']}
+                        variant="outlined"
+                        style={{ marginRight: '16px' }}
+                      />
+                    </span>
                   );
                 })}
+              </div>
+              {journalEntriesPlaceholder.map(journalEntry => {
+                return (
+                  <CardContent
+                    sx={{
+                      whiteSpace: 'pre-wrap',
+                    }}
+                  >
+                    {journalEntry['raw_text']}
+                  </CardContent>
+                );
+              })}
             </Card>
           );
         }
