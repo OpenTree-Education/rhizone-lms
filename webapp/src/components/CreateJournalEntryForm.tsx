@@ -87,6 +87,15 @@ class CreateJournalEntryForm extends Component<
   };
 
   render() {
+    // HACK Until the questionnaire can be loaded from the API, the ids for the
+    //   options in the outlook check-in form are taken from this environment
+    //   variable in the format "#,#,#,#,#" where "#" represents an option id
+    //   in order of `options.sort_order` for the outlook prompt. If the
+    //   environment variable is unavailable or does not have five values, the
+    //   outlook check-in form is hidden to prevent save errors.
+    const outlookOptionIds = process.env.REACT_APP_TEMP_OUTLOOK_OPTIONS
+      ? process.env.REACT_APP_TEMP_OUTLOOK_OPTIONS.split(',')
+      : [];
     return (
       <form onSubmit={this.handleSubmit}>
         <Card sx={{ maxWidth: 1000 }}>
@@ -94,57 +103,61 @@ class CreateJournalEntryForm extends Component<
             <Typography variant="h4" component="h1" sx={{ mb: 5 }}>
               New Reflection
             </Typography>
-            <Typography variant="inherit" component="h2">
-              Outlook
-            </Typography>
-            <FormControl component="fieldset">
-              <FormLabel component="legend">
-                How are you feeling about your current endevours?
-              </FormLabel>
-              <RadioGroup
-                row
-                aria-label="mood"
-                name="row-radio-buttons-group"
-                onChange={event =>
-                  this.setState({
-                    selectedOptions: +event.target.value,
-                  })
-                }
-              >
-                <Stack direction="row" sx={{ my: 3, textAlign: 'center' }}>
-                  <FormControlLabel
-                    value="1"
-                    control={<Radio />}
-                    label="Very discouraged"
-                    labelPlacement="bottom"
-                  />
-                  <FormControlLabel
-                    value="2"
-                    control={<Radio />}
-                    label="A little discouraged"
-                    labelPlacement="bottom"
-                  />
-                  <FormControlLabel
-                    value="3"
-                    control={<Radio />}
-                    label="I don't know"
-                    labelPlacement="bottom"
-                  />
-                  <FormControlLabel
-                    value="4"
-                    control={<Radio />}
-                    label="A little hopeful"
-                    labelPlacement="bottom"
-                  />
-                  <FormControlLabel
-                    value="5"
-                    control={<Radio />}
-                    label="Very hopeful"
-                    labelPlacement="bottom"
-                  />
-                </Stack>
-              </RadioGroup>
-            </FormControl>
+            {outlookOptionIds.length === 5 && (
+              <>
+                <Typography variant="inherit" component="h2">
+                  Outlook
+                </Typography>
+                <FormControl component="fieldset">
+                  <FormLabel component="legend">
+                    How are you feeling about your current endevours?
+                  </FormLabel>
+                  <RadioGroup
+                    row
+                    aria-label="mood"
+                    name="row-radio-buttons-group"
+                    onChange={event =>
+                      this.setState({
+                        selectedOptions: +event.target.value,
+                      })
+                    }
+                  >
+                    <Stack direction="row" sx={{ my: 3, textAlign: 'center' }}>
+                      <FormControlLabel
+                        value={outlookOptionIds[0]}
+                        control={<Radio />}
+                        label="Very discouraged"
+                        labelPlacement="bottom"
+                      />
+                      <FormControlLabel
+                        value={outlookOptionIds[1]}
+                        control={<Radio />}
+                        label="A little discouraged"
+                        labelPlacement="bottom"
+                      />
+                      <FormControlLabel
+                        value={outlookOptionIds[2]}
+                        control={<Radio />}
+                        label="I don't know"
+                        labelPlacement="bottom"
+                      />
+                      <FormControlLabel
+                        value={outlookOptionIds[3]}
+                        control={<Radio />}
+                        label="A little hopeful"
+                        labelPlacement="bottom"
+                      />
+                      <FormControlLabel
+                        value={outlookOptionIds[4]}
+                        control={<Radio />}
+                        label="Very hopeful"
+                        labelPlacement="bottom"
+                      />
+                    </Stack>
+                  </RadioGroup>
+                </FormControl>
+              </>
+            )}
           </CardContent>
           <CardContent sx={{ paddingBottom: 0 }}>
             <Typography variant="inherit" component="h2">
