@@ -56,3 +56,16 @@ jobs:
         env:
           CI: true
         run: yarn test --passWithNoTests
+
+      - name: Install website dependencies
+        if: always()
+        working-directory: website
+        run: yarn install
+      - name: Check website formatting
+        if: always()
+        working-directory: website
+        run: yarn prettier --check 'src/**/*.{ts,tsx,css}'
+      - name: Check website lint
+        if: always()
+        working-directory: website
+        run: yarn eslint 'src/**/*.{ts,tsx}'
