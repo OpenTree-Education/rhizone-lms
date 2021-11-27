@@ -64,7 +64,7 @@ jobs:
       - name: Check website formatting
         if: always()
         working-directory: website
-        run: yarn prettier --check 'src/**/*.{ts,tsx,css}'
+        run: yarn prettier --check 'src/**/*.{ts,tsx}'
       - name: Check website lint
         if: always()
         working-directory: website
