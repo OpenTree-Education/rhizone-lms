@@ -1,7 +1,11 @@
+import CssBaseline from '@mui/material/CssBaseline';
 import { Helmet } from 'react-helmet';
 import React from 'react';
+import ThemeProvider from '@mui/material/styles/ThemeProvider';
 
-import opentreeEducationLogo from '../images/opentree-education-logo.svg';
+import Footer from '../components/Footer';
+import Header from '../components/Header';
+import theme from '../components/theme';
 
 interface PageProps {
   pageContext: {
@@ -11,13 +15,16 @@ interface PageProps {
 
 const Page = ({ pageContext: { title } }: PageProps) => {
   return (
-    <main>
+    <>
       <Helmet>
         <title>{title}</title>
       </Helmet>
-      <img alt="OpenTree Education logo" src={opentreeEducationLogo} />
-      <h1>OpenTree Education</h1>
-    </main>
+      <CssBaseline />
+      <ThemeProvider theme={theme}>
+        <Header />
+        <Footer />
+      </ThemeProvider>
+    </>
   );
 };
 
