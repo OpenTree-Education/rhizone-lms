@@ -2,7 +2,7 @@ import createTheme from "@mui/material/styles/createTheme";
 
 const amulet = 'hsl(104,18%,52%)';
 const amuletDark = 'hsl(104,23%,42%)';
-const amuletLight = 'hsl(104,18%,62%)';
+const lightMossGreen = 'hsl(104,35%,76%)';
 const amuletContrastText = 'hsl(0,0%,100%)';
 
 const paleCornflowerBlue = 'hsl(208,62%,82%)';
@@ -47,7 +47,7 @@ const theme = createTheme({
     primary: {
       contrastText: amuletContrastText,
       dark: amuletDark,
-      light: amuletLight,
+      light: lightMossGreen,
       main: amulet,
     },
     secondary: {

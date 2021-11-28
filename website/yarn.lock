@@ -4106,6 +4106,13 @@ decamelize@^1.2.0:
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
   integrity sha1-9lNNFRSCabIDUue+4m9QH5oZEpA=
 
+decode-named-character-reference@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/decode-named-character-reference/-/decode-named-character-reference-1.0.0.tgz#334409015275c33fb1a3b55654866bb6cd108d29"
+  integrity sha512-KTiXDlRp9MMm/nlgI8rDGKoNNKiTJBl0RPjnBM680m2HlgJEA4JTASspK44lsvE4GQJildMRFp2HdEBiG+nqng==
+  dependencies:
+    character-entities "^2.0.0"
+
 decode-uri-component@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.0.tgz#eb3913333458775cb84cd1a1fae062106bb87545"
@@ -8108,6 +8115,29 @@ micromark@^3.0.0:
     micromark-util-symbol "^1.0.0"
     micromark-util-types "^1.0.1"
     parse-entities "^3.0.0"
+    uvu "^0.5.0"
+
+micromark@^3.0.9:
+  version "3.0.9"
+  resolved "https://registry.yarnpkg.com/micromark/-/micromark-3.0.9.tgz#2ac001ffd126342fcf5f4ec2f944aa08206dd8d5"
+  integrity sha512-aWPjuXAqiFab4+oKLjH1vSNQm8S9GMnnf5sFNLrQaIggGYMBcQ9CS0Tt7+BJH6hbyv783zk3vgDhaORl3K33IQ==
+  dependencies:
+    "@types/debug" "^4.0.0"
+    debug "^4.0.0"
+    decode-named-character-reference "^1.0.0"
+    micromark-core-commonmark "^1.0.1"
+    micromark-factory-space "^1.0.0"
+    micromark-util-character "^1.0.0"
+    micromark-util-chunked "^1.0.0"
+    micromark-util-combine-extensions "^1.0.0"
+    micromark-util-decode-numeric-character-reference "^1.0.0"
+    micromark-util-encode "^1.0.0"
+    micromark-util-normalize-identifier "^1.0.0"
+    micromark-util-resolve-all "^1.0.0"
+    micromark-util-sanitize-uri "^1.0.0"
+    micromark-util-subtokenize "^1.0.0"
+    micromark-util-symbol "^1.0.0"
+    micromark-util-types "^1.0.1"
     uvu "^0.5.0"
 
 micromatch@^3.1.10:

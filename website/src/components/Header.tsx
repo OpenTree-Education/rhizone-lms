@@ -7,6 +7,7 @@ import { useMatch } from '@reach/router';
 
 import opentreeEducationLogo from '../images/opentree-education-logo.svg';
 import opentreeEducationWordMark from '../images/opentree-education.svg';
+import theme from './theme';
 
 interface TopNavLinkProps {
   children: string;
@@ -39,42 +40,45 @@ const Header = () => (
     spacing={1}
     sx={{ flexWrap: 'wrap' }}
   >
-    <Box py={1}>
-      <GatsbyLink to="/">
-        <Stack
-          alignItems="center"
-          direction="row"
-          justifyContent="space-between"
-          pr={1}
-        >
-          <img
-            alt="illustration of a stylized capital O surrounding a tree"
-            height={64}
-            src={opentreeEducationLogo}
-            width={64}
-          />
-          <img
-            alt="OpenTree Education"
-            height={40}
-            src={opentreeEducationWordMark}
-            width={116}
-          />
-        </Stack>
-      </GatsbyLink>
-    </Box>
     <Stack
       alignItems="center"
       direction="row"
       justifyContent="space-between"
-      py={1}
-      spacing={4}
+      sx={{ flexWrap: 'wrap' }}
     >
-      <TopNavLink to="/professional-mentorship-program/">Program</TopNavLink>
-      <TopNavLink to="/employers/">Employers</TopNavLink>
-      <TopNavLink to="/about/">About</TopNavLink>
-      <TopNavLink to="/contact/">Contact</TopNavLink>
+      <Box pr={6} py={1}>
+        <GatsbyLink to="/">
+          <Stack alignItems="center" direction="row">
+            <img
+              alt="illustration of a stylized capital O surrounding a tree"
+              height={64}
+              src={opentreeEducationLogo}
+              width={64}
+            />
+            <img
+              alt="OpenTree Education"
+              height={40}
+              src={opentreeEducationWordMark}
+              width={116}
+            />
+          </Stack>
+        </GatsbyLink>
+      </Box>
+      <Stack
+        alignItems="flex-end"
+        direction="row"
+        justifyContent="space-between"
+        spacing={3}
+        py={1}
+        sx={{ [theme.breakpoints.down('sm')]: { flexDirection: 'column' } }}
+      >
+        <TopNavLink to="/professional-mentorship-program/">Program</TopNavLink>
+        <TopNavLink to="/employers/">Employers</TopNavLink>
+        <TopNavLink to="/about/">About</TopNavLink>
+        <TopNavLink to="/contact/">Contact</TopNavLink>
+      </Stack>
     </Stack>
-    <Box sx={{ py: 1 }}>
+    <Box py={1}>
       <Button
         component={GatsbyLink}
         disableElevation
