@@ -38,7 +38,7 @@ const Section = ({ background, color, content, id }: SectionData) => (
             item
             md={columns || 3}
             py={verticalWhiteSpace || 12}
-            xs={12}
+            sm={12}
           >
             {heading && (
               <Typography
