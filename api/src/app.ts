@@ -7,8 +7,9 @@ import session from 'express-session';
 import authRouter from './authRouter';
 import { handleErrors, handleNotFound } from './errorHandlingMiddleware';
 import journalEntriesRouter from './journalEntriesRouter';
-import reflectionsRouter from './reflectionsRouter';
 import { loggedIn } from './authMiddleware';
+import questionnairesRouter from './questionnairesRouter';
+import reflectionsRouter from './reflectionsRouter';
 import settingsRouter from './settingsRouter';
 
 declare module 'express-session' {
@@ -49,6 +50,8 @@ const withCors = cors({ credentials: true, origin: process.env.WEBAPP_ORIGIN });
 app.use(withCors, authRouter);
 
 app.use('/journalentries', withCors, loggedIn, journalEntriesRouter);
+
+app.use('/questionnaires', withCors, loggedIn, questionnairesRouter);
 
 app.use('/reflections', withCors, loggedIn, reflectionsRouter);
 
