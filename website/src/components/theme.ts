@@ -1,4 +1,4 @@
-import createTheme from "@mui/material/styles/createTheme";
+import createTheme from '@mui/material/styles/createTheme';
 
 const amulet = 'hsl(104,18%,52%)';
 const amuletDark = 'hsl(104,23%,42%)';
@@ -6,29 +6,29 @@ const lightMossGreen = 'hsl(104,35%,76%)';
 const amuletContrastText = 'hsl(0,0%,100%)';
 
 const paleCornflowerBlue = 'hsl(208,62%,82%)';
-const paleCornflowerBlueDark  = 'hsl(208,66%,74%)';
+const paleCornflowerBlueDark = 'hsl(208,66%,74%)';
 const paleCornflowerBlueLight = 'hsl(208,62%,92%)';
-const paleCornflowerBlueContrastText  = 'hsl(208,67%,18%)';
+const paleCornflowerBlueContrastText = 'hsl(208,67%,18%)';
 
 const tropicalViolet = 'hsl(284,35%,76%)';
-const tropicalVioletDark  = 'hsl(284,40%,69%)';
+const tropicalVioletDark = 'hsl(284,40%,69%)';
 const tropicalVioletLight = 'hsl(284,35%,86%)';
-const tropicalVioletContrastText  = 'hsl(284,40%,16%)';
+const tropicalVioletContrastText = 'hsl(284,40%,16%)';
 
 const cameoPink = 'hsl(347,50%,84%)';
-const cameoPinkDark  = 'hsl(347,53%,77%)';
+const cameoPinkDark = 'hsl(347,53%,77%)';
 const cameoPinkLight = 'hsl(347,50%,94%)';
-const cameoPinkContrastText  = 'hsl(347,55%,20%)';
+const cameoPinkContrastText = 'hsl(347,55%,20%)';
 
 const peach = 'hsl(41,100%,84%)';
-const peachDark  = 'hsl(41,100%,74%)';
+const peachDark = 'hsl(41,100%,74%)';
 const peachLight = 'hsl(41,100%,94%)';
-const peachContrastText  = 'hsl(41,100%,20%)';
+const peachContrastText = 'hsl(41,100%,20%)';
 
 const alabaster = 'hsl(98,19%,92%)';
-const alabasterDark  = 'hsl(98,22%,85%)';
+const alabasterDark = 'hsl(98,22%,85%)';
 const cultured = 'hsl(210,30%,96%)';
-const alabasterContrastText  = 'hsl(98,24%,32%)';
+const alabasterContrastText = 'hsl(98,24%,32%)';
 
 const theme = createTheme({
   palette: {
@@ -70,8 +70,8 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontSize: 16
-  }
+    fontSize: 16,
+  },
 });
 
 export default theme;
