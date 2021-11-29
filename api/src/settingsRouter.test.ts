@@ -1,61 +1,52 @@
+import { itemEnvelope } from './responseEnvelope';
 import { loginExistingUser } from './loginHelpers';
-import { collectionEnvelope } from './responseEnvelope';
 import { tracker } from './mockDb';
-import { InternalServerError } from './httpErrors';
 
-const responseObj = {
-  property: 'default_questionnaire_id',
-  content: '1',
-};
-
-const trackerHelper = (done: jest.DoneCallback, totalCount: number) => {
-  tracker.on('query', ({ bindings, sql, response }) => {
-    if (
-      sql ===
-      'select `property`, `content` from `settings` where `category` = ?'
-    ) {
-      expect(bindings).toEqual(['webapp']);
-      totalCount === 1
-        ? response([responseObj])
-        : response([responseObj, responseObj]);
-    } else if (
-      sql ===
-      'select count(*) as `total_count` from `settings` where `category` = ?'
-    ) {
-      expect(bindings).toEqual(['webapp']);
-      response([{ total_count: totalCount === 1 ? 1 : 2 }]);
-    } else {
-      done(`Unexpected sql statement. Recieved: ${sql}`);
-    }
-  });
-};
-describe('settings router', () => {
-  describe('get /settings/:category', () => {
-    it('should return the existing entry in the settings table', done => {
+describe('settingsRouter', () => {
+  describe('GET /settings/:category', () => {
+    it('should return an object with setting properties as keys and content as values', done => {
       loginExistingUser(appAgent => {
-        trackerHelper(done, 1);
-        appAgent
-          .get('/settings/webapp')
-          .expect(200, collectionEnvelope([responseObj], 1), done);
+        tracker.on('query', ({ bindings, response, sql }) => {
+          if (
+            sql ===
+            'select `property`, `content` from `settings` where `category` = ? order by `property` asc'
+          ) {
+            expect(bindings).toEqual(['test-category']);
+            response([
+              { property: 'setting1', content: 'value 1' },
+              { property: 'setting2', content: 'value 2' },
+            ]);
+          } else {
+            throw new Error(`Unrecognized query: ${sql}`);
+          }
+        });
+        appAgent.get('/settings/test-category').expect(
+          200,
+          itemEnvelope({
+            id: 'test-category',
+            setting1: 'value 1',
+            setting2: 'value 2',
+          }),
+          done
+        );
       }, done);
     });
 
-    it('should return multiple entries from the settings table', done => {
+    it('should not send a database error message in the response when one occurs', done => {
       loginExistingUser(appAgent => {
-        trackerHelper(done, 2);
-        appAgent
-          .get('/settings/webapp')
-          .expect(200, collectionEnvelope([responseObj, responseObj], 2), done);
-      }, done);
-    });
-    it('should catch the internal server error, and response with appropriate code', done => {
-      loginExistingUser(appAgent => {
+        const databaseErrorMessage =
+          'database error that should not be sent in response';
         tracker.on('query', ({ reject }) => {
-          reject(new InternalServerError());
+          reject(new Error(databaseErrorMessage));
         });
         appAgent
           .get('/settings/webapp')
-          .expect(InternalServerError.prototype.status, done);
+          .expect(500)
+          .expect(res => {
+            expect(res.body.error).toHaveProperty('message');
+            expect(res.body.error.message).not.toBe(databaseErrorMessage);
+          })
+          .end(done);
       }, done);
     });
   });
