@@ -6,7 +6,7 @@
       {
         "id": "hero",
         "background": "radial-gradient(circle, hsl(104,35%,76%), hsl(104,35%,66%))",
-        "content": [
+        "columns": [
           {
             "heading": "Free 1:1 mentorship",
             "headingComponent": "h1",
@@ -16,11 +16,11 @@
             "callToActionHref": "/professional-mentorship-program/",
             "callToActionText": "About the program",
             "callToActionColor": "warning",
-            "columns": 6,
+            "span": 6,
             "verticalWhiteSpace": 18
           },
           {
-            "columns": 6
+            "span": 6
           }
         ]
       },
@@ -28,7 +28,7 @@
         "id": "employers",
         "background": "#343434",
         "color": "#ffffff",
-        "content": [
+        "columns": [
           {
             "heading": "Skilled software developers for hire",
             "headingVariant": "h5",
@@ -37,78 +37,78 @@
             "callToActionHref": "/employers/",
             "callToActionText": "About partnerships",
             "callToActionVariant": "outlined",
-            "columns": 6,
+            "span": 6,
             "verticalWhiteSpace": 6
           },
           {
             "callToActionHref": "/employers/#partner-with-us",
             "callToActionText": "Hire from us",
             "callToActionVariant": "contained",
-            "columns": 6
+            "span": 6
           }
         ]
       },
       {
         "id": "who-we-are",
         "background": "#b8d7ac",
-        "content": [
+        "columns": [
           {
-            "columns": 6
+            "span": 6
           },
           {
             "heading": "Who we are",
             "body": "OpenTree Education facilitates equitable entry and growth in the tech industry.",
             "callToActionHref": "/about/",
             "callToActionText": "Our mission",
-            "columns": 6
+            "span": 6
           }
         ]
       },
       {
         "id": "our-research",
         "background": "#b8d7ac",
-        "content": [
+        "columns": [
           {
             "heading": "Our research",
             "body": "As we conduct research and development on how to promote diversity, equity, and inclusion in education and the workplace, we post our findings on the OpenTree Education blog.",
             "callToActionHref": "/blog/",
             "callToActionText": "Read the blog",
-            "columns": 6
+            "span": 6
           },
           {
-            "columns": 6
+            "span": 6
           }
         ]
       },
       {
         "id": "careers",
         "background": "#b8d7ac",
-        "content": [
+        "columns": [
           {
-            "columns": 6
+            "span": 6
           },
           {
             "heading": "Help us change tech for the better",
             "body": "See how you can take part in our mission to make tech education and employment more equitable.",
             "callToActionHref": "/careers/",
             "callToActionText": "Work at OpenTree Education",
-            "columns": 6
+            "span": 6
           }
         ]
       },
       {
         "id": "contact",
         "background": "#b8d7ac",
-        "content": [
+        "columns": [
           {
             "heading": "We’d love to chat",
             "body": "We value everyone’s ideas for how to make positive change in the tech industry.",
             "callToActionHref": "/contact/",
             "callToActionText": "Get in touch",
-            "columns": 6
+            "span": 6
           },
           {
-            "columns": 6
+            "span": 6
           }
         ]
       }

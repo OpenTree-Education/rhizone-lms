@@ -1,7 +1,7 @@
 import { ElementType } from 'react';
 import { Variant } from '@mui/material/styles/createTypography';
 
-export interface ContentData {
+export interface ColumnData {
   body?: string;
   bodyVariant?: Variant;
   callToActionColor?:
@@ -15,16 +15,16 @@ export interface ContentData {
   callToActionHref?: string;
   callToActionText?: string;
   callToActionVariant?: 'text' | 'outlined' | 'contained';
-  columns?: number;
   heading?: string;
   headingComponent?: ElementType;
   headingVariant?: Variant;
+  span?: number;
   verticalWhiteSpace?: number;
 }
 
 export interface SectionData {
   background?: string;
   color?: string;
-  content: ContentData[];
+  columns: ColumnData[];
   id: string;
 }

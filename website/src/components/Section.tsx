@@ -7,9 +7,9 @@ import { micromark } from 'micromark';
 import React from 'react';
 import Typography from '@mui/material/Typography';
 
-import { SectionData } from '../@types/data';
+import { SectionData } from '../types/data';
 
-const Section = ({ background, color, content, id }: SectionData) => (
+const Section = ({ background, color, columns, id }: SectionData) => (
   <Box component="section" id={id} sx={{ background }}>
     <Container maxWidth="xl">
       <Grid
@@ -18,7 +18,7 @@ const Section = ({ background, color, content, id }: SectionData) => (
         container
         justifyContent="center"
       >
-        {content.map(
+        {columns.map(
           (
             {
               body,
@@ -27,10 +27,10 @@ const Section = ({ background, color, content, id }: SectionData) => (
               callToActionHref,
               callToActionText,
               callToActionVariant,
-              columns,
               heading,
               headingComponent,
               headingVariant,
+              span,
               verticalWhiteSpace,
             },
             contentIndex
@@ -38,7 +38,7 @@ const Section = ({ background, color, content, id }: SectionData) => (
             <Grid
               key={contentIndex}
               item
-              md={columns || 3}
+              md={span || 3}
               py={verticalWhiteSpace || 12}
               sm={12}
             >

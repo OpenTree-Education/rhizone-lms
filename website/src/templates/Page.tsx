@@ -7,7 +7,7 @@ import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import Section from '../components/Section';
-import { SectionData } from '../@types/data';
+import { SectionData } from '../types/data';
 import theme from '../components/theme';
 
 interface PageProps {
