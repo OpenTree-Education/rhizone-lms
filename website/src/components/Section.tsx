@@ -8,21 +8,14 @@ import Typography from '@mui/material/Typography';
 
 import { SectionData } from '../@types/data';
 
-const Section = ({
-  background,
-  color,
-  content,
-  id,
-  verticalWhiteSpace,
-}: SectionData) => (
-  <Box
-    component="section"
-    id={id}
-    px={3}
-    py={verticalWhiteSpace || 12}
-    sx={{ background }}
-  >
-    <Grid container alignItems="center" justifyContent="center" spacing={3}>
+const Section = ({ background, color, content, id }: SectionData) => (
+  <Box component="section" id={id} px={3} sx={{ background }}>
+    <Grid
+      alignItems="center"
+      columnSpacing={3}
+      container
+      justifyContent="center"
+    >
       {content.map(
         (
           {
@@ -36,10 +29,17 @@ const Section = ({
             heading,
             headingComponent,
             headingVariant,
+            verticalWhiteSpace,
           },
-          key
+          contentIndex
         ) => (
-          <Grid key={key} item xs={12} md={columns || 3}>
+          <Grid
+            key={contentIndex}
+            item
+            md={columns || 3}
+            py={verticalWhiteSpace || 12}
+            xs={12}
+          >
             {heading && (
               <Typography
                 component={headingComponent || 'h2'}
@@ -53,7 +53,9 @@ const Section = ({
               <Typography
                 component="div"
                 dangerouslySetInnerHTML={{
-                  __html: micromark(body, 'utf8', { allowDangerousHtml: true }),
+                  __html: micromark(body, 'utf8', {
+                    allowDangerousHtml: true,
+                  }),
                 }}
                 variant={bodyVariant || 'subtitle1'}
                 sx={{ color }}

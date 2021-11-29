@@ -19,6 +19,7 @@ export interface ContentData {
   heading?: string;
   headingComponent?: ElementType;
   headingVariant?: Variant;
+  verticalWhiteSpace?: number;
 }
 
 export interface SectionData {
@@ -26,5 +27,4 @@ export interface SectionData {
   color?: string;
   content: ContentData[];
   id: string;
-  verticalWhiteSpace?: number;
 }

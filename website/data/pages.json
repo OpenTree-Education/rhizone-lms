@@ -5,7 +5,6 @@
     "sections": [
       {
         "id": "hero",
-        "verticalWhiteSpace": 18,
         "background": "radial-gradient(circle, hsl(104,35%,76%), hsl(104,35%,66%))",
         "content": [
           {
@@ -17,7 +16,8 @@
             "callToActionHref": "/professional-mentorship-program/",
             "callToActionText": "About the program",
             "callToActionColor": "warning",
-            "columns": 5
+            "columns": 5,
+            "verticalWhiteSpace": 18
           },
           {
             "columns": 4
@@ -28,7 +28,6 @@
         "id": "employers",
         "background": "#343434",
         "color": "#ffffff",
-        "verticalWhiteSpace": 6,
         "content": [
           {
             "heading": "Skilled software developers for hire",
@@ -38,7 +37,8 @@
             "callToActionHref": "/employers/",
             "callToActionText": "About partnerships",
             "callToActionVariant": "outlined",
-            "columns": 5
+            "columns": 5,
+            "verticalWhiteSpace": 6
           },
           {
             "callToActionHref": "/employers/#partner-with-us",
@@ -102,7 +102,7 @@
         "content": [
           {
             "heading": "We’d love to chat",
-            "body": "We value everyone's ideas for how to make positive change in the tech industry.",
+            "body": "We value everyone’s ideas for how to make positive change in the tech industry.",
             "callToActionHref": "/contact/",
             "callToActionText": "Get in touch",
             "columns": 4
