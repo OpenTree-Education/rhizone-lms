@@ -16,11 +16,11 @@
             "callToActionHref": "/professional-mentorship-program/",
             "callToActionText": "About the program",
             "callToActionColor": "warning",
-            "columns": 5,
+            "columns": 6,
             "verticalWhiteSpace": 18
           },
           {
-            "columns": 4
+            "columns": 6
           }
         ]
       },
@@ -37,14 +37,14 @@
             "callToActionHref": "/employers/",
             "callToActionText": "About partnerships",
             "callToActionVariant": "outlined",
-            "columns": 5,
+            "columns": 6,
             "verticalWhiteSpace": 6
           },
           {
             "callToActionHref": "/employers/#partner-with-us",
             "callToActionText": "Hire from us",
             "callToActionVariant": "contained",
-            "columns": 4
+            "columns": 6
           }
         ]
       },
@@ -53,14 +53,14 @@
         "background": "#b8d7ac",
         "content": [
           {
-            "columns": 5
+            "columns": 6
           },
           {
             "heading": "Who we are",
             "body": "OpenTree Education facilitates equitable entry and growth in the tech industry.",
             "callToActionHref": "/about/",
             "callToActionText": "Our mission",
-            "columns": 4
+            "columns": 6
           }
         ]
       },
@@ -73,10 +73,10 @@
             "body": "As we conduct research and development on how to promote diversity, equity, and inclusion in education and the workplace, we post our findings on the OpenTree Education blog.",
             "callToActionHref": "/blog/",
             "callToActionText": "Read the blog",
-            "columns": 4
+            "columns": 6
           },
           {
-            "columns": 5
+            "columns": 6
           }
         ]
       },
@@ -85,14 +85,14 @@
         "background": "#b8d7ac",
         "content": [
           {
-            "columns": 5
+            "columns": 6
           },
           {
             "heading": "Help us change tech for the better",
             "body": "See how you can take part in our mission to make tech education and employment more equitable.",
             "callToActionHref": "/careers/",
             "callToActionText": "Work at OpenTree Education",
-            "columns": 4
+            "columns": 6
           }
         ]
       },
@@ -105,10 +105,10 @@
             "body": "We value everyone’s ideas for how to make positive change in the tech industry.",
             "callToActionHref": "/contact/",
             "callToActionText": "Get in touch",
-            "columns": 4
+            "columns": 6
           },
           {
-            "columns": 5
+            "columns": 6
           }
         ]
       }

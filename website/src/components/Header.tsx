@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
 import { Link as GatsbyLink } from 'gatsby';
 import React from 'react';
 import Stack from '@mui/material/Stack';
@@ -31,65 +32,68 @@ const TopNavLink = ({ children, to }: TopNavLinkProps) => {
 };
 
 const Header = () => (
-  <Stack
-    alignItems="center"
-    direction="row"
-    justifyContent="space-between"
-    px={3}
-    py={2}
-    spacing={1}
-    sx={{ flexWrap: 'wrap' }}
-  >
+  <Container maxWidth="xl">
     <Stack
       alignItems="center"
       direction="row"
       justifyContent="space-between"
+      py={2}
+      spacing={1}
       sx={{ flexWrap: 'wrap' }}
     >
-      <Box pr={6} py={1}>
-        <GatsbyLink to="/">
-          <Stack alignItems="center" direction="row">
-            <img
-              alt="illustration of a stylized capital O surrounding a tree"
-              height={64}
-              src={opentreeEducationLogo}
-              width={64}
-            />
-            <img
-              alt="OpenTree Education"
-              height={40}
-              src={opentreeEducationWordMark}
-              width={116}
-            />
-          </Stack>
-        </GatsbyLink>
-      </Box>
       <Stack
-        alignItems="flex-end"
+        alignItems="center"
         direction="row"
         justifyContent="space-between"
-        spacing={3}
-        py={1}
-        sx={{ [theme.breakpoints.down('sm')]: { flexDirection: 'column' } }}
+        sx={{ flexWrap: 'wrap' }}
       >
-        <TopNavLink to="/professional-mentorship-program/">Program</TopNavLink>
-        <TopNavLink to="/employers/">Employers</TopNavLink>
-        <TopNavLink to="/about/">About</TopNavLink>
-        <TopNavLink to="/contact/">Contact</TopNavLink>
+        <Box pr={6} py={1}>
+          <GatsbyLink to="/">
+            <Stack alignItems="center" direction="row">
+              <img
+                alt="illustration of a stylized capital O surrounding a tree"
+                height={64}
+                src={opentreeEducationLogo}
+                width={64}
+              />
+              <img
+                alt="OpenTree Education"
+                height={40}
+                src={opentreeEducationWordMark}
+                width={116}
+              />
+            </Stack>
+          </GatsbyLink>
+        </Box>
+        <Stack
+          alignItems="flex-end"
+          direction="row"
+          justifyContent="space-between"
+          spacing={3}
+          py={1}
+          sx={{ [theme.breakpoints.down('sm')]: { flexDirection: 'column' } }}
+        >
+          <TopNavLink to="/professional-mentorship-program/">
+            Program
+          </TopNavLink>
+          <TopNavLink to="/employers/">Employers</TopNavLink>
+          <TopNavLink to="/about/">About</TopNavLink>
+          <TopNavLink to="/contact/">Contact</TopNavLink>
+        </Stack>
       </Stack>
+      <Box py={1}>
+        <Button
+          component={GatsbyLink}
+          disableElevation
+          size="large"
+          to="/professional-mentorship-program/#apply"
+          variant="outlined"
+        >
+          Apply Now
+        </Button>
+      </Box>
     </Stack>
-    <Box py={1}>
-      <Button
-        component={GatsbyLink}
-        disableElevation
-        size="large"
-        to="/professional-mentorship-program/#apply"
-        variant="outlined"
-      >
-        Apply Now
-      </Button>
-    </Box>
-  </Stack>
+  </Container>
 );
 
 export default Header;
