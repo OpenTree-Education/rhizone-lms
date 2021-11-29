@@ -23,6 +23,12 @@ environments.
 The `/webapp` folder contains a React app that enables user functionality and
 communicates with the api.
 
+## `/website`
+
+The `/website` folder contains a Gatsby site that is published as the marketing
+website for OpenTree Education. On the site there are forms to apply for
+admission to the program, which creates applicant accounts in Rhizone LMS.
+
 ## Hints and troubleshooting
 
 1. `cd` into each module's directory before running commands. They won't work
