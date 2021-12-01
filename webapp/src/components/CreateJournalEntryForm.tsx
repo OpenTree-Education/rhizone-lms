@@ -65,7 +65,7 @@ class CreateJournalEntryForm extends Component<
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             raw_text: this.state.journalEntryText,
-            options: [{ id: this.state.selectedOptions }],
+            options: this.state.selectedOptions ? [{ id: this.state.selectedOptions }] : [],
           }),
         }
       );
