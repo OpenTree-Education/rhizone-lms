@@ -19,6 +19,8 @@ import {
   Typography,
 } from '@mui/material';
 
+import { io } from 'socket.io-client';
+
 interface CreateJournalEntryFormProps {
   onJournalEntryCreated?: (response: CreationResponseEnvelope) => void;
 }
@@ -30,7 +32,12 @@ interface CreateJournalEntryFormState {
   loading: boolean;
   errorVisibility: boolean;
   successVisibility: boolean;
+  agendaText: string;
+  agendaList: string[];
 }
+const socket = io('ws://api.rhi.zone-development/', {
+  path: '/collab',
+});
 
 class CreateJournalEntryForm extends Component<
   CreateJournalEntryFormProps,
@@ -45,6 +52,8 @@ class CreateJournalEntryForm extends Component<
       loading: false,
       errorVisibility: false,
       successVisibility: false,
+      agendaText: '',
+      agendaList: [],
     };
   }
   handleChangeJournalEntryText: ChangeEventHandler<HTMLTextAreaElement> =
@@ -86,6 +95,29 @@ class CreateJournalEntryForm extends Component<
     this.setState({ loading: false });
   };
 
+  async componentDidUpdate() {
+    socket.io.on('error', error => {
+      console.log(error.message);
+    });
+
+    socket.on('recieve-agenda-text', agendaTextArr => {
+      console.log('text-recieved');
+      this.setState({ agendaList: agendaTextArr });
+    });
+  }
+
+  sendAgenda = () => {
+    socket.emit('send-agenda-text', this.state.agendaText);
+    socket.on('recieve-agenda-text', agendaTextArr => {
+      console.log('text-recieved');
+      this.setState({ agendaList: agendaTextArr });
+    });
+  };
+
+  handleChangeAgendaText: ChangeEventHandler<HTMLTextAreaElement> = event => {
+    this.setState({ agendaText: event.target.value });
+  };
+
   render() {
     // HACK Until the questionnaire can be loaded from the API, the ids for the
     //   options in the outlook check-in form are taken from this environment
@@ -98,6 +130,30 @@ class CreateJournalEntryForm extends Component<
       : [];
     return (
       <form onSubmit={this.handleSubmit}>
+        <Card>
+          <ul>
+            {this.state.agendaList.map((agendaItem, key) => {
+              return <li key={key}>{agendaItem}</li>;
+            })}
+          </ul>
+        </Card>
+
+        <Card>
+          <TextField
+            sx={{ marginBottom: '20px' }}
+            id="outlined-multiline-static"
+            label="Multiline"
+            fullWidth
+            multiline
+            rows={4}
+            value={this.state.agendaText}
+            onChange={this.handleChangeAgendaText}
+          />
+          <Button fullWidth variant="contained" onClick={this.sendAgenda}>
+            Add Agenda
+          </Button>
+        </Card>
+
         <Card sx={{ maxWidth: 1000 }}>
           <CardContent>
             <Typography variant="h4" component="h1" sx={{ mb: 5 }}>
@@ -158,6 +214,57 @@ class CreateJournalEntryForm extends Component<
                 </FormControl>
               </>
             )}
+            <Typography variant="inherit" component="h2">
+              Outlook
+            </Typography>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">
+                How are you feeling about your current endevours?
+              </FormLabel>
+              <RadioGroup
+                row
+                aria-label="mood"
+                name="row-radio-buttons-group"
+                onChange={event =>
+                  this.setState({
+                    selectedOptions: +event.target.value,
+                  })
+                }
+              >
+                <Stack direction="row" sx={{ my: 3, textAlign: 'center' }}>
+                  <FormControlLabel
+                    value="1"
+                    control={<Radio />}
+                    label="Very discouraged"
+                    labelPlacement="bottom"
+                  />
+                  <FormControlLabel
+                    value="2"
+                    control={<Radio />}
+                    label="A little discouraged"
+                    labelPlacement="bottom"
+                  />
+                  <FormControlLabel
+                    value="3"
+                    control={<Radio />}
+                    label="I don't know"
+                    labelPlacement="bottom"
+                  />
+                  <FormControlLabel
+                    value="4"
+                    control={<Radio />}
+                    label="A little hopeful"
+                    labelPlacement="bottom"
+                  />
+                  <FormControlLabel
+                    value="5"
+                    control={<Radio />}
+                    label="Very hopeful"
+                    labelPlacement="bottom"
+                  />
+                </Stack>
+              </RadioGroup>
+            </FormControl>
           </CardContent>
           <CardContent sx={{ paddingBottom: 0 }}>
             <Typography variant="inherit" component="h2">

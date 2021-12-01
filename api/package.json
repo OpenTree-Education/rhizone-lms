@@ -21,6 +21,7 @@
     "knex": "^0.95.11",
     "mysql": "^2.18.1",
     "pm2": "^5.1.2",
+    "socket.io": "^4.4.0",
     "superagent": "^6.1.0"
   },
   "devDependencies": {
