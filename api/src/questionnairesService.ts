@@ -1,0 +1,41 @@
+import db from './db';
+
+export const findQuestionnaire = async (
+  questionnaireId: number,
+  builder = db
+) => {
+  const questionnaireRows = await builder('questionnaires')
+    .select('id')
+    .where({ id: questionnaireId })
+    .limit(1);
+  if (!questionnaireRows.length) {
+    return null;
+  }
+  const prompts = await builder('prompts')
+    .select('id', 'label', 'query_text')
+    .where({
+      questionnaire_id: questionnaireId,
+    })
+    .orderBy('sort_order');
+  const promptIds = prompts.map(({ id }) => id);
+  const promptsById = new Map();
+  let options;
+  if (promptIds.length) {
+    options = await builder('options')
+      .select('id', 'label', 'prompt_id')
+      .whereIn('prompt_id', promptIds)
+      .orderBy('prompt_id', 'sort_order');
+  }
+  for (const prompt of prompts) {
+    promptsById.set(prompt.id, { ...prompt, options: [] });
+  }
+  if (options) {
+    for (const option of options) {
+      promptsById.get(option.prompt_id).options.push(option);
+    }
+  }
+  return {
+    ...questionnaireRows[0],
+    prompts: Array.from(promptsById.values()),
+  };
+};
