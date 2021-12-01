@@ -1,4 +1,5 @@
 import db from './db';
+import { Option } from './reflectionsRouter';
 
 export const countReflections = async (principalId: number, builder = db) => {
   const countAlias = 'total_count';
@@ -71,3 +72,19 @@ export const listReflections = async (
   }
   return Array.from(reflectionsById.values());
 };
+
+export const validateOptionIds = async (options: Array<Option> | [], builder = db) => {
+  if (options.length === 0){
+    return true;
+  }
+
+  let optionIntegers = options.map((optionObj) => optionObj.id)
+  // creating a unique set of elements and using a spread operator to change the set back to an array.
+  optionIntegers = [...new Set(optionIntegers)]
+  
+  const optionIdsCount = await builder('options')
+    .count('id', {as: 'option_id_count'})
+    .whereIn('id', optionIntegers)
+
+  return optionIdsCount[0].option_id_count === optionIntegers.length;
+}
