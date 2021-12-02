@@ -30,8 +30,8 @@ interface Option {
 interface CreateJournalEntryFormState {
   journalEntryText: string;
   selectedOptionIds: Option[];
-  rows: number;
-  loading: boolean;
+  wasJournalEntryTextTouched: boolean;
+  isSavingReflection: boolean;
   errorVisibility: boolean;
   successVisibility: boolean;
 }
@@ -45,8 +45,8 @@ class CreateJournalEntryForm extends Component<
     this.state = {
       journalEntryText: '',
       selectedOptionIds: [],
-      rows: 1,
-      loading: false,
+      wasJournalEntryTextTouched: false,
+      isSavingReflection: false,
       errorVisibility: false,
       successVisibility: false,
     };
@@ -58,7 +58,7 @@ class CreateJournalEntryForm extends Component<
 
   handleSubmit: FormEventHandler = async event => {
     event.preventDefault();
-    this.setState({ loading: true });
+    this.setState({ isSavingReflection: true });
 
     try {
       const createJournalEntry = await fetch(
@@ -87,7 +87,7 @@ class CreateJournalEntryForm extends Component<
     } catch (err) {
       this.setState({ errorVisibility: true });
     }
-    this.setState({ loading: false });
+    this.setState({ isSavingReflection: false });
   };
 
   render() {
@@ -102,7 +102,7 @@ class CreateJournalEntryForm extends Component<
       : [];
     return (
       <form onSubmit={this.handleSubmit}>
-        <Card sx={{ maxWidth: 1000 }}>
+        <Card>
           <CardContent>
             <Typography variant="h4" component="h1" sx={{ mb: 5 }}>
               New Reflection
@@ -118,7 +118,7 @@ class CreateJournalEntryForm extends Component<
                   </FormLabel>
                   <RadioGroup
                     row
-                    aria-label="mood"
+                    aria-label="outlook"
                     name="row-radio-buttons-group"
                     onChange={event =>
                       this.setState({
@@ -174,9 +174,9 @@ class CreateJournalEntryForm extends Component<
               fullWidth
               label="How is it going?"
               onFocus={() => {
-                this.setState({ rows: 4 });
+                this.setState({ wasJournalEntryTextTouched: true });
               }}
-              minRows={this.state.rows}
+              minRows={this.state.wasJournalEntryTextTouched ? 4 : 1}
               multiline
               onChange={this.handleChangeJournalEntryText}
               value={this.state.journalEntryText}
@@ -197,7 +197,6 @@ class CreateJournalEntryForm extends Component<
                     this.setState({ successVisibility: false });
                   }}
                   severity="success"
-                  sx={{ width: '100%' }}
                 >
                   Reflection created
                 </Alert>
@@ -211,25 +210,24 @@ class CreateJournalEntryForm extends Component<
                 severity="error"
                 sx={{ mb: 2 }}
               >
-                Reflection was not saved!
+                Reflection was not saved.
               </Alert>
             )}
             <Box
               sx={{
                 display: 'flex',
-                flexDirection: 'row',
                 justifyContent: 'space-between',
-                width: 220,
+                width: '14rem',
               }}
             >
               <Button
                 type="submit"
                 variant="contained"
-                disabled={this.state.loading}
+                disabled={this.state.isSavingReflection}
               >
                 Save reflection
               </Button>
-              {this.state.loading && <CircularProgress />}
+              {this.state.isSavingReflection && <CircularProgress />}
             </Box>
           </CardContent>
         </Card>

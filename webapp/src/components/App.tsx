@@ -56,8 +56,8 @@ class App extends Component<AppProps, AppState> {
         <Navbar loggedIn={this.state.loggedIn} />
         {this.state.loggedIn === true && (
           <Grid container justifyContent="center">
-            <Grid item md={8}>
-              <Box sx={{ my: 12 }}>
+            <Grid item md={6}>
+              <Box sx={{ my: 8 }}>
                 <CreateJournalEntryForm
                   onJournalEntryCreated={this.fetchJournalEntries}
                 />
