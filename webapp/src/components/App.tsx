@@ -1,4 +1,4 @@
-import { Box, Container, Grid, Typography } from '@mui/material';
+import { Box, Container, Grid, Typography, Stack } from '@mui/material';
 import React, { Component } from 'react';
 
 import CreateJournalEntryForm from './CreateJournalEntryForm';
@@ -52,30 +52,34 @@ class App extends Component<AppProps, AppState> {
 
   render() {
     return (
-      <Container fixed>
-        <Navbar loggedIn={this.state.loggedIn} />
-        {this.state.loggedIn === true && (
-          <Grid container justifyContent="center">
-            <Grid item md={8}>
-              <Box sx={{ my: 12 }}>
-                <CreateJournalEntryForm
-                  onJournalEntryCreated={this.fetchJournalEntries}
-                />
-              </Box>
-              {this.state.journalEntries.length > 0 && (
-                <JournalEntriesList
-                  journalEntries={this.state.journalEntries}
-                />
-              )}
+      <div>
+        <Stack px={3}>
+          <Navbar loggedIn={this.state.loggedIn} />
+        </Stack>
+        <Container fixed>
+          {this.state.loggedIn === true && (
+            <Grid container justifyContent="center">
+              <Grid item md={8}>
+                <Box sx={{ my: 12 }}>
+                  <CreateJournalEntryForm
+                    onJournalEntryCreated={this.fetchJournalEntries}
+                  />
+                </Box>
+                {this.state.journalEntries.length > 0 && (
+                  <JournalEntriesList
+                    journalEntries={this.state.journalEntries}
+                  />
+                )}
+              </Grid>
             </Grid>
-          </Grid>
-        )}
-        <Box sx={{ my: 12 }}>
-          <Typography align="center">
-            <small>© OpenTree Education Inc.</small>
-          </Typography>
-        </Box>
-      </Container>
+          )}
+          <Box sx={{ my: 12 }}>
+            <Typography align="center">
+              <small>© OpenTree Education Inc.</small>
+            </Typography>
+          </Box>
+        </Container>
+      </div>
     );
   }
 }
