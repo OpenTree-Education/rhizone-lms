@@ -58,7 +58,7 @@ describe('meetingsRouter', () => {
         });
       });
 
-      it('should throw 500 error if the cause was countMeetings', done => {
+      it('should respond with a 500 error if the cause was countMeetings', done => {
         mockListMeetings.mockResolvedValueOnce([]);
         mockCountMeetings.mockRejectedValueOnce(new Error());
         loginExistingUser(appAgent => {
@@ -66,7 +66,7 @@ describe('meetingsRouter', () => {
         }, done);
       });
 
-      it('should throw 500 error if the cause was listMeetings', done => {
+      it('should respond with a 500 error if the cause was listMeetings', done => {
         mockListMeetings.mockRejectedValueOnce(new Error());
         mockCountMeetings.mockResolvedValueOnce(0);
         loginExistingUser(appAgent => {
