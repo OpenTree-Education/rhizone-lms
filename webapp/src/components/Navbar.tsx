@@ -1,5 +1,5 @@
-import { Button, Grid, IconButton } from '@mui/material';
-import EventNoteIcon from '@mui/icons-material/EventNote';
+import { Button, Grid, IconButton, Drawer, List } from '@mui/material';
+import EventNoteIcon from '@mui/icons-material/EventNote'; //navbar meeting icon
 
 import React, {Component} from 'react';
 
@@ -51,7 +51,16 @@ class Navbar extends Component<NavbarProps, NavbarState> {
               >
                 Sign Out
               </Button>
+              <Drawer
+                variant="persistent"
+                anchor="right"
+                open={this.state.drawerOpen}
+                transitionDuration={400}
+              >
+                <List sx={{ width: ['100vw', '350px'], pt: 0 }}>
 
+                </List>
+              </Drawer>
             </div>
           )}
         </Grid>
