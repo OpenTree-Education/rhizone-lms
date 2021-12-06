@@ -16,7 +16,7 @@ reflectionsRouter.post('/', async (req, res, next) => {
   const { principalId } = req.session;
   const rawText = req.body.raw_text;
   const options: Array<Option> | [] = req.body.options ? req.body.options : [];
-  if (!rawText && options.length < 1) {
+  if (!rawText && options.length === 0) {
     next(
       new BadRequestError(
         'At least one option or journal entry must be present to complete this request'
