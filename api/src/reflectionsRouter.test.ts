@@ -50,6 +50,24 @@ function trackerHelper(done: jest.DoneCallback) {
       ]);
       expect(transacting).toEqual(true);
       response([MOCK_RESPONSE_ID]);
+    } else if (
+      sql ===
+      'select count(`id`) as `option_id_count` from `options` where `id` in (?)'
+    ) {
+      expect(bindings).toEqual([MOCK_OPTION_ID]);
+      response([{ option_id_count: 1 }]);
+    } else if (
+      sql ===
+      'select count(`id`) as `option_id_count` from `options` where `id` in (?, ?)'
+    ) {
+      expect(bindings).toEqual([MOCK_OPTION_ID, MOCK_OPTION_ID + 1]);
+      response([{ option_id_count: 2 }]);
+    } else if (
+      sql ===
+      'select count(`id`) as `option_id_count` from `options` where `id` in (?, ?, ?)'
+    ) {
+      expect(bindings).toEqual([MOCK_OPTION_ID, MOCK_OPTION_ID + 1, MOCK_OPTION_ID + 50]);
+      response([{ option_id_count: 1 }]);
     } else if (sql === 'BEGIN;') {
       response(null);
     } else if (sql === 'COMMIT;') {
