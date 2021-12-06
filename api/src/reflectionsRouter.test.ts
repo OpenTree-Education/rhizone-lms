@@ -67,11 +67,11 @@ function trackerHelper(done: jest.DoneCallback) {
 
 describe('reflectionsRouter', () => {
   describe('POST /reflections', () => {
-    it('should respond with error message if raw text is not provided', done => {
+    it('should respond with error message if both raw text and option(s) are not provided', done => {
       loginExistingUser(appAgent => {
         appAgent
           .post('/reflections')
-          .send({ raw_text: '' })
+          .send({ raw_text: '', options: [] })
           .expect(
             BadRequestError.prototype.status,
             errorEnvelope(
@@ -79,6 +79,16 @@ describe('reflectionsRouter', () => {
             ),
             done
           );
+      }, done);
+    });
+
+    it('should create a reflection, a response, associated to the reflection, and associate both with the principal, and respond with an envelope containing the id of the newly created reflection.', done => {
+      loginExistingUser(appAgent => {
+        trackerHelper(done);
+        appAgent
+          .post('/reflections')
+          .send({ options: [{ id: MOCK_OPTION_ID }] })
+          .expect(201, itemEnvelope({ id: MOCK_REFLECTION_ID }), done);
       }, done);
     });
 
