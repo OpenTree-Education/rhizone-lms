@@ -1,4 +1,4 @@
-import { Button, Grid, IconButton, Drawer, List, ListItem } from '@mui/material';
+import { Button, Grid, IconButton, Drawer, List, ListItem, Divider, Typography } from '@mui/material';
 import EventNoteIcon from '@mui/icons-material/EventNote'; //navbar meeting icon
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'; //close drawer icon
 
@@ -16,7 +16,7 @@ class Navbar extends Component<NavbarProps, NavbarState> {
   constructor(props: NavbarProps) {
     super(props);
     this.state = {
-      drawerOpen: false
+      drawerOpen: true
     }
   }
 
@@ -71,6 +71,24 @@ class Navbar extends Component<NavbarProps, NavbarState> {
                       onClick={() => this.setState({drawerOpen: false})}
                     >
                       <ArrowRightIcon /> 
+                    </ListItem>
+                    <Divider />
+                    <ListItem
+                      sx={{
+                        backgroundColor: 'primary.main',
+                        py: 2,
+                      }}
+                    >
+                      <Typography variant="h5" sx={{color: 'common.white'}}>Upcoming Meetings</Typography>
+                    </ListItem>
+                    <Divider />
+                    <ListItem
+                      sx={{
+                        backgroundColor: 'primary.main',
+                        py: 2,
+                      }}
+                    >
+                      <Typography variant="h5" sx={{color: 'common.white'}}>Past Meetings</Typography>
                     </ListItem>
                 </List>
               </Drawer>
