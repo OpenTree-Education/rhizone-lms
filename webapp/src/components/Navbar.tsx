@@ -1,13 +1,22 @@
-import { Button, Grid } from '@mui/material';
+import { Button, Grid, IconButton } from '@mui/material';
+import EventNoteIcon from '@mui/icons-material/EventNote';
+
 import React, {Component} from 'react';
+
+interface NavbarState {
+  drawerOpen: boolean
+}
 
 interface NavbarProps {
   loggedIn: boolean | null;
 }
 
-class Navbar extends Component<NavbarProps> {
+class Navbar extends Component<NavbarProps, NavbarState> {
   constructor(props: NavbarProps) {
     super(props);
+    this.state = {
+      drawerOpen: false
+    }
   }
 
   render() {
@@ -27,12 +36,23 @@ class Navbar extends Component<NavbarProps> {
             </Button>
           )}
           {this.props.loggedIn === true && (
-            <Button
-              component="a"
-              href={`${process.env.REACT_APP_API_ORIGIN}/auth/logout`}
-            >
-              Sign Out
-            </Button>
+            <div>
+              <IconButton
+                sx={{mr: 1}}
+                onClick={() =>
+                  this.setState({ drawerOpen: !this.state.drawerOpen })
+                }
+              >
+                <EventNoteIcon />
+              </IconButton>
+              <Button
+                component="a"
+                href={`${process.env.REACT_APP_API_ORIGIN}/auth/logout`}
+              >
+                Sign Out
+              </Button>
+
+            </div>
           )}
         </Grid>
       </Grid>
