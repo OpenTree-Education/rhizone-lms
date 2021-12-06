@@ -1,4 +1,6 @@
-import { Box, Container, Grid, Typography, Stack } from '@mui/material';
+import { Box, Container, Grid, Typography, Stack, Drawer, List, ListItem, Divider } from '@mui/material';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight'; //close drawer icon
+
 import React, { Component } from 'react';
 
 import CreateJournalEntryForm from './CreateJournalEntryForm';
@@ -9,6 +11,7 @@ import Navbar from './Navbar';
 interface AppState {
   loggedIn: boolean | null;
   journalEntries: JournalEntry[];
+  isMeetingDrawerOpen: boolean
 }
 
 interface AppProps {}
@@ -19,6 +22,7 @@ class App extends Component<AppProps, AppState> {
     this.state = {
       loggedIn: null,
       journalEntries: [],
+      isMeetingDrawerOpen: false
     };
   }
 
@@ -50,11 +54,15 @@ class App extends Component<AppProps, AppState> {
     }
   };
 
+  handleCalendarClick = () => {
+    this.setState({isMeetingDrawerOpen: !this.state.isMeetingDrawerOpen})
+  }
+
   render() {
     return (
       <div>
         <Stack px={3}>
-          <Navbar loggedIn={this.state.loggedIn} />
+          <Navbar loggedIn={this.state.loggedIn} handleCalendarClick={this.handleCalendarClick}/>
         </Stack>
         <Container fixed>
           {this.state.loggedIn === true && (
@@ -79,6 +87,47 @@ class App extends Component<AppProps, AppState> {
             </Typography>
           </Box>
         </Container>
+        <Drawer
+                variant="persistent"
+                anchor="right"
+                open={this.state.isMeetingDrawerOpen}
+                transitionDuration={400}
+                PaperProps={{sx:{'@media (max-width: 360px)': { width: '100vw' }, width: '360px' }}}
+              >
+                <List sx={{ pt: 0 }}>
+                  <ListItem
+                      sx={{
+                        backgroundColor: 'primary.main',
+                        color: 'common.white',
+                        p: 1,
+                        '&:hover': {
+                          cursor: 'pointer'
+                        }
+                      }}
+                      onClick={() => this.setState({isMeetingDrawerOpen: false})}
+                    >
+                      <ArrowRightIcon /> 
+                    </ListItem>
+                    <Divider />
+                    <ListItem
+                      sx={{
+                        backgroundColor: 'primary.main',
+                        py: 2,
+                      }}
+                    >
+                      <Typography variant="h5" sx={{color: 'common.white'}}>Upcoming Meetings</Typography>
+                    </ListItem>
+                    <Divider />
+                    <ListItem
+                      sx={{
+                        backgroundColor: 'primary.main',
+                        py: 2,
+                      }}
+                    >
+                      <Typography variant="h5" sx={{color: 'common.white'}}>Past Meetings</Typography>
+                    </ListItem>
+                </List>
+              </Drawer>
       </div>
     );
   }
