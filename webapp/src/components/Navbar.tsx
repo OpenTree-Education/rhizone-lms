@@ -1,5 +1,6 @@
-import { Button, Grid, IconButton, Drawer, List } from '@mui/material';
+import { Button, Grid, IconButton, Drawer, List, ListItem } from '@mui/material';
 import EventNoteIcon from '@mui/icons-material/EventNote'; //navbar meeting icon
+import ArrowRightIcon from '@mui/icons-material/ArrowRight'; //close drawer icon
 
 import React, {Component} from 'react';
 
@@ -58,7 +59,19 @@ class Navbar extends Component<NavbarProps, NavbarState> {
                 transitionDuration={400}
               >
                 <List sx={{ width: ['100vw', '350px'], pt: 0 }}>
-
+                  <ListItem
+                      sx={{
+                        backgroundColor: 'primary.main',
+                        color: 'common.white',
+                        p: 1,
+                        '&:hover': {
+                          cursor: 'pointer'
+                        }
+                      }}
+                      onClick={() => this.setState({drawerOpen: false})}
+                    >
+                      <ArrowRightIcon /> 
+                    </ListItem>
                 </List>
               </Drawer>
             </div>
