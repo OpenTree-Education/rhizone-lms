@@ -5,13 +5,15 @@ import React, { Component } from 'react';
 
 import CreateJournalEntryForm from './CreateJournalEntryForm';
 import JournalEntriesList from './JournalEntriesList';
-import { JournalEntry } from '../types/api';
+import { JournalEntry, MeetingInfo } from '../types/api';
 import Navbar from './Navbar';
+import { couldStartTrivia } from 'typescript';
 
 interface AppState {
   loggedIn: boolean | null;
   journalEntries: JournalEntry[];
   isMeetingDrawerOpen: boolean
+  meetingInfoList: MeetingInfo[];
 }
 
 interface AppProps {}
@@ -22,7 +24,8 @@ class App extends Component<AppProps, AppState> {
     this.state = {
       loggedIn: null,
       journalEntries: [],
-      isMeetingDrawerOpen: false
+      isMeetingDrawerOpen: false,
+      meetingInfoList: []
     };
   }
 
@@ -36,7 +39,23 @@ class App extends Component<AppProps, AppState> {
       this.setState({ loggedIn: sessionInfo.authenticated });
       if (sessionInfo.authenticated) {
         this.fetchJournalEntries();
+        this.fetchMeetingsInfoList();
       }
+    }
+  }
+
+  fetchMeetingsInfoList = async () =>{
+    const fetchMeetings = await fetch(
+      `${process.env.REACT_APP_API_ORIGIN}/meetings`,
+      {credentials: 'include'}
+    );
+    if(fetchMeetings.status === 401){
+      this.setState({ loggedIn: false });
+    }
+    if(fetchMeetings.ok){
+      const meetingInfos = await fetchMeetings.json();
+      this.setState({loggedIn: true ,meetingInfoList: meetingInfos});
+      console.log(this.state.meetingInfoList);
     }
   }
 
