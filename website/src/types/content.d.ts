@@ -3,6 +3,8 @@ import { Variant } from '@mui/material/styles/createTypography';
 
 export interface ColumnData {
   body?: string;
+  bodyComponent?: ElementType;
+  bodyTextAlign?: 'left' | 'center' | 'right';
   bodyVariant?: Variant;
   callToActionColor?:
     | 'inherit'
@@ -17,6 +19,7 @@ export interface ColumnData {
   callToActionVariant?: 'text' | 'outlined' | 'contained';
   heading?: string;
   headingComponent?: ElementType;
+  headingTextAlign?: 'left' | 'center' | 'right';
   headingVariant?: Variant;
   span?: number;
   verticalWhiteSpace?: number;
@@ -27,4 +30,12 @@ export interface SectionData {
   color?: string;
   columns: ColumnData[];
   id: string;
+  verticalAlignment?: 'top' | 'middle' | 'bottom';
+  verticalWhiteSpace?: number;
+}
+
+export interface PageData {
+  background?: string;
+  sections: SectionData[];
+  title: string;
 }

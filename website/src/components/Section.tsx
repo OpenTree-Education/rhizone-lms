@@ -3,18 +3,39 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import { Link as GatsbyLink } from 'gatsby';
-import { micromark } from 'micromark';
 import React from 'react';
 import Typography from '@mui/material/Typography';
 
-import { SectionData } from '../types/data';
+import { SectionData } from '../types/content';
 
-const Section = ({ background, color, columns, id }: SectionData) => (
-  <Box component="section" id={id} sx={{ background }}>
+const verticalAlignmentsMap = {
+  bottom: 'flex-end',
+  middle: 'center',
+  top: 'flex-start',
+};
+
+const Section = ({
+  background,
+  color,
+  columns,
+  id,
+  verticalAlignment,
+  verticalWhiteSpace: sectionVerticalWhiteSpace,
+}: SectionData) => (
+  <Box
+    component="section"
+    id={id}
+    py={
+      Number.isFinite(sectionVerticalWhiteSpace)
+        ? sectionVerticalWhiteSpace
+        : 10
+    }
+    sx={{ background }}
+  >
     <Container maxWidth="xl">
       <Grid
-        alignItems="center"
-        columnSpacing={3}
+        alignItems={verticalAlignmentsMap[verticalAlignment || 'top']}
+        columnSpacing={4}
         container
         justifyContent="center"
       >
@@ -22,6 +43,8 @@ const Section = ({ background, color, columns, id }: SectionData) => (
           (
             {
               body,
+              bodyComponent,
+              bodyTextAlign,
               bodyVariant,
               callToActionColor,
               callToActionHref,
@@ -29,42 +52,48 @@ const Section = ({ background, color, columns, id }: SectionData) => (
               callToActionVariant,
               heading,
               headingComponent,
+              headingTextAlign,
               headingVariant,
               span,
-              verticalWhiteSpace,
+              verticalWhiteSpace: columnVerticalWhiteSpace,
             },
             contentIndex
           ) => (
             <Grid
               key={contentIndex}
               item
-              md={span || 3}
-              py={verticalWhiteSpace || 12}
-              sm={12}
+              md={span || 12}
+              py={
+                Number.isFinite(columnVerticalWhiteSpace)
+                  ? columnVerticalWhiteSpace
+                  : 2
+              }
+              xs={12}
             >
               {heading && (
                 <Typography
+                  align={headingTextAlign || 'left'}
                   component={headingComponent || 'h2'}
-                  variant={headingVariant || 'h3'}
-                  sx={{ color }}
-                >
-                  {heading}
-                </Typography>
-              )}
-              {body && (
-                <Typography
-                  component="div"
                   dangerouslySetInnerHTML={{
-                    __html: micromark(body, 'utf8', {
-                      allowDangerousHtml: true,
-                    }),
+                    __html: heading,
                   }}
-                  variant={bodyVariant || 'subtitle1'}
+                  variant={headingVariant || 'h4'}
                   sx={{ color }}
                 />
               )}
+              {body && (
+                <Typography
+                  align={bodyTextAlign || 'left'}
+                  component={bodyComponent || 'p'}
+                  dangerouslySetInnerHTML={{ __html: body }}
+                  mb={callToActionText && callToActionHref ? 3 : 0}
+                  mt={heading ? 2 : 0}
+                  sx={{ color }}
+                  variant={bodyVariant || 'body1'}
+                />
+              )}
               {callToActionText && callToActionHref && (
-                <Box>
+                <Box mt={heading || body ? 3 : 0}>
                   <Button
                     color={callToActionColor || 'primary'}
                     component={GatsbyLink}
