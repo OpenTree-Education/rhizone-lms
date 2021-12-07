@@ -16,9 +16,9 @@ const Footer = () => (
           <GatsbyLink to="/">
             <img
               alt="illustration of a stylized capital O surrounding a tree"
-              height={96}
+              height={84}
               src={opentreeEducationLogo}
-              width={96}
+              width={69}
             />
           </GatsbyLink>
         </Box>
@@ -54,13 +54,6 @@ const Footer = () => (
             sx={{ color: 'primary.dark' }}
           >
             Blog
-          </MuiLink>
-          <MuiLink
-            component={GatsbyLink}
-            to="/careers/"
-            sx={{ color: 'primary.dark' }}
-          >
-            Careers
           </MuiLink>
           <MuiLink
             component={GatsbyLink}
