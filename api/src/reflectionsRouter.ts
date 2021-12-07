@@ -15,7 +15,7 @@ interface Option {
 reflectionsRouter.post('/', async (req, res, next) => {
   const { principalId } = req.session;
   const rawText = req.body.raw_text;
-  const options: Array<Option> | [] = req.body.options ? req.body.options : [];
+  const options: Array<Option> = req.body.options || [];
   if (!rawText && options.length === 0) {
     next(
       new BadRequestError(
