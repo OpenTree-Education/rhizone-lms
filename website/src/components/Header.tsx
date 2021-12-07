@@ -19,42 +19,38 @@ const TopNavLink = ({ children, to }: TopNavLinkProps) => {
   const isCurrentPage = !!useMatch(to);
   const color = isCurrentPage ? 'success' : 'primary';
   return (
-    <Button
-      color={color}
-      component={GatsbyLink}
-      size="large"
-      to={to}
-      variant="text"
-    >
-      {children}
-    </Button>
+    <Box>
+      <Button
+        color={color}
+        component={GatsbyLink}
+        size="large"
+        to={to}
+        variant="text"
+      >
+        {children}
+      </Button>
+    </Box>
   );
 };
 
 const Header = () => (
-  <Container maxWidth="xl">
-    <Stack
-      alignItems="center"
-      direction="row"
-      justifyContent="space-between"
-      py={2}
-      spacing={1}
-      sx={{ flexWrap: 'wrap' }}
-    >
+  <Box sx={{ background: '#ffffff' }}>
+    <Container maxWidth="xl">
       <Stack
         alignItems="center"
         direction="row"
         justifyContent="space-between"
-        sx={{ flexWrap: 'wrap' }}
+        py={2}
+        spacing={1}
       >
-        <Box pr={6} py={1}>
+        <Box pr={3} py={1}>
           <GatsbyLink to="/">
-            <Stack alignItems="center" direction="row">
+            <Stack alignItems="center" direction="row" spacing={1}>
               <img
                 alt="illustration of a stylized capital O surrounding a tree"
-                height={64}
+                height={56}
                 src={opentreeEducationLogo}
-                width={64}
+                width={46}
               />
               <img
                 alt="OpenTree Education"
@@ -66,34 +62,41 @@ const Header = () => (
           </GatsbyLink>
         </Box>
         <Stack
-          alignItems="flex-end"
+          alignItems="center"
           direction="row"
           justifyContent="space-between"
-          spacing={3}
-          py={1}
-          sx={{ [theme.breakpoints.down('sm')]: { flexDirection: 'column' } }}
+          sx={{ flexGrow: 1, flexWrap: 'wrap' }}
         >
-          <TopNavLink to="/professional-mentorship-program/">
-            Program
-          </TopNavLink>
-          <TopNavLink to="/employers/">Employers</TopNavLink>
-          <TopNavLink to="/about/">About</TopNavLink>
-          <TopNavLink to="/contact/">Contact</TopNavLink>
+          <Stack
+            alignItems="flex-end"
+            direction="row"
+            justifyContent="space-between"
+            spacing={2}
+            py={1}
+            sx={{ [theme.breakpoints.down('md')]: { flexDirection: 'column' } }}
+          >
+            <TopNavLink to="/professional-mentorship-program/">
+              Program
+            </TopNavLink>
+            <TopNavLink to="/employers/">Employers</TopNavLink>
+            <TopNavLink to="/about/">About</TopNavLink>
+            <TopNavLink to="/contact/">Contact</TopNavLink>
+          </Stack>
+          <Box py={1}>
+            <Button
+              component={GatsbyLink}
+              disableElevation
+              size="large"
+              to="/professional-mentorship-program/#apply"
+              variant="outlined"
+            >
+              Apply&nbsp;Now
+            </Button>
+          </Box>
         </Stack>
       </Stack>
-      <Box py={1}>
-        <Button
-          component={GatsbyLink}
-          disableElevation
-          size="large"
-          to="/professional-mentorship-program/#apply"
-          variant="outlined"
-        >
-          Apply Now
-        </Button>
-      </Box>
-    </Stack>
-  </Container>
+    </Container>
+  </Box>
 );
 
 export default Header;

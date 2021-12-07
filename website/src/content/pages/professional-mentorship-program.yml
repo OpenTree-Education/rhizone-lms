@@ -1,0 +1,94 @@
+title: Professional Mentorship Program | OpenTree Education
+sections:
+  - background: 'radial-gradient(circle, #e1cfe8, #ccacd7)'
+    columns:
+      - heading: Whatever your education or work experience, OpenTree Education helps you advance your tech career for free
+        headingVariant: h2
+        span: 8
+      - span: 4
+  - background: '#e1cfe8'
+    columns:
+      - heading: |
+          8 weeks of technical and behavioural training, experience on a real software team, and lifetime support after that
+        callToActionText: Apply now
+        callToActionHref: '#apply'
+        callToActionColor: warning
+        span: 8
+      - span: 4
+  - background: '#e1cfe8'
+    columns:
+      - heading: Holistic professionalism
+        headingVariant: h5
+        body: |
+          Software developers are hired for their ability to learn and communicate. This full-time 8 week program focuses on developing holistic professionals who are in control of their own learning and growth.
+        span: 3
+        verticalWhiteSpace: 4
+      - span: 3
+        verticalWhiteSpace: 4
+      - heading: Self-discovery
+        headingVariant: h5
+        body: |
+          A full half of the program is dedicated to discovering, describing, and developing competencies in the five areas that employers look for: behavioural, functional, operational, organizational, and strategic.
+        span: 3
+        verticalWhiteSpace: 4
+      - span: 3
+        verticalWhiteSpace: 4
+  - background: '#e1cfe8'
+    columns:
+      - span: 3
+        verticalWhiteSpace: 4
+      - heading: The whole lifecycle
+        headingVariant: h5
+        body: |
+          The program runs in cohorts who work together as a software development team. Following agile methodologies, the team plans, builds, deploys, and maintains live software products.
+        span: 3
+        verticalWhiteSpace: 4
+      - span: 3
+        verticalWhiteSpace: 4
+      - heading: Personal mentorship
+        headingVariant: h5
+        body: |
+          Every person taking the program has weekly one-on-one meetings with their personal mentor to develop goals and strategies for achieving them unique to their situation.
+        span: 3
+        verticalWhiteSpace: 4
+  - background: '#e1cfe8'
+    columns:
+      - heading: Get matched with roles at employers that are aligned with your strengths and career goals
+        body: |
+          <p>We get to know you and your goals, and can make insightful recommendations about which of our partner employers best matches your aspirations.</p>
+          <p>We partner with employers who value diversity, equity, and inclusion, to ensure that we set every person up for success, no matter what their path is.</p>
+        bodyComponent: div
+        span: 6
+      - span: 6
+  - background: '#e1cfe8'
+    columns:
+      - heading: The tech industry is remote now, and so is our program
+        body: |
+          <p>The Professional Mentorship Program is fully remote, and open to anyone in the world. We collaborate with each other in real-time on video calls, messaging platforms, screen sharing, and online code review.</p>
+          <p>Live collaboration takes place during North American work hours. Don’t hesitate to apply if you’re in another part of the world!</p>
+        bodyComponent: div
+        span: 6
+      - span: 6
+  - background: '#e1cfe8'
+    columns:
+      - heading: Cohorts start every two months in 2022
+        body: |
+          Apply now to get the schedule of cohort start dates. Spots fill up fast, so get your application in early to ensure you get into the cohort that works best for you!
+        callToActionText: Apply now
+        callToActionHref: '#apply'
+        callToActionColor: warning
+        span: 6
+      - span: 6
+  - background: '#e1cfe8'
+    columns:
+      - heading: Apply today to secure your spot; submitting an application requires zero commitment
+        body: |
+          Once you apply, we’ll get in touch to discuss the specifics of your application. We work with you one-on-one to ensure you get the most out of the experience.
+        span: 6
+      - span: 6
+  - id: apply
+    background: '#ccacd7'
+    columns:
+      - heading: Apply to the OpenTree Education Professional Mentorship Program
+        body: |
+          Application form goes here.

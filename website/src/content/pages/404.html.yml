@@ -1,0 +1,10 @@
+title: Page Not Found | OpenTree Education
+sections:
+  - columns:
+      - heading: Page Not Found
+        headingVariant: h2
+        body: |
+          The requested page could not be found on this website.
+        callToActionText: Go to the home page
+        callToActionHref: '/'
+        callToActionVariant: text
