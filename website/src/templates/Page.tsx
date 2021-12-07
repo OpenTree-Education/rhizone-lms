@@ -14,9 +14,7 @@ interface PageProps {
   pageContext: PageData;
 }
 
-const Page = ({
-  pageContext: { background, sections, title },
-}: PageProps) => (
+const Page = ({ pageContext: { background, sections, title } }: PageProps) => (
   <>
     <Helmet>
       <title>{title}</title>
