@@ -15,8 +15,8 @@ interface Option {
 reflectionsRouter.post('/', async (req, res, next) => {
   const { principalId } = req.session;
   const rawText = req.body.raw_text;
-  const options: Array<Option> | [] = req.body.options ? req.body.options : [];
-  if (!rawText) {
+  const options: Array<Option> = req.body.options || [];
+  if (!rawText && options.length === 0) {
     next(
       new BadRequestError(
         'At least one option or journal entry must be present to complete this request'
@@ -30,11 +30,14 @@ reflectionsRouter.post('/', async (req, res, next) => {
       insertedReflectionId = await trx('reflections').insert({
         principal_id: principalId,
       });
-      await trx('journal_entries').insert({
-        raw_text: rawText,
-        principal_id: principalId,
-        reflection_id: insertedReflectionId[0],
-      });
+
+      if (rawText) {
+        await trx('journal_entries').insert({
+          raw_text: rawText,
+          principal_id: principalId,
+          reflection_id: insertedReflectionId[0],
+        });
+      }
 
       if (options.length > 0) {
         await trx('responses').insert(
