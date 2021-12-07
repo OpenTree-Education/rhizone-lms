@@ -3,7 +3,11 @@ import { Router } from 'express';
 import { BadRequestError, ValidationError } from './httpErrors';
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
 import db from './db';
-import { listReflections, countReflections, validateOptionIds } from './reflectionsService';
+import {
+  listReflections,
+  countReflections,
+  validateOptionIds,
+} from './reflectionsService';
 import paginationValues from './paginationValues';
 
 const reflectionsRouter = Router();
@@ -23,10 +27,15 @@ reflectionsRouter.post('/', async (req, res, next) => {
       )
     );
     return;
-  } else if (!(await validateOptionIds(options))) {
+  }
+
+  if (
+    options.length !== 0 &&
+    !(await validateOptionIds(options.map(optionObj => optionObj.id)))
+  ) {
     next(new ValidationError());
     return;
-  };
+  }
 
   let insertedReflectionId: number[];
   try {
