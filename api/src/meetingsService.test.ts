@@ -47,7 +47,7 @@ describe('meetingsService', () => {
         tracker.on('query', ({ bindings, response, sql }) => {
           if (
             sql ===
-            'select `meetings`.`id` as `id`, `starts_at` from `meetings` inner join `participants` on `participants`.`meeting_id` = `meetings`.`id` where `participants`.`principal_id` = ? order by `starts_at` desc, `created_at` asc limit ? offset ?'
+            'select `meetings`.`id` as `id`, `starts_at` from `meetings` inner join `participants` on `participants`.`meeting_id` = `meetings`.`id` where `participants`.`principal_id` = ? order by `starts_at` desc, `meetings`.`created_at` asc limit ? offset ?'
           ) {
             expect(bindings).toEqual([2, 3, 5]);
             response([{ id: 7, starts_at: '2000-01-01T12:00:00:00Z' }]);
@@ -91,7 +91,7 @@ describe('meetingsService', () => {
         tracker.on('query', ({ response, sql }) => {
           if (
             sql ===
-            'select `meetings`.`id` as `id`, `starts_at` from `meetings` inner join `participants` on `participants`.`meeting_id` = `meetings`.`id` where `participants`.`principal_id` = ? order by `starts_at` desc, `created_at` asc limit ? offset ?'
+            'select `meetings`.`id` as `id`, `starts_at` from `meetings` inner join `participants` on `participants`.`meeting_id` = `meetings`.`id` where `participants`.`principal_id` = ? order by `starts_at` desc, `meetings`.`created_at` asc limit ? offset ?'
           ) {
             response([]);
           } else {
