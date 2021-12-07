@@ -8,6 +8,7 @@ import authRouter from './authRouter';
 import { handleErrors, handleNotFound } from './errorHandlingMiddleware';
 import journalEntriesRouter from './journalEntriesRouter';
 import { loggedIn } from './authMiddleware';
+import meetingsRouter from './meetingsRouter';
 import questionnairesRouter from './questionnairesRouter';
 import reflectionsRouter from './reflectionsRouter';
 import settingsRouter from './settingsRouter';
@@ -50,6 +51,8 @@ const withCors = cors({ credentials: true, origin: process.env.WEBAPP_ORIGIN });
 app.use(withCors, authRouter);
 
 app.use('/journalentries', withCors, loggedIn, journalEntriesRouter);
+
+app.use('/meetings', withCors, loggedIn, meetingsRouter);
 
 app.use('/questionnaires', withCors, loggedIn, questionnairesRouter);
 
