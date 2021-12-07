@@ -1,0 +1,80 @@
+title: Employers | OpenTree Education
+sections:
+  - background: 'radial-gradient(circle, #b5d3ee, #91c0e8)'
+    columns:
+      - span: 2
+      - heading: Product focused software developers, ready to work
+        headingVariant: h2
+        span: 8
+      - span: 2
+  - background: '#b5d3ee'
+    columns:
+      - span: 2
+      - heading: Technical skills are crucial, but they’re not enough
+        body: |
+          <p>Resumes focus on functional skills, but it’s challenging to find candidates who excel in all the other areas that make a great hire.</p>
+          <p>OpenTree Education guarantees candidates have a holistic set of competencies to ensure that they hit the ground running on any professional software development team.</p>
+        bodyComponent: div
+        span: 8
+      - span: 2
+  - background: '#b5d3ee'
+    columns:
+      - span: 2
+      - heading: Candidates are available in cities across the U.S., Canada, and remote
+        body: |
+          Graduates of the program are located in cities in the U.S. and Canada, and are prepared to work remotely. Some candidates are able to relocate, too, so please reach out if you want to know if our current candidate pool has someone where you need them.
+        span: 8
+      - span: 2
+  - background: '#b5d3ee'
+    verticalAlignment: top
+    columns:
+      - span: 2
+      - heading: Better than a recruiter,<br />we train candidates to meet your needs
+        body: |
+          <h3>We are committed to our candidates’ success</h3>
+          <p>Traditional forms of recruitment tend to be ineffective and limiting in their lack of investment in the individual candidate. We commit more time and resources to learn about our candidates so we can best support their growth and activate their potential to meet your company’s technological needs.</p>
+          <h3>Training focuses on what matters</h3>
+          <p>Our program is designed to professionally develop our candidates through an extensive understanding of their qualities, the provision of personalized expert mentorship, and rigorous competency training and experience on software development teams.</p>
+          <h3>Informed matches lead to improved retention</h3>
+          <p>The result? Effective, informed matches between our candidates and partner employers to increase employee performance and satisfaction, improve company diversity, and increase retention rates.</p>
+          <h3>Move tech forward with equitable education</h3>
+          <p>Remove unnecessary and outdated recruitment assessment requirements that don’t prove success within your organization and cause  you to miss out on amazing talent. Save money and time by optimizing training and recruitment practices while supporting equitable education at the same time!</p>
+        bodyComponent: div
+        span: 8
+      - span: 2
+  - background: '#b5d3ee'
+    columns:
+      - heading: Diversify your team
+        body: |
+          <p>By opening our doors to everyone regardless of their backgrounds, we provide a safe and supportive environment for a broad range of people to grow as holistic professionals.</p>
+          <p>Tap into our unique candidate pipelines to support talent growth and increase workplace diversity.</p>
+        bodyComponent: div
+        span: 6
+      - heading: Improve your reputation
+        body: |
+          Fostering a diverse and inclusive workforce is not a nice-to-have, but a vital component of any successful team. Research shows that diverse workplaces rate higher in performance, innovation, creativity, profits, and stock returns.
+        span: 6
+  - background: '#b5d3ee'
+    columns:
+      - span: 2
+      - heading: Hire today, or work with us to develop a custom program to have skilled developers in as little as 8 weeks
+        body: |
+          Access our candidate pipeline today to meet graduates from our professional mentorship program. Strategize with us to scale your team through custom training programs to ensure that your future employees are ready from day one.
+        span: 8
+      - span: 2
+  - background: '#b5d3ee'
+    columns:
+      - span: 2
+      - heading: Tell us what you need and we’ll start matching you
+        body: |
+          <p>Talk to us about your current team and culture needs. We’ll address your immediate needs and work proactively with you to support scaling a team.</p>
+          <p>Meet the candidates that are best suited to your needs through our employer matching process. Upon matching, the candidate becomes your employee, with our extended mentorship support for the first three months.</p>
+        bodyComponent: div
+        span: 8
+      - span: 2
+  - id: apply
+    background: '#91c0e8'
+    columns:
+      - heading: Apply to be an employer partner
+        body: |
+          Application form goes here.
