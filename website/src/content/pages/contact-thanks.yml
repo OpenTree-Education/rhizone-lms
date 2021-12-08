@@ -1,0 +1,9 @@
+title: Thanks for Contacting OpenTree Education
+sections:
+  - columns:
+      - heading: Thanks for the message!
+        headingVariant: h2
+        body: |
+          We’ve received your message and will respond to you by email.
+        callToActionText: Go back to home page
+        callToActionHref: '/'

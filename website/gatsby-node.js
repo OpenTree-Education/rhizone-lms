@@ -69,6 +69,15 @@ exports.createPages = async ({ actions: { createPage }, graphql }) => {
               callToActionHref
               callToActionText
               callToActionVariant
+              formAction
+              formButtonText
+              formFields {
+                label
+                required
+                type
+              }
+              formHeading
+              formName
               heading
               headingComponent
               headingTextAlign
