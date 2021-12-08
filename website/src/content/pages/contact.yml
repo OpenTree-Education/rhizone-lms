@@ -31,7 +31,7 @@ sections:
         body: |
           We’re more than happy to chat about anything related to equitable education and employement. Use this form if you have any questions about our programs or this website, too.
         formName: Contact
-        formAction: /contact-thanks/
+        formAction: /contact-thanks
         formHeading: Contact OpenTree Education
         formButtonText: Send message
         formFields:
