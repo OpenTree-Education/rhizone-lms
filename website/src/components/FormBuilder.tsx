@@ -29,6 +29,13 @@ const FormBuilder = ({
 }: FormBuilderProps) => (
   <Paper variant="outlined">
     <form action={formAction} data-netlify="true" method="post" name={formName}>
+      {/* HACK This hidden form field with the form name is added automatically
+               by Netlify's post processing step, however, when the React app is
+               rehydrated gets removed, so we have to put it in the React app
+               ourselves, but not during server-side rendering. */}
+      {typeof window !== 'undefined' && (
+        <input type="hidden" name="form-name" value={formName} />
+      )}
       <Stack p={4} spacing={4}>
         {formHeading && (
           <Typography component="h2" variant="h6">
