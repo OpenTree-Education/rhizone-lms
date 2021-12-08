@@ -77,4 +77,24 @@ sections:
     columns:
       - heading: Apply to be an employer partner
         body: |
-          Application form goes here.
+          We’re interested in talking to companies of all sizes and shapes. If you hire software developers and care about diveristy, equity, and inclusion, then we will work with you to secure exceptional talent.
+        span: 4
+      - span: 1
+      - span: 7
+        formName: Employers
+        formAction: /employers-thanks/
+        formHeading: Employer partnership application
+        formButtonText: Submit application
+        formFields:
+          - label: Your name
+            type: text
+            required: true
+          - label: Email address
+            type: email
+            required: true
+          - label: Company name
+            type: text
+            required: true
+          - label: Your role
+            type: text
+            required: true
