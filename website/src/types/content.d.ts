@@ -17,6 +17,15 @@ export interface ColumnData {
   callToActionHref?: string;
   callToActionText?: string;
   callToActionVariant?: 'text' | 'outlined' | 'contained';
+  formAction?: string;
+  formButtonText?: string;
+  formFields?: {
+    label: string;
+    required?: boolean;
+    type: 'text' | 'email' | 'textarea';
+  }[];
+  formHeading?: string;
+  formName?: string;
   heading?: string;
   headingComponent?: ElementType;
   headingTextAlign?: 'left' | 'center' | 'right';

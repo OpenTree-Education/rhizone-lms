@@ -30,7 +30,22 @@ sections:
       - heading: Send a message
         body: |
           We’re more than happy to chat about anything related to equitable education and employement. Use this form if you have any questions about our programs or this website, too.
-        span: 8
+        formName: Contact
+        formAction: /contact-thanks/
+        formHeading: Contact OpenTree Education
+        formButtonText: Send message
+        formFields:
+          - label: Your name
+            type: text
+            required: true
+          - label: Email address
+            type: email
+            required: true
+          - label: Write a message
+            type: textarea
+            required: true
+        span: 6
+      - span: 2
       - heading: Mailing address
         body: |
           <p>OpenTree Education Inc. is registered in British Columbia, Canada. You can use this address when required to mail materials to us.</p>
