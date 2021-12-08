@@ -71,3 +71,11 @@ export const listReflections = async (
   }
   return Array.from(reflectionsById.values());
 };
+
+export const validateOptionIds = async (optionIds: number[], builder = db) => {
+  const uniqueOptionIds = [...new Set(optionIds)];
+  const optionIdsCount = await builder('options')
+    .count('id', { as: 'option_id_count' })
+    .whereIn('id', uniqueOptionIds);
+  return optionIdsCount[0].option_id_count === uniqueOptionIds.length;
+};

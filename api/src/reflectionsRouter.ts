@@ -1,14 +1,18 @@
 import { Router } from 'express';
 
-import { BadRequestError } from './httpErrors';
+import { BadRequestError, ValidationError } from './httpErrors';
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
 import db from './db';
-import { listReflections, countReflections } from './reflectionsService';
+import {
+  listReflections,
+  countReflections,
+  validateOptionIds,
+} from './reflectionsService';
 import paginationValues from './paginationValues';
 
 const reflectionsRouter = Router();
 
-interface Option {
+export interface Option {
   id: number;
 }
 
@@ -24,6 +28,15 @@ reflectionsRouter.post('/', async (req, res, next) => {
     );
     return;
   }
+
+  if (
+    options.length !== 0 &&
+    !(await validateOptionIds(options.map(optionObj => optionObj.id)))
+  ) {
+    next(new ValidationError());
+    return;
+  }
+
   let insertedReflectionId: number[];
   try {
     await db.transaction(async trx => {
