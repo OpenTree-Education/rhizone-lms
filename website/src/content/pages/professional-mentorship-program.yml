@@ -96,7 +96,7 @@ sections:
       - span: 1
       - span: 7
         formName: Professional Mentorship Program
-        formAction: /professional-mentorship-program-thanks/
+        formAction: /professional-mentorship-program-thanks
         formHeading: Professional Mentorship Program application
         formButtonText: Submit application
         formFields:

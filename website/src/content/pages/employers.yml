@@ -82,7 +82,7 @@ sections:
       - span: 1
       - span: 7
         formName: Employers
-        formAction: /employers-thanks/
+        formAction: /employers-thanks
         formHeading: Employer partnership application
         formButtonText: Submit application
         formFields:
