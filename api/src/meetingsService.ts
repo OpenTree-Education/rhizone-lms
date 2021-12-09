@@ -17,8 +17,8 @@ export const findMeeting = async (
 ) => {
   const meetingRows = await builder('meetings')
     .select('meetings.id AS id', 'starts_at')
-		.join('participants', 'participants.meeting_id', 'meetings.id')
-    .where({ 'meetings.id': id, 'participants.principal_id': principalId});
+    .join('participants', 'participants.meeting_id', 'meetings.id')
+    .where({ 'meetings.id': id, 'participants.principal_id': principalId });
   if (meetingRows.length === 0) {
     throw new NotFoundError();
   }
@@ -40,7 +40,7 @@ export const findMeeting = async (
       { column: 'agenda_owning_participant_id', order: 'desc' },
       { column: 'sort_order', order: 'desc' },
       'meeting_notes.created_at',
-    ])
+    ]);
   const participants = await builder('participants')
     .select('id', 'principal_id')
     .where({ meeting_id: id })

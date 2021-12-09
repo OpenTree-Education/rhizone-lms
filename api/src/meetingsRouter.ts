@@ -30,7 +30,7 @@ meetingsRouter.get('/', async (req, res, next) => {
 meetingsRouter.get('/:id', async (req, res, next) => {
   const { id } = req.params;
   const { principalId } = req.session;
-	const meetingId = Number(id);
+  const meetingId = Number(id);
   if (!Number.isInteger(meetingId) || meetingId < 1) {
     next(new BadRequestError(`"${id}" is not a valid meeting id.`));
     return;
