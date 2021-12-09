@@ -4,7 +4,8 @@ sections:
     columns:
       - span: 2
       - heading: Product focused software developers, ready to work
-        headingVariant: h2
+        headingComponent: h1
+        headingVariant: h1
         span: 8
       - span: 2
   - background: '#b5d3ee'

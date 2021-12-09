@@ -119,7 +119,7 @@ const Section = ({
                       dangerouslySetInnerHTML={{
                         __html: heading,
                       }}
-                      variant={headingVariant || 'h4'}
+                      variant={headingVariant || 'h2'}
                       sx={{ color }}
                     />
                   )}
@@ -133,7 +133,7 @@ const Section = ({
                     />
                   )}
                   {hasCallToAction && (
-                    <Box>
+                    <Box py={1}>
                       <Button
                         color={callToActionColor || 'primary'}
                         component={GatsbyLink}

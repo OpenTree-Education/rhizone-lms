@@ -3,7 +3,8 @@ sections:
   - background: 'radial-gradient(circle, #e1cfe8, #ccacd7)'
     columns:
       - heading: Whatever your education or work experience, OpenTree Education helps you advance your tech career for free
-        headingVariant: h2
+        headingComponent: h1
+        headingVariant: h1
         span: 8
   - background: '#e1cfe8'
     columns:
@@ -13,25 +14,25 @@ sections:
   - background: '#e1cfe8'
     columns:
       - heading: Holistic professionalism
-        headingVariant: h5
+        headingVariant: h4
         body: |
           Software developers are hired for their ability to learn and communicate. This full-time 8 week program focuses on developing holistic professionals who are in control of their own learning and growth.
         span: 3
         verticalWhiteSpace: 4
       - heading: Self-discovery
-        headingVariant: h5
+        headingVariant: h4
         body: |
           A full half of the program is dedicated to discovering, describing, and developing competencies in the five areas that employers look for: behavioural, functional, operational, organizational, and strategic.
         span: 3
         verticalWhiteSpace: 4
       - heading: The whole lifecycle
-        headingVariant: h5
+        headingVariant: h4
         body: |
           The program runs in cohorts who work together as a software development team. Following agile methodologies, the team plans, builds, deploys, and maintains live software products.
         span: 3
         verticalWhiteSpace: 4
       - heading: Personal mentorship
-        headingVariant: h5
+        headingVariant: h4
         body: |
           Every person taking the program has weekly one-on-one meetings with their personal mentor to develop goals and strategies for achieving them unique to their situation.
         span: 3

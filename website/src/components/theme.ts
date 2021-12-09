@@ -73,6 +73,30 @@ const theme = responsiveFontSizes(
     },
     typography: {
       fontSize: 16,
+      h1: {
+        fontSize: '3.75rem',
+        fontWeight: 300,
+      },
+      h2: {
+        fontSize: '3rem',
+        fontWeight: 300,
+      },
+      h3: {
+        fontSize: '2.125rem',
+        fontWeight: 300,
+      },
+      h4: {
+        fontSize: '1.5rem',
+        fontWeight: 400,
+      },
+      h5: {
+        fontSize: '1.25rem',
+        fontWeight: 700,
+      },
+      h6: {
+        fontSize: '1.25rem',
+        fontWeight: 500,
+      },
     },
   })
 );

@@ -5,24 +5,27 @@ sections:
     minHeight: 700px
     verticalAlignment: middle
     columns:
+      - span: 1
+        verticalWhiteSpace: 0
       - heading: Free 1:1 mentorship
         headingComponent: h1
-        headingVariant: h2
+        headingVariant: h1
         body: |
           Get one-on-one coaching from industry experts, experience on a real software team, and access to jobs with our partner employers.
-        bodyVariant: h5
+        bodyVariant: h3
         callToActionHref: '/professional-mentorship-program/'
         callToActionText: Learn about the program
         callToActionColor: warning
         span: 5
       - span: 6
+        verticalWhiteSpace: 0
   - background: '#343434'
     color: white
     verticalAlignment: middle
     verticalWhiteSpace: 3
     columns:
       - heading: Skilled software developers for&nbsp;hire
-        headingVariant: h5
+        headingVariant: h3
         body: |
           Are you an employer that values <b style="color: #b3d2ed">diversity</b>, <b style="color: #cdaed8">equity</b> and <b style="color: #ffe6af">inclusion</b>?<br />
           Make OpenTree Education part of your talent&nbsp;pipeline!
@@ -31,7 +34,7 @@ sections:
       - callToActionHref: '/employers/'
         callToActionText: Hire from us
         callToActionVariant: contained
-        span: 5
+        span: 4
         verticalWhiteSpace: 1
   - background: 'radial-gradient(circle, #b8d7ac, #9ac78a)'
     columns:
