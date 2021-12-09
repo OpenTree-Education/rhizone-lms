@@ -1,7 +1,9 @@
 title: Free 1:1 Tech Mentorship | OpenTree Education
 sections:
-  - background: 'radial-gradient(circle, #b8d7ac, #9ac78a)'
-    verticalWhiteSpace: 24
+  - background: 'linear-gradient(to right, rgba(34, 34, 34, 1) 0%, rgba(34, 34, 34, 0) 75%) 50% 50% / 1800px 100%, #212121 url(https://media.istockphoto.com/photos/afro-girl-in-headset-using-laptop-having-skype-conference-picture-id1206006959) 50% 50% / 1800px 1200px no-repeat'
+    color: white
+    minHeight: 700px
+    verticalAlignment: middle
     columns:
       - heading: Free 1:1 mentorship
         headingComponent: h1
@@ -12,53 +14,47 @@ sections:
         callToActionHref: '/professional-mentorship-program/'
         callToActionText: Learn about the program
         callToActionColor: warning
-        span: 6
+        span: 5
       - span: 6
-  - background: '#2a2a2a'
-    color: '#ffffff'
+  - background: '#343434'
+    color: white
     verticalAlignment: middle
-    verticalWhiteSpace: 4
+    verticalWhiteSpace: 3
     columns:
-      - heading: Skilled software developers for hire
+      - heading: Skilled software developers for&nbsp;hire
         headingVariant: h5
         body: |
-          <p>Are you an employer that values <b style="color: #b3d2ed">diversity</b>, <b style="color: #cdaed8">equity</b> and <b style="color: #ffe6af">inclusion</b>?</p>
-          <p>Make OpenTree Education part of your talent pipeline!</p>
-        bodyComponent: div
-        callToActionHref: '/employers/'
-        callToActionText: Learn about partnerships
-        callToActionVariant: outlined
+          Are you an employer that values <b style="color: #b3d2ed">diversity</b>, <b style="color: #cdaed8">equity</b> and <b style="color: #ffe6af">inclusion</b>?<br />
+          Make OpenTree Education part of your talent&nbsp;pipeline!
         span: 6
-        verticalWhiteSpace: 2
-      - callToActionHref: '/employers/#apply'
+        verticalWhiteSpace: 1
+      - callToActionHref: '/employers/'
         callToActionText: Hire from us
         callToActionVariant: contained
-        span: 6
-        verticalWhiteSpace: 2
-  - background: '#b8d7ac'
+        span: 5
+        verticalWhiteSpace: 1
+  - background: 'radial-gradient(circle, #b8d7ac, #9ac78a)'
     columns:
-      - span: 6
       - heading: Who we are
         body: |
-          OpenTree Education facilitates equitable entry and growth in the tech industry.
+          OpenTree Education works to facilitate equitable entry and growth in the tech&nbsp;industry.
         callToActionHref: '/about/'
         callToActionText: Learn about our mission
-        span: 6
-  - background: '#b8d7ac'
-    columns:
+        span: 3
+        verticalWhiteSpace: 6
+      - span: 1
       - heading: Our research
         body: |
-          As we conduct research and development on how to promote diversity, equity, and inclusion in education and the workplace, we post our findings on the OpenTree Education blog.
+          Read articles on how to promote diversity, equity, and inclusion in education and the&nbsp;workplace.
         callToActionHref: '/blog/'
         callToActionText: Read the blog
-        span: 6
-      - span: 6
-  - background: '#b8d7ac'
-    columns:
-      - span: 6
-      - heading: We’d love to chat
+        span: 3
+        verticalWhiteSpace: 6
+      - span: 1
+      - heading: Chat with us
         body: |
-          We value everyone’s ideas for how to make positive change in the tech industry.
+          We value everyone’s ideas for how to make the workplace and education more&nbsp;equitable.
         callToActionHref: '/contact/'
-        callToActionText: Get in touch
-        span: 6
+        callToActionText: Contact us
+        span: 3
+        verticalWhiteSpace: 6

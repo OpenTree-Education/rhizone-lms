@@ -87,21 +87,38 @@ sections:
       - heading: Davey Feimer
         headingTextAlign: center
         headingVariant: h5
+        imageFile: Davey-about-page-temp.jpg
+        imageAlt: Davey Feimer
+        imageOriginalHeight: 400
+        imageOriginalWidth: 400
+        imageAspectRatio: 1
         body: |
           Co-founder
         bodyTextAlign: center
-        span: 4
+        span: 3
+      - span: 1
       - heading: Glen Chua
         headingTextAlign: center
         headingVariant: h5
+        imageFile: Glen-about-page.jpg
+        imageAlt: Glen Chua
+        imageOriginalHeight: 2058
+        imageOriginalWidth: 2058
+        imageAspectRatio: 1
         body: |
           Co-founder
         bodyTextAlign: center
-        span: 4
+        span: 3
+      - span: 1
       - heading: David VanDusen
         headingTextAlign: center
         headingVariant: h5
+        imageFile: David-about-page2.jpg
+        imageAlt: David VanDusen
+        imageOriginalHeight: 849
+        imageOriginalWidth: 849
+        imageAspectRatio: 1
         body: |
           Founding Engineer and Head Mentor
         bodyTextAlign: center
-        span: 4
+        span: 3

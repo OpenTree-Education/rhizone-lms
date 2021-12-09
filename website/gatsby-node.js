@@ -75,10 +75,16 @@ exports.createPages = async ({ actions: { createPage }, graphql }) => {
               headingComponent
               headingTextAlign
               headingVariant
+              imageAlt
+              imageAspectRatio
+              imageFile
+              imageOriginalHeight
+              imageOriginalWidth
               span
               verticalWhiteSpace
             }
             id
+            minHeight
             verticalAlignment
             verticalWhiteSpace
           }
