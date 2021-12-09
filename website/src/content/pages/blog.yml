@@ -1,0 +1,29 @@
+title: The OpenTree Education Blog
+sections:
+  - columns:
+      - heading: The OpenTree Education Blog
+        headingVariant: h2
+  - columns:
+      - heading: Welcome to the OpenTree blog!
+        body: |
+          This blog covers topics related to equity, diversity, and inclusion in tech education and careers. The purpose of this blog is to generate fruitful research and conversations over important topics in tech. Posts should come out around every two weeks.
+        span: 6
+      - span: 1
+      - heading: Authors
+        body: |
+          OpenTree Blog is authored and edited by the staff at OpenTree Education. See our <a href="/about/">about page</a> for more about each of us. We welcome guest contributors! See our contact page for more information.
+        span: 5
+  # HACK The blog index is hard-coded now, but it should be a custom component
+  #      that gets the list of blog posts and renders them in cards
+  - columns:
+      - heading: |
+          <a href="/blog/2021-09-13-an-equitable-start-leveling-the-playing-field-from-education-to-employment/">An Equitable Start: Leveling the Playing Field from Education to Employment</a>
+        headingVariant: h5
+        body: |
+          <p>Published on 2021-09-13 by Glen Chua.</p>
+          <p>Booming, but for whom? It’s become clear that the tech industry has been, and continues to be, booming. The current pandemic has not only intensified this growth exponentially, but has caused many to rethink their education, lifestyle, and career choices.</p>
+        bodyComponent: div
+        callToActionText: Read this post
+        callToActionHref: '/blog/2021-09-13-an-equitable-start-leveling-the-playing-field-from-education-to-employment/'
+        span: 4
+      - span: 8

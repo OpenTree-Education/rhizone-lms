@@ -65,7 +65,7 @@ export const listMeetings = async (
     .select('meetings.id AS id', 'starts_at')
     .join('participants', 'participants.meeting_id', 'meetings.id')
     .where({ 'participants.principal_id': principalId })
-    .orderBy([{ column: 'starts_at', order: 'desc' }, 'created_at'])
+    .orderBy([{ column: 'starts_at', order: 'desc' }, 'meetings.created_at'])
     .limit(limit)
     .offset(offset);
   if (meetings.length === 0) {

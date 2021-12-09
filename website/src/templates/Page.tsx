@@ -7,28 +7,25 @@ import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import Section from '../components/Section';
-import { SectionData } from '../types/data';
+import { PageData } from '../types/content';
 import theme from '../components/theme';
 
 interface PageProps {
-  pageContext: {
-    title: string;
-    sections: SectionData[];
-  };
+  pageContext: PageData;
 }
 
-const Page = ({ pageContext: { title, sections } }: PageProps) => (
+const Page = ({ pageContext: { background, sections, title } }: PageProps) => (
   <>
     <Helmet>
       <title>{title}</title>
     </Helmet>
     <CssBaseline />
     <GlobalStyles styles="@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');" />
-    <GlobalStyles styles={{ p: { maxWidth: '36em' } }} />
+    <GlobalStyles styles={{ body: { background }, p: { maxWidth: '40em' } }} />
     <ThemeProvider theme={theme}>
       <Header />
-      {sections.map(sectionData => (
-        <Section key={sectionData.id} {...sectionData} />
+      {sections.map((sectionData, index) => (
+        <Section key={index} {...sectionData} />
       ))}
       <Footer />
     </ThemeProvider>

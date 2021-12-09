@@ -23,9 +23,13 @@ interface CreateJournalEntryFormProps {
   onJournalEntryCreated?: (response: CreationResponseEnvelope) => void;
 }
 
+interface OptionId {
+  id: number;
+}
+
 interface CreateJournalEntryFormState {
   journalEntryText: string;
-  selectedOptions: null | number;
+  selectedOptions: OptionId[];
   rows: number;
   loading: boolean;
   errorVisibility: boolean;
@@ -40,7 +44,7 @@ class CreateJournalEntryForm extends Component<
     super(props);
     this.state = {
       journalEntryText: '',
-      selectedOptions: null,
+      selectedOptions: [],
       rows: 1,
       loading: false,
       errorVisibility: false,
@@ -65,7 +69,7 @@ class CreateJournalEntryForm extends Component<
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             raw_text: this.state.journalEntryText,
-            options: [{ id: this.state.selectedOptions }],
+            options: this.state.selectedOptions,
           }),
         }
       );
@@ -84,6 +88,10 @@ class CreateJournalEntryForm extends Component<
       this.setState({ errorVisibility: true });
     }
     this.setState({ loading: false });
+  };
+
+  handleOptionsSelection: ChangeEventHandler<HTMLInputElement> = event => {
+    this.setState({ selectedOptions: [{ id: Number(event.target.value) }] });
   };
 
   render() {
@@ -116,11 +124,7 @@ class CreateJournalEntryForm extends Component<
                     row
                     aria-label="mood"
                     name="row-radio-buttons-group"
-                    onChange={event =>
-                      this.setState({
-                        selectedOptions: +event.target.value,
-                      })
-                    }
+                    onChange={this.handleOptionsSelection}
                   >
                     <Stack direction="row" sx={{ my: 3, textAlign: 'center' }}>
                       <FormControlLabel

@@ -19,15 +19,15 @@ module.exports = {
         icon: 'src/images/icon.png',
       },
     },
-    'gatsby-plugin-sharp',
-    'gatsby-transformer-sharp',
+    'gatsby-transformer-yaml',
+    'gatsby-transformer-remark',
     {
       resolve: 'gatsby-source-filesystem',
       options: {
-        name: 'images',
-        path: './src/images/',
+        name: 'content',
+        path: './src/content/',
       },
-      __key: 'images',
+      __key: 'content',
     },
   ],
 };

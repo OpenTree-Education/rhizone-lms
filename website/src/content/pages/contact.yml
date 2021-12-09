@@ -1,0 +1,59 @@
+title: Contact OpenTree Education
+sections:
+  - columns:
+      - heading: Contact OpenTree Education
+        headingVariant: h2
+  - verticalWhiteSpace: 6
+    columns:
+      - heading: Drop us a line!
+        body: |
+          Connect with us on social media or use the form on this page to send a message. We’ll get back to you in a jiffy!
+  - verticalWhiteSpace: 6
+    columns:
+      - heading: LinkedIn
+        headingVariant: h5
+        body: <a href="https://ca.linkedin.com/company/opentree-education">company/opentree-education</a>
+        span: 3
+      - heading: Twitter
+        headingVariant: h5
+        body: <a href="https://twitter.com/opentree_ed">@opentree_ed</a>
+        span: 3
+      - heading: Facebook
+        headingVariant: h5
+        body: <a href="https://www.facebook.com/opentree.education">@opentree.education</a>
+        span: 3
+      - heading: Instagram
+        headingVariant: h5
+        body: <a href="https://www.instagram.com/opentree.education/">@opentree.education</a>
+        span: 3
+  - columns:
+      - heading: Send a message
+        body: |
+          We’re more than happy to chat about anything related to equitable education and employement. Use this form if you have any questions about our programs or this website, too.
+        formName: Contact
+        formAction: /contact-thanks
+        formHeading: Contact OpenTree Education
+        formButtonText: Send message
+        formFields:
+          - label: Your name
+            type: text
+            required: true
+          - label: Email address
+            type: email
+            required: true
+          - label: Write a message
+            type: textarea
+            required: true
+        span: 6
+      - span: 2
+      - heading: Mailing address
+        body: |
+          <p>OpenTree Education Inc. is registered in British Columbia, Canada. You can use this address when required to mail materials to us.</p>
+          <address>
+            OpenTree Education, Inc.<br />
+            404-1265 Beach Ave.<br />
+            Vancouver, BC&nbsp; V6E 1V4<br />
+            Canada
+          </address>
+        bodyComponent: div
+        span: 4

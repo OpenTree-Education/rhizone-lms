@@ -1,0 +1,64 @@
+title: Free 1:1 Tech Mentorship | OpenTree Education
+sections:
+  - background: 'radial-gradient(circle, #b8d7ac, #9ac78a)'
+    verticalWhiteSpace: 24
+    columns:
+      - heading: Free 1:1 mentorship
+        headingComponent: h1
+        headingVariant: h2
+        body: |
+          Get one-on-one coaching from industry experts, experience on a real software team, and access to jobs with our partner employers.
+        bodyVariant: h5
+        callToActionHref: '/professional-mentorship-program/'
+        callToActionText: Learn about the program
+        callToActionColor: warning
+        span: 6
+      - span: 6
+  - background: '#2a2a2a'
+    color: '#ffffff'
+    verticalAlignment: middle
+    verticalWhiteSpace: 4
+    columns:
+      - heading: Skilled software developers for hire
+        headingVariant: h5
+        body: |
+          <p>Are you an employer that values <b style="color: #b3d2ed">diversity</b>, <b style="color: #cdaed8">equity</b> and <b style="color: #ffe6af">inclusion</b>?</p>
+          <p>Make OpenTree Education part of your talent pipeline!</p>
+        bodyComponent: div
+        callToActionHref: '/employers/'
+        callToActionText: Learn about partnerships
+        callToActionVariant: outlined
+        span: 6
+        verticalWhiteSpace: 2
+      - callToActionHref: '/employers/#apply'
+        callToActionText: Hire from us
+        callToActionVariant: contained
+        span: 6
+        verticalWhiteSpace: 2
+  - background: '#b8d7ac'
+    columns:
+      - span: 6
+      - heading: Who we are
+        body: |
+          OpenTree Education facilitates equitable entry and growth in the tech industry.
+        callToActionHref: '/about/'
+        callToActionText: Learn about our mission
+        span: 6
+  - background: '#b8d7ac'
+    columns:
+      - heading: Our research
+        body: |
+          As we conduct research and development on how to promote diversity, equity, and inclusion in education and the workplace, we post our findings on the OpenTree Education blog.
+        callToActionHref: '/blog/'
+        callToActionText: Read the blog
+        span: 6
+      - span: 6
+  - background: '#b8d7ac'
+    columns:
+      - span: 6
+      - heading: We’d love to chat
+        body: |
+          We value everyone’s ideas for how to make positive change in the tech industry.
+        callToActionHref: '/contact/'
+        callToActionText: Get in touch
+        span: 6
