@@ -1,4 +1,5 @@
 import db from './db';
+import { NotFoundError } from './httpErrors';
 
 export const countMeetings = async (principalId: number, builder = db) => {
   const countAlias = 'total_count';
@@ -9,18 +10,17 @@ export const countMeetings = async (principalId: number, builder = db) => {
   return meetingCounts[0][countAlias];
 };
 
-export const listMeeting = async (
+export const findMeeting = async (
   id: number,
-  limit: number,
-  offset: number,
+  principalId: number,
   builder = db
 ) => {
-  const meeting = await builder('meetings')
+  const meetingRows = await builder('meetings')
     .select('meetings.id AS id', 'starts_at')
-    .where({ id: id })
-    .orderBy('created_at', 'id');
-  if (meeting.length === 0) {
-    return [];
+		.join('participants', 'participants.meeting_id', 'meetings.id')
+    .where({ 'meetings.id': id, 'participants.principal_id': principalId});
+  if (meetingRows.length === 0) {
+    throw new NotFoundError();
   }
   const meetingNotes = await builder('meeting_notes')
     .select(
@@ -37,22 +37,19 @@ export const listMeeting = async (
     )
     .where({ 'participants.meeting_id': id })
     .orderBy([
-      { column: 'sort_order', order: 'desc' },
       { column: 'agenda_owning_participant_id', order: 'desc' },
+      { column: 'sort_order', order: 'desc' },
       'meeting_notes.created_at',
     ])
-    .limit(limit)
-    .offset(offset);
   const participants = await builder('participants')
     .select('id', 'principal_id')
-    .where({ meeting_id: id });
-  return [
-    {
-      ...meeting[0],
-      participants: [...participants],
-      meetingNotes: [...meetingNotes],
-    },
-  ];
+    .where({ meeting_id: id })
+    .orderBy('created_at', 'id');
+  return {
+    ...meetingRows[0],
+    participants,
+    meetingNotes,
+  };
 };
 
 export const listMeetings = async (
