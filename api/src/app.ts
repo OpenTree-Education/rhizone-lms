@@ -12,6 +12,7 @@ import meetingsRouter from './meetingsRouter';
 import questionnairesRouter from './questionnairesRouter';
 import reflectionsRouter from './reflectionsRouter';
 import settingsRouter from './settingsRouter';
+import userRouter from './userRouter';
 
 declare module 'express-session' {
   interface Session {
@@ -49,6 +50,8 @@ app.use(
 const withCors = cors({ credentials: true, origin: process.env.WEBAPP_ORIGIN });
 
 app.use(withCors, authRouter);
+
+app.use('/user', withCors, userRouter);
 
 app.use('/journalentries', withCors, loggedIn, journalEntriesRouter);
 
