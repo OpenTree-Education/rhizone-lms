@@ -25,18 +25,15 @@ const Navbar = ({ loggedIn, handleCalendarClick }: NavbarProps) => (
       )}
       {loggedIn === true && (
         <>
-        <IconButton
-          sx={{mr: 1}}
-          onClick={() => handleCalendarClick()}
-        >
-          <EventNoteIcon />
-        </IconButton>
-        <Button
-          component="a"
-          href={`${process.env.REACT_APP_API_ORIGIN}/auth/logout`}
-        >
-          Sign Out
-        </Button>
+          <IconButton sx={{ mr: 1 }} onClick={() => handleCalendarClick()}>
+            <EventNoteIcon />
+          </IconButton>
+          <Button
+            component="a"
+            href={`${process.env.REACT_APP_API_ORIGIN}/auth/logout`}
+          >
+            Sign Out
+          </Button>
         </>
       )}
     </Grid>

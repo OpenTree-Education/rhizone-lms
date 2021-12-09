@@ -22,7 +22,6 @@ describe('dateTime', () => {
 
     it('should return an empty string when passing an undefined value', () => {
       const result = formatDateTime(undefined as any as string);
-
       expect(result).toBe('');
     });
   });

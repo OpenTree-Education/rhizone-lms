@@ -28,18 +28,10 @@ export interface JournalEntry {
   ];
 }
 
-/*  id: 1000,
-    starts_at: "2021-12-02T05:18:37.000Z",
-    participants: [
-      {id: 1,
-      principal_id: 1}
-    ],
-  }*/
-
- export interface Participant {
-   id: number;
-   principal_id: number;
- }
+export interface Participant {
+  id: number;
+  principal_id: number;
+}
 export interface MeetingInfo {
   id: number;
   starts_at: string;
