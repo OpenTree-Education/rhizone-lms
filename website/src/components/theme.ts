@@ -1,4 +1,5 @@
 import createTheme from '@mui/material/styles/createTheme';
+import responsiveFontSizes from '@mui/material/styles/responsiveFontSizes';
 
 const amulet = 'hsl(104,18%,52%)';
 const amuletDark = 'hsl(104,23%,42%)';
@@ -30,48 +31,50 @@ const alabasterDark = 'hsl(98,22%,85%)';
 const cultured = 'hsl(210,30%,96%)';
 const alabasterContrastText = 'hsl(98,24%,32%)';
 
-const theme = createTheme({
-  palette: {
-    error: {
-      contrastText: cameoPinkContrastText,
-      dark: cameoPinkDark,
-      light: cameoPinkLight,
-      main: cameoPink,
+const theme = responsiveFontSizes(
+  createTheme({
+    palette: {
+      error: {
+        contrastText: cameoPinkContrastText,
+        dark: cameoPinkDark,
+        light: cameoPinkLight,
+        main: cameoPink,
+      },
+      info: {
+        contrastText: alabasterContrastText,
+        dark: alabasterDark,
+        light: cultured,
+        main: alabaster,
+      },
+      primary: {
+        contrastText: amuletContrastText,
+        dark: amuletDark,
+        light: lightMossGreen,
+        main: amulet,
+      },
+      secondary: {
+        contrastText: paleCornflowerBlueContrastText,
+        dark: paleCornflowerBlueDark,
+        light: paleCornflowerBlueLight,
+        main: paleCornflowerBlue,
+      },
+      success: {
+        contrastText: tropicalVioletContrastText,
+        dark: tropicalVioletDark,
+        light: tropicalVioletLight,
+        main: tropicalViolet,
+      },
+      warning: {
+        contrastText: peachContrastText,
+        dark: peachDark,
+        light: peachLight,
+        main: peach,
+      },
     },
-    info: {
-      contrastText: alabasterContrastText,
-      dark: alabasterDark,
-      light: cultured,
-      main: alabaster,
+    typography: {
+      fontSize: 16,
     },
-    primary: {
-      contrastText: amuletContrastText,
-      dark: amuletDark,
-      light: lightMossGreen,
-      main: amulet,
-    },
-    secondary: {
-      contrastText: paleCornflowerBlueContrastText,
-      dark: paleCornflowerBlueDark,
-      light: paleCornflowerBlueLight,
-      main: paleCornflowerBlue,
-    },
-    success: {
-      contrastText: tropicalVioletContrastText,
-      dark: tropicalVioletDark,
-      light: tropicalVioletLight,
-      main: tropicalViolet,
-    },
-    warning: {
-      contrastText: peachContrastText,
-      dark: peachDark,
-      light: peachLight,
-      main: peach,
-    },
-  },
-  typography: {
-    fontSize: 16,
-  },
-});
+  })
+);
 
 export default theme;
