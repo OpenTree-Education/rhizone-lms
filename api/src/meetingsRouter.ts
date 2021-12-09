@@ -1,9 +1,10 @@
 import { Router } from 'express';
 
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
-import { countMeetings, listMeetings, listMeeting } from './meetingsService';
+import { countMeetings, listMeetings, findMeeting } from './meetingsService';
 import db from './db';
 import paginationValues from './paginationValues';
+import { BadRequestError } from './httpErrors';
 
 const meetingsRouter = Router();
 
@@ -27,12 +28,17 @@ meetingsRouter.get('/', async (req, res, next) => {
 });
 
 meetingsRouter.get('/:id', async (req, res, next) => {
-  const { limit, offset } = paginationValues(req.query.page, req.query.perpage);
   const { id } = req.params;
+  const { principalId } = req.session;
+	const meetingId = Number(id);
+  if (!Number.isInteger(meetingId) || meetingId < 1) {
+    next(new BadRequestError(`"${id}" is not a valid meeting id.`));
+    return;
+  }
   let meeting;
   try {
     await db.transaction(async trx => {
-      meeting = await listMeeting(Number.parseInt(id), limit, offset, trx);
+      meeting = await findMeeting(meetingId, principalId, trx);
     });
   } catch (err) {
     next(err);
