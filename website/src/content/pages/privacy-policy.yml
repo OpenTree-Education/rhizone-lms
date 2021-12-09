@@ -27,3 +27,4 @@ sections:
           <h2>Contact us</h2>
           <p>If you have any questions about this Privacy Policy, please <a href="/contact/">contact us</a>.</p>
         bodyComponent: div
+        span: 6

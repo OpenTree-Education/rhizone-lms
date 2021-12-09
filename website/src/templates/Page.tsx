@@ -21,7 +21,7 @@ const Page = ({ pageContext: { background, sections, title } }: PageProps) => (
     </Helmet>
     <CssBaseline />
     <GlobalStyles styles="@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');" />
-    <GlobalStyles styles={{ body: { background }, p: { maxWidth: '40em' } }} />
+    <GlobalStyles styles={{ body: { background } }} />
     <ThemeProvider theme={theme}>
       <Header />
       {sections.map((sectionData, index) => (

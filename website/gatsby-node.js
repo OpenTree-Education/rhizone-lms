@@ -9,41 +9,34 @@ const transformPostToPageContext = ({
     title: `${formattedTitle} | OpenTree Education Blog`,
     sections: [
       {
-        verticalWhiteSpace: 6,
         columns: [
-          { span: 2 },
           {
             heading: title,
             headingComponent: 'h1',
             headingVariant: 'h2',
             body: subtitle,
             bodyVariant: 'h4',
-            span: 8,
+            span: 6,
           },
-          { span: 2 },
         ],
       },
       {
         verticalWhiteSpace: 0,
         columns: [
-          { span: 2 },
           {
             body: `Published on ${publicationDate} by ${author}.`,
             bodyVariant: 'body2',
-            span: 8,
+            span: 6,
           },
-          { span: 2 },
         ],
       },
       {
         verticalWhiteSpace: 6,
         columns: [
-          { span: 2 },
           {
             body: html,
-            span: 8,
+            span: 6,
           },
-          { span: 2 },
         ],
       },
     ],
