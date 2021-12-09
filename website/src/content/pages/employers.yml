@@ -49,11 +49,12 @@ sections:
           <p>By opening our doors to everyone regardless of their backgrounds, we provide a safe and supportive environment for a broad range of people to grow as holistic professionals.</p>
           <p>Tap into our unique candidate pipelines to support talent growth and increase workplace diversity.</p>
         bodyComponent: div
-        span: 6
+        span: 4
+      - span: 2
       - heading: Improve your reputation
         body: |
           Fostering a diverse and inclusive workforce is not a nice-to-have, but a vital component of any successful team. Research shows that diverse workplaces rate higher in performance, innovation, creativity, profits, and stock returns.
-        span: 6
+        span: 4
   - background: '#b5d3ee'
     columns:
       - span: 2
@@ -73,9 +74,9 @@ sections:
         span: 8
       - span: 2
   - id: apply
-    background: '#91c0e8'
+    background: 'radial-gradient(circle, #b5d3ee, #91c0e8)'
     columns:
-      - heading: Apply to be an employer partner
+      - heading: Apply to be one of our employer partners
         body: |
           We’re interested in talking to companies of all sizes and shapes. If you hire software developers and care about diveristy, equity, and inclusion, then we will work with you to secure exceptional talent.
         span: 4
