@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
-import { collectionEnvelope } from './responseEnvelope';
-import { countMeetings, listMeetings } from './meetingsService';
+import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
+import { countMeetings, listMeetings, listMeeting } from './meetingsService';
 import db from './db';
 import paginationValues from './paginationValues';
 
@@ -26,4 +26,18 @@ meetingsRouter.get('/', async (req, res, next) => {
   res.json(collectionEnvelope(meetings, meetingsCount));
 });
 
+meetingsRouter.get('/:id', async (req, res, next) => {
+  const { limit, offset } = paginationValues(req.query.page, req.query.perpage);
+  const { id } = req.params;
+  let meeting;
+  try {
+    await db.transaction(async trx => {
+      meeting = await listMeeting(Number.parseInt(id), limit, offset, trx);
+    });
+  } catch (err) {
+    next(err);
+    return;
+  }
+  res.json(itemEnvelope(meeting));
+});
 export default meetingsRouter;

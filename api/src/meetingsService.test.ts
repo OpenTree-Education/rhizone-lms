@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
 
-import { countMeetings, listMeetings } from './meetingsService';
+import { countMeetings, listMeetings, listMeeting } from './meetingsService';
 import db from './db';
 import { tracker } from './mockDb';
 
@@ -112,6 +112,110 @@ describe('meetingsService', () => {
           reject(databaseError);
         });
         return expect(listMeetings(2, 3, 5)).rejects.toBe(databaseError);
+      });
+    });
+  });
+
+  describe('listMeeting', () => {
+    describe('with valid state', () => {
+      beforeEach(() => {
+        tracker.on('query', ({ bindings, response, sql }) => {
+          if (
+            sql ===
+            'select `meetings`.`id` as `id`, `starts_at` from `meetings` where `id` = ? order by `created_at` asc'
+          ) {
+            expect(bindings).toEqual([2]);
+            response([{ id: 2, starts_at: '2021-10-12T04:00:00.000Z' }]);
+          } else if (
+            sql ===
+            'select `meeting_notes`.`id` as `id`, `note_text`, `sort_order`, `authoring_participant_id`, `agenda_owning_participant_id` from `meeting_notes` inner join `participants` on `participants`.`id` = `meeting_notes`.`authoring_participant_id` where `participants`.`meeting_id` = ? order by `sort_order` desc, `agenda_owning_participant_id` desc, `meeting_notes`.`created_at` asc limit ? offset ?'
+          ) {
+            expect(bindings).toEqual([2, 3, 5]);
+            response([
+              {
+                note_text: 'test',
+                sort_order: 1,
+                id: 1,
+                authoring_participant_id: 1,
+                agenda_owning_participant_id: 2,
+              },
+            ]);
+          } else if (
+            sql ===
+            'select `id`, `principal_id` from `participants` where `meeting_id` = ?'
+          ) {
+            expect(bindings).toEqual([2]);
+            response([
+              {
+                id: 1,
+                principal_id: 3,
+              },
+              {
+                id: 2,
+                principal_id: 4,
+              },
+            ]);
+          } else {
+            console.log(sql);
+          }
+        });
+      });
+
+      it('should return meeting with participants and meeting notes', async () => {
+        expect(await listMeeting(2, 3, 5)).toEqual([
+          {
+            id: 2,
+            participants: [
+              {
+                id: 1,
+                principal_id: 3,
+              },
+              {
+                id: 2,
+                principal_id: 4,
+              },
+            ],
+            starts_at: '2021-10-12T04:00:00.000Z',
+            meetingNotes: [
+              {
+                note_text: 'test',
+                sort_order: 1,
+                id: 1,
+                authoring_participant_id: 1,
+                agenda_owning_participant_id: 2,
+              },
+            ],
+          },
+        ]);
+      });
+    });
+
+    describe('when meeting doesnt exist', () => {
+      beforeEach(() => {
+        tracker.on('query', ({ response, sql }) => {
+          if (
+            sql ===
+            'select `meetings`.`id` as `id`, `starts_at` from `meetings` where `id` = ? order by `created_at` asc'
+          ) {
+            response([]);
+          } else {
+            throw new Error(`Unexpected query: ${sql}`);
+          }
+        });
+      });
+
+      it('should not query participants and notes if there are no meeting', async () => {
+        expect(await listMeeting(2, 3, 5)).toEqual([]);
+      });
+    });
+
+    describe('when a database error occurs', () => {
+      it('should reject with the database error', () => {
+        const databaseError = new Error();
+        tracker.on('query', ({ reject }) => {
+          reject(databaseError);
+        });
+        return expect(listMeeting(2, 3, 5)).rejects.toBe(databaseError);
       });
     });
   });
