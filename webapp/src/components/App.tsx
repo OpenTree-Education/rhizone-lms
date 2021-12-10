@@ -72,12 +72,10 @@ class App extends Component<AppProps, AppState> {
   render() {
     return (
       <div>
-        <Stack px={3}>
           <Navbar
             loggedIn={this.state.loggedIn}
             handleCalendarClick={this.handleCalendarClick}
           />
-        </Stack>
         <Container fixed>
           {this.state.loggedIn === true && (
             <Grid container justifyContent="center">

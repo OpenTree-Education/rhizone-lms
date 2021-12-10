@@ -9,7 +9,7 @@ interface NavbarProps {
 }
 
 const Navbar = ({ loggedIn, handleCalendarClick }: NavbarProps) => (
-  <Grid alignItems="center" container>
+  <Grid alignItems="center" container px={3}>
     <Grid item xs>
       <h1>Rhizone</h1>
     </Grid>
