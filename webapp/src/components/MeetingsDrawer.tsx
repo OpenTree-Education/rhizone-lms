@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'; //close drawer icon
 
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { formatDate, formatTime } from '../helpers/dateTime';
 import { Meeting } from '../types/api';
 
@@ -110,7 +110,7 @@ class MeetingsDrawer extends Component<
             </Typography>
           </ListItem>
           {this.state.upcomingMeetings.map(meeting => (
-            <div key={meeting.id}>
+            <Fragment key={meeting.id}>
               <Divider />
               <ListItem>
                 <ListItemText
@@ -118,7 +118,7 @@ class MeetingsDrawer extends Component<
                   secondary={formatTime(meeting.starts_at)}
                 />
               </ListItem>
-            </div>
+            </Fragment>
           ))}
           <Divider />
           <ListItem
@@ -133,7 +133,7 @@ class MeetingsDrawer extends Component<
           </ListItem>
 
           {this.state.pastMeetings.map(meeting => (
-            <div key={meeting.id}>
+            <Fragment key={meeting.id}>
               <ListItem>
                 <ListItemText
                   primary={formatDate(meeting.starts_at)}
@@ -141,7 +141,7 @@ class MeetingsDrawer extends Component<
                 />
               </ListItem>
               <Divider />
-            </div>
+            </Fragment>
           ))}
         </List>
       </Drawer>
