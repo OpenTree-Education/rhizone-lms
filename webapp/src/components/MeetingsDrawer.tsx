@@ -103,20 +103,18 @@ class MeetingsDrawer extends Component <MeetingsDrawerProps, MeetingsDrawerState
                 Upcoming meetings
               </Typography>
             </ListItem>
-            {this.state.upcomingMeetingsList.map(meeting => {
-              return (
-                <div key={meeting.id}>
-                  <ListItem>
-                    <ListItemText
-                      primary={formatDate(meeting.starts_at)}
-                      secondary={formatTime(meeting.starts_at)}
-                    />
-                  </ListItem>
-                  <Divider />
-                </div>
-              );
-            })}
-
+            {this.state.upcomingMeetingsList.map(meeting =>
+              <div key={meeting.id}>
+                <Divider />
+                <ListItem>
+                  <ListItemText
+                    primary={formatDate(meeting.starts_at)}
+                    secondary={formatTime(meeting.starts_at)}
+                  />
+                </ListItem>
+              </div>
+            )}
+            <Divider />
             <ListItem
               sx={{
                 backgroundColor: 'primary.main',
@@ -128,8 +126,7 @@ class MeetingsDrawer extends Component <MeetingsDrawerProps, MeetingsDrawerState
               </Typography>
             </ListItem>
 
-            {this.state.pastMeetingsList.map(meeting => {
-              return (
+            {this.state.pastMeetingsList.map(meeting => 
                 <div key={meeting.id}>
                   <ListItem>
                     <ListItemText
@@ -139,8 +136,7 @@ class MeetingsDrawer extends Component <MeetingsDrawerProps, MeetingsDrawerState
                   </ListItem>
                   <Divider />
                 </div>
-              );
-            })}
+            )}
           </List>
         </Drawer>
     )
