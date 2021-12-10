@@ -100,7 +100,7 @@ class MeetingsDrawer extends Component <MeetingsDrawerProps, MeetingsDrawerState
               }}
             >
               <Typography variant="h5" sx={{ color: 'common.white' }}>
-                Upcoming Meetings
+                Upcoming meetings
               </Typography>
             </ListItem>
             {this.state.upcomingMeetingsList.reverse().map(meeting => {
@@ -124,7 +124,7 @@ class MeetingsDrawer extends Component <MeetingsDrawerProps, MeetingsDrawerState
               }}
             >
               <Typography variant="h5" sx={{ color: 'common.white' }}>
-                Past Meetings
+                Past meetings
               </Typography>
             </ListItem>
 
