@@ -27,7 +27,7 @@ const FormBuilder = ({
   formHeading,
   formName,
 }: FormBuilderProps) => (
-  <Paper variant="outlined">
+  <Paper sx={{ boxShadow: 10 }}>
     <form action={formAction} data-netlify="true" method="post" name={formName}>
       {/* HACK This hidden form field with the form name is added automatically
                by Netlify's post processing step, however, when the React app is
