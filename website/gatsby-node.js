@@ -1,48 +1,5 @@
 const path = require('path');
 
-const transformPostToPageContext = ({
-  frontmatter: { author, publicationDate, subtitle, title },
-  html,
-}) => {
-  const formattedTitle = `${title}${subtitle ? ': ' : ''}${subtitle}`;
-  return {
-    title: `${formattedTitle} | OpenTree Education Blog`,
-    sections: [
-      {
-        columns: [
-          {
-            heading: title,
-            headingComponent: 'h1',
-            headingVariant: 'h2',
-            body: subtitle,
-            bodyVariant: 'h4',
-            span: 6,
-          },
-        ],
-      },
-      {
-        verticalWhiteSpace: 0,
-        columns: [
-          {
-            body: `Published on ${publicationDate} by ${author}.`,
-            bodyVariant: 'body2',
-            span: 6,
-          },
-        ],
-      },
-      {
-        verticalWhiteSpace: 6,
-        columns: [
-          {
-            body: html,
-            span: 6,
-          },
-        ],
-      },
-    ],
-  };
-};
-
 exports.createPages = async ({ actions: { createPage }, graphql }) => {
   const listPagesResult = await graphql(`
     query ListPages {
@@ -116,13 +73,8 @@ exports.createPages = async ({ actions: { createPage }, graphql }) => {
     }
   `);
 
-  const posts = listBlogPostsResult.data.allMarkdownRemark.nodes.map(
-    transformPostToPageContext
-  );
-
-  const data = { posts };
-
   const pageTemplatePath = path.resolve(`./src/templates/Page.tsx`);
+  const postTemplatePath = path.resolve(`./src/templates/Post.tsx`);
 
   for (const {
     parent: { name: path },
@@ -141,8 +93,8 @@ exports.createPages = async ({ actions: { createPage }, graphql }) => {
     } = context;
     createPage({
       path: `/blog/${publicationDate.substr(0, 10)}-${slug}/`,
-      component: pageTemplatePath,
-      context: transformPostToPageContext(context, data),
+      component: postTemplatePath,
+      context,
     });
   }
 };
