@@ -1,7 +1,10 @@
+
 import { Box, Container, Typography } from '@mui/material';
 
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import MeetingNotesShow from './MeetingNotesShow';
 import Navbar from './Navbar';
 import MeetingsDrawer from './MeetingsDrawer';
 import Reflections from './Reflections';
