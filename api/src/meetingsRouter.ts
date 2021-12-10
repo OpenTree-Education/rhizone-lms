@@ -39,15 +39,15 @@ meetingsRouter.get('/:id', async (req, res, next) => {
   try {
     await db.transaction(async trx => {
       meeting = await findMeeting(meetingId, principalId, trx);
-      if (meeting === null) {
-        next(
-          new NotFoundError(`A meeting with the id "${id}" could not be found.`)
-        );
-        return;
-      }
     });
   } catch (err) {
     next(err);
+    return;
+  }
+  if (meeting === null) {
+    next(
+      new NotFoundError(`A meeting with the id "${id}" could not be found.`)
+    );
     return;
   }
   res.json(itemEnvelope(meeting));

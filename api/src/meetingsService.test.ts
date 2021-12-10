@@ -136,7 +136,7 @@ describe('meetingsService', () => {
                 note_text: 'test',
                 sort_order: 1,
                 id: 1,
-                authoring_participant_id: 3,
+                authoring_participant_id: 1,
                 agenda_owning_participant_id: 2,
               },
             ]);
@@ -175,12 +175,12 @@ describe('meetingsService', () => {
             },
           ],
           starts_at: '2021-10-12T04:00:00.000Z',
-          meetingNotes: [
+          meeting_notes: [
             {
               note_text: 'test',
               sort_order: 1,
               id: 1,
-              authoring_participant_id: 3,
+              authoring_participant_id: 1,
               agenda_owning_participant_id: 2,
             },
           ],

@@ -11,7 +11,7 @@ const mockCountMeetings = mocked(countMeetings);
 const mockListMeetings = mocked(listMeetings);
 const mockFindMeeting = mocked(findMeeting);
 
-const MEETING = {
+const meeting = {
   id: 2,
   participants: [
     {
@@ -24,12 +24,12 @@ const MEETING = {
     },
   ],
   starts_at: '2021-10-12T04:00:00.000Z',
-  meetingNotes: [
+  meeting_notes: [
     {
       note_text: 'test',
       sort_order: 1,
       id: 1,
-      authoring_participant_id: 3,
+      authoring_participant_id: 1,
       agenda_owning_participant_id: 2,
     },
   ],
@@ -112,11 +112,11 @@ describe('meetingsRouter', () => {
       });
 
       it('should return meeting with nested participants and meeting_notes', done => {
-        mockFindMeeting.mockResolvedValueOnce(MEETING);
+        mockFindMeeting.mockResolvedValueOnce(meeting);
         loginExistingUser(appAgent => {
           appAgent
             .get('/meetings/2')
-            .expect(200, itemEnvelope(MEETING))
+            .expect(200, itemEnvelope(meeting))
             .end(err => {
               if (err) {
                 done(err);

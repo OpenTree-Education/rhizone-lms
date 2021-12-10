@@ -47,7 +47,7 @@ export const findMeeting = async (
   return {
     ...meetingRows[0],
     participants,
-    meetingNotes,
+    meeting_notes: meetingNotes,
   };
 };
 
