@@ -4,7 +4,7 @@ import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
 import { countMeetings, listMeetings, findMeeting } from './meetingsService';
 import db from './db';
 import paginationValues from './paginationValues';
-import { BadRequestError } from './httpErrors';
+import { BadRequestError, NotFoundError } from './httpErrors';
 
 const meetingsRouter = Router();
 
@@ -39,6 +39,12 @@ meetingsRouter.get('/:id', async (req, res, next) => {
   try {
     await db.transaction(async trx => {
       meeting = await findMeeting(meetingId, principalId, trx);
+      if (meeting === null) {
+        next(
+          new NotFoundError(`A meeting with the id "${id}" could not be found.`)
+        );
+        return;
+      }
     });
   } catch (err) {
     next(err);
