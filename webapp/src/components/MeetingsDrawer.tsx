@@ -56,7 +56,7 @@ class MeetingsDrawer extends Component <MeetingsDrawerProps, MeetingsDrawerState
         upcomingMeetingsList: this.state.allMeetingsList.slice(
           0,
           startIndexOfPastMeeting
-        ),
+        ).reverse(),
         pastMeetingsList: this.state.allMeetingsList.slice(
           startIndexOfPastMeeting
         ),
@@ -103,7 +103,7 @@ class MeetingsDrawer extends Component <MeetingsDrawerProps, MeetingsDrawerState
                 Upcoming meetings
               </Typography>
             </ListItem>
-            {this.state.upcomingMeetingsList.reverse().map(meeting => {
+            {this.state.upcomingMeetingsList.map(meeting => {
               return (
                 <div key={meeting.id}>
                   <ListItem>
