@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import {
   Box,
   Container,
@@ -7,18 +8,27 @@ import {
 } from '@mui/material';
 
 
+=======
+import { Box, Container, Typography } from '@mui/material';
+>>>>>>> Stashed changes
 import React, { Component } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import CreateJournalEntryForm from './CreateJournalEntryForm';
-import JournalEntriesList from './JournalEntriesList';
-import { JournalEntry } from '../types/api';
+import MeetingNotesShow from './MeetingNotesShow';
 import Navbar from './Navbar';
+<<<<<<< Updated upstream
 import MeetingsDrawer from './MeetingsDrawer';
 
 interface AppState {
   loggedIn: boolean | null;
   journalEntries: JournalEntry[];
   isMeetingDrawerOpen: boolean;
+=======
+import Reflections from './Reflections';
+
+interface AppState {
+  loggedIn: boolean | null;
+>>>>>>> Stashed changes
 }
 
 interface AppProps { }
@@ -28,9 +38,14 @@ class App extends Component<AppProps, AppState> {
     super(props);
     this.state = {
       loggedIn: null,
+<<<<<<< Updated upstream
       journalEntries: [],
       isMeetingDrawerOpen: false,
+=======
+>>>>>>> Stashed changes
     };
+
+    this.updateLoggedIn = this.updateLoggedIn.bind(this);
   }
 
   async componentDidMount() {
@@ -41,25 +56,12 @@ class App extends Component<AppProps, AppState> {
     if (fetchSessionInfo.ok) {
       const { data: sessionInfo } = await fetchSessionInfo.json();
       this.setState({ loggedIn: sessionInfo.authenticated });
-      if (sessionInfo.authenticated) {
-        this.fetchJournalEntries();
-      }
     }
   }
 
-  fetchJournalEntries = async () => {
-    const fetchJournalEntries = await fetch(
-      `${process.env.REACT_APP_API_ORIGIN}/reflections`,
-      { credentials: 'include' }
-    );
-    if (fetchJournalEntries.status === 401) {
-      this.setState({ loggedIn: false });
-    }
-    if (fetchJournalEntries.ok) {
-      const { data: journalEntries } = await fetchJournalEntries.json();
-      this.setState({ loggedIn: true, journalEntries });
-    }
-  };
+  updateLoggedIn(loggedInStatus: boolean) {
+    this.setState({ loggedIn: loggedInStatus });
+  }
 
   handleCalendarClick = () => {
     this.setState({ isMeetingDrawerOpen: !this.state.isMeetingDrawerOpen });
@@ -71,6 +73,7 @@ class App extends Component<AppProps, AppState> {
 
   render() {
     return (
+<<<<<<< Updated upstream
       <div>
           <Navbar
             loggedIn={this.state.loggedIn}
@@ -106,6 +109,33 @@ class App extends Component<AppProps, AppState> {
           updateLoggedIn={this.updateLoggedIn}
         />
       </div>
+=======
+      <Container fixed>
+        <Navbar loggedIn={this.state.loggedIn} />
+        <Router>
+          <Routes>
+            {this.state.loggedIn ? (
+              <Route
+                path="/"
+                element={<Reflections updateLoggedIn={this.updateLoggedIn} />}
+              />
+            ) : (
+              ''
+            )}
+            {this.state.loggedIn ? (
+              <Route path="meetings/:id" element={<MeetingNotesShow />} />
+            ) : (
+              ''
+            )}
+          </Routes>
+        </Router>
+        <Box sx={{ my: 12 }}>
+          <Typography align="center">
+            <small>© OpenTree Education Inc.</small>
+          </Typography>
+        </Box>
+      </Container>
+>>>>>>> Stashed changes
     );
   }
 }
