@@ -1,12 +1,10 @@
 title: Free 1:1 Tech Mentorship | OpenTree Education
 sections:
-  - background: 'linear-gradient(to right, rgba(34, 34, 34, 1) 0%, rgba(34, 34, 34, 0) 75%) 50% 50% / 1800px 100%, #212121 url(https://media.istockphoto.com/photos/afro-girl-in-headset-using-laptop-having-skype-conference-picture-id1206006959) 50% 50% / 1800px 1200px no-repeat'
+  - background: 'linear-gradient(to right, rgba(34, 34, 34, 1) 0%, rgba(34, 34, 34, 0) 60%) 50% 50% / 1800px 100%, #212121 url(https://opentree-education.imgix.net/iStock-1206006959.jpg?w=1800&h=860&fit=crop&auto=compress) 50% 50% no-repeat'
     color: white
     minHeight: 700px
     verticalAlignment: middle
     columns:
-      - span: 1
-        verticalWhiteSpace: 0
       - heading: Free 1:1 mentorship
         headingComponent: h1
         headingVariant: h1
@@ -17,24 +15,26 @@ sections:
         callToActionText: Learn about the program
         callToActionColor: warning
         span: 5
+        verticalWhiteSpace: 0
       - span: 6
         verticalWhiteSpace: 0
   - background: '#343434'
     color: white
     verticalAlignment: middle
-    verticalWhiteSpace: 3
+    verticalWhiteSpace: 4
     columns:
       - heading: Skilled software developers for&nbsp;hire
-        headingVariant: h3
+        headingVariant: h5
         body: |
           Are you an employer that values <b style="color: #b3d2ed">diversity</b>, <b style="color: #cdaed8">equity</b> and <b style="color: #ffe6af">inclusion</b>?<br />
           Make OpenTree Education part of your talent&nbsp;pipeline!
+        bodyVariant: body2
         span: 6
         verticalWhiteSpace: 1
       - callToActionHref: '/employers/'
         callToActionText: Hire from us
         callToActionVariant: contained
-        span: 4
+        span: 5
         verticalWhiteSpace: 1
   - background: 'radial-gradient(circle, #b8d7ac, #9ac78a)'
     columns:

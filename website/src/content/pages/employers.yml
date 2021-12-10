@@ -2,34 +2,54 @@ title: Employers | OpenTree Education
 sections:
   - background: 'radial-gradient(circle, #b5d3ee, #91c0e8)'
     columns:
-      - span: 2
-      - heading: Product focused software developers, ready to work
+      - heading: Employer Partnerships
         headingComponent: h1
         headingVariant: h1
-        span: 8
-      - span: 2
+        body: |
+          Hire product-focused software developers and promote diveristy, equity, and inclusion in education and the workplace
+        bodyVariant: h3
+        span: 7
+      - span: 5
   - background: '#b5d3ee'
+    verticalAlignment: middle
+    verticalWhiteSpace: 4
     columns:
-      - span: 2
       - heading: Technical skills are crucial, but they’re not enough
         body: |
           <p>Resumes focus on functional skills, but it’s challenging to find candidates who excel in all the other areas that make a great hire.</p>
           <p>OpenTree Education guarantees candidates have a holistic set of competencies to ensure that they hit the ground running on any professional software development team.</p>
         bodyComponent: div
-        span: 8
-      - span: 2
-  - background: '#b5d3ee'
+        verticalWhiteSpace: 6
+        span: 5
+      - imageFile: AdobeStock_408070902.jpeg
+        imageAlt: Woman in headphones on video call on laptop with sticky notes on wall in background
+        imageOriginalWidth: 6144
+        imageOriginalHeight: 3456
+        verticalWhiteSpace: 0
+        span: 7
+  - background: '#91c0e8'
+    verticalAlignment: middle
+    verticalWhiteSpace: 4
     columns:
-      - span: 2
-      - heading: Candidates are available in cities across the U.S., Canada, and remote
+      - imageFile: timo-wielink-4Zk45jNyQS4-unsplash.jpg
+        imageAlt: Poster map with pushpins in North American cities
+        imageOriginalWidth: 6124
+        imageOriginalHeight: 4083
         body: |
-          Graduates of the program are located in cities in the U.S. and Canada, and are prepared to work remotely. Some candidates are able to relocate, too, so please reach out if you want to know if our current candidate pool has someone where you need them.
-        span: 8
-      - span: 2
-  - background: '#b5d3ee'
+          Photo by <a href="https://unsplash.com/@timowielink" rel="nofollow">Timo Wielink</a>.
+        bodyVariant: body2
+        span: 5
+        verticalWhiteSpace: 0
+      - span: 1
+      - heading: Our candidates are in cities across the U.S., Canada, and open to remote
+        body: |
+          Graduates of our program are located around the world and are prepared to work remotely. Some candidates are able to relocate, too, so please reach out if you want to know if our current candidate pool has someone where you need them.
+        span: 5
+        verticalWhiteSpace: 6
+      - span: 1
+  - background: 'radial-gradient(circle, #c5e3fe, #b5d3ee)'
     verticalAlignment: top
     columns:
-      - span: 2
       - heading: Better than a recruiter,<br />we train candidates to meet your needs
         body: |
           <h3>We are committed to our candidates’ success</h3>
@@ -41,39 +61,50 @@ sections:
           <h3>Move tech forward with equitable education</h3>
           <p>Remove unnecessary and outdated recruitment assessment requirements that don’t prove success within your organization and cause  you to miss out on amazing talent. Save money and time by optimizing training and recruitment practices while supporting equitable education at the same time!</p>
         bodyComponent: div
-        span: 8
-      - span: 2
-  - background: '#b5d3ee'
+        span: 7
+  - background: 'radial-gradient(circle at center, rgba(155, 199, 235, 0.65), rgba(155, 199, 235, 0) 50%), radial-gradient(circle at top left, rgba(125, 255, 232, 0.75), rgba(125, 245, 232, 0) 50%), radial-gradient(circle at bottom right, rgba(232, 245, 145, 0.65), rgba(232, 245, 145, 0) 50%), #b5d3ee'
+    verticalWhiteSpace: 6
     columns:
+      - heading: |
+          You can be a champion of <b style="color: #4293b5">diversity</b>, <b style="color: #9d64b1">equity</b> and <b style="color: #ab832b">inclusion</b>
+        verticalWhiteSpace: 6
+        span: 10
       - heading: Diversify your team
+        headingVariant: h3
         body: |
           <p>By opening our doors to everyone regardless of their backgrounds, we provide a safe and supportive environment for a broad range of people to grow as holistic professionals.</p>
           <p>Tap into our unique candidate pipelines to support talent growth and increase workplace diversity.</p>
         bodyComponent: div
+        verticalWhiteSpace: 6
         span: 4
       - span: 2
       - heading: Improve your reputation
+        headingVariant: h3
         body: |
-          Fostering a diverse and inclusive workforce is not a nice-to-have, but a vital component of any successful team. Research shows that diverse workplaces rate higher in performance, innovation, creativity, profits, and stock returns.
+          <p>Fostering a diverse and inclusive workforce is not a nice-to-have, but a vital component of any successful team. Research shows that diverse workplaces rate higher in performance, innovation, creativity, profits, and stock returns.</p>
+        bodyComponent: div
+        verticalWhiteSpace: 6
         span: 4
   - background: '#b5d3ee'
     columns:
-      - span: 2
       - heading: Hire today, or work with us to develop a custom program to have skilled developers in as little as 8 weeks
         body: |
-          Access our candidate pipeline today to meet graduates from our professional mentorship program. Strategize with us to scale your team through custom training programs to ensure that your future employees are ready from day one.
-        span: 8
-      - span: 2
-  - background: '#b5d3ee'
-    columns:
-      - span: 2
-      - heading: Tell us what you need and we’ll start matching you
-        body: |
+          <p>Access our candidate pipeline today to meet graduates from our professional mentorship program. Strategize with us to scale your team through custom training programs to ensure that your future employees are ready from day one.</p>
+          <h3>Tell us what you need and we’ll start matching you</h3>
           <p>Talk to us about your current team and culture needs. We’ll address your immediate needs and work proactively with you to support scaling a team.</p>
           <p>Meet the candidates that are best suited to your needs through our employer matching process. Upon matching, the candidate becomes your employee, with our extended mentorship support for the first three months.</p>
         bodyComponent: div
-        span: 8
-      - span: 2
+        span: 5
+      - span: 1
+      - imageFile: mimi-thian-vdXMSiX-n6M-unsplash.jpeg
+        imageAlt: Four people collaborating around a laptop computer
+        imageOriginalWidth: 5184
+        imageOriginalHeight: 3888
+        body: |
+          Photo by <a href="https://unsplash.com/@mimithian" rel="nofollow">Mimi Thian</a>.
+        bodyVariant: body2
+        bodyTextAlign: right
+        span: 6
   - id: apply
     background: 'radial-gradient(circle, #b5d3ee, #91c0e8)'
     columns:
