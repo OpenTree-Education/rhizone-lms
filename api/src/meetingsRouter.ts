@@ -1,9 +1,10 @@
 import { Router } from 'express';
 
-import { collectionEnvelope } from './responseEnvelope';
-import { countMeetings, listMeetings } from './meetingsService';
+import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
+import { countMeetings, listMeetings, findMeeting } from './meetingsService';
 import db from './db';
 import paginationValues from './paginationValues';
+import { BadRequestError, NotFoundError } from './httpErrors';
 
 const meetingsRouter = Router();
 
@@ -26,4 +27,29 @@ meetingsRouter.get('/', async (req, res, next) => {
   res.json(collectionEnvelope(meetings, meetingsCount));
 });
 
+meetingsRouter.get('/:id', async (req, res, next) => {
+  const { id } = req.params;
+  const { principalId } = req.session;
+  const meetingId = Number(id);
+  if (!Number.isInteger(meetingId) || meetingId < 1) {
+    next(new BadRequestError(`"${id}" is not a valid meeting id.`));
+    return;
+  }
+  let meeting;
+  try {
+    await db.transaction(async trx => {
+      meeting = await findMeeting(meetingId, principalId, trx);
+    });
+  } catch (err) {
+    next(err);
+    return;
+  }
+  if (meeting === null) {
+    next(
+      new NotFoundError(`A meeting with the id "${id}" could not be found.`)
+    );
+    return;
+  }
+  res.json(itemEnvelope(meeting));
+});
 export default meetingsRouter;
