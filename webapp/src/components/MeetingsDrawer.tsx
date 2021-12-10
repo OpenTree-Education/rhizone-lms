@@ -3,7 +3,7 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight'; //close drawer icon
 
 import React, { Component } from 'react'
 import { formatDate, formatTime } from '../helpers/dateTime';
-import { MeetingInfo } from '../types/api';
+import { Meeting } from '../types/api';
 
 interface MeetingsDrawerProps {
   open: boolean;
@@ -13,18 +13,18 @@ interface MeetingsDrawerProps {
 }
 
 interface MeetingsDrawerState {
-  allMeetingsList: MeetingInfo[];
-  upcomingMeetingsList: MeetingInfo[];
-  pastMeetingsList: MeetingInfo[];
+  allMeetings: Meeting[];
+  upcomingMeetings: Meeting[];
+  pastMeetings: Meeting[];
 }
 
 class MeetingsDrawer extends Component <MeetingsDrawerProps, MeetingsDrawerState> {
   constructor(props: MeetingsDrawerProps) {
     super(props);
     this.state = {
-      allMeetingsList: [],
-      upcomingMeetingsList: [],
-      pastMeetingsList: [],
+      allMeetings: [],
+      upcomingMeetings: [],
+      pastMeetings: [],
     }
   }
 
@@ -42,22 +42,22 @@ class MeetingsDrawer extends Component <MeetingsDrawerProps, MeetingsDrawerState
       this.props.updateLoggedIn(false)
     }
     if (fetchMeetings.ok) {
-      const { data: allMeetingsList } = await fetchMeetings.json();
+      const { data: allMeetings } = await fetchMeetings.json();
       this.props.updateLoggedIn(true)
-      this.setState({ allMeetingsList });
+      this.setState({ allMeetings });
       let startIndexOfPastMeeting = 0;
-      for (let i = 0; i < this.state.allMeetingsList.length; i++) {
-        if (Date.parse(this.state.allMeetingsList[i].starts_at) < Date.now()) {
+      for (let i = 0; i < this.state.allMeetings.length; i++) {
+        if (Date.parse(this.state.allMeetings[i].starts_at) < Date.now()) {
           startIndexOfPastMeeting = i;
           break;
         }
       }
       this.setState({
-        upcomingMeetingsList: this.state.allMeetingsList.slice(
+        upcomingMeetings: this.state.allMeetings.slice(
           0,
           startIndexOfPastMeeting
         ).reverse(),
-        pastMeetingsList: this.state.allMeetingsList.slice(
+        pastMeetings: this.state.allMeetings.slice(
           startIndexOfPastMeeting
         ),
       });
@@ -103,7 +103,7 @@ class MeetingsDrawer extends Component <MeetingsDrawerProps, MeetingsDrawerState
                 Upcoming meetings
               </Typography>
             </ListItem>
-            {this.state.upcomingMeetingsList.map(meeting =>
+            {this.state.upcomingMeetings.map(meeting =>
               <div key={meeting.id}>
                 <Divider />
                 <ListItem>
@@ -126,7 +126,7 @@ class MeetingsDrawer extends Component <MeetingsDrawerProps, MeetingsDrawerState
               </Typography>
             </ListItem>
 
-            {this.state.pastMeetingsList.map(meeting => 
+            {this.state.pastMeetings.map(meeting => 
                 <div key={meeting.id}>
                   <ListItem>
                     <ListItemText

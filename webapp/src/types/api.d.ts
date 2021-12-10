@@ -32,7 +32,8 @@ export interface Participant {
   id: number;
   principal_id: number;
 }
-export interface MeetingInfo {
+
+export interface Meeting {
   id: number;
   starts_at: string;
   participants: Participant[];
