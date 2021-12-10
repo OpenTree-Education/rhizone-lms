@@ -38,6 +38,7 @@ const transformPostDataToPageData = ({
         columns: [
           {
             body: html,
+            bodyComponent: 'div',
             span: 6,
           },
         ],
