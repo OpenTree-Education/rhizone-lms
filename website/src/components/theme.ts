@@ -1,4 +1,5 @@
 import createTheme from '@mui/material/styles/createTheme';
+import responsiveFontSizes from '@mui/material/styles/responsiveFontSizes';
 
 const amulet = 'hsl(104,18%,52%)';
 const amuletDark = 'hsl(104,23%,42%)';
@@ -30,48 +31,74 @@ const alabasterDark = 'hsl(98,22%,85%)';
 const cultured = 'hsl(210,30%,96%)';
 const alabasterContrastText = 'hsl(98,24%,32%)';
 
-const theme = createTheme({
-  palette: {
-    error: {
-      contrastText: cameoPinkContrastText,
-      dark: cameoPinkDark,
-      light: cameoPinkLight,
-      main: cameoPink,
+const theme = responsiveFontSizes(
+  createTheme({
+    palette: {
+      error: {
+        contrastText: cameoPinkContrastText,
+        dark: cameoPinkDark,
+        light: cameoPinkLight,
+        main: cameoPink,
+      },
+      info: {
+        contrastText: alabasterContrastText,
+        dark: alabasterDark,
+        light: cultured,
+        main: alabaster,
+      },
+      primary: {
+        contrastText: amuletContrastText,
+        dark: amuletDark,
+        light: lightMossGreen,
+        main: amulet,
+      },
+      secondary: {
+        contrastText: paleCornflowerBlueContrastText,
+        dark: paleCornflowerBlueDark,
+        light: paleCornflowerBlueLight,
+        main: paleCornflowerBlue,
+      },
+      success: {
+        contrastText: tropicalVioletContrastText,
+        dark: tropicalVioletDark,
+        light: tropicalVioletLight,
+        main: tropicalViolet,
+      },
+      warning: {
+        contrastText: peachContrastText,
+        dark: peachDark,
+        light: peachLight,
+        main: peach,
+      },
     },
-    info: {
-      contrastText: alabasterContrastText,
-      dark: alabasterDark,
-      light: cultured,
-      main: alabaster,
+    typography: {
+      fontSize: 16,
+      h1: {
+        fontSize: '3.75rem',
+        fontWeight: 300,
+      },
+      h2: {
+        fontSize: '3rem',
+        fontWeight: 300,
+      },
+      h3: {
+        fontSize: '2.125rem',
+        fontWeight: 300,
+      },
+      h4: {
+        fontSize: '1.5rem',
+        fontWeight: 400,
+      },
+      h5: {
+        fontSize: '1.25rem',
+        fontWeight: 700,
+      },
+      h6: {
+        fontSize: '1.25rem',
+        fontWeight: 500,
+      },
     },
-    primary: {
-      contrastText: amuletContrastText,
-      dark: amuletDark,
-      light: lightMossGreen,
-      main: amulet,
-    },
-    secondary: {
-      contrastText: paleCornflowerBlueContrastText,
-      dark: paleCornflowerBlueDark,
-      light: paleCornflowerBlueLight,
-      main: paleCornflowerBlue,
-    },
-    success: {
-      contrastText: tropicalVioletContrastText,
-      dark: tropicalVioletDark,
-      light: tropicalVioletLight,
-      main: tropicalViolet,
-    },
-    warning: {
-      contrastText: peachContrastText,
-      dark: peachDark,
-      light: peachLight,
-      main: peach,
-    },
-  },
-  typography: {
-    fontSize: 16,
-  },
-});
+  })
+);
 
 export default theme;

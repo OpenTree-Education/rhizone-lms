@@ -1,13 +1,13 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import { ImgixGatsbyImage } from '@imgix/gatsby';
 import { Link as GatsbyLink } from 'gatsby';
 import React from 'react';
 import Stack from '@mui/material/Stack';
 import { useMatch } from '@reach/router';
 
 import opentreeEducationLogo from '../images/opentree-education-logo.svg';
-import opentreeEducationWordMark from '../images/opentree-education.svg';
 import theme from './theme';
 
 interface TopNavLinkProps {
@@ -52,11 +52,13 @@ const Header = () => (
                 src={opentreeEducationLogo}
                 width={46}
               />
-              <img
+              <ImgixGatsbyImage
                 alt="OpenTree Education"
-                height={40}
-                src={opentreeEducationWordMark}
-                width={116}
+                src="https://opentree-education.imgix.net/opentree-education.png"
+                layout="fixed"
+                width={120}
+                sourceHeight={547}
+                sourceWidth={1500}
               />
             </Stack>
           </GatsbyLink>

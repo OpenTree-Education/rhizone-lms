@@ -30,6 +30,11 @@ export interface ColumnData {
   headingComponent?: ElementType;
   headingTextAlign?: 'left' | 'center' | 'right';
   headingVariant?: Variant;
+  imageAlt?: string;
+  imageAspectRatio?: number;
+  imageFile?: string;
+  imageOriginalHeight?: number;
+  imageOriginalWidth?: number;
   span?: number;
   verticalWhiteSpace?: number;
 }
@@ -39,6 +44,7 @@ export interface SectionData {
   color?: string;
   columns: ColumnData[];
   id: string;
+  minHeight?: number;
   verticalAlignment?: 'top' | 'middle' | 'bottom';
   verticalWhiteSpace?: number;
 }

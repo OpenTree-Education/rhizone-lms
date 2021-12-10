@@ -2,7 +2,8 @@ title: OpenTree Education Professional Mentorship Program Application Received
 sections:
   - columns:
       - heading: Application Received
-        headingVariant: h2
+        headingComponent: h1
+        headingVariant: h1
         body: |
           We’ll be reaching out by email to talk to you about the next steps the application process. Looking forward to speaking with you!
         callToActionText: Go back to home page

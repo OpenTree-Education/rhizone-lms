@@ -2,106 +2,117 @@ title: About OpenTree Education
 background: '#ffffff radial-gradient(circle 1440px at 50% -240px, #fafafa, #ffffff) 50% 50% no-repeat'
 sections:
   - columns:
-      - span: 2
       - heading: About Us
-        headingVariant: h2
-        span: 8
-      - span: 2
+        headingComponent: h1
+        headingVariant: h1
+        span: 6
   - id: mission
     verticalWhiteSpace: 6
     columns:
-      - span: 2
       - heading: Our mission
-        headingVariant: h3
         body: |
           To champion equity, diversity and inclusion in education and the workplace
-        bodyVariant: h5
-        span: 8
-      - span: 2
+        bodyVariant: h4
+        span: 6
   - id: principles
     verticalWhiteSpace: 6
     columns:
-      - span: 2
       - heading: Our principles
-        headingVariant: h3
-        span: 8
-      - span: 2
+        span: 6
   - id: principle-1
     verticalWhiteSpace: 6
     columns:
-      - span: 2
       - heading: 1. Equity of educational opportunity and outcome
-        headingVariant: h4
+        headingVariant: h3
         body: |
           Educational opportunities and outcomes should be accessible to all, with particular attention to marginalized and traditionally underrepresented groups in higher and tertiary education; the latter includes, but is not limited to, women, different gender identities, ethnic minorities (indigenous, immigrant, and others), persons with disabilities, and people from lower socio-economic backgrounds. Equity in education recognizes that each individual has different circumstances and allocates resources and opportunities accordingly to reach equal outcomes.
-        span: 8
-      - span: 2
+        span: 6
   - id: principle-2
     verticalWhiteSpace: 6
     columns:
-      - span: 2
       - heading: 2. Empowerment and support of educators to facilitate quality learning and effective mentorship
-        headingVariant: h4
+        headingVariant: h3
         body: |
           Educators should be empowered and supported to produce productive learning environments and invested mentorship. General information is widely accessible, but educational transformation requires exceptional educators and safe spaces. We believe in investing in not only experts and leaders in their fields, but also people who are passionate and skilled in mentoring. While technological developments continue to contribute to the ways in which we teach and learn, it does not replace the role of people.
-        span: 8
-      - span: 2
+        span: 6
   - id: principle-3
     verticalWhiteSpace: 6
     columns:
-      - span: 2
       - heading: 3. The most effective learning paths are personalized and start from self-awareness
-        headingVariant: h4
+        headingVariant: h3
         body: |
           Educational experiences are not one-size-fits-all, and should be personalized. We believe in empowering learners’ educational paths by helping them assess who they are, what they’re good at, what they want to learn, and what their life and career goals are. This self-awareness and realization is key to learners’ success in both education and their careers.
-        span: 8
-      - span: 2
+        span: 6
   - id: principle-4
     verticalWhiteSpace: 6
     columns:
-      - span: 2
       - heading: 4. Lifelong learning extends beyond traditional education and into the workplace
-        headingVariant: h4
+        headingVariant: h3
         body: |
           Learning is a lifelong journey that should extend beyond educational institutions and traditional workplaces. We believe in nurturing growth through long term mentorship. Belonging and contributing to a community of like-minded people is fundamental to positive growth.
-        span: 8
-      - span: 2
+        span: 6
   - id: story
+    background: 'radial-gradient(circle, #ffffff, #edf0f2)'
+    verticalAlignment: middle
     columns:
       - heading: Our story
-        headingVariant: h3
         body: |
           <p>OpenTree was started by two people from different educational and career backgrounds who came to the same conclusion: access to quality education must be universally accessible for work to be equitable.</p>
           <p>Having supported students in higher and tertiary education navigate their way through structural barriers, whether financial, cultural, time-based, or otherwise, Davey and Glen sought solutions to the problem: people with purpose and desire but without access to the resources and the attention and care that comes from personalized mentorship to fully realize their potential. Knowing the limiting effects of workplace discrimination, the lack of transparency in the recruitment process, and the many factors that influence a person’s development, Davey and Glen came to an agreement while walking through Vancouver’s Stanley Park in the spring of 2021: a commitment, from day one of their partnership, to provide free education, mentorship, and placement in the tech industry, period.</p>
         bodyComponent: div
-        span: 8
-      - body: |
-          Put a cool photo over here. Maybe, like, a tree in a park in English Bay?
-        span: 4
+        span: 5
+      - span: 1
+      - imageFile: mike-benna-SBiVq9eWEtQ-unsplash.jpg
+        imageAlt: A tree-covered path in Stanley Park
+        imageOriginalWidth: 5760
+        imageOriginalHeight: 3840
+        body: |
+          Photo of Stanley Park in Vancouver, Canada by <a href="https://unsplash.com/@mbenna" rel="nofollow">Mike Benna</a>.
+        bodyVariant: body2
+        bodyTextAlign: center
+        span: 6
   - id: team
+    background: '#eaedef'
     columns:
       - heading: Meet the team
-        headingVariant: h3
         headingTextAlign: center
-  - columns:
+  - background: '#eaedef'
+    columns:
       - heading: Davey Feimer
         headingTextAlign: center
-        headingVariant: h5
+        headingVariant: h4
+        imageFile: Davey-about-page-temp.jpg
+        imageAlt: Davey Feimer
+        imageOriginalHeight: 400
+        imageOriginalWidth: 400
+        imageAspectRatio: 1
         body: |
           Co-founder
         bodyTextAlign: center
-        span: 4
+        span: 3
+      - span: 1
       - heading: Glen Chua
         headingTextAlign: center
-        headingVariant: h5
+        headingVariant: h4
+        imageFile: Glen-about-page.jpg
+        imageAlt: Glen Chua
+        imageOriginalHeight: 2058
+        imageOriginalWidth: 2058
+        imageAspectRatio: 1
         body: |
           Co-founder
         bodyTextAlign: center
-        span: 4
+        span: 3
+      - span: 1
       - heading: David VanDusen
         headingTextAlign: center
-        headingVariant: h5
+        headingVariant: h4
+        imageFile: David-about-page2.jpg
+        imageAlt: David VanDusen
+        imageOriginalHeight: 849
+        imageOriginalWidth: 849
+        imageAspectRatio: 1
         body: |
           Founding Engineer and Head Mentor
         bodyTextAlign: center
-        span: 4
+        span: 3

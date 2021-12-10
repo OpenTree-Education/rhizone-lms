@@ -2,7 +2,8 @@ title: Contact OpenTree Education
 sections:
   - columns:
       - heading: Contact OpenTree Education
-        headingVariant: h2
+        headingComponent: h1
+        headingVariant: h1
   - verticalWhiteSpace: 6
     columns:
       - heading: Drop us a line!

@@ -2,7 +2,8 @@ title: Privacy Policy | OpenTree Education
 sections:
   - columns:
       - heading: Privacy Policy
-        headingVariant: h2
+        headingComponent: h1
+        headingVariant: h1
         body: |
           <p>Last updated: <mark>December 5, 2021</mark></p>
           <p><mark>OpenTree Education, Inc.</mark> ("us", "we", or "our") operates <mark><a href="https://opentree.education/">https://opentree.education</a></mark> (the "Site"). This page informs you of our policies regarding the collection, use and disclosure of Personal Information we receive from users of the Site.</p>
@@ -27,3 +28,4 @@ sections:
           <h2>Contact us</h2>
           <p>If you have any questions about this Privacy Policy, please <a href="/contact/">contact us</a>.</p>
         bodyComponent: div
+        span: 6

@@ -2,7 +2,8 @@ title: The OpenTree Education Blog
 sections:
   - columns:
       - heading: The OpenTree Education Blog
-        headingVariant: h2
+        headingComponent: h1
+        headingVariant: h1
   - columns:
       - heading: Welcome to the OpenTree blog!
         body: |

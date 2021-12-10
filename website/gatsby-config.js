@@ -19,6 +19,13 @@ module.exports = {
         icon: 'src/images/icon.png',
       },
     },
+    {
+      resolve: `@imgix/gatsby`,
+      options: {
+        domain: 'opentree-education.imgix.net',
+        defaultImgixParams: { auto: ['compress', 'format'] },
+      },
+    },
     'gatsby-transformer-yaml',
     'gatsby-transformer-remark',
     {
