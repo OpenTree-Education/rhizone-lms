@@ -3,33 +3,25 @@ import {
   Container,
   Grid,
   Typography,
-  Stack,
-  Drawer,
-  List,
-  ListItem,
-  Divider,
-  ListItemText,
+  Stack
 } from '@mui/material';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight'; //close drawer icon
+
 
 import React, { Component } from 'react';
 
 import CreateJournalEntryForm from './CreateJournalEntryForm';
 import JournalEntriesList from './JournalEntriesList';
-import { JournalEntry, MeetingInfo } from '../types/api';
+import { JournalEntry } from '../types/api';
 import Navbar from './Navbar';
-import { formatDate, formatTime } from '../helpers/dateTime';
+import MeetingsDrawer from './MeetingsDrawer';
 
 interface AppState {
   loggedIn: boolean | null;
   journalEntries: JournalEntry[];
   isMeetingDrawerOpen: boolean;
-  allMeetingsList: MeetingInfo[];
-  upcomingMeetingsList: MeetingInfo[];
-  pastMeetingsList: MeetingInfo[];
 }
 
-interface AppProps {}
+interface AppProps { }
 
 class App extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
@@ -38,9 +30,6 @@ class App extends Component<AppProps, AppState> {
       loggedIn: null,
       journalEntries: [],
       isMeetingDrawerOpen: false,
-      allMeetingsList: [],
-      upcomingMeetingsList: [],
-      pastMeetingsList: [],
     };
   }
 
@@ -54,40 +43,9 @@ class App extends Component<AppProps, AppState> {
       this.setState({ loggedIn: sessionInfo.authenticated });
       if (sessionInfo.authenticated) {
         this.fetchJournalEntries();
-        this.fetchMeetingsInfoList();
       }
     }
   }
-
-  fetchMeetingsInfoList = async () => {
-    const fetchMeetings = await fetch(
-      `${process.env.REACT_APP_API_ORIGIN}/meetings`,
-      { credentials: 'include' }
-    );
-    if (fetchMeetings.status === 401) {
-      this.setState({ loggedIn: false });
-    }
-    if (fetchMeetings.ok) {
-      const { data: allMeetingsList } = await fetchMeetings.json();
-      this.setState({ loggedIn: true, allMeetingsList });
-      let startIndexOfPastMeeting = 0;
-      for (let i = 0; i < this.state.allMeetingsList.length; i++) {
-        if (Date.parse(this.state.allMeetingsList[i].starts_at) < Date.now()) {
-          startIndexOfPastMeeting = i;
-          break;
-        }
-      }
-      this.setState({
-        upcomingMeetingsList: this.state.allMeetingsList.slice(
-          0,
-          startIndexOfPastMeeting
-        ),
-        pastMeetingsList: this.state.allMeetingsList.slice(
-          startIndexOfPastMeeting
-        ),
-      });
-    }
-  };
 
   fetchJournalEntries = async () => {
     const fetchJournalEntries = await fetch(
@@ -106,6 +64,10 @@ class App extends Component<AppProps, AppState> {
   handleCalendarClick = () => {
     this.setState({ isMeetingDrawerOpen: !this.state.isMeetingDrawerOpen });
   };
+
+  updateLoggedIn = (isLoggedIn: boolean) => {
+    this.setState({ loggedIn: isLoggedIn })
+  }
 
   render() {
     return (
@@ -139,83 +101,12 @@ class App extends Component<AppProps, AppState> {
             </Typography>
           </Box>
         </Container>
-        <Drawer
-          variant="persistent"
-          anchor="right"
+        <MeetingsDrawer
           open={this.state.isMeetingDrawerOpen}
-          transitionDuration={400}
-          PaperProps={{
-            sx: {
-              '@media (max-width: 360px)': { width: '100vw' },
-              width: '360px',
-            },
-          }}
-        >
-          <List sx={{ pt: 0 }}>
-            <ListItem
-              sx={{
-                backgroundColor: 'primary.main',
-                color: 'common.white',
-                p: 1,
-                '&:hover': {
-                  cursor: 'pointer',
-                },
-              }}
-              onClick={() => this.setState({ isMeetingDrawerOpen: false })}
-            >
-              <ArrowRightIcon />
-            </ListItem>
-            <Divider />
-            <ListItem
-              sx={{
-                backgroundColor: 'primary.main',
-                py: 2,
-              }}
-            >
-              <Typography variant="h5" sx={{ color: 'common.white' }}>
-                Upcoming Meetings
-              </Typography>
-            </ListItem>
-            {this.state.upcomingMeetingsList.reverse().map(meeting => {
-              return (
-                <div key={meeting.id}>
-                  <ListItem>
-                    <ListItemText
-                      primary={formatDate(meeting.starts_at)}
-                      secondary={formatTime(meeting.starts_at)}
-                    />
-                  </ListItem>
-                  <Divider />
-                </div>
-              );
-            })}
-
-            <ListItem
-              sx={{
-                backgroundColor: 'primary.main',
-                py: 2,
-              }}
-            >
-              <Typography variant="h5" sx={{ color: 'common.white' }}>
-                Past Meetings
-              </Typography>
-            </ListItem>
-
-            {this.state.pastMeetingsList.map(meeting => {
-              return (
-                <div key={meeting.id}>
-                  <ListItem>
-                    <ListItemText
-                      primary={formatDate(meeting.starts_at)}
-                      secondary={formatTime(meeting.starts_at)}
-                    />
-                  </ListItem>
-                  <Divider />
-                </div>
-              );
-            })}
-          </List>
-        </Drawer>
+          handleCalendarClick={this.handleCalendarClick}
+          loggedIn={this.state.loggedIn}
+          updateLoggedIn={this.updateLoggedIn}
+        />
       </div>
     );
   }
