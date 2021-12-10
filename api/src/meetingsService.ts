@@ -1,5 +1,4 @@
 import db from './db';
-import { NotFoundError } from './httpErrors';
 
 export const countMeetings = async (principalId: number, builder = db) => {
   const countAlias = 'total_count';
@@ -20,7 +19,7 @@ export const findMeeting = async (
     .join('participants', 'participants.meeting_id', 'meetings.id')
     .where({ 'meetings.id': id, 'participants.principal_id': principalId });
   if (meetingRows.length === 0) {
-    throw new NotFoundError();
+    return null;
   }
   const meetingNotes = await builder('meeting_notes')
     .select(
