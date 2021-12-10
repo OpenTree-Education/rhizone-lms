@@ -1,11 +1,4 @@
-import {
-  Box,
-  Container,
-  Grid,
-  Typography,
-  Stack
-} from '@mui/material';
-
+import { Box, Container, Grid, Typography } from '@mui/material';
 
 import React, { Component } from 'react';
 
@@ -21,7 +14,7 @@ interface AppState {
   isMeetingDrawerOpen: boolean;
 }
 
-interface AppProps { }
+interface AppProps {}
 
 class App extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
@@ -66,16 +59,16 @@ class App extends Component<AppProps, AppState> {
   };
 
   updateLoggedIn = (isLoggedIn: boolean) => {
-    this.setState({ loggedIn: isLoggedIn })
-  }
+    this.setState({ loggedIn: isLoggedIn });
+  };
 
   render() {
     return (
       <div>
-          <Navbar
-            loggedIn={this.state.loggedIn}
-            handleCalendarClick={this.handleCalendarClick}
-          />
+        <Navbar
+          loggedIn={this.state.loggedIn}
+          handleCalendarClick={this.handleCalendarClick}
+        />
         <Container fixed>
           {this.state.loggedIn === true && (
             <Grid container justifyContent="center">
