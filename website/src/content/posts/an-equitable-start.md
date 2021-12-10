@@ -5,6 +5,7 @@ publicationDate: 2021-09-13
 author: Glen Chua
 slug: an-equitable-start-leveling-the-playing-field-from-education-to-employment
 ---
+
 ## Booming, but for whom?
 
 It’s become clear that the tech industry has been, and continues to be, booming. The current pandemic has not only intensified this growth exponentially, but has caused many to rethink their education, lifestyle, and career choices. The appeal: competitive salaries, employment growth, flexible work, and lucrative benefits packages, all attainable at a fast pace through short-term online resources and coding bootcamps. As the logic goes, “anyone can code and launch a career in tech faster than ever.” Is the tech industry as viable and open as it seems?

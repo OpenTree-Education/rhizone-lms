@@ -43,7 +43,7 @@ export interface SectionData {
   background?: string;
   color?: string;
   columns: ColumnData[];
-  id: string;
+  id?: string;
   minHeight?: number;
   verticalAlignment?: 'top' | 'middle' | 'bottom';
   verticalWhiteSpace?: number;
@@ -53,4 +53,15 @@ export interface PageData {
   background?: string;
   sections: SectionData[];
   title: string;
+}
+
+export interface PostData {
+  frontmatter: {
+    author: string;
+    publicationDate: string;
+    slug: string;
+    subtitle?: string;
+    title: string;
+  };
+  html: string;
 }
