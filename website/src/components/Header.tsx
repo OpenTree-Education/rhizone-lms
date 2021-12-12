@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import GlobalStyles from '@mui/material/GlobalStyles';
 import { ImgixGatsbyImage } from '@imgix/gatsby';
 import { Link as GatsbyLink } from 'gatsby';
 import React from 'react';
@@ -19,7 +20,11 @@ const TopNavLink = ({ children, to }: TopNavLinkProps) => {
   const isCurrentPage = !!useMatch(to);
   const color = isCurrentPage ? 'success' : 'primary';
   return (
-    <Box>
+    <Box
+      sx={{
+        [theme.breakpoints.down('md')]: { pt: 1 },
+      }}
+    >
       <Button
         color={color}
         component={GatsbyLink}
@@ -37,65 +42,118 @@ const Header = () => (
   <Box sx={{ background: '#ffffff' }}>
     <Container maxWidth="xl">
       <Stack
-        alignItems="center"
+        alignItems="flex-start"
         direction="row"
         justifyContent="space-between"
         py={2}
-        spacing={1}
+        sx={{
+          [theme.breakpoints.down('md')]: {
+            flexDirection: 'column',
+          },
+        }}
       >
-        <Box pr={3} py={1}>
+        <Box>
           <GatsbyLink to="/">
             <Stack alignItems="center" direction="row" spacing={1}>
               <img
                 alt="illustration of a stylized capital O surrounding a tree"
-                height={56}
+                height={46}
                 src={opentreeEducationLogo}
-                width={46}
+                width={38}
               />
               <ImgixGatsbyImage
                 alt="OpenTree Education"
                 src="https://opentree-education.imgix.net/opentree-education.png"
                 layout="fixed"
-                width={120}
+                width={100}
                 sourceHeight={547}
                 sourceWidth={1500}
               />
             </Stack>
           </GatsbyLink>
         </Box>
-        <Stack
-          alignItems="center"
-          direction="row"
-          justifyContent="space-between"
-          sx={{ flexGrow: 1, flexWrap: 'wrap' }}
+        <Box
+          ml={4}
+          sx={{
+            flexGrow: 1,
+            [theme.breakpoints.down('md')]: {
+              ml: 'auto',
+            },
+          }}
         >
-          <Stack
-            alignItems="flex-end"
-            direction="row"
-            justifyContent="space-between"
-            spacing={2}
-            py={1}
-            sx={{ [theme.breakpoints.down('md')]: { flexDirection: 'column' } }}
+          <GlobalStyles
+            styles={{
+              [theme.breakpoints.down('md')]: {
+                '#main-navigation': {
+                  display: 'none',
+                },
+                '#reveal-main-navigation:checked + #main-navigation': {
+                  display: 'flex',
+                },
+              },
+            }}
+          />
+          <Button
+            component="label"
+            htmlFor="reveal-main-navigation"
+            size="large"
+            variant="contained"
+            sx={{
+              position: 'absolute',
+              right: theme.spacing(3),
+              top: theme.spacing(2),
+              [theme.breakpoints.up('md')]: {
+                display: 'none',
+              },
+              [theme.breakpoints.down('sm')]: {
+                right: theme.spacing(2),
+              },
+            }}
           >
-            <TopNavLink to="/professional-mentorship-program/">
-              Program
-            </TopNavLink>
-            <TopNavLink to="/employers/">Employers</TopNavLink>
-            <TopNavLink to="/about/">About</TopNavLink>
-            <TopNavLink to="/contact/">Contact</TopNavLink>
-          </Stack>
-          <Box py={1}>
-            <Button
-              component={GatsbyLink}
-              disableElevation
-              size="large"
-              to="/professional-mentorship-program/#apply"
-              variant="outlined"
+            Menu
+          </Button>
+          <input
+            type="checkbox"
+            id="reveal-main-navigation"
+            name="reveal-main-navigation"
+            style={{ position: 'absolute', top: '-50px' }}
+          />
+          <nav id="main-navigation">
+            <Stack
+              alignItems="flex-end"
+              direction="row"
+              spacing={2}
+              sx={{
+                [theme.breakpoints.down('md')]: {
+                  flexDirection: 'column',
+                  mt: 1,
+                },
+              }}
             >
-              Apply&nbsp;Now
-            </Button>
-          </Box>
-        </Stack>
+              <TopNavLink to="/professional-mentorship-program/">
+                Program
+              </TopNavLink>
+              <TopNavLink to="/employers/">Employers</TopNavLink>
+              <TopNavLink to="/about/">About</TopNavLink>
+              <TopNavLink to="/contact/">Contact</TopNavLink>
+              <Box sx={{ flexGrow: 1 }} />
+              <Box
+                sx={{
+                  [theme.breakpoints.down('md')]: { pt: 1 },
+                }}
+              >
+                <Button
+                  component={GatsbyLink}
+                  size="large"
+                  to="/professional-mentorship-program/#apply"
+                  variant="outlined"
+                >
+                  Apply&nbsp;Now
+                </Button>
+              </Box>
+            </Stack>
+          </nav>
+        </Box>
       </Stack>
     </Container>
   </Box>
