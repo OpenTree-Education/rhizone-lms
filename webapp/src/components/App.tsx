@@ -63,7 +63,7 @@ class App extends Component<AppProps, AppState> {
 
   render() {
     return (
-      <div>
+      <>
         <Navbar
           loggedIn={this.state.loggedIn}
           onCalendarClick={this.toggleMeetingDrawerOpen}
@@ -95,7 +95,7 @@ class App extends Component<AppProps, AppState> {
           isDrawerOpen={this.state.isMeetingDrawerOpen}
           onArrowRightClick={this.toggleMeetingDrawerOpen}
         />
-      </div>
+      </>
     );
   }
 }
