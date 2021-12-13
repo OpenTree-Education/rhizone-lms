@@ -8,9 +8,7 @@ interface ReflectionsState {
   journalEntries: JournalEntry[];
 }
 
-interface ReflectionsProps {
-  updateLoggedIn: (loggedInStatus: boolean) => void;
-}
+interface ReflectionsProps {}
 
 class Reflections extends React.Component<ReflectionsProps, ReflectionsState> {
   constructor(props: ReflectionsProps) {
@@ -18,7 +16,6 @@ class Reflections extends React.Component<ReflectionsProps, ReflectionsState> {
     this.state = {
       journalEntries: [],
     };
-    this.fetchJournalEntries = this.fetchJournalEntries.bind(this);
   }
 
   async componentDidMount() {
@@ -30,20 +27,18 @@ class Reflections extends React.Component<ReflectionsProps, ReflectionsState> {
       `${process.env.REACT_APP_API_ORIGIN}/reflections`,
       { credentials: 'include' }
     );
-    if (fetchJournalEntries.status === 401) {
-      this.props.updateLoggedIn(false);
-    }
+
     if (fetchJournalEntries.ok) {
       const { data: journalEntries } = await fetchJournalEntries.json();
-      this.setState({ journalEntries }, () => this.props.updateLoggedIn(true));
+      this.setState({ journalEntries });
     }
   };
 
   render() {
     return (
       <Grid container justifyContent="center">
-        <Grid item md={8}>
-          <Box sx={{ my: 12 }}>
+        <Grid item xs={12} md={8}>
+          <Box my={12}>
             <CreateJournalEntryForm
               onJournalEntryCreated={this.fetchJournalEntries}
             />
