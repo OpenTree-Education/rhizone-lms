@@ -12,7 +12,9 @@
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "lint:fix": "yarn prettier --write src/**/*.{ts,tsx} & yarn eslint --fix src/**/*.{ts,tsx}",
-    "lint:check": "yarn prettier --check src/**/*.{ts,tsx} & yarn eslint src/**/*.{ts,tsx}"
+    "lint:check": "yarn prettier --check src/**/*.{ts,tsx} & yarn eslint src/**/*.{ts,tsx}",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "dependencies": {
     "@emotion/react": "^11.7.0",
@@ -46,5 +48,14 @@
       "__PATH_PREFIX__": true
     },
     "extends": "react-app"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@storybook/addon-actions": "^6.4.9",
+    "@storybook/addon-essentials": "^6.4.9",
+    "@storybook/addon-links": "^6.4.9",
+    "@storybook/react": "^6.4.9",
+    "babel-loader": "^8.2.3",
+    "storybook-addon-gatsby": "^0.0.3"
   }
 }
