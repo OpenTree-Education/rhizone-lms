@@ -53,19 +53,29 @@ class MeetingsDrawer extends Component<
     if (fetchMeetings.ok) {
       const { data: allMeetings } = await fetchMeetings.json();
       this.props.updateLoggedIn(true);
-      let startIndexOfPastMeeting = 0;
+      let startIndexOfPastMeeting;
       for (let i = 0; i < allMeetings.length; i++) {
         if (Date.parse(allMeetings[i].starts_at) < Date.now()) {
           startIndexOfPastMeeting = i;
           break;
         }
       }
-      this.setState({
-        upcomingMeetings: allMeetings
-          .slice(0, startIndexOfPastMeeting)
-          .reverse(),
-        pastMeetings: allMeetings.slice(startIndexOfPastMeeting),
-      });
+      if (!startIndexOfPastMeeting) {
+        this.setState({
+          upcomingMeetings: allMeetings
+        })
+      } else if (startIndexOfPastMeeting === 0) {
+        this.setState({
+          pastMeetings: allMeetings
+        })
+      } else {
+        this.setState({
+          upcomingMeetings: allMeetings
+            .slice(0, startIndexOfPastMeeting)
+            .reverse(),
+          pastMeetings: allMeetings.slice(startIndexOfPastMeeting),
+        });
+      }
     }
   };
 
