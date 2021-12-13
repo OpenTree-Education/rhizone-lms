@@ -45,29 +45,19 @@ class MeetingsDrawer extends Component<
     );
     if (fetchMeetings.ok) {
       const { data: allMeetings } = await fetchMeetings.json();
-      let startIndexOfPastMeeting;
+      let startIndexOfPastMeeting = allMeetings.length;
       for (let i = 0; i < allMeetings.length; i++) {
         if (Date.parse(allMeetings[i].starts_at) < Date.now()) {
           startIndexOfPastMeeting = i;
           break;
         }
       }
-      if (!startIndexOfPastMeeting) {
-        this.setState({
-          upcomingMeetings: allMeetings,
-        });
-      } else if (startIndexOfPastMeeting === 0) {
-        this.setState({
-          pastMeetings: allMeetings,
-        });
-      } else {
         this.setState({
           upcomingMeetings: allMeetings
             .slice(0, startIndexOfPastMeeting)
             .reverse(),
           pastMeetings: allMeetings.slice(startIndexOfPastMeeting),
         });
-      }
     }
   };
 
@@ -95,7 +85,7 @@ class MeetingsDrawer extends Component<
                 cursor: 'pointer',
               },
             }}
-            onClick={() => this.props.onArrowRightClick()}
+            onClick={() => this.props.onClose()}
           >
             <ArrowRightIcon />
           </ListItem>
