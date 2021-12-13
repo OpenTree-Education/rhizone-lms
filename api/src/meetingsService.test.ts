@@ -1,6 +1,12 @@
 import { Knex } from 'knex';
 
-import { countMeetings, listMeetings, findMeeting } from './meetingsService';
+import {
+  countMeetings,
+  findMeeting,
+  insertMeetingNote,
+  listMeetings,
+  validateMeetingParticipantId,
+} from './meetingsService';
 import db from './db';
 import { tracker } from './mockDb';
 
@@ -196,6 +202,57 @@ describe('meetingsService', () => {
         });
         return expect(findMeeting(2, 3)).rejects.toBe(databaseError);
       });
+    });
+  });
+
+  describe('validateMeetingParticipantId', () => {
+    beforeEach(() => {
+      tracker.on('query', ({ bindings, response, sql }) => {
+        if (
+          sql ===
+          'select `principal_id` from `participants` where `meeting_id` = ?'
+        ) {
+          expect(bindings).toEqual([2]);
+          response([
+            {
+              principal_id: 3,
+            },
+            {
+              principal_id: 4,
+            },
+          ]);
+        } else {
+          throw new Error(`Unexpected query: ${sql}`);
+        }
+      });
+    });
+
+    it(`should return true if user's principal id is in the list of meeting participants`, async () => {
+      expect(await validateMeetingParticipantId(2, 3)).toBe(true);
+    });
+
+    it(`should return false if user's principal id is not in the list of meeting participants`, async () => {
+      expect(await validateMeetingParticipantId(2, 5)).toBe(false);
+    });
+  });
+
+  describe('insertMeetingNote', () => {
+    beforeEach(() => {
+      tracker.on('query', ({ bindings, response, sql }) => {
+        if (
+          sql ===
+          'insert into `meeting_notes` (`agenda_owning_participant_id`, `authoring_participant_id`, `note_text`, `sort_order`) values (?, ?, ?, ?)'
+        ) {
+          expect(bindings).toEqual([2, 2, 'Hello', 2.5]);
+          response([3]);
+        } else {
+          throw new Error(`Unexpected query: ${sql}`);
+        }
+      });
+    });
+
+    it(`should return inserted note id`, async () => {
+      expect(await insertMeetingNote(2, 2, 'Hello', 2.5)).toEqual([3]);
     });
   });
 });

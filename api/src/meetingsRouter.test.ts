@@ -1,7 +1,17 @@
 import { mocked } from 'ts-jest/utils';
 
-import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
-import { countMeetings, listMeetings, findMeeting } from './meetingsService';
+import {
+  collectionEnvelope,
+  errorEnvelope,
+  itemEnvelope,
+} from './responseEnvelope';
+import {
+  countMeetings,
+  findMeeting,
+  insertMeetingNote,
+  listMeetings,
+  validateMeetingParticipantId,
+} from './meetingsService';
 import { loginExistingUser } from './loginHelpers';
 import { tracker } from './mockDb';
 
@@ -10,6 +20,8 @@ jest.mock('./meetingsService');
 const mockCountMeetings = mocked(countMeetings);
 const mockListMeetings = mocked(listMeetings);
 const mockFindMeeting = mocked(findMeeting);
+const mockInsertMeetingNote = mocked(insertMeetingNote);
+const mockValidateMeetingParticipantId = mocked(validateMeetingParticipantId);
 
 const meeting = {
   id: 2,
@@ -147,6 +159,127 @@ describe('meetingsRouter', () => {
           appAgent.get('/meetings/2').expect(500, done);
         }, done);
       });
+    });
+  });
+
+  describe('POST /meetings/:id/notes', () => {
+    it('should create a meeting note,', done => {
+      mockValidateMeetingParticipantId.mockResolvedValueOnce(true);
+      mockInsertMeetingNote.mockResolvedValueOnce([3]);
+      loginExistingUser(appAgent => {
+        appAgent
+          .post('/meetings/2/notes')
+          .send({
+            agenda_owning_participant_id: 1,
+            note_text: 'Hello',
+            sort_order: 2.5,
+          })
+          .expect(201, itemEnvelope({ id: [3] }), done);
+      }, done);
+    });
+
+    it('should create a meeting note if agenda_owning_participant_id is not assigned,', done => {
+      mockValidateMeetingParticipantId.mockResolvedValueOnce(true);
+      mockInsertMeetingNote.mockResolvedValueOnce([3]);
+      loginExistingUser(appAgent => {
+        appAgent
+          .post('/meetings/2/notes')
+          .send({
+            agenda_owning_participant_id: null,
+            note_text: 'Hello',
+            sort_order: 2.5,
+          })
+          .expect(201, itemEnvelope({ id: [3] }), done);
+      }, done);
+    });
+
+    it('should respond with an unauthorized error when a user posting the note is not a meeting participant,', done => {
+      mockValidateMeetingParticipantId.mockResolvedValueOnce(false);
+      loginExistingUser(appAgent => {
+        appAgent
+          .post('/meetings/2/notes')
+          .send({
+            agenda_owning_participant_id: 1,
+            note_text: 'Hello',
+            sort_order: 2.5,
+          })
+          .expect(
+            401,
+            errorEnvelope(
+              'The requester does not have access to the resource.'
+            ),
+            done
+          );
+      }, done);
+    });
+
+    it('should respond with error message if agenda_owning_participant_id is of the wrong type', done => {
+      mockValidateMeetingParticipantId.mockResolvedValueOnce(true);
+      loginExistingUser(appAgent => {
+        appAgent
+          .post('/meetings/2/notes')
+          .send({
+            agenda_owning_participant_id: '1',
+            note_text: 'Hello',
+            sort_order: 2.5,
+          })
+          .expect(
+            422,
+            errorEnvelope('The provided data does not meet requirements.'),
+            done
+          );
+      }, done);
+    });
+
+    it('should respond with error message if note_text is of the wrong type', done => {
+      mockValidateMeetingParticipantId.mockResolvedValueOnce(true);
+      loginExistingUser(appAgent => {
+        appAgent
+          .post('/meetings/2/notes')
+          .send({
+            agenda_owning_participant_id: 1,
+            note_text: null,
+            sort_order: 2.5,
+          })
+          .expect(
+            422,
+            errorEnvelope('The provided data does not meet requirements.'),
+            done
+          );
+      }, done);
+    });
+
+    it('should respond with error message if if sort_order is of the wrong type', done => {
+      mockValidateMeetingParticipantId.mockResolvedValueOnce(true);
+      loginExistingUser(appAgent => {
+        appAgent
+          .post('/meetings/2/notes')
+          .send({
+            agenda_owning_participant_id: 1,
+            note_text: 'Hello',
+            sort_order: '2.5',
+          })
+          .expect(
+            422,
+            errorEnvelope('The provided data does not meet requirements.'),
+            done
+          );
+      }, done);
+    });
+
+    it('should respond with a 500 error if the cause was InsertMeetingNote,', done => {
+      mockValidateMeetingParticipantId.mockResolvedValueOnce(true);
+      mockInsertMeetingNote.mockRejectedValueOnce(new Error());
+      loginExistingUser(appAgent => {
+        appAgent
+          .post('/meetings/2/notes')
+          .send({
+            agenda_owning_participant_id: 1,
+            note_text: 'Hello',
+            sort_order: 2.5,
+          })
+          .expect(500, done);
+      }, done);
     });
   });
 });
