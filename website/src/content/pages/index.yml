@@ -16,7 +16,6 @@ sections:
         callToActionText: Learn about the program
         callToActionColor: warning
         span: 5
-        verticalWhiteSpace: 0
       - span: 6
         verticalWhiteSpace: 0
   - background: '#343434'
