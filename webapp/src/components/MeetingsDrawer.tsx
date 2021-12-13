@@ -52,12 +52,12 @@ class MeetingsDrawer extends Component<
           break;
         }
       }
-        this.setState({
-          upcomingMeetings: allMeetings
-            .slice(0, startIndexOfPastMeeting)
-            .reverse(),
-          pastMeetings: allMeetings.slice(startIndexOfPastMeeting),
-        });
+      this.setState({
+        upcomingMeetings: allMeetings
+          .slice(0, startIndexOfPastMeeting)
+          .reverse(),
+        pastMeetings: allMeetings.slice(startIndexOfPastMeeting),
+      });
     }
   };
 
