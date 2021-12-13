@@ -9,6 +9,7 @@ exports.createPages = async ({ actions: { createPage }, graphql }) => {
           title
           sections {
             background
+            backgroundMobile
             color
             columns {
               body

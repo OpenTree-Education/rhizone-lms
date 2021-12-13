@@ -41,6 +41,7 @@ export interface ColumnData {
 
 export interface SectionData {
   background?: string;
+  backgroundMobile?: string;
   color?: string;
   columns: ColumnData[];
   id?: string;
