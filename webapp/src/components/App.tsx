@@ -53,7 +53,7 @@ class App extends Component<AppProps, AppState> {
     }
   };
 
-  handleCalendarClick = () => {
+  toggleMeetingDrawerOpen = () => {
     this.setState({ isMeetingDrawerOpen: !this.state.isMeetingDrawerOpen });
   };
 
@@ -66,7 +66,7 @@ class App extends Component<AppProps, AppState> {
       <div>
         <Navbar
           loggedIn={this.state.loggedIn}
-          handleCalendarClick={this.handleCalendarClick}
+          onCalendarClick={this.toggleMeetingDrawerOpen}
         />
         <Container fixed>
           {this.state.loggedIn === true && (
@@ -92,8 +92,8 @@ class App extends Component<AppProps, AppState> {
           </Box>
         </Container>
         <MeetingsDrawer
-          open={this.state.isMeetingDrawerOpen}
-          handleCalendarClick={this.handleCalendarClick}
+          isDrawerOpen={this.state.isMeetingDrawerOpen}
+          onArrowRightClick={this.toggleMeetingDrawerOpen}
         />
       </div>
     );

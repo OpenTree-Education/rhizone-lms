@@ -5,10 +5,10 @@ import EventNoteIcon from '@mui/icons-material/EventNote';
 
 interface NavbarProps {
   loggedIn: boolean | null;
-  handleCalendarClick: () => void;
+  onCalendarClick: () => void;
 }
 
-const Navbar = ({ loggedIn, handleCalendarClick }: NavbarProps) => (
+const Navbar = ({ loggedIn, onCalendarClick }: NavbarProps) => (
   <Grid alignItems="center" container px={3}>
     <Grid item xs>
       <h1>Rhizone</h1>
@@ -25,7 +25,7 @@ const Navbar = ({ loggedIn, handleCalendarClick }: NavbarProps) => (
       )}
       {loggedIn === true && (
         <>
-          <IconButton sx={{ mr: 1 }} onClick={() => handleCalendarClick()}>
+          <IconButton sx={{ mr: 1 }} onClick={() => onCalendarClick()}>
             <EventNoteIcon />
           </IconButton>
           <Button

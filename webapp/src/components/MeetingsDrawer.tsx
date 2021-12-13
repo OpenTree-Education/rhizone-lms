@@ -13,8 +13,8 @@ import { formatDate, formatTime } from '../helpers/dateTime';
 import { Meeting } from '../types/api';
 
 interface MeetingsDrawerProps {
-  open: boolean;
-  handleCalendarClick: () => void;
+  isDrawerOpen: boolean;
+  onArrowRightClick: () => void;
 }
 
 interface MeetingsDrawerState {
@@ -56,12 +56,12 @@ class MeetingsDrawer extends Component<
       }
       if (!startIndexOfPastMeeting) {
         this.setState({
-          upcomingMeetings: allMeetings
-        })
+          upcomingMeetings: allMeetings,
+        });
       } else if (startIndexOfPastMeeting === 0) {
         this.setState({
-          pastMeetings: allMeetings
-        })
+          pastMeetings: allMeetings,
+        });
       } else {
         this.setState({
           upcomingMeetings: allMeetings
@@ -78,7 +78,7 @@ class MeetingsDrawer extends Component<
       <Drawer
         variant="persistent"
         anchor="right"
-        open={this.props.open}
+        open={this.props.isDrawerOpen}
         transitionDuration={400}
         PaperProps={{
           sx: {
@@ -97,7 +97,7 @@ class MeetingsDrawer extends Component<
                 cursor: 'pointer',
               },
             }}
-            onClick={() => this.props.handleCalendarClick()}
+            onClick={() => this.props.onArrowRightClick()}
           >
             <ArrowRightIcon />
           </ListItem>
