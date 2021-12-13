@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatDateTime } from '../helpers/dateTime';
+import { formatDate, formatTime } from '../helpers/dateTime';
 
 interface MeetingNotesShowProps {}
 
@@ -13,7 +13,7 @@ interface MeetingNote {
 
 interface Participant {
   principal_id: number;
-  participant_id: number;
+  id: number;
 }
 
 interface MeetingNotesShowState {
@@ -47,16 +47,23 @@ class MeetingNotesShow extends React.Component<
       { credentials: 'include' }
     );
 
-    if (fetchLoggedInPrincipalId.ok) {
+    if (fetchLoggedInPrincipalId.ok && fetchMeetingNotes.ok) {
       const { data: principalId } = await fetchLoggedInPrincipalId.json();
       const { data: meetingNotes } = await fetchMeetingNotes.json();
-      const participantId = meetingNotes.participants.find(
-        (participant: Participant) => participant.principal_id === principalId
-      );
+      const participants: Array<Participant> = meetingNotes.participants;
+      let participantId: number | null = null;
+
+      for (let i = 0; i < participants.length; i++) {
+        if (participants[i].principal_id === principalId.principal_id) {
+          participantId = participants[i].id;
+          break;
+        }
+      }
+
       this.setState({
         meetingNotes: meetingNotes.meeting_notes,
         meetingStartTimestamp: meetingNotes.starts_at,
-        principalId: principalId,
+        principalId: principalId.principal_id,
         participantId: participantId,
       });
     }
@@ -81,9 +88,9 @@ class MeetingNotesShow extends React.Component<
 
       meetingNotes = (
         <>
-          <h1>{`Meeting on ${formatDateTime(
+          <h1>{`Meeting on ${formatDate(
             this.state.meetingStartTimestamp
-          )}`}</h1>
+          )} at ${formatTime(this.state.meetingStartTimestamp)}`}</h1>
           <h2>My agenda items</h2>
           <ul>
             {myAgendaItems.map(agenda => {
