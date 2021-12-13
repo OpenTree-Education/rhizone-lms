@@ -38,7 +38,7 @@ class MeetingsDrawer extends Component<
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     this.fetchMeetingsInfoList();
   }
 
@@ -53,19 +53,18 @@ class MeetingsDrawer extends Component<
     if (fetchMeetings.ok) {
       const { data: allMeetings } = await fetchMeetings.json();
       this.props.updateLoggedIn(true);
-      this.setState({ allMeetings });
       let startIndexOfPastMeeting = 0;
-      for (let i = 0; i < this.state.allMeetings.length; i++) {
-        if (Date.parse(this.state.allMeetings[i].starts_at) < Date.now()) {
+      for (let i = 0; i < allMeetings.length; i++) {
+        if (Date.parse(allMeetings[i].starts_at) < Date.now()) {
           startIndexOfPastMeeting = i;
           break;
         }
       }
       this.setState({
-        upcomingMeetings: this.state.allMeetings
+        upcomingMeetings: allMeetings
           .slice(0, startIndexOfPastMeeting)
           .reverse(),
-        pastMeetings: this.state.allMeetings.slice(startIndexOfPastMeeting),
+        pastMeetings: allMeetings.slice(startIndexOfPastMeeting),
       });
     }
   };
