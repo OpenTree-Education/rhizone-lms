@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 
 import FormBuilder from './FormBuilder';
 import { SectionData } from '../types/content';
+import theme from './theme';
 
 const verticalAlignmentsMap = {
   bottom: 'flex-end',
@@ -19,6 +20,7 @@ const verticalAlignmentsMap = {
 
 const Section = ({
   background,
+  backgroundMobile,
   color,
   columns,
   id,
@@ -26,7 +28,20 @@ const Section = ({
   verticalAlignment,
   verticalWhiteSpace: sectionVerticalWhiteSpace,
 }: SectionData) => (
-  <Box component="section" id={id} sx={{ background }}>
+  <Box
+    component="section"
+    id={id}
+    sx={
+      background && backgroundMobile
+        ? {
+            [theme.breakpoints.up('md')]: { background },
+            [theme.breakpoints.down('md')]: { background: backgroundMobile },
+          }
+        : {
+            background,
+          }
+    }
+  >
     <Container
       maxWidth="xl"
       sx={{
@@ -40,7 +55,7 @@ const Section = ({
         columnSpacing={4}
         container
         justifyContent="center"
-        sx={{ minHeight }}
+        sx={{ [theme.breakpoints.up('md')]: { minHeight } }}
       >
         {columns.map(
           (
