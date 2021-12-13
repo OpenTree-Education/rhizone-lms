@@ -93,7 +93,7 @@ class App extends Component<AppProps, AppState> {
         </Container>
         <MeetingsDrawer
           isDrawerOpen={this.state.isMeetingDrawerOpen}
-          onArrowRightClick={this.toggleMeetingDrawerOpen}
+          onClose={this.toggleMeetingDrawerOpen}
         />
       </>
     );

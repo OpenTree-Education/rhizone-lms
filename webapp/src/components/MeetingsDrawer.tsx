@@ -14,11 +14,10 @@ import { Meeting } from '../types/api';
 
 interface MeetingsDrawerProps {
   isDrawerOpen: boolean;
-  onArrowRightClick: () => void;
+  onClose: () => void;
 }
 
 interface MeetingsDrawerState {
-  allMeetings: Meeting[];
   upcomingMeetings: Meeting[];
   pastMeetings: Meeting[];
 }
@@ -30,7 +29,6 @@ class MeetingsDrawer extends Component<
   constructor(props: MeetingsDrawerProps) {
     super(props);
     this.state = {
-      allMeetings: [],
       upcomingMeetings: [],
       pastMeetings: [],
     };
