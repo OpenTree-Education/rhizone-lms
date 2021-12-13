@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './Navbar';
 import MeetingsDrawer from './MeetingsDrawer';
+import MeetingNotesShow from './MeetingNotesShow';
 import Reflections from './Reflections';
 
 interface AppState {
