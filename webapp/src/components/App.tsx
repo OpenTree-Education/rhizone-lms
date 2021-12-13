@@ -20,8 +20,6 @@ class App extends Component<AppProps, AppState> {
       loggedIn: null,
       isMeetingDrawerOpen: false,
     };
-
-    this.updateLoggedIn = this.updateLoggedIn.bind(this);
   }
 
   async componentDidMount() {
@@ -39,10 +37,6 @@ class App extends Component<AppProps, AppState> {
     this.setState({ isMeetingDrawerOpen: !this.state.isMeetingDrawerOpen });
   };
 
-  updateLoggedIn = (isLoggedIn: boolean) => {
-    this.setState({ loggedIn: isLoggedIn });
-  };
-
   render() {
     return (
       <div>
@@ -50,26 +44,22 @@ class App extends Component<AppProps, AppState> {
           loggedIn={this.state.loggedIn}
           handleCalendarClick={this.handleCalendarClick}
         />
-        <MeetingsDrawer
-          open={this.state.isMeetingDrawerOpen}
-          handleCalendarClick={this.handleCalendarClick}
-          loggedIn={this.state.loggedIn}
-          updateLoggedIn={this.updateLoggedIn}
-        />
 
         <Container fixed>
           <Router>
             <Routes>
               {this.state.loggedIn ? (
-                <Route
-                  path="/"
-                  element={<Reflections updateLoggedIn={this.updateLoggedIn} />}
-                />
+                <Route path="/" element={<Reflections />} />
               ) : (
                 ''
               )}
             </Routes>
           </Router>
+          <MeetingsDrawer
+            open={this.state.isMeetingDrawerOpen}
+            handleCalendarClick={this.handleCalendarClick}
+            loggedIn={this.state.loggedIn}
+          />
           <Box sx={{ my: 12 }}>
             <Typography align="center">
               <small>© OpenTree Education Inc.</small>
