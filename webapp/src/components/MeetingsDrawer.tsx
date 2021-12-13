@@ -6,9 +6,9 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight'; //close drawer icon
-
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import React, { Component, Fragment } from 'react';
+
 import { formatDate, formatTime } from '../helpers/dateTime';
 import { Meeting } from '../types/api';
 

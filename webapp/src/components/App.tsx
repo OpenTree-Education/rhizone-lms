@@ -1,5 +1,4 @@
 import { Box, Container, Grid, Typography } from '@mui/material';
-
 import React, { Component } from 'react';
 
 import CreateJournalEntryForm from './CreateJournalEntryForm';
