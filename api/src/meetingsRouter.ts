@@ -1,10 +1,21 @@
 import { Router } from 'express';
 
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
-import { countMeetings, listMeetings, findMeeting } from './meetingsService';
+import {
+  countMeetings,
+  findMeeting,
+  insertMeetingNote,
+  listMeetings,
+  validateMeetingParticipantId,
+} from './meetingsService';
 import db from './db';
 import paginationValues from './paginationValues';
-import { BadRequestError, NotFoundError } from './httpErrors';
+import {
+  BadRequestError,
+  NotFoundError,
+  ValidationError,
+  UnauthorizedError,
+} from './httpErrors';
 
 const meetingsRouter = Router();
 
@@ -52,4 +63,42 @@ meetingsRouter.get('/:id', async (req, res, next) => {
   }
   res.json(itemEnvelope(meeting));
 });
+
+meetingsRouter.post('/:id/notes', async (req, res, next) => {
+  const { principalId } = req.session;
+  const meetingId = Number(req.params.id);
+  const agendaOwningParticipantId = req.body.agenda_owning_participant_id;
+  const noteText = req.body.note_text;
+  const sortOrder = req.body.sort_order;
+
+  if (!(await validateMeetingParticipantId(meetingId, principalId))) {
+    next(new UnauthorizedError());
+    return;
+  }
+
+  if (
+    typeof noteText !== 'string' ||
+    typeof sortOrder !== 'number' ||
+    (typeof agendaOwningParticipantId !== 'number' &&
+      agendaOwningParticipantId !== null)
+  ) {
+    next(new ValidationError());
+    return;
+  }
+
+  let insertedNoteId;
+  try {
+    insertedNoteId = await insertMeetingNote(
+      agendaOwningParticipantId,
+      principalId,
+      noteText,
+      sortOrder
+    );
+  } catch (err) {
+    next(err);
+    return;
+  }
+  res.status(201).json(itemEnvelope({ id: insertedNoteId }));
+});
+
 export default meetingsRouter;

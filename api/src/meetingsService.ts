@@ -81,3 +81,34 @@ export const listMeetings = async (
   }
   return Array.from(meetingsById.values());
 };
+
+export const validateMeetingParticipantId = async (
+  meetingId: number,
+  principalId: number,
+  builder = db
+) => {
+  const meetingParticipantRows = await builder('participants')
+    .select('principal_id')
+    .where('meeting_id', meetingId);
+
+  const meetingParticipantPrincipalIds = meetingParticipantRows.map(
+    ({ principal_id }) => principal_id
+  );
+  return meetingParticipantPrincipalIds.includes(principalId);
+};
+
+export const insertMeetingNote = async (
+  agendaOwningParticipantId: number,
+  principalId: number,
+  noteText: string,
+  sortOrder: number,
+  builder = db
+) => {
+  const insertedNoteId = await builder('meeting_notes').insert({
+    agenda_owning_participant_id: agendaOwningParticipantId,
+    authoring_participant_id: principalId,
+    note_text: noteText,
+    sort_order: sortOrder,
+  });
+  return insertedNoteId;
+};
