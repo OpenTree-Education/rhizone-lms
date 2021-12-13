@@ -14,9 +14,7 @@ import { Meeting } from '../types/api';
 
 interface MeetingsDrawerProps {
   open: boolean;
-  loggedIn: boolean | null;
   handleCalendarClick: () => void;
-  updateLoggedIn: (isLoggedIn: boolean) => void;
 }
 
 interface MeetingsDrawerState {
@@ -47,12 +45,8 @@ class MeetingsDrawer extends Component<
       `${process.env.REACT_APP_API_ORIGIN}/meetings`,
       { credentials: 'include' }
     );
-    if (fetchMeetings.status === 401) {
-      this.props.updateLoggedIn(false);
-    }
     if (fetchMeetings.ok) {
       const { data: allMeetings } = await fetchMeetings.json();
-      this.props.updateLoggedIn(true);
       let startIndexOfPastMeeting;
       for (let i = 0; i < allMeetings.length; i++) {
         if (Date.parse(allMeetings[i].starts_at) < Date.now()) {

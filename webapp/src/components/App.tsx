@@ -94,8 +94,6 @@ class App extends Component<AppProps, AppState> {
         <MeetingsDrawer
           open={this.state.isMeetingDrawerOpen}
           handleCalendarClick={this.handleCalendarClick}
-          loggedIn={this.state.loggedIn}
-          updateLoggedIn={this.updateLoggedIn}
         />
       </div>
     );
