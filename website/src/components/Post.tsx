@@ -1,11 +1,14 @@
 import React from 'react';
 
-import Page from './Page';
+import { PageTemplate } from './Page';
 import { PageData, PostData } from '../types/content';
 
 const transformPostDataToPageData = ({
-  frontmatter: { author, publicationDate, subtitle, title },
+  author,
   html,
+  publicationDate,
+  subtitle,
+  title,
 }: PostData): PageData => {
   const formattedTitle = `${title}${subtitle ? ': ' : ''}${subtitle}`;
   return {
@@ -47,12 +50,14 @@ const transformPostDataToPageData = ({
   };
 };
 
+export const PostTemplate = (props: PostData) => (
+  <PageTemplate {...transformPostDataToPageData(props)} />
+);
+
 declare interface PostProps {
   pageContext: PostData;
 }
 
-const Post = ({ pageContext }: PostProps) => (
-  <Page {...{ pageContext: transformPostDataToPageData(pageContext) }} />
-);
+const Post = ({ pageContext }: PostProps) => <PostTemplate {...pageContext} />;
 
 export default Post;

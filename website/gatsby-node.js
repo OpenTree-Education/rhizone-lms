@@ -1,5 +1,24 @@
 const path = require('path');
 
+/**
+ * When data is queried from a Gatsby source using graphql, any empty properties
+ * are set to null. React expects optional props to not be set in order to know
+ * to use default values. So, this function deletes all the nulls from the
+ * graphql results so they can be used as React props with default behaviour.
+ */
+const removeNullsDeep = node => {
+  for (const prop in node) {
+    if (typeof node[prop] === 'object') {
+      if (node[prop] === null) {
+        delete node[prop];
+      } else {
+        node[prop] = removeNullsDeep(node[prop]);
+      }
+    }
+  }
+  return node;
+};
+
 exports.createPages = async ({ actions: { createPage }, graphql }) => {
   const listPagesResult = await graphql(`
     query ListPages {
@@ -74,8 +93,8 @@ exports.createPages = async ({ actions: { createPage }, graphql }) => {
     }
   `);
 
-  const pageTemplatePath = path.resolve(`./src/templates/Page.tsx`);
-  const postTemplatePath = path.resolve(`./src/templates/Post.tsx`);
+  const pageTemplatePath = path.resolve(`./src/components/Page.tsx`);
+  const postTemplatePath = path.resolve(`./src/components/Post.tsx`);
 
   for (const {
     parent: { name: path },
@@ -84,7 +103,7 @@ exports.createPages = async ({ actions: { createPage }, graphql }) => {
     createPage({
       path: path === 'index' ? '/' : path,
       component: pageTemplatePath,
-      context,
+      context: removeNullsDeep(context),
     });
   }
 
@@ -92,10 +111,12 @@ exports.createPages = async ({ actions: { createPage }, graphql }) => {
     const {
       frontmatter: { publicationDate, slug },
     } = context;
+    const { frontmatter, ...otherProps } = context;
+    const flattenedFrontmatter = { ...frontmatter, ...otherProps };
     createPage({
       path: `/blog/${publicationDate.substr(0, 10)}-${slug}/`,
       component: postTemplatePath,
-      context,
+      context: removeNullsDeep(flattenedFrontmatter),
     });
   }
 };

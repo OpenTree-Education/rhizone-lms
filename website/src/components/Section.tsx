@@ -5,7 +5,7 @@ import React from 'react';
 
 import { SectionData } from '../types/content';
 import theme from './theme';
-import Column from "./Column";
+import Column from './Column';
 
 const verticalAlignmentsMap = {
   bottom: 'flex-end',
@@ -19,8 +19,8 @@ const Section = ({
   columns,
   id,
   minHeight,
-  verticalAlignment,
-  verticalWhiteSpace: sectionVerticalWhiteSpace,
+  verticalAlignment = 'top',
+  verticalWhiteSpace = 10,
 }: SectionData) => (
   <Box
     component="section"
@@ -36,16 +36,9 @@ const Section = ({
           }
     }
   >
-    <Container
-      maxWidth="xl"
-      sx={{
-        py: Number.isFinite(sectionVerticalWhiteSpace)
-          ? sectionVerticalWhiteSpace
-          : 10,
-      }}
-    >
+    <Container maxWidth="xl" sx={{ py: verticalWhiteSpace }}>
       <Grid
-        alignItems={verticalAlignmentsMap[verticalAlignment || 'top']}
+        alignItems={verticalAlignmentsMap[verticalAlignment]}
         columnSpacing={4}
         container
         justifyContent="center"

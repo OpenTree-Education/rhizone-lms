@@ -10,15 +10,17 @@ import Typography from '@mui/material/Typography';
 import { ColumnData } from '../types/content';
 import FormBuilder from './FormBuilder';
 
+const totalGridColumns = 12;
+
 const Column = ({
   body,
-  bodyComponent,
-  bodyTextAlign,
-  bodyVariant,
-  callToActionColor,
+  bodyComponent = 'p',
+  bodyTextAlign = 'left',
+  bodyVariant = 'body1',
+  callToActionColor = 'primary',
   callToActionHref,
   callToActionText,
-  callToActionVariant,
+  callToActionVariant = 'contained',
   color,
   formAction,
   formButtonText,
@@ -26,37 +28,34 @@ const Column = ({
   formHeading,
   formName,
   heading,
-  headingComponent,
-  headingTextAlign,
-  headingVariant,
+  headingComponent = 'h2',
+  headingTextAlign = 'left',
+  headingVariant = 'h2',
   imageAlt,
   imageAspectRatio,
   imageFile,
   imageOriginalHeight,
   imageOriginalWidth,
-  span,
-  verticalWhiteSpace: columnVerticalWhiteSpace,
+  span = totalGridColumns,
+  verticalWhiteSpace = 2,
 }: ColumnData) => {
   const hasForm = formName && formAction && formFields.length > 0;
   const hasCallToAction = callToActionText && callToActionHref;
   const hasImage =
     imageFile && imageAlt && imageOriginalHeight && imageOriginalWidth;
-  const totalColumns = 12;
-  const columns = span || totalColumns;
+  const columns = span;
   const containerWidth = 1520;
   const imageMaxWidth =
-    columns === totalColumns
+    columns === totalGridColumns
       ? containerWidth
-      : Math.ceil((containerWidth / totalColumns) * columns - 32);
+      : Math.ceil((containerWidth / totalGridColumns) * columns - 32);
   return (
     <Grid
       key={Math.random()}
       item
       md={columns}
-      py={
-        Number.isFinite(columnVerticalWhiteSpace) ? columnVerticalWhiteSpace : 2
-      }
-      xs={totalColumns}
+      py={verticalWhiteSpace}
+      xs={totalGridColumns}
     >
       <Stack spacing={2}>
         {hasImage && (
@@ -74,32 +73,32 @@ const Column = ({
         )}
         {heading && (
           <Typography
-            align={headingTextAlign || 'left'}
-            component={headingComponent || 'h2'}
+            align={headingTextAlign}
+            component={headingComponent}
             dangerouslySetInnerHTML={{
               __html: heading,
             }}
-            variant={headingVariant || 'h2'}
+            variant={headingVariant}
             sx={{ color }}
           />
         )}
         {body && (
           <Typography
-            align={bodyTextAlign || 'left'}
-            component={bodyComponent || 'p'}
+            align={bodyTextAlign}
+            component={bodyComponent}
             dangerouslySetInnerHTML={{ __html: body }}
             sx={{ color }}
-            variant={bodyVariant || 'body1'}
+            variant={bodyVariant}
           />
         )}
         {hasCallToAction && (
           <Box py={1}>
             <Button
-              color={callToActionColor || 'primary'}
+              color={callToActionColor}
               component={GatsbyLink}
               size="large"
               to={callToActionHref}
-              variant={callToActionVariant || 'contained'}
+              variant={callToActionVariant}
             >
               {callToActionText}
             </Button>

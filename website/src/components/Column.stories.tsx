@@ -1,8 +1,8 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { Grid } from '@mui/material';
 import React from 'react';
 
 import Column from './Column';
+import Section from './Section';
 
 export default {
   title: 'Column',
@@ -10,13 +10,11 @@ export default {
 } as ComponentMeta<typeof Column>;
 
 const Template: ComponentStory<typeof Column> = args => (
-  <Grid container>
-    <Column {...args} />
-  </Grid>
+  <Section columns={[args]} />
 );
 
 export const Basic = Template.bind({});
 Basic.args = {
-  heading: 'Column heading',
+  heading: 'Column',
   body: 'This is the body text of the column. When no span is given, it takes up all 12 grid columns.',
 };

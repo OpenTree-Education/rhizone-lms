@@ -22,7 +22,7 @@ declare interface FormBuilderProps {
 
 const FormBuilder = ({
   formAction,
-  formButtonText,
+  formButtonText = 'Submit',
   formFields,
   formHeading,
   formName,
@@ -74,7 +74,7 @@ const FormBuilder = ({
           </p>
           <p>
             <Button type="submit" variant="contained">
-              {formButtonText || 'Submit'}
+              {formButtonText}
             </Button>
           </p>
         </Box>
