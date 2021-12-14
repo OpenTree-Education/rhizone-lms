@@ -5,5 +5,8 @@ module.exports = {
     '@storybook/addon-essentials',
     'storybook-addon-gatsby',
   ],
+  features: {
+    emotionAlias: false,
+  },
   framework: '@storybook/react',
 };
