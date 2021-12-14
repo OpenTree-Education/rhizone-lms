@@ -6,20 +6,18 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight'; //close drawer icon
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import React, { Component, Fragment } from 'react';
 
-import React, { Component } from 'react';
 import { formatDate, formatTime } from '../helpers/dateTime';
 import { Meeting } from '../types/api';
 
 interface MeetingsDrawerProps {
-  open: boolean;
-  loggedIn: boolean | null;
-  handleCalendarClick: () => void;
+  isDrawerOpen: boolean;
+  onClose: () => void;
 }
 
 interface MeetingsDrawerState {
-  allMeetings: Meeting[];
   upcomingMeetings: Meeting[];
   pastMeetings: Meeting[];
 }
@@ -31,13 +29,12 @@ class MeetingsDrawer extends Component<
   constructor(props: MeetingsDrawerProps) {
     super(props);
     this.state = {
-      allMeetings: [],
       upcomingMeetings: [],
       pastMeetings: [],
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     this.fetchMeetingsInfoList();
   }
 
@@ -48,19 +45,18 @@ class MeetingsDrawer extends Component<
     );
     if (fetchMeetings.ok) {
       const { data: allMeetings } = await fetchMeetings.json();
-      this.setState({ allMeetings });
-      let startIndexOfPastMeeting = 0;
-      for (let i = 0; i < this.state.allMeetings.length; i++) {
-        if (Date.parse(this.state.allMeetings[i].starts_at) < Date.now()) {
+      let startIndexOfPastMeeting = allMeetings.length;
+      for (let i = 0; i < allMeetings.length; i++) {
+        if (Date.parse(allMeetings[i].starts_at) < Date.now()) {
           startIndexOfPastMeeting = i;
           break;
         }
       }
       this.setState({
-        upcomingMeetings: this.state.allMeetings
+        upcomingMeetings: allMeetings
           .slice(0, startIndexOfPastMeeting)
           .reverse(),
-        pastMeetings: this.state.allMeetings.slice(startIndexOfPastMeeting),
+        pastMeetings: allMeetings.slice(startIndexOfPastMeeting),
       });
     }
   };
@@ -70,7 +66,7 @@ class MeetingsDrawer extends Component<
       <Drawer
         variant="persistent"
         anchor="right"
-        open={this.props.open}
+        open={this.props.isDrawerOpen}
         transitionDuration={400}
         PaperProps={{
           sx: {
@@ -89,7 +85,7 @@ class MeetingsDrawer extends Component<
                 cursor: 'pointer',
               },
             }}
-            onClick={() => this.props.handleCalendarClick()}
+            onClick={() => this.props.onClose()}
           >
             <ArrowRightIcon />
           </ListItem>
@@ -105,7 +101,7 @@ class MeetingsDrawer extends Component<
             </Typography>
           </ListItem>
           {this.state.upcomingMeetings.map(meeting => (
-            <div key={meeting.id}>
+            <Fragment key={meeting.id}>
               <Divider />
               <ListItem>
                 <ListItemText
@@ -113,7 +109,7 @@ class MeetingsDrawer extends Component<
                   secondary={formatTime(meeting.starts_at)}
                 />
               </ListItem>
-            </div>
+            </Fragment>
           ))}
           <Divider />
           <ListItem
@@ -128,7 +124,7 @@ class MeetingsDrawer extends Component<
           </ListItem>
 
           {this.state.pastMeetings.map(meeting => (
-            <div key={meeting.id}>
+            <Fragment key={meeting.id}>
               <ListItem>
                 <ListItemText
                   primary={formatDate(meeting.starts_at)}
@@ -136,7 +132,7 @@ class MeetingsDrawer extends Component<
                 />
               </ListItem>
               <Divider />
-            </div>
+            </Fragment>
           ))}
         </List>
       </Drawer>

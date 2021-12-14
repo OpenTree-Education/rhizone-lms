@@ -33,20 +33,23 @@ class App extends Component<AppProps, AppState> {
     }
   }
 
-  handleCalendarClick = () => {
+
+
+  toggleMeetingDrawerOpen = () => {
     this.setState({ isMeetingDrawerOpen: !this.state.isMeetingDrawerOpen });
   };
 
+
   render() {
     return (
-      <div>
+      <>
         <Navbar
           loggedIn={this.state.loggedIn}
-          handleCalendarClick={this.handleCalendarClick}
+          onCalendarClick={this.toggleMeetingDrawerOpen}
         />
-
         <Container fixed>
-          <Router>
+          {this.state.loggedIn === true && (
+           <Router>
             <Routes>
               {this.state.loggedIn ? (
                 <Route path="/" element={<Reflections />} />
@@ -55,18 +58,18 @@ class App extends Component<AppProps, AppState> {
               )}
             </Routes>
           </Router>
-          <MeetingsDrawer
-            open={this.state.isMeetingDrawerOpen}
-            handleCalendarClick={this.handleCalendarClick}
-            loggedIn={this.state.loggedIn}
-          />
+          )}
           <Box sx={{ my: 12 }}>
             <Typography align="center">
               <small>© OpenTree Education Inc.</small>
             </Typography>
           </Box>
         </Container>
-      </div>
+        <MeetingsDrawer
+          isDrawerOpen={this.state.isMeetingDrawerOpen}
+          onClose={this.toggleMeetingDrawerOpen}
+        />
+      </>
     );
   }
 }
