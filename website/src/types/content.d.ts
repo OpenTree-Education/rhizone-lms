@@ -1,9 +1,10 @@
-import { ElementType } from 'react';
 import { Variant } from '@mui/material/styles/createTypography';
+
+type ComponentTagName = 'div' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
 
 export interface ColumnData {
   body?: string;
-  bodyComponent?: ElementType;
+  bodyComponent?: ComponentTagName;
   bodyTextAlign?: 'left' | 'center' | 'right';
   bodyVariant?: Variant;
   callToActionColor?:
@@ -17,6 +18,7 @@ export interface ColumnData {
   callToActionHref?: string;
   callToActionText?: string;
   callToActionVariant?: 'text' | 'outlined' | 'contained';
+  color?: string;
   formAction?: string;
   formButtonText?: string;
   formFields?: {
@@ -27,7 +29,7 @@ export interface ColumnData {
   formHeading?: string;
   formName?: string;
   heading?: string;
-  headingComponent?: ElementType;
+  headingComponent?: ComponentTagName;
   headingTextAlign?: 'left' | 'center' | 'right';
   headingVariant?: Variant;
   imageAlt?: string;
@@ -42,7 +44,6 @@ export interface ColumnData {
 export interface SectionData {
   background?: string;
   backgroundMobile?: string;
-  color?: string;
   columns: ColumnData[];
   id?: string;
   minHeight?: number;

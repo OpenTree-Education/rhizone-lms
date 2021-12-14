@@ -43,12 +43,6 @@
     "react-helmet": "^6.1.0",
     "typescript": "^4.5.2"
   },
-  "eslintConfig": {
-    "globals": {
-      "__PATH_PREFIX__": true
-    },
-    "extends": "react-app"
-  },
   "devDependencies": {
     "@babel/core": "^7.16.0",
     "@storybook/addon-actions": "^6.4.9",
@@ -57,5 +51,11 @@
     "@storybook/react": "^6.4.9",
     "babel-loader": "^8.2.3",
     "storybook-addon-gatsby": "^0.0.3"
+  },
+  "eslintConfig": {
+    "globals": {
+      "__PATH_PREFIX__": true
+    },
+    "extends": "react-app"
   }
 }

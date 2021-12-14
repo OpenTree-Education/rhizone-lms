@@ -10,7 +10,6 @@ exports.createPages = async ({ actions: { createPage }, graphql }) => {
           sections {
             background
             backgroundMobile
-            color
             columns {
               body
               bodyComponent
@@ -20,6 +19,7 @@ exports.createPages = async ({ actions: { createPage }, graphql }) => {
               callToActionHref
               callToActionText
               callToActionVariant
+              color
               formAction
               formButtonText
               formFields {
