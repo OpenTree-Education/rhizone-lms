@@ -32,6 +32,6 @@ interface PageProps {
   pageContext: PageData;
 }
 
-const Page = ({ pageContext }: PageProps) => <PageTemplate {...pageContext} />
+const Page = ({ pageContext }: PageProps) => <PageTemplate {...pageContext} />;
 
 export default Page;
