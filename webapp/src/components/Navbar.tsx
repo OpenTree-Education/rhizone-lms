@@ -1,12 +1,14 @@
-import { Button, Grid } from '@mui/material';
 import React from 'react';
+import { Button, Grid, IconButton } from '@mui/material';
+import EventNoteIcon from '@mui/icons-material/EventNote';
 
 interface NavbarProps {
   loggedIn: boolean | null;
+  onCalendarClick: () => void;
 }
 
-const Navbar = ({ loggedIn }: NavbarProps) => (
-  <Grid alignItems="center" container>
+const Navbar = ({ loggedIn, onCalendarClick }: NavbarProps) => (
+  <Grid alignItems="center" container px={3}>
     <Grid item xs>
       <h1>Rhizone</h1>
     </Grid>
@@ -21,12 +23,17 @@ const Navbar = ({ loggedIn }: NavbarProps) => (
         </Button>
       )}
       {loggedIn === true && (
-        <Button
-          component="a"
-          href={`${process.env.REACT_APP_API_ORIGIN}/auth/logout`}
-        >
-          Sign Out
-        </Button>
+        <>
+          <IconButton sx={{ mr: 1 }} onClick={() => onCalendarClick()}>
+            <EventNoteIcon />
+          </IconButton>
+          <Button
+            component="a"
+            href={`${process.env.REACT_APP_API_ORIGIN}/auth/logout`}
+          >
+            Sign Out
+          </Button>
+        </>
       )}
     </Grid>
   </Grid>

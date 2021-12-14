@@ -5,10 +5,12 @@ import CreateJournalEntryForm from './CreateJournalEntryForm';
 import JournalEntriesList from './JournalEntriesList';
 import { JournalEntry } from '../types/api';
 import Navbar from './Navbar';
+import MeetingsDrawer from './MeetingsDrawer';
 
 interface AppState {
   loggedIn: boolean | null;
   journalEntries: JournalEntry[];
+  isMeetingDrawerOpen: boolean;
 }
 
 interface AppProps {}
@@ -19,6 +21,7 @@ class App extends Component<AppProps, AppState> {
     this.state = {
       loggedIn: null,
       journalEntries: [],
+      isMeetingDrawerOpen: false,
     };
   }
 
@@ -50,32 +53,45 @@ class App extends Component<AppProps, AppState> {
     }
   };
 
+  toggleMeetingDrawerOpen = () => {
+    this.setState({ isMeetingDrawerOpen: !this.state.isMeetingDrawerOpen });
+  };
+
   render() {
     return (
-      <Container fixed>
-        <Navbar loggedIn={this.state.loggedIn} />
-        {this.state.loggedIn === true && (
-          <Grid container justifyContent="center">
-            <Grid item md={8}>
-              <Box sx={{ my: 12 }}>
-                <CreateJournalEntryForm
-                  onJournalEntryCreated={this.fetchJournalEntries}
-                />
-              </Box>
-              {this.state.journalEntries.length > 0 && (
-                <JournalEntriesList
-                  journalEntries={this.state.journalEntries}
-                />
-              )}
+      <>
+        <Navbar
+          loggedIn={this.state.loggedIn}
+          onCalendarClick={this.toggleMeetingDrawerOpen}
+        />
+        <Container fixed>
+          {this.state.loggedIn === true && (
+            <Grid container justifyContent="center">
+              <Grid item md={8}>
+                <Box sx={{ my: 12 }}>
+                  <CreateJournalEntryForm
+                    onJournalEntryCreated={this.fetchJournalEntries}
+                  />
+                </Box>
+                {this.state.journalEntries.length > 0 && (
+                  <JournalEntriesList
+                    journalEntries={this.state.journalEntries}
+                  />
+                )}
+              </Grid>
             </Grid>
-          </Grid>
-        )}
-        <Box sx={{ my: 12 }}>
-          <Typography align="center">
-            <small>© OpenTree Education Inc.</small>
-          </Typography>
-        </Box>
-      </Container>
+          )}
+          <Box sx={{ my: 12 }}>
+            <Typography align="center">
+              <small>© OpenTree Education Inc.</small>
+            </Typography>
+          </Box>
+        </Container>
+        <MeetingsDrawer
+          isDrawerOpen={this.state.isMeetingDrawerOpen}
+          onClose={this.toggleMeetingDrawerOpen}
+        />
+      </>
     );
   }
 }
