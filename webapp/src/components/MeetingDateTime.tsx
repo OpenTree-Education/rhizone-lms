@@ -9,14 +9,12 @@ interface MeetingDateTimeProps {
 }
 
 const MeetingDateTime = ({ meeting }: MeetingDateTimeProps) => (
-  <>
-    <ListItem>
-      <ListItemText
-        primary={formatDate(meeting.starts_at)}
-        secondary={formatTime(meeting.starts_at)}
-      />
-    </ListItem>
-  </>
+  <ListItem>
+    <ListItemText
+      primary={formatDate(meeting.starts_at)}
+      secondary={formatTime(meeting.starts_at)}
+    />
+  </ListItem>
 );
 
 export default MeetingDateTime;

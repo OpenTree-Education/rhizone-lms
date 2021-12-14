@@ -57,10 +57,6 @@ class App extends Component<AppProps, AppState> {
     this.setState({ isMeetingDrawerOpen: !this.state.isMeetingDrawerOpen });
   };
 
-  updateLoggedIn = (isLoggedIn: boolean) => {
-    this.setState({ loggedIn: isLoggedIn });
-  };
-
   render() {
     return (
       <>

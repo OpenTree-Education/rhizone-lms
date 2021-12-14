@@ -1,6 +1,5 @@
-import { Button, Grid, IconButton } from '@mui/material';
 import React from 'react';
-
+import { Button, Grid, IconButton } from '@mui/material';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 
 interface NavbarProps {
