@@ -1,16 +1,9 @@
-import {
-  Divider,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-} from '@mui/material';
+import { Divider, Drawer, List, ListItem, Typography } from '@mui/material';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import React, { Component, Fragment } from 'react';
 
-import { formatDate, formatTime } from '../helpers/dateTime';
 import { Meeting } from '../types/api';
+import MeetingDateTime from './MeetingDateTime';
 
 interface MeetingsDrawerProps {
   isDrawerOpen: boolean;
@@ -100,18 +93,13 @@ class MeetingsDrawer extends Component<
               Upcoming meetings
             </Typography>
           </ListItem>
-          {this.state.upcomingMeetings.map(meeting => (
+          {this.state.upcomingMeetings.map((meeting, index) => (
             <Fragment key={meeting.id}>
-              <Divider />
-              <ListItem>
-                <ListItemText
-                  primary={formatDate(meeting.starts_at)}
-                  secondary={formatTime(meeting.starts_at)}
-                />
-              </ListItem>
+              {index === 0 || <Divider />}
+              <MeetingDateTime meeting={meeting} />
             </Fragment>
           ))}
-          <Divider />
+          {this.state.upcomingMeetings.length === 0 && <Divider />}
           <ListItem
             sx={{
               backgroundColor: 'primary.main',
@@ -123,17 +111,13 @@ class MeetingsDrawer extends Component<
             </Typography>
           </ListItem>
 
-          {this.state.pastMeetings.map(meeting => (
+          {this.state.pastMeetings.map((meeting, index) => (
             <Fragment key={meeting.id}>
-              <ListItem>
-                <ListItemText
-                  primary={formatDate(meeting.starts_at)}
-                  secondary={formatTime(meeting.starts_at)}
-                />
-              </ListItem>
-              <Divider />
+              {index === 0 || <Divider />}
+              <MeetingDateTime meeting={meeting} />
             </Fragment>
           ))}
+          {this.state.pastMeetings.length === 0 || <Divider />}
         </List>
       </Drawer>
     );
