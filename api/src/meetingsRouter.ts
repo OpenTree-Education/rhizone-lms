@@ -6,16 +6,11 @@ import {
   findMeeting,
   insertMeetingNote,
   listMeetings,
-  validateMeetingParticipantId,
+  findParticipantIdForPrincipal,
 } from './meetingsService';
 import db from './db';
 import paginationValues from './paginationValues';
-import {
-  BadRequestError,
-  NotFoundError,
-  ValidationError,
-  UnauthorizedError,
-} from './httpErrors';
+import { BadRequestError, NotFoundError, ValidationError } from './httpErrors';
 
 const meetingsRouter = Router();
 
@@ -71,34 +66,64 @@ meetingsRouter.post('/:id/notes', async (req, res, next) => {
   const noteText = req.body.note_text;
   const sortOrder = req.body.sort_order;
 
-  if (!(await validateMeetingParticipantId(meetingId, principalId))) {
-    next(new UnauthorizedError());
+  if (!(Number.isInteger(meetingId) && meetingId > 0)) {
+    next(new ValidationError('Meeting id must be a positive integer.'));
     return;
   }
-
-  if (
-    typeof noteText !== 'string' ||
-    typeof sortOrder !== 'number' ||
-    (typeof agendaOwningParticipantId !== 'number' &&
-      agendaOwningParticipantId !== null)
-  ) {
-    next(new ValidationError());
+  if (typeof noteText !== 'string') {
+    next(new ValidationError('note_text must be of type string.'));
     return;
   }
-
-  let insertedNoteId;
-  try {
-    insertedNoteId = await insertMeetingNote(
-      agendaOwningParticipantId,
-      principalId,
-      noteText,
-      sortOrder
+  if (!Number.isFinite(sortOrder)) {
+    next(
+      new ValidationError(
+        'sort_order must be of type number and neither positive Infinity, negative Infinity, nor NaN'
+      )
     );
+    return;
+  }
+  if (
+    typeof agendaOwningParticipantId !== 'number' &&
+    agendaOwningParticipantId !== null
+  ) {
+    next(
+      new ValidationError(
+        'agenda_owning_participant_id must be a positive integer or null.'
+      )
+    );
+    return;
+  }
+
+  let insertedNoteIds: number[];
+  interface ParticipantId {
+    id: number;
+  }
+  try {
+    await db.transaction(async trx => {
+      const participantIdRows: ParticipantId[] =
+        await findParticipantIdForPrincipal(principalId, meetingId, trx);
+
+      if (participantIdRows.length === 0) {
+        next(
+          new NotFoundError(
+            `Participant for meeting ${meetingId} is not found.`
+          )
+        );
+      }
+      const participantId = participantIdRows[0].id;
+      insertedNoteIds = await insertMeetingNote(
+        agendaOwningParticipantId,
+        participantId,
+        noteText,
+        sortOrder,
+        trx
+      );
+    });
   } catch (err) {
     next(err);
     return;
   }
-  res.status(201).json(itemEnvelope({ id: insertedNoteId }));
+  res.status(201).json(itemEnvelope({ id: insertedNoteIds[0] }));
 });
 
 export default meetingsRouter;
