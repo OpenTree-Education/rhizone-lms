@@ -3,9 +3,9 @@ import { Knex } from 'knex';
 import {
   countMeetings,
   findMeeting,
+  findParticipantIdForPrincipal,
   insertMeetingNote,
   listMeetings,
-  validateMeetingParticipantId,
 } from './meetingsService';
 import db from './db';
 import { tracker } from './mockDb';
@@ -205,39 +205,44 @@ describe('meetingsService', () => {
     });
   });
 
-  describe('validateMeetingParticipantId', () => {
-    beforeEach(() => {
+  describe('findParticipantIdForPrincipal', () => {
+    it(`should return user's meeting participant id`, async () => {
       tracker.on('query', ({ bindings, response, sql }) => {
         if (
           sql ===
-          'select `principal_id` from `participants` where `meeting_id` = ?'
+          'select `id` from `participants` where `meeting_id` = ? and `principal_id` = ?'
         ) {
-          expect(bindings).toEqual([2]);
+          expect(bindings).toEqual([2, 3]);
           response([
             {
-              principal_id: 3,
-            },
-            {
-              principal_id: 4,
+              id: 1,
             },
           ]);
         } else {
           throw new Error(`Unexpected query: ${sql}`);
         }
       });
+      expect(await findParticipantIdForPrincipal(2, 3)).toEqual([{ id: 1 }]);
     });
 
-    it(`should return true if user's principal id is in the list of meeting participants`, async () => {
-      expect(await validateMeetingParticipantId(2, 3)).toBe(true);
-    });
-
-    it(`should return false if user's principal id is not in the list of meeting participants`, async () => {
-      expect(await validateMeetingParticipantId(2, 5)).toBe(false);
+    it(`should return am empty array if user is not a meeting participant`, async () => {
+      tracker.on('query', ({ bindings, response, sql }) => {
+        if (
+          sql ===
+          'select `id` from `participants` where `meeting_id` = ? and `principal_id` = ?'
+        ) {
+          expect(bindings).toEqual([2, 0]);
+          response([]);
+        } else {
+          throw new Error(`Unexpected query: ${sql}`);
+        }
+      });
+      expect(await findParticipantIdForPrincipal(2, 0)).toEqual([]);
     });
   });
 
   describe('insertMeetingNote', () => {
-    beforeEach(() => {
+    it(`should return an array with the inserted note id`, async () => {
       tracker.on('query', ({ bindings, response, sql }) => {
         if (
           sql ===
@@ -249,10 +254,17 @@ describe('meetingsService', () => {
           throw new Error(`Unexpected query: ${sql}`);
         }
       });
+      expect(await insertMeetingNote(2, 2, 'Hello', 2.5)).toEqual([3]);
     });
 
-    it(`should return inserted note id`, async () => {
-      expect(await insertMeetingNote(2, 2, 'Hello', 2.5)).toEqual([3]);
+    it('should reject with the database error', () => {
+      const databaseError = new Error();
+      tracker.on('query', ({ reject }) => {
+        reject(databaseError);
+      });
+      return expect(insertMeetingNote(2, 2, 'Hello', 2.5)).rejects.toBe(
+        databaseError
+      );
     });
   });
 });
