@@ -1,15 +1,13 @@
-import { Box, Container, Grid, Typography } from '@mui/material';
-import React, { Component } from 'react';
+import { Box, Container, Typography } from '@mui/material';
 
-import CreateJournalEntryForm from './CreateJournalEntryForm';
-import JournalEntriesList from './JournalEntriesList';
-import { JournalEntry } from '../types/api';
+import React, { Component } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './Navbar';
 import MeetingsDrawer from './MeetingsDrawer';
+import Reflections from './Reflections';
 
 interface AppState {
   loggedIn: boolean | null;
-  journalEntries: JournalEntry[];
   isMeetingDrawerOpen: boolean;
 }
 
@@ -20,7 +18,6 @@ class App extends Component<AppProps, AppState> {
     super(props);
     this.state = {
       loggedIn: null,
-      journalEntries: [],
       isMeetingDrawerOpen: false,
     };
   }
@@ -33,32 +30,11 @@ class App extends Component<AppProps, AppState> {
     if (fetchSessionInfo.ok) {
       const { data: sessionInfo } = await fetchSessionInfo.json();
       this.setState({ loggedIn: sessionInfo.authenticated });
-      if (sessionInfo.authenticated) {
-        this.fetchJournalEntries();
-      }
     }
   }
 
-  fetchJournalEntries = async () => {
-    const fetchJournalEntries = await fetch(
-      `${process.env.REACT_APP_API_ORIGIN}/reflections`,
-      { credentials: 'include' }
-    );
-    if (fetchJournalEntries.status === 401) {
-      this.setState({ loggedIn: false });
-    }
-    if (fetchJournalEntries.ok) {
-      const { data: journalEntries } = await fetchJournalEntries.json();
-      this.setState({ loggedIn: true, journalEntries });
-    }
-  };
-
   toggleMeetingDrawerOpen = () => {
     this.setState({ isMeetingDrawerOpen: !this.state.isMeetingDrawerOpen });
-  };
-
-  updateLoggedIn = (isLoggedIn: boolean) => {
-    this.setState({ loggedIn: isLoggedIn });
   };
 
   render() {
@@ -70,20 +46,15 @@ class App extends Component<AppProps, AppState> {
         />
         <Container fixed>
           {this.state.loggedIn === true && (
-            <Grid container justifyContent="center">
-              <Grid item md={8}>
-                <Box sx={{ my: 12 }}>
-                  <CreateJournalEntryForm
-                    onJournalEntryCreated={this.fetchJournalEntries}
-                  />
-                </Box>
-                {this.state.journalEntries.length > 0 && (
-                  <JournalEntriesList
-                    journalEntries={this.state.journalEntries}
-                  />
+            <Router>
+              <Routes>
+                {this.state.loggedIn ? (
+                  <Route path="/" element={<Reflections />} />
+                ) : (
+                  ''
                 )}
-              </Grid>
-            </Grid>
+              </Routes>
+            </Router>
           )}
           <Box sx={{ my: 12 }}>
             <Typography align="center">
