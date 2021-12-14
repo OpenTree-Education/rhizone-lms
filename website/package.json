@@ -11,10 +11,9 @@
     "build": "gatsby build && build-storybook --docs --output-dir public/docs",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
-    "lint:fix": "yarn prettier --write src/**/*.{ts,tsx} & yarn eslint --fix src/**/*.{ts,tsx}",
-    "lint:check": "yarn prettier --check src/**/*.{ts,tsx} & yarn eslint src/**/*.{ts,tsx}",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "lint:fix": "yarn prettier --write src/**/*.{ts,tsx} && yarn eslint --fix src/**/*.{ts,tsx}",
+    "lint:check": "yarn prettier --check src/**/*.{ts,tsx} && yarn eslint src/**/*.{ts,tsx}",
+    "storybook": "start-storybook -p 6006"
   },
   "dependencies": {
     "@emotion/react": "^11.7.0",

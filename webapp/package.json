@@ -25,8 +25,8 @@
     "build": "react-scripts build",
     "test": "TZ=UTC react-scripts test",
     "eject": "react-scripts eject",
-    "lint:fix": "yarn prettier --write src/**/*.{ts,tsx,css} & yarn eslint --fix src/**/*.{ts,tsx}",
-    "lint:check": "yarn prettier --check src/**/*.{ts,tsx,css} & yarn eslint src/**/*.{ts,tsx}"
+    "lint:fix": "yarn prettier --write src/**/*.{ts,tsx,css} && yarn eslint --fix src/**/*.{ts,tsx}",
+    "lint:check": "yarn prettier --check src/**/*.{ts,tsx,css} && yarn eslint src/**/*.{ts,tsx}"
   },
   "eslintConfig": {
     "extends": [
