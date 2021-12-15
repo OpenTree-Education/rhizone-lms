@@ -34,17 +34,18 @@ app.use(bodyParser.json());
 
 app.set('trust proxy', 1);
 
+export const sessionMiddleware = session({
+	secret: process.env.SESSION_SECRET || 'default session secret',
+	name: 'session_id',
+	resave: true,
+	saveUninitialized: true,
+	cookie: {
+		sameSite: true,
+		secure: app.get('secure'),
+	},
+})
 app.use(
-  session({
-    secret: process.env.SESSION_SECRET || 'default session secret',
-    name: 'session_id',
-    resave: true,
-    saveUninitialized: true,
-    cookie: {
-      sameSite: true,
-      secure: app.get('secure'),
-    },
-  })
+  sessionMiddleware
 );
 
 const withCors = cors({ credentials: true, origin: process.env.WEBAPP_ORIGIN });
