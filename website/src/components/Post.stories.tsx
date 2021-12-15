@@ -1,16 +1,14 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
 
-import { PostTemplate } from './Post';
+import Post from './Post';
 
 export default {
-  title: 'Post',
-  component: PostTemplate,
-} as ComponentMeta<typeof PostTemplate>;
+  title: 'Components/Post',
+  component: Post,
+} as ComponentMeta<typeof Post>;
 
-const Template: ComponentStory<typeof PostTemplate> = args => (
-  <PostTemplate {...args} />
-);
+const Template: ComponentStory<typeof Post> = args => <Post {...args} />;
 
 export const Basic = Template.bind({});
 Basic.args = {

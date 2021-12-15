@@ -4,7 +4,7 @@ import React from 'react';
 import Section from './Section';
 
 export default {
-  title: 'Section',
+  title: 'Components/Section',
   component: Section,
 } as ComponentMeta<typeof Section>;
 

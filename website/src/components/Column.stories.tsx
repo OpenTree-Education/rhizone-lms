@@ -5,7 +5,7 @@ import Column from './Column';
 import Section from './Section';
 
 export default {
-  title: 'Column',
+  title: 'Components/Column',
   component: Column,
 } as ComponentMeta<typeof Column>;
 
