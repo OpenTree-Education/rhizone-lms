@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 dotenv.config();
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+
 import app, { sessionMiddleware } from './app';
 import { UnauthorizedError } from './httpErrors';
 
@@ -12,15 +13,20 @@ const io = new Server(server, {
     origin: process.env.WEBAPP_ORIGIN,
     methods: ['GET', 'POST'],
   },
+  serveClient: false,
 });
+
 io.use((socket, next) => {
-  const req = socket.request as Request;
-  const res = req.res as Response;
-  sessionMiddleware(req, res || ({} as Response), next as NextFunction);
+  sessionMiddleware(
+    socket.request as Request,
+    {} as Response,
+    next as NextFunction
+  );
 });
 
 io.use((socket, next) => {
   const req = socket.request as Request;
+	console.log(req.session, 'this is sesion')
   if (!req.session.principalId) {
     next(new UnauthorizedError('Please log in to connect with websocket'));
   } else {
@@ -30,7 +36,6 @@ io.use((socket, next) => {
 
 io.on('connect', socket => {
   app.set('socketio', socket);
-  // const req = socket.request as Request
 });
 
 server.listen(app.get('port'), app.get('host'), () => {
