@@ -2,12 +2,11 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
-import session from 'express-session';
 
 import authRouter from './authRouter';
 import { handleErrors, handleNotFound } from './errorHandlingMiddleware';
 import journalEntriesRouter from './journalEntriesRouter';
-import { loggedIn } from './authMiddleware';
+import { loggedIn, getSessionMiddleware } from './authMiddleware';
 import meetingsRouter from './meetingsRouter';
 import questionnairesRouter from './questionnairesRouter';
 import reflectionsRouter from './reflectionsRouter';
@@ -21,59 +20,48 @@ declare module 'express-session' {
 }
 
 const app = express();
-
-app.set('host', process.env.HOST || 'api.rhi.zone-development');
-
-app.set('port', process.env.PORT || 8491);
-
-app.set('secure', process.env.SECURE === 'true');
-
-app.use(helmet());
-
-app.use(bodyParser.json());
-
-app.set('trust proxy', 1);
-
-export const sessionMiddleware = session({
-	secret: process.env.SESSION_SECRET || 'default session secret',
-	name: 'session_id',
-	resave: true,
-	saveUninitialized: true,
-	cookie: {
-		sameSite: true,
-		secure: app.get('secure'),
-	},
-})
-app.use(
-  sessionMiddleware
-);
-
 const withCors = cors({ credentials: true, origin: process.env.WEBAPP_ORIGIN });
+export const mountAppRoutes = (app: express.Application) => {
+  app.use('/user', withCors, userRouter);
 
-app.use(withCors, authRouter);
+  app.use('/journalentries', withCors, loggedIn, journalEntriesRouter);
 
-app.use('/user', withCors, userRouter);
+  app.use('/meetings', withCors, loggedIn, meetingsRouter);
 
-app.use('/journalentries', withCors, loggedIn, journalEntriesRouter);
+  app.use('/questionnaires', withCors, loggedIn, questionnairesRouter);
 
-app.use('/meetings', withCors, loggedIn, meetingsRouter);
+  app.use('/reflections', withCors, loggedIn, reflectionsRouter);
 
-app.use('/questionnaires', withCors, loggedIn, questionnairesRouter);
+  app.use('/settings', withCors, loggedIn, settingsRouter);
 
-app.use('/reflections', withCors, loggedIn, reflectionsRouter);
+  app.get('/', (_, res) => {
+    res.json({});
+  });
 
-app.use('/settings', withCors, loggedIn, settingsRouter);
+  // This must come after all route handling middleware so that it can deal with
+  // requests for routes that aren't defined.
+  app.use(handleNotFound);
 
-app.get('/', (_, res) => {
-  res.json({});
-});
+  // This error handler must come after all other middleware so that errors in all
+  // middlewares and request handlers are handled consistently.
+  app.use(handleErrors);
+};
+export const configureApp = (app: express.Application) => {
+  app.set('host', process.env.HOST || 'api.rhi.zone-development');
 
-// This must come after all route handling middleware so that it can deal with
-// requests for routes that aren't defined.
-app.use(handleNotFound);
+  app.set('port', process.env.PORT || 8491);
 
-// This error handler must come after all other middleware so that errors in all
-// middlewares and request handlers are handled consistently.
-app.use(handleErrors);
+  app.set('secure', process.env.SECURE === 'true');
+
+  app.use(helmet());
+
+  app.use(bodyParser.json());
+
+  app.set('trust proxy', 1);
+  const session = getSessionMiddleware(app);
+  app.use(session);
+
+  app.use(withCors, authRouter);
+};
 
 export default app;

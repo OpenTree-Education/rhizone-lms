@@ -4,19 +4,27 @@ dotenv.config();
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 
-import app, { sessionMiddleware } from './app';
+import app, { configureApp, mountAppRoutes } from './app';
+import { getSessionMiddleware } from './authMiddleware';
 import { UnauthorizedError } from './httpErrors';
 
+declare module 'express' {
+  export interface Request {
+    io?: Server;
+  }
+}
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
     origin: process.env.WEBAPP_ORIGIN,
     methods: ['GET', 'POST'],
+    credentials: true,
   },
   serveClient: false,
 });
 
 io.use((socket, next) => {
+  const sessionMiddleware = getSessionMiddleware(app);
   sessionMiddleware(
     socket.request as Request,
     {} as Response,
@@ -26,17 +34,18 @@ io.use((socket, next) => {
 
 io.use((socket, next) => {
   const req = socket.request as Request;
-	console.log(req.session, 'this is sesion')
   if (!req.session.principalId) {
     next(new UnauthorizedError('Please log in to connect with websocket'));
   } else {
     next();
   }
 });
-
-io.on('connect', socket => {
-  app.set('socketio', socket);
+configureApp(app);
+app.use((req: Request, res: Response, next: NextFunction) => {
+  req.io = io;
+  next();
 });
+mountAppRoutes(app);
 
 server.listen(app.get('port'), app.get('host'), () => {
   const host = app.get('host');
