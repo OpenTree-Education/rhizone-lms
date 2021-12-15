@@ -8,7 +8,7 @@ import app, { configureApp, mountAppRoutes } from './app';
 import { getSessionMiddleware } from './authMiddleware';
 import { UnauthorizedError } from './httpErrors';
 
-declare module 'express' {
+declare module 'express-serve-static-core' {
   export interface Request {
     io?: Server;
   }
@@ -41,7 +41,7 @@ io.use((socket, next) => {
   }
 });
 configureApp(app);
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((req, res, next) => {
   req.io = io;
   next();
 });
