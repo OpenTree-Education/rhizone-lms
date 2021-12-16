@@ -173,8 +173,8 @@ describe('meetingsRouter', () => {
       });
 
       it('should create a meeting note,', done => {
-        mockFindParticipantIdForPrincipal.mockResolvedValueOnce([{ id: 1 }]);
-        mockInsertMeetingNote.mockResolvedValueOnce([2]);
+        mockFindParticipantIdForPrincipal.mockResolvedValueOnce(1);
+        mockInsertMeetingNote.mockResolvedValueOnce(2);
         loginExistingUser(appAgent => {
           appAgent
             .post('/meetings/2/notes')
@@ -189,7 +189,7 @@ describe('meetingsRouter', () => {
 
       it('should create a meeting note if agenda_owning_participant_id is not assigned,', done => {
         mockFindParticipantIdForPrincipal.mockResolvedValueOnce([{ id: 1 }]);
-        mockInsertMeetingNote.mockResolvedValueOnce([3]);
+        mockInsertMeetingNote.mockResolvedValueOnce(3);
         loginExistingUser(appAgent => {
           appAgent
             .post('/meetings/2/notes')
@@ -199,24 +199,6 @@ describe('meetingsRouter', () => {
               sort_order: 2.5,
             })
             .expect(201, itemEnvelope({ id: 3 }), done);
-        }, done);
-      });
-
-      it('should respond with an error when a user posting the note is not a meeting participant,', done => {
-        mockFindParticipantIdForPrincipal.mockResolvedValueOnce([]);
-        loginExistingUser(appAgent => {
-          appAgent
-            .post('/meetings/2/notes')
-            .send({
-              agenda_owning_participant_id: 1,
-              note_text: 'Hello',
-              sort_order: 2.5,
-            })
-            .expect(
-              404,
-              errorEnvelope(`Participant for meeting 2 is not found.`),
-              done
-            );
         }, done);
       });
     });
@@ -229,13 +211,32 @@ describe('meetingsRouter', () => {
           }
         });
       });
-      it('should respond with error message if agenda_owning_participant_id is of the wrong type', done => {
-        mockFindParticipantIdForPrincipal.mockResolvedValueOnce([{ id: 1 }]);
+
+      it('should respond with an error when a user posting the note is not a meeting participant,', done => {
+        mockFindParticipantIdForPrincipal.mockResolvedValueOnce(null);
         loginExistingUser(appAgent => {
           appAgent
             .post('/meetings/2/notes')
             .send({
-              agenda_owning_participant_id: '1',
+              agenda_owning_participant_id: 1,
+              note_text: 'Hello',
+              sort_order: 2.5,
+            })
+            .expect(
+              404,
+              errorEnvelope('Participant for meeting 2 is not found.'),
+              done
+            );
+        }, done);
+      });
+
+      it('should respond with error message if agenda_owning_participant_id is of the wrong type', done => {
+        mockFindParticipantIdForPrincipal.mockResolvedValueOnce(1);
+        loginExistingUser(appAgent => {
+          appAgent
+            .post('/meetings/2/notes')
+            .send({
+              agenda_owning_participant_id: '0',
               note_text: 'Hello',
               sort_order: 2.5,
             })
@@ -250,7 +251,7 @@ describe('meetingsRouter', () => {
       });
 
       it('should respond with error message if note_text is of the wrong type', done => {
-        mockFindParticipantIdForPrincipal.mockResolvedValueOnce([{ id: 1 }]);
+        mockFindParticipantIdForPrincipal.mockResolvedValueOnce(1);
         loginExistingUser(appAgent => {
           appAgent
             .post('/meetings/2/notes')
@@ -267,8 +268,8 @@ describe('meetingsRouter', () => {
         }, done);
       });
 
-      it('should respond with error message if if sort_order is of the wrong type', done => {
-        mockFindParticipantIdForPrincipal.mockResolvedValueOnce([{ id: 1 }]);
+      it('should respond with error message if sort_order is of the wrong type', done => {
+        mockFindParticipantIdForPrincipal.mockResolvedValueOnce(1);
         loginExistingUser(appAgent => {
           appAgent
             .post('/meetings/2/notes')
@@ -297,8 +298,8 @@ describe('meetingsRouter', () => {
         });
       });
 
-      it('should respond with a 500 error if the cause was InsertMeetingNote,', done => {
-        mockFindParticipantIdForPrincipal.mockResolvedValueOnce([{ id: 1 }]);
+      it('should respond with a 500 error if the cause was insertMeetingNote,', done => {
+        mockFindParticipantIdForPrincipal.mockResolvedValueOnce(1);
         mockInsertMeetingNote.mockRejectedValueOnce(new Error());
         loginExistingUser(appAgent => {
           appAgent
