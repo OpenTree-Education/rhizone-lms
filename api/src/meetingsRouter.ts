@@ -83,7 +83,10 @@ meetingsRouter.post('/:id/notes', async (req, res, next) => {
     return;
   }
   if (
-    typeof agendaOwningParticipantId !== 'number' &&
+    !(
+      Number.isInteger(agendaOwningParticipantId) &&
+      agendaOwningParticipantId > 0
+    ) &&
     agendaOwningParticipantId !== null
   ) {
     next(
@@ -94,36 +97,37 @@ meetingsRouter.post('/:id/notes', async (req, res, next) => {
     return;
   }
 
-  let insertedNoteIds: number[];
-  interface ParticipantId {
-    id: number;
-  }
+  let insertedNoteId: number;
+  let participantId: number;
   try {
     await db.transaction(async trx => {
-      const participantIdRows: ParticipantId[] =
-        await findParticipantIdForPrincipal(principalId, meetingId, trx);
-
-      if (participantIdRows.length === 0) {
-        next(
-          new NotFoundError(
-            `Participant for meeting ${meetingId} is not found.`
-          )
-        );
-      }
-      const participantId = participantIdRows[0].id;
-      insertedNoteIds = await insertMeetingNote(
-        agendaOwningParticipantId,
-        participantId,
-        noteText,
-        sortOrder,
+      participantId = await findParticipantIdForPrincipal(
+        principalId,
+        meetingId,
         trx
       );
+
+      if (participantId) {
+        insertedNoteId = await insertMeetingNote(
+          agendaOwningParticipantId,
+          participantId,
+          noteText,
+          sortOrder,
+          trx
+        );
+      }
     });
   } catch (err) {
     next(err);
     return;
   }
-  res.status(201).json(itemEnvelope({ id: insertedNoteIds[0] }));
+  if (!participantId) {
+    next(
+      new NotFoundError(`Participant for meeting ${meetingId} is not found.`)
+    );
+    return;
+  }
+  res.status(201).json(itemEnvelope({ id: insertedNoteId }));
 });
 
 export default meetingsRouter;
