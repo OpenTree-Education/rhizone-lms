@@ -87,14 +87,14 @@ export const findParticipantIdForPrincipal = async (
   principalId: number,
   builder = db
 ) => {
-  const foundParticipantIdRows = await builder('participants')
+  const participants = await builder('participants')
     .select('id')
     .where({ meeting_id: meetingId, principal_id: principalId });
-  return foundParticipantIdRows;
+  return participants.length ? participants[0].id : null;
 };
 
 export const insertMeetingNote = async (
-  agendaOwningParticipantId: number,
+  agendaOwningParticipantId: number | null,
   participantId: number,
   noteText: string,
   sortOrder: number,
@@ -106,5 +106,5 @@ export const insertMeetingNote = async (
     note_text: noteText,
     sort_order: sortOrder,
   });
-  return insertedNoteIds;
+  return insertedNoteIds[0];
 };
