@@ -81,3 +81,30 @@ export const listMeetings = async (
   }
   return Array.from(meetingsById.values());
 };
+
+export const findParticipantIdForPrincipal = async (
+  meetingId: number,
+  principalId: number,
+  builder = db
+) => {
+  const participants = await builder('participants')
+    .select('id')
+    .where({ meeting_id: meetingId, principal_id: principalId });
+  return participants.length ? participants[0].id : null;
+};
+
+export const insertMeetingNote = async (
+  agendaOwningParticipantId: number | null,
+  participantId: number,
+  noteText: string,
+  sortOrder: number,
+  builder = db
+) => {
+  const insertedNoteIds = await builder('meeting_notes').insert({
+    agenda_owning_participant_id: agendaOwningParticipantId,
+    authoring_participant_id: participantId,
+    note_text: noteText,
+    sort_order: sortOrder,
+  });
+  return insertedNoteIds[0];
+};

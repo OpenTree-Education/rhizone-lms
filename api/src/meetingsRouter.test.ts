@@ -1,7 +1,17 @@
 import { mocked } from 'ts-jest/utils';
 
-import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
-import { countMeetings, listMeetings, findMeeting } from './meetingsService';
+import {
+  collectionEnvelope,
+  errorEnvelope,
+  itemEnvelope,
+} from './responseEnvelope';
+import {
+  countMeetings,
+  findMeeting,
+  findParticipantIdForPrincipal,
+  insertMeetingNote,
+  listMeetings,
+} from './meetingsService';
 import { loginExistingUser } from './loginHelpers';
 import { tracker } from './mockDb';
 
@@ -10,6 +20,8 @@ jest.mock('./meetingsService');
 const mockCountMeetings = mocked(countMeetings);
 const mockListMeetings = mocked(listMeetings);
 const mockFindMeeting = mocked(findMeeting);
+const mockFindParticipantIdForPrincipal = mocked(findParticipantIdForPrincipal);
+const mockInsertMeetingNote = mocked(insertMeetingNote);
 
 const meeting = {
   id: 2,
@@ -145,6 +157,159 @@ describe('meetingsRouter', () => {
         mockFindMeeting.mockRejectedValueOnce(new Error());
         loginExistingUser(appAgent => {
           appAgent.get('/meetings/2').expect(500, done);
+        }, done);
+      });
+    });
+  });
+
+  describe('POST /meetings/:id/notes', () => {
+    describe('with valid data', () => {
+      beforeEach(() => {
+        tracker.on('query', ({ sql, response }) => {
+          if (sql === 'BEGIN;' || sql === 'COMMIT;') {
+            response(null);
+          }
+        });
+      });
+
+      it('should create a meeting note,', done => {
+        mockFindParticipantIdForPrincipal.mockResolvedValueOnce(1);
+        mockInsertMeetingNote.mockResolvedValueOnce(2);
+        loginExistingUser(appAgent => {
+          appAgent
+            .post('/meetings/2/notes')
+            .send({
+              agenda_owning_participant_id: 1,
+              note_text: 'Hello',
+              sort_order: 2.5,
+            })
+            .expect(201, itemEnvelope({ id: 2 }), done);
+        }, done);
+      });
+
+      it('should create a meeting note if agenda_owning_participant_id is not assigned,', done => {
+        mockFindParticipantIdForPrincipal.mockResolvedValueOnce([{ id: 1 }]);
+        mockInsertMeetingNote.mockResolvedValueOnce(3);
+        loginExistingUser(appAgent => {
+          appAgent
+            .post('/meetings/2/notes')
+            .send({
+              agenda_owning_participant_id: null,
+              note_text: 'Hello',
+              sort_order: 2.5,
+            })
+            .expect(201, itemEnvelope({ id: 3 }), done);
+        }, done);
+      });
+    });
+
+    describe('with invalid data', () => {
+      beforeEach(() => {
+        tracker.on('query', ({ sql, response }) => {
+          if (sql === 'BEGIN;' || sql === 'COMMIT;') {
+            response(null);
+          }
+        });
+      });
+
+      it('should respond with an error when a user posting the note is not a meeting participant,', done => {
+        mockFindParticipantIdForPrincipal.mockResolvedValueOnce(null);
+        loginExistingUser(appAgent => {
+          appAgent
+            .post('/meetings/2/notes')
+            .send({
+              agenda_owning_participant_id: 1,
+              note_text: 'Hello',
+              sort_order: 2.5,
+            })
+            .expect(
+              404,
+              errorEnvelope('Participant for meeting 2 is not found.'),
+              done
+            );
+        }, done);
+      });
+
+      it('should respond with error message if agenda_owning_participant_id is of the wrong type', done => {
+        mockFindParticipantIdForPrincipal.mockResolvedValueOnce(1);
+        loginExistingUser(appAgent => {
+          appAgent
+            .post('/meetings/2/notes')
+            .send({
+              agenda_owning_participant_id: '0',
+              note_text: 'Hello',
+              sort_order: 2.5,
+            })
+            .expect(
+              422,
+              errorEnvelope(
+                'agenda_owning_participant_id must be a positive integer or null.'
+              ),
+              done
+            );
+        }, done);
+      });
+
+      it('should respond with error message if note_text is of the wrong type', done => {
+        mockFindParticipantIdForPrincipal.mockResolvedValueOnce(1);
+        loginExistingUser(appAgent => {
+          appAgent
+            .post('/meetings/2/notes')
+            .send({
+              agenda_owning_participant_id: 1,
+              note_text: null,
+              sort_order: 2.5,
+            })
+            .expect(
+              422,
+              errorEnvelope('note_text must be of type string.'),
+              done
+            );
+        }, done);
+      });
+
+      it('should respond with error message if sort_order is of the wrong type', done => {
+        mockFindParticipantIdForPrincipal.mockResolvedValueOnce(1);
+        loginExistingUser(appAgent => {
+          appAgent
+            .post('/meetings/2/notes')
+            .send({
+              agenda_owning_participant_id: 1,
+              note_text: 'Hello',
+              sort_order: '2.5',
+            })
+            .expect(
+              422,
+              errorEnvelope(
+                'sort_order must be of type number and neither positive Infinity, negative Infinity, nor NaN'
+              ),
+              done
+            );
+        }, done);
+      });
+    });
+
+    describe('when the database transaction fails', () => {
+      beforeEach(() => {
+        tracker.on('query', ({ sql, response }) => {
+          if (sql === 'ROLLBACK' || sql === 'BEGIN;') {
+            response(null);
+          }
+        });
+      });
+
+      it('should respond with a 500 error if the cause was insertMeetingNote,', done => {
+        mockFindParticipantIdForPrincipal.mockResolvedValueOnce(1);
+        mockInsertMeetingNote.mockRejectedValueOnce(new Error());
+        loginExistingUser(appAgent => {
+          appAgent
+            .post('/meetings/2/notes')
+            .send({
+              agenda_owning_participant_id: 1,
+              note_text: 'Hello',
+              sort_order: 2.5,
+            })
+            .expect(500, done);
         }, done);
       });
     });

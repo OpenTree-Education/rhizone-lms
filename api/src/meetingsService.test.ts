@@ -1,6 +1,12 @@
 import { Knex } from 'knex';
 
-import { countMeetings, listMeetings, findMeeting } from './meetingsService';
+import {
+  countMeetings,
+  findMeeting,
+  findParticipantIdForPrincipal,
+  insertMeetingNote,
+  listMeetings,
+} from './meetingsService';
 import db from './db';
 import { tracker } from './mockDb';
 
@@ -196,6 +202,75 @@ describe('meetingsService', () => {
         });
         return expect(findMeeting(2, 3)).rejects.toBe(databaseError);
       });
+    });
+  });
+
+  describe('findParticipantIdForPrincipal', () => {
+    it(`should return user's meeting participant id`, async () => {
+      tracker.on('query', ({ bindings, response, sql }) => {
+        if (
+          sql ===
+          'select `id` from `participants` where `meeting_id` = ? and `principal_id` = ?'
+        ) {
+          expect(bindings).toEqual([2, 3]);
+          response([{ id: 3 }]);
+        } else {
+          throw new Error(`Unexpected query: ${sql}`);
+        }
+      });
+      expect(await findParticipantIdForPrincipal(2, 3)).toEqual(3);
+    });
+
+    it(`should return null if a meeting participant is not found`, async () => {
+      tracker.on('query', ({ bindings, response, sql }) => {
+        if (
+          sql ===
+          'select `id` from `participants` where `meeting_id` = ? and `principal_id` = ?'
+        ) {
+          expect(bindings).toEqual([2, 0]);
+          response([]);
+        } else {
+          throw new Error(`Unexpected query: ${sql}`);
+        }
+      });
+      expect(await findParticipantIdForPrincipal(2, 0)).toEqual(null);
+    });
+
+    it('should reject with the database error', () => {
+      const databaseError = new Error();
+      tracker.on('query', ({ reject }) => {
+        reject(databaseError);
+      });
+      return expect(findParticipantIdForPrincipal(2, 3)).rejects.toBe(
+        databaseError
+      );
+    });
+  });
+
+  describe('insertMeetingNote', () => {
+    it(`should return inserted note id`, async () => {
+      tracker.on('query', ({ bindings, response, sql }) => {
+        if (
+          sql ===
+          'insert into `meeting_notes` (`agenda_owning_participant_id`, `authoring_participant_id`, `note_text`, `sort_order`) values (?, ?, ?, ?)'
+        ) {
+          expect(bindings).toEqual([2, 2, 'Hello', 2.5]);
+          response([3]);
+        } else {
+          throw new Error(`Unexpected query: ${sql}`);
+        }
+      });
+      expect(await insertMeetingNote(2, 2, 'Hello', 2.5)).toEqual(3);
+    });
+
+    it('should reject with the database error', () => {
+      const databaseError = new Error();
+      tracker.on('query', ({ reject }) => {
+        reject(databaseError);
+      });
+      return expect(insertMeetingNote(2, 2, 'Hello', 2.5)).rejects.toBe(
+        databaseError
+      );
     });
   });
 });
