@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './Navbar';
 import MeetingsDrawer from './MeetingsDrawer';
-import MeetingNotesShow from './MeetingNotesShow';
+import MeetingPage from './MeetingPage';
 import Reflections from './Reflections';
 
 interface AppState {
@@ -49,11 +49,8 @@ class App extends Component<AppProps, AppState> {
           {this.state.loggedIn === true && (
             <Router>
               <Routes>
-                {this.state.loggedIn ? (
-                  <Route path="/" element={<Reflections />} />
-                ) : (
-                  ''
-                )}
+                <Route path="/" element={<Reflections />} />
+                <Route path="/meetings/:id" element={<MeetingPage />} />
               </Routes>
             </Router>
           )}
