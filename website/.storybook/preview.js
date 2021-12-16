@@ -6,6 +6,10 @@ import { ThemeProvider } from '@mui/material';
 
 import theme from '../src/components/theme';
 
+export const parameters = {
+  controls: { expanded: true },
+};
+
 export const decorators = [
   Story => (
     <LocationProvider>
