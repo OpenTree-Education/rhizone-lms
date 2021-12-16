@@ -37,7 +37,7 @@ export const findMeeting = async (
     .where({ 'participants.meeting_id': id })
     .orderBy([
       { column: 'agenda_owning_participant_id', order: 'desc' },
-      { column: 'sort_order', order: 'desc' },
+      { column: 'sort_order', order: 'asc' },
       'meeting_notes.created_at',
     ]);
   const participants = await builder('participants')
