@@ -10,24 +10,24 @@ interface MeetingDateTimeProps {
 }
 
 const MeetingDateTime = ({ meeting }: MeetingDateTimeProps) => (
-  <MuiLink
-    component={ReactRouterLink}
-    to={`/meetings/${meeting.id}`}
-    underline="none"
+  <ListItem
+    sx={{
+      backgroundColor: 'common.white',
+      '&:hover': { backgroundColor: 'grey.200' },
+    }}
   >
-    <ListItem
-      sx={{
-        backgroundColor: 'common.white',
-        '&:hover': { backgroundColor: 'grey.200' },
-      }}
+    <MuiLink
+      component={ReactRouterLink}
+      to={`/meetings/${meeting.id}`}
+      underline="none"
+      sx={{ color: 'text.primary' }}
     >
       <ListItemText
         primary={formatDate(meeting.starts_at)}
         secondary={formatTime(meeting.starts_at)}
-        sx={{ color: 'black' }}
       />
-    </ListItem>
-  </MuiLink>
+    </MuiLink>
+  </ListItem>
 );
 
 export default MeetingDateTime;
