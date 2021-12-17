@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import { UnauthorizedError } from './httpErrors';
 
@@ -14,7 +14,7 @@ export const loggedIn = (req: Request, res: Response, next: NextFunction) => {
   );
 };
 
-export const getSessionMiddleware = (app: express.Application) =>
+export const getSessionMiddleware = (secure: boolean) =>
   session({
     secret: process.env.SESSION_SECRET || 'default session secret',
     name: 'session_id',
@@ -22,6 +22,6 @@ export const getSessionMiddleware = (app: express.Application) =>
     saveUninitialized: true,
     cookie: {
       sameSite: true,
-      secure: app.get('secure'),
+      secure,
     },
   });

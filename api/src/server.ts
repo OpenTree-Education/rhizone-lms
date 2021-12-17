@@ -24,7 +24,8 @@ const io = new Server(server, {
 });
 
 io.use((socket, next) => {
-  const sessionMiddleware = getSessionMiddleware(app);
+	const secure = app.get('secure')
+  const sessionMiddleware = getSessionMiddleware(secure);
   sessionMiddleware(
     socket.request as Request,
     {} as Response,
