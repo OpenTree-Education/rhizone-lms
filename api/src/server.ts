@@ -14,6 +14,7 @@ declare module 'express-serve-static-core' {
   }
 }
 const server = createServer(app);
+configureApp(app);
 const io = new Server(server, {
   cors: {
     origin: process.env.WEBAPP_ORIGIN,
@@ -41,7 +42,7 @@ io.use((socket, next) => {
     next();
   }
 });
-configureApp(app);
+
 app.use((req, res, next) => {
   req.io = io;
   next();
