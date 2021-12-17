@@ -1,4 +1,5 @@
 import React from 'react';
+import { Grid } from '@mui/material';
 import { formatDate, formatTime } from '../helpers/dateTime';
 import { Meeting as APIMeeting } from '../types/api';
 
@@ -45,8 +46,13 @@ class Meeting extends React.Component<MeetingProps, MeetingState> {
       return <h1>Loading...</h1>;
     }
 
+    const currentParticipantId = this.state.meeting?.participants.find(
+      ({ principal_id }) =>
+        principal_id === this.state.currentUser?.principal_id
+    )?.id;
+
     return (
-      <div>
+      <Grid>
         <h1>{`Meeting on ${formatDate(
           this.state.meeting.starts_at
         )} at ${formatTime(this.state.meeting.starts_at)}`}</h1>
@@ -58,12 +64,9 @@ class Meeting extends React.Component<MeetingProps, MeetingState> {
                   meetingNotes[index - 1].agenda_owning_participant_id) && (
                 <h2>
                   {meetingNote.agenda_owning_participant_id === null
-                    ? 'Action Items'
+                    ? 'Action items'
                     : meetingNote.agenda_owning_participant_id ===
-                      this.state.meeting?.participants.find(
-                        ({ principal_id }) =>
-                          principal_id === this.state.currentUser?.principal_id
-                      )?.id
+                      currentParticipantId
                     ? 'My agenda items'
                     : 'Their agenda items'}
                 </h2>
@@ -74,7 +77,7 @@ class Meeting extends React.Component<MeetingProps, MeetingState> {
             </React.Fragment>
           )
         )}
-      </div>
+      </Grid>
     );
   }
 }
