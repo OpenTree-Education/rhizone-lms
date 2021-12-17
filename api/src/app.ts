@@ -58,7 +58,7 @@ export const configureApp = (app: express.Application) => {
   app.use(bodyParser.json());
 
   app.set('trust proxy', 1);
-  const session = getSessionMiddleware(app);
+  const session = getSessionMiddleware(app.get('secure'));
   app.use(session);
 
   app.use(withCors, authRouter);
