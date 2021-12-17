@@ -128,7 +128,7 @@ describe('meetingsService', () => {
             response([{ id: 2, starts_at: '2021-10-12T04:00:00.000Z' }]);
           } else if (
             sql ===
-            'select `meeting_notes`.`id` as `id`, `note_text`, `sort_order`, `authoring_participant_id`, `agenda_owning_participant_id` from `meeting_notes` inner join `participants` on `participants`.`id` = `meeting_notes`.`authoring_participant_id` where `participants`.`meeting_id` = ? order by `agenda_owning_participant_id` desc, `sort_order` desc, `meeting_notes`.`created_at` asc'
+            'select `meeting_notes`.`id` as `id`, `note_text`, `sort_order`, `authoring_participant_id`, `agenda_owning_participant_id` from `meeting_notes` inner join `participants` on `participants`.`id` = `meeting_notes`.`authoring_participant_id` where `participants`.`meeting_id` = ? order by `agenda_owning_participant_id` desc, `sort_order` asc, `meeting_notes`.`created_at` asc'
           ) {
             expect(bindings).toEqual([2]);
             response([
