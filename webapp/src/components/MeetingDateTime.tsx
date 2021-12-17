@@ -1,6 +1,5 @@
-import { ListItem, ListItemText } from '@mui/material';
+import { Link as MuiLink, ListItem, ListItemText } from '@mui/material';
 import React from 'react';
-import MuiLink from '@mui/material/Link';
 import { Link as ReactLink } from 'react-router-dom';
 
 import { formatDate, formatTime } from '../helpers/dateTime';
