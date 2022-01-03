@@ -10,7 +10,7 @@ import Section from '../components/Section';
 import { PageData } from '../types/content';
 import theme from '../components/theme';
 
-export const PageTemplate = ({ background, sections, title }: PageData) => (
+export const Page = ({ background, sections, title }: PageData) => (
   <>
     <Helmet>
       <title>{title}</title>
@@ -27,11 +27,5 @@ export const PageTemplate = ({ background, sections, title }: PageData) => (
     </ThemeProvider>
   </>
 );
-
-interface PageProps {
-  pageContext: PageData;
-}
-
-const Page = ({ pageContext }: PageProps) => <PageTemplate {...pageContext} />;
 
 export default Page;

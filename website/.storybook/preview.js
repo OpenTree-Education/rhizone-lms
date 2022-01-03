@@ -6,6 +6,20 @@ import { ThemeProvider } from '@mui/material';
 
 import theme from '../src/components/theme';
 
+export const parameters = {
+  controls: { expanded: true },
+  options: {
+    storySort: {
+      order: [
+        'Guides',
+        ['Introduction', 'Pages', 'Posts', 'Theme', 'Redirects', 'Adding features'],
+        'Components',
+        ['Page Template', 'Page', 'Section', 'Column', 'Post'],
+      ],
+    },
+  },
+};
+
 export const decorators = [
   Story => (
     <LocationProvider>

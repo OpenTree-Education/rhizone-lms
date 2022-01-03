@@ -93,8 +93,8 @@ exports.createPages = async ({ actions: { createPage }, graphql }) => {
     }
   `);
 
-  const pageTemplatePath = path.resolve(`./src/components/Page.tsx`);
-  const postTemplatePath = path.resolve(`./src/components/Post.tsx`);
+  const pageTemplatePath = path.resolve(`./src/components/PageTemplate.tsx`);
+  const postTemplatePath = path.resolve(`./src/components/PostTemplate.tsx`);
 
   for (const {
     parent: { name: path },

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { PageTemplate } from './Page';
+import Page from './Page';
 import { PageData, PostData } from '../types/content';
 
 const transformPostDataToPageData = ({
@@ -50,14 +50,8 @@ const transformPostDataToPageData = ({
   };
 };
 
-export const PostTemplate = (props: PostData) => (
-  <PageTemplate {...transformPostDataToPageData(props)} />
+export const Post = (props: PostData) => (
+  <Page {...transformPostDataToPageData(props)} />
 );
-
-declare interface PostProps {
-  pageContext: PostData;
-}
-
-const Post = ({ pageContext }: PostProps) => <PostTemplate {...pageContext} />;
 
 export default Post;
