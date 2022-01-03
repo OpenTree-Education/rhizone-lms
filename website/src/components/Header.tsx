@@ -61,13 +61,12 @@ const Header = () => (
                 src={opentreeEducationLogo}
                 width={38}
               />
-              <ImgixGatsbyImage
+              <img
+                width="100"
+                height="36"
+                src="https://opentree-education.imgix.net/opentree-education.png?fit=min&amp;q=75&amp;w=100&amp;h=36"
+                srcSet="https://opentree-education.imgix.net/opentree-education.png?fit=min&amp;q=75&amp;w=100&amp;h=36, https://opentree-education.imgix.net/opentree-education.png?fit=min&amp;q=50&amp;w=200&amp;h=72 2x"
                 alt="OpenTree Education"
-                src="https://opentree-education.imgix.net/opentree-education.png"
-                layout="fixed"
-                width={100}
-                sourceHeight={547}
-                sourceWidth={1500}
               />
             </Stack>
           </GatsbyLink>
