@@ -234,6 +234,11 @@ export interface PageData {
    */
   background?: string;
   /**
+   * The content of the description meta tag in the head of the html page. This
+   * may be seen by users if shown to them by search engines.
+   */
+  description?: string;
+  /**
    * The sections that make up the page content. They will be rendered in
    * between the Header and Footer.
    */
