@@ -25,6 +25,7 @@ exports.createPages = async ({ actions: { createPage }, graphql }) => {
       allPagesYaml {
         nodes {
           background
+          description
           title
           sections {
             background
