@@ -36,5 +36,11 @@ module.exports = {
       },
       __key: 'content',
     },
+    {
+      resolve: 'gatsby-plugin-force-trailing-slashes',
+      options: {
+        excludedPaths: [`/404.html`],
+      },
+    },
   ],
 };
