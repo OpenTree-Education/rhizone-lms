@@ -1,17 +1,19 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
 
-import Post from './Post';
+import PostComponent from '../../components/Post';
 
 export default {
   title: 'Components/Post',
-  component: Post,
-} as ComponentMeta<typeof Post>;
+  component: PostComponent,
+} as ComponentMeta<typeof PostComponent>;
 
-const Template: ComponentStory<typeof Post> = args => <Post {...args} />;
+const Template: ComponentStory<typeof PostComponent> = args => (
+  <PostComponent {...args} />
+);
 
-export const Basic = Template.bind({});
-Basic.args = {
+export const Post = Template.bind({});
+Post.args = {
   author: 'Author Name',
   publicationDate: '2021-12-14',
   slug: 'title-subtitle',

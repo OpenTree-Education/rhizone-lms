@@ -2,21 +2,22 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
 import yaml from 'js-yaml';
 
-import ErrorBoundary from './ErrorBoundary';
-import PageTemplate from './PageTemplate';
-import { PageData } from '../types/content';
+import ErrorBoundary from '../../components/ErrorBoundary';
+import PageTemplateComponent from '../../components/PageTemplate';
+import { PageData } from '../../types/content';
 
 export default {
-  title: 'Components/PageTemplate',
-  component: PageTemplate,
+  title: 'Components/Page Template',
+  component: PageTemplateComponent,
   argTypes: {
     pageContext: {
       name: 'Page Yaml',
-      description: 'Yaml content just like in the files in `src/content/pages`.',
+      description:
+        'Yaml content just like in the files in `src/content/pages`.',
       type: 'string',
     },
   },
-} as ComponentMeta<typeof PageTemplate>;
+} as ComponentMeta<typeof PageTemplateComponent>;
 
 const Template: ComponentStory<any> = ({ pageContext }) => {
   let parsedPageContext: PageData;
@@ -27,13 +28,13 @@ const Template: ComponentStory<any> = ({ pageContext }) => {
   }
   return (
     <ErrorBoundary key={pageContext}>
-      <PageTemplate pageContext={parsedPageContext} />
+      <PageTemplateComponent pageContext={parsedPageContext} />
     </ErrorBoundary>
   );
 };
 
-export const Basic = Template.bind({});
-Basic.args = {
+export const PageTemplate = Template.bind({});
+PageTemplate.args = {
   pageContext: `title: PageTemplate
 sections:
   - columns:

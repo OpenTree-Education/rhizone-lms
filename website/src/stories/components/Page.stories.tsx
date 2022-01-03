@@ -1,17 +1,19 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
 
-import Page from './Page';
+import PageComponent from '../../components/Page';
 
 export default {
   title: 'Components/Page',
-  component: Page,
-} as ComponentMeta<typeof Page>;
+  component: PageComponent,
+} as ComponentMeta<typeof PageComponent>;
 
-const Template: ComponentStory<typeof Page> = args => <Page {...args} />;
+const Template: ComponentStory<typeof PageComponent> = args => (
+  <PageComponent {...args} />
+);
 
-export const Basic = Template.bind({});
-Basic.args = {
+export const Page = Template.bind({});
+Page.args = {
   title: 'Title',
   sections: [
     {

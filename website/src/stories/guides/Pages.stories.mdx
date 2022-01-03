@@ -1,0 +1,167 @@
+import { Meta } from '@storybook/addon-docs';
+
+<Meta title="Guides/Pages" />
+
+# Pages
+
+Pages are any location on the website that is not a blog post.
+
+## Creating a new page
+
+When a new page needs to be created, a number of unique steps need to be taken
+apart from modifying the content of the page itself.
+
+### Choosing a path
+
+The path of a web page is the part of its URL that starts with the forward slash
+after the domain name. For example, in the URL
+`https://opentree.education/contact`, the path is `/contact`. The path of a web
+page is its permanent home and should not be changed. This is because links to
+that page will exist on other websites, notably search engines, and if the path
+to a page changes, those links will no longer work.
+
+Paths should only contain lowercase letters and numbers, and words should be
+separated by hyphens. The words in the path should describe the content of the
+page since the path is used both by users to confirm that they are on the right
+page, and because search engines may use words from the path as a signal for
+ranking results.
+
+### Naming the file
+
+One the path has been decided upon, a new file for the page should be created.
+The name of the file is just the path with the extension `.yml`. This file must
+be placed into the `src/pages` directory. Pages are not intended to be organized
+into folders; all page files should be immediate descendents of the `src/pages`
+directory.
+
+The content of the file is written in [YAML](https://yaml.org/) as a single
+object. Each property is written as a property name, then a colon, a space, and
+the property value. Review the structure of existing pages to see the specific
+syntax.
+
+### Page level properties
+
+In addition to the visible content on the page, there are a number of metadata
+attributes that need to be added for every page. These properties are documented
+in the [**Components / Page**](?path=/story/components-page--page) story.
+
+The following properties are required for every page.
+
+- `title`: The text that appears in the browser tab for the page.
+- `description`: A description of the content of the page for search engines.
+- `sections`: A list of the sections of the page and their content.
+
+The following properties are optional and may be added to a page to achieve
+specific design requirements.
+
+- `background`: A background that is applied to the page as a whole.
+
+## Adding sections to pages
+
+The content of pages are vertically stacked areas, each with its own background
+and content grid. The properties of a section are documented in the
+[**Components / Section**](?path=/story/components-section--section) story.
+
+### Creating a section
+
+To add a section to a page, under the page level `sections` property, add a list
+item bulleted by a hyphen, and then add properties to the section object.
+
+For example, the following code represents a section with a green background.
+Note that the colour is in quotation marks because it starts with number sign
+(`#`) which would otherwise start a code comment for the file. The `columns`
+property is required because it contains the actual content of the section. For
+now, it is set to an empty array, but that will be changed once content is
+added.
+
+```yaml
+sections:
+  - background: '#b8d7ac'
+    columns: []
+```
+
+#### Grid-based layout
+
+Each section is laid out using the 12-column layout grid provided by
+[Material UI](https://mui.com/components/grid/). The actual content of the
+section is added to columns within this grid. A content column may span any
+whole number of grid columns from `1` to `12`. These columns are presented
+side-by-side, provided that their spans added together do not exceed `12`.
+
+On mobile devices, all the columns are presented in a vertical stack, rather
+than side-by-side.
+
+## Adding content to columns
+
+Similarly to adding sections to a page, adding columns to a section involves
+adding a list item under a section's `columns` property, bulleted by a hyphen.
+Properties that can be added to columns are documented in the
+[**Components / Column**](?path=/story/components-column--column) story.
+
+For example, the following code adds a column with a heading spanning the left 6
+columns of the grid, and an empty column taking up the right 6 columns of the
+grid in order to cause the heading to shift to the left. Without the empty
+column the column with the heading would be horizontally centered in the layout
+grid.
+
+```yaml
+sections:
+  - columns:
+      - heading: Heading text for this column
+        span: 6
+      - span: 6
+```
+
+### Value propositions
+
+Most content on the website will be presented in the form of value propositions,
+or "value props". A value prop is a heading that the user can scan, a couple
+sentences of text explaining the value being proposed, and a call to action, or
+"CTA", which is a link that a user can follow in order to take action. For
+example:
+
+```yaml
+sections:
+  - columns:
+      - heading: Trees make the oxygen we breathe
+        body: |
+          Through the process of photosynthesis, trees convert carbon dioxide in
+          the air into oxygen gas which humans need to survive.
+        callToActionText: Plant trees
+        callToActionHref: '/sign-up'
+```
+
+See the [**Components / Column**](?path=/story/components-column--column) story
+for more documentation on these properties.
+
+### Images
+
+Images for the website are hosted on [imgix](https://dashboard.imgix.com/) and
+must be added there before being added to a web page.
+
+Upload the original resolution image to the `opentree-education` source in imgix
+and take note of its file name, and its width and height.
+
+To insert an image into a column, specify the file name, and the original width
+and height of the image. It will be automatically resized to fit the column it's
+being inserted into to shorten the time it takes to download the image.
+
+```yaml
+sections:
+  - columns:
+      - imageFile: the-image-file-name.jpg
+        imageAlt: Text describing the image to users that can't see it
+        imageOriginalHeight: 1080
+        imageOriginalWidth: 1920
+```
+
+See the [**Components / Column**](?path=/story/components-column--column) story
+for more documentation on image properties.
+
+### Forms
+
+There are a number of column level properties for creating forms. At the time of
+writing, forms use [Netlify Forms](https://www.netlify.com/products/forms/). The
+properties documented in the
+[**Components / Column**](?path=/story/components-column--column) story describe
+how to create a simple form that gets submitted to Netlify.
