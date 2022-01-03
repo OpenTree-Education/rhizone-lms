@@ -18,6 +18,7 @@ export const Page = ({
 }: PageData) => (
   <>
     <Helmet>
+      <html lang="en" />
       <title>{title}</title>
       {description && <meta name="description" content={description} />}
     </Helmet>
