@@ -4,7 +4,6 @@ import Grid from '@mui/material/Grid';
 import { ImgixGatsbyImage } from '@imgix/gatsby';
 import { Link as GatsbyLink } from 'gatsby';
 import React from 'react';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { ColumnData } from '../types/content';
@@ -39,81 +38,91 @@ const Column = ({
   span = totalGridColumns,
   verticalWhiteSpace = 2,
 }: ColumnData) => {
-  const hasForm = formName && formAction && formFields.length > 0;
-  const hasCallToAction = callToActionText && callToActionHref;
-  const hasImage =
-    imageFile && imageAlt && imageOriginalHeight && imageOriginalWidth;
-  const columns = span;
-  const containerWidth = 1520;
-  const imageMaxWidth =
-    columns === totalGridColumns
-      ? containerWidth
-      : Math.ceil((containerWidth / totalGridColumns) * columns - 32);
+  const content = [];
+  if (imageFile && imageAlt && imageOriginalHeight && imageOriginalWidth) {
+    const columns = span;
+    const containerWidth = 1520;
+    const imageMaxWidth =
+      columns === totalGridColumns
+        ? containerWidth
+        : Math.ceil((containerWidth / totalGridColumns) * columns - 32);
+    content.push(
+      <Box sx={{ alignSelf: 'center' }}>
+        <ImgixGatsbyImage
+          alt={imageAlt}
+          src={`https://opentree-education.imgix.net/${imageFile}`}
+          sourceHeight={imageOriginalHeight}
+          sourceWidth={imageOriginalWidth}
+          layout="constrained"
+          aspectRatio={imageAspectRatio}
+          width={imageMaxWidth}
+        />
+      </Box>
+    );
+  }
+  if (heading) {
+    content.push(
+      <Typography
+        align={headingTextAlign}
+        component={headingComponent}
+        dangerouslySetInnerHTML={{
+          __html: heading,
+        }}
+        variant={headingVariant}
+        sx={{ color }}
+      />
+    );
+  }
+  if (body) {
+    content.push(
+      <Typography
+        align={bodyTextAlign}
+        component={bodyComponent}
+        dangerouslySetInnerHTML={{ __html: body }}
+        sx={{ color }}
+        variant={bodyVariant}
+      />
+    );
+  }
+  if (callToActionText && callToActionHref) {
+    content.push(
+      <Box py={1}>
+        <Button
+          color={callToActionColor}
+          component={GatsbyLink}
+          size="large"
+          to={callToActionHref}
+          variant={callToActionVariant}
+        >
+          {callToActionText}
+        </Button>
+      </Box>
+    );
+  }
+  if (formName && formAction && formFields.length > 0) {
+    content.push(
+      <FormBuilder
+        formAction={formAction}
+        formButtonText={formButtonText}
+        formFields={formFields}
+        formHeading={formHeading}
+        formName={formName}
+      />
+    );
+  }
   return (
     <Grid
       key={Math.random()}
       item
-      md={columns}
+      md={span}
       py={verticalWhiteSpace}
       xs={totalGridColumns}
     >
-      <Stack spacing={2}>
-        {hasImage && (
-          <Box sx={{ alignSelf: 'center' }}>
-            <ImgixGatsbyImage
-              alt={imageAlt}
-              src={`https://opentree-education.imgix.net/${imageFile}`}
-              sourceHeight={imageOriginalHeight}
-              sourceWidth={imageOriginalWidth}
-              layout="constrained"
-              aspectRatio={imageAspectRatio}
-              width={imageMaxWidth}
-            />
-          </Box>
-        )}
-        {heading && (
-          <Typography
-            align={headingTextAlign}
-            component={headingComponent}
-            dangerouslySetInnerHTML={{
-              __html: heading,
-            }}
-            variant={headingVariant}
-            sx={{ color }}
-          />
-        )}
-        {body && (
-          <Typography
-            align={bodyTextAlign}
-            component={bodyComponent}
-            dangerouslySetInnerHTML={{ __html: body }}
-            sx={{ color }}
-            variant={bodyVariant}
-          />
-        )}
-        {hasCallToAction && (
-          <Box py={1}>
-            <Button
-              color={callToActionColor}
-              component={GatsbyLink}
-              size="large"
-              to={callToActionHref}
-              variant={callToActionVariant}
-            >
-              {callToActionText}
-            </Button>
-          </Box>
-        )}
-        {hasForm && (
-          <FormBuilder
-            formAction={formAction}
-            formButtonText={formButtonText}
-            formFields={formFields}
-            formHeading={formHeading}
-            formName={formName}
-          />
-        )}
-      </Stack>
+      {content.map((item, index) => (
+        <Box key={index} mt={index === 0 ? 0 : 2}>
+          {item}
+        </Box>
+      ))}
     </Grid>
   );
 };
