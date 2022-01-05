@@ -19,39 +19,30 @@ const ReflectionsList = ({ reflections }: ReflectionsListProps) => (
           created_at: createdAt,
           journal_entries: journalEntries,
           responses,
-        }) => {
-          return (
-            <Card key={id}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <CardContent>{formatDateTime(createdAt)}</CardContent>
-                {responses.map(response => {
-                  return (
-                    <span style={{ display: 'flex', alignItems: 'center' }}>
-                      <CardContent style={{ padding: '10px' }}>
-                        {response['option']['prompt']['label']}
-                      </CardContent>
-                      <Chip
-                        label={response['option']['label']}
-                        variant="outlined"
-                        style={{ marginRight: '16px' }}
-                      />
-                    </span>
-                  );
-                })}
-              </div>
-              {journalEntries.map(({ id, raw_text: rawText }) => (
-                <CardContent
-                  key={id}
-                  sx={{
-                    whiteSpace: 'pre-wrap',
-                  }}
-                >
-                  {rawText}
-                </CardContent>
+        }) => (
+          <Card key={id}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <CardContent>{formatDateTime(createdAt)}</CardContent>
+              {responses.map(response => (
+                <span style={{ display: 'flex', alignItems: 'center' }}>
+                  <CardContent style={{ padding: '10px' }}>
+                    {response.option.prompt.label}
+                  </CardContent>
+                  <Chip
+                    label={response.option.label}
+                    variant="outlined"
+                    style={{ marginRight: '16px' }}
+                  />
+                </span>
               ))}
-            </Card>
-          );
-        }
+            </div>
+            {journalEntries.map(({ id, raw_text: rawText }) => (
+              <CardContent key={id} sx={{ whiteSpace: 'pre-wrap' }}>
+                {rawText}
+              </CardContent>
+            ))}
+          </Card>
+        )
       )}
     </Stack>
   </>
