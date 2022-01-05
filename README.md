@@ -14,9 +14,9 @@ app to handle authentication.
 2. Go to [Settings / Developer settings](https://github.com/settings/apps).
 3. Click "New OAuth App".
 4. Enter the following data.
-   - Application name: `Rhizone LMS`
+   - Application name: `Rhizone LMS (Development)`
    - Homepage URL: `http://rhi.zone-development/`
-   - Application description: `Rhizone LMS`
+   - Application description: `Rhizone LMS (Development)`
    - Authorization callback URL: `http://api.rhi.zone-development/auth/github/callback`
 5. Click "Register application".
 6. Click "Generate a new client secret".
@@ -30,9 +30,8 @@ The development environment assumes that the domains `rhi.zone-development` and
 `api.rhi.zone-development` resolve to your dev machine.
 
 1. Open your `hosts` file for editing. You may need to do this with
-    administrator privileges. The [location of the `hosts`
-    file](https://en.wikipedia.org/wiki/Hosts_(file)#Location_in_the_file_system)
-    differs depending on your operating system.
+    administrator privileges. On macOS and Linux, the file is at `/etc/hosts`.
+    On Windows it is at `C:\Windows\System32\drivers\etc\hosts`.
 2. Add the following lines to resolve the development domain names to the
     loopback address.
 
