@@ -1,11 +1,11 @@
 import React from 'react';
 import { Box, Grid } from '@mui/material';
-import CreateJournalEntryForm from './CreateJournalEntryForm';
-import JournalEntriesList from './JournalEntriesList';
-import { JournalEntry } from '../types/api';
+import CreateReflectionForm from './CreateReflectionForm';
+import ReflectionsList from './ReflectionsList';
+import { Reflection } from '../types/api';
 
 interface ReflectionsState {
-  journalEntries: JournalEntry[];
+  reflections: Reflection[];
 }
 
 interface ReflectionsProps {}
@@ -14,23 +14,23 @@ class Reflections extends React.Component<ReflectionsProps, ReflectionsState> {
   constructor(props: ReflectionsProps) {
     super(props);
     this.state = {
-      journalEntries: [],
+      reflections: [],
     };
   }
 
   async componentDidMount() {
-    this.fetchJournalEntries();
+    this.fetchReflections();
   }
 
-  fetchJournalEntries = async () => {
-    const fetchJournalEntries = await fetch(
+  fetchReflections = async () => {
+    const fetchReflectionsResponse = await fetch(
       `${process.env.REACT_APP_API_ORIGIN}/reflections`,
       { credentials: 'include' }
     );
 
-    if (fetchJournalEntries.ok) {
-      const { data: journalEntries } = await fetchJournalEntries.json();
-      this.setState({ journalEntries });
+    if (fetchReflectionsResponse.ok) {
+      const { data: reflections } = await fetchReflectionsResponse.json();
+      this.setState({ reflections });
     }
   };
 
@@ -39,12 +39,10 @@ class Reflections extends React.Component<ReflectionsProps, ReflectionsState> {
       <Grid container justifyContent="center">
         <Grid item xs={12} md={8}>
           <Box my={12}>
-            <CreateJournalEntryForm
-              onJournalEntryCreated={this.fetchJournalEntries}
-            />
+            <CreateReflectionForm onReflectionCreated={this.fetchReflections} />
           </Box>
-          {this.state.journalEntries.length > 0 && (
-            <JournalEntriesList journalEntries={this.state.journalEntries} />
+          {this.state.reflections.length > 0 && (
+            <ReflectionsList reflections={this.state.reflections} />
           )}
         </Grid>
       </Grid>

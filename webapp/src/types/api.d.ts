@@ -4,7 +4,7 @@ export interface CreationResponseEnvelope {
   };
 }
 
-export interface JournalEntry {
+export interface Reflection {
   id: number;
   created_at: string;
   journal_entries: [

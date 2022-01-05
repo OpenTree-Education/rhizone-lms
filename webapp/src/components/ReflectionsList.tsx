@@ -1,23 +1,23 @@
 import { Card, CardContent, Stack, Chip } from '@mui/material';
 import React from 'react';
 
-import { JournalEntry } from '../types/api';
+import { Reflection } from '../types/api';
 
 import { formatDateTime } from '../helpers/dateTime';
 
-interface JournalEntriesListProps {
-  journalEntries: JournalEntry[];
+interface ReflectionsListProps {
+  reflections: Reflection[];
 }
 
-const JournalEntriesList = ({ journalEntries }: JournalEntriesListProps) => (
+const ReflectionsList = ({ reflections }: ReflectionsListProps) => (
   <>
     <h2>Your previous entries</h2>
     <Stack spacing={2}>
-      {journalEntries.map(
+      {reflections.map(
         ({
           id,
           created_at: createdAt,
-          journal_entries: journalEntriesPlaceholder,
+          journal_entries: journalEntries,
           responses,
         }) => {
           return (
@@ -39,17 +39,16 @@ const JournalEntriesList = ({ journalEntries }: JournalEntriesListProps) => (
                   );
                 })}
               </div>
-              {journalEntriesPlaceholder.map(journalEntry => {
-                return (
-                  <CardContent
-                    sx={{
-                      whiteSpace: 'pre-wrap',
-                    }}
-                  >
-                    {journalEntry['raw_text']}
-                  </CardContent>
-                );
-              })}
+              {journalEntries.map(({ id, raw_text: rawText }) => (
+                <CardContent
+                  key={id}
+                  sx={{
+                    whiteSpace: 'pre-wrap',
+                  }}
+                >
+                  {rawText}
+                </CardContent>
+              ))}
             </Card>
           );
         }
@@ -58,4 +57,4 @@ const JournalEntriesList = ({ journalEntries }: JournalEntriesListProps) => (
   </>
 );
 
-export default JournalEntriesList;
+export default ReflectionsList;

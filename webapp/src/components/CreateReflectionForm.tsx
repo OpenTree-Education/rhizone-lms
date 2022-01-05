@@ -19,15 +19,15 @@ import {
   Typography,
 } from '@mui/material';
 
-interface CreateJournalEntryFormProps {
-  onJournalEntryCreated?: (response: CreationResponseEnvelope) => void;
+interface CreateReflectionFormProps {
+  onReflectionCreated?: (response: CreationResponseEnvelope) => void;
 }
 
 interface OptionId {
   id: number;
 }
 
-interface CreateJournalEntryFormState {
+interface CreateJournalReflectionFormState {
   journalEntryText: string;
   selectedOptions: OptionId[];
   rows: number;
@@ -36,11 +36,11 @@ interface CreateJournalEntryFormState {
   successVisibility: boolean;
 }
 
-class CreateJournalEntryForm extends Component<
-  CreateJournalEntryFormProps,
-  CreateJournalEntryFormState
+class CreateReflectionForm extends Component<
+  CreateReflectionFormProps,
+  CreateJournalReflectionFormState
 > {
-  constructor(props: CreateJournalEntryFormProps) {
+  constructor(props: CreateReflectionFormProps) {
     super(props);
     this.state = {
       journalEntryText: '',
@@ -61,7 +61,7 @@ class CreateJournalEntryForm extends Component<
     this.setState({ loading: true });
 
     try {
-      const createJournalEntry = await fetch(
+      const createReflectionResponse = await fetch(
         `${process.env.REACT_APP_API_ORIGIN}/reflections`,
         {
           method: 'POST',
@@ -73,8 +73,8 @@ class CreateJournalEntryForm extends Component<
           }),
         }
       );
-      if (createJournalEntry.ok && this.props.onJournalEntryCreated) {
-        this.props.onJournalEntryCreated(await createJournalEntry.json());
+      if (createReflectionResponse.ok && this.props.onReflectionCreated) {
+        this.props.onReflectionCreated(await createReflectionResponse.json());
 
         this.setState({
           successVisibility: true,
@@ -238,4 +238,4 @@ class CreateJournalEntryForm extends Component<
   }
 }
 
-export default CreateJournalEntryForm;
+export default CreateReflectionForm;
