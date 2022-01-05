@@ -1,6 +1,6 @@
 import { Divider, Drawer, List, ListItem, Typography } from '@mui/material';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 
 import { Meeting } from '../types/api';
 import MeetingDateTime from './MeetingDateTime';
@@ -93,11 +93,8 @@ class MeetingsDrawer extends Component<
               Upcoming meetings
             </Typography>
           </ListItem>
-          {this.state.upcomingMeetings.map((meeting, index) => (
-            <Fragment key={meeting.id}>
-              {index === 0 || <Divider />}
-              <MeetingDateTime meeting={meeting} />
-            </Fragment>
+          {this.state.upcomingMeetings.map(meeting => (
+            <MeetingDateTime key={meeting.id} meeting={meeting} />
           ))}
           {this.state.upcomingMeetings.length === 0 && <Divider />}
           <ListItem
@@ -110,14 +107,9 @@ class MeetingsDrawer extends Component<
               Past meetings
             </Typography>
           </ListItem>
-
-          {this.state.pastMeetings.map((meeting, index) => (
-            <Fragment key={meeting.id}>
-              {index === 0 || <Divider />}
-              <MeetingDateTime meeting={meeting} />
-            </Fragment>
+          {this.state.pastMeetings.map(meeting => (
+            <MeetingDateTime key={meeting.id} meeting={meeting} />
           ))}
-          {this.state.pastMeetings.length === 0 || <Divider />}
         </List>
       </Drawer>
     );
