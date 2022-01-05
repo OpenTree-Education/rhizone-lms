@@ -26,8 +26,8 @@ app to handle authentication.
 
 ### 2. Development domain name
 
-The development environment assumes that the domains <rhi.zone-development> and
-<api.rhi.zone-development> resolve to your dev machine.
+The development environment assumes that the domains `rhi.zone-development` and
+`api.rhi.zone-development` resolve to your dev machine.
 
 1. Open your `hosts` file for editing. You may need to do this with
     administrator privileges. The [location of the `hosts`
@@ -50,6 +50,8 @@ at once.
     and Windows users, Docker Compose comes with
     [Docker Desktop](https://www.docker.com/products/docker-desktop).
 2. Run `docker-compose up` to start the dev environment.
+3. Once the containers have started, visit http://rhi.zone-development/ in your
+    web browser to use the app.
 
 ## Modules
 
