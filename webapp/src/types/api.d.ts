@@ -47,3 +47,7 @@ export interface MeetingNote {
   authoring_participant_id: number;
   agenda_owning_participant_id: number | null;
 }
+
+export interface User {
+  principal_id: number | null;
+}

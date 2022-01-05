@@ -6,7 +6,7 @@ import { Meeting } from '../types/api';
 import MeetingDateTime from './MeetingDateTime';
 
 interface MeetingsDrawerProps {
-  isDrawerOpen: boolean;
+  isOpen: boolean;
   onClose: () => void;
 }
 
@@ -59,7 +59,7 @@ class MeetingsDrawer extends Component<
       <Drawer
         variant="persistent"
         anchor="right"
-        open={this.props.isDrawerOpen}
+        open={this.props.isOpen}
         transitionDuration={400}
         PaperProps={{
           sx: {
