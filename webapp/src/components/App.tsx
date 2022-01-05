@@ -52,6 +52,10 @@ class App extends Component<AppProps, AppState> {
                 <Route path="/" element={<Reflections />} />
                 <Route path="/meetings/:id" element={<MeetingPage />} />
               </Routes>
+              <MeetingsDrawer
+                isDrawerOpen={this.state.isMeetingDrawerOpen}
+                onClose={this.toggleMeetingDrawerOpen}
+              />
             </Router>
           )}
           <Box sx={{ my: 12 }}>
@@ -60,10 +64,6 @@ class App extends Component<AppProps, AppState> {
             </Typography>
           </Box>
         </Container>
-        <MeetingsDrawer
-          isDrawerOpen={this.state.isMeetingDrawerOpen}
-          onClose={this.toggleMeetingDrawerOpen}
-        />
       </>
     );
   }
