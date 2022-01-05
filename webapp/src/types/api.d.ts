@@ -37,4 +37,13 @@ export interface Meeting {
   id: number;
   starts_at: string;
   participants: Participant[];
+  meeting_notes: Array<MeetingNote>;
+}
+
+export interface MeetingNote {
+  id: number;
+  note_text: string;
+  sort_order: number;
+  authoring_participant_id: number;
+  agenda_owning_participant_id: number | null;
 }
