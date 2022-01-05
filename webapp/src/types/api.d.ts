@@ -4,28 +4,32 @@ export interface CreationResponseEnvelope {
   };
 }
 
+export type Prompt = {
+  id: number;
+  label: string;
+};
+
+export type Option = {
+  id: number;
+  label: string;
+  prompt: Prompt;
+};
+
+export type Response = {
+  id: number;
+  option: Option;
+};
+
+export type JournalEntry = {
+  id: number;
+  raw_text: string;
+};
+
 export interface Reflection {
   id: number;
   created_at: string;
-  journal_entries: [
-    {
-      id: number;
-      raw_text: string;
-    }
-  ];
-  responses: [
-    {
-      id: number;
-      option: {
-        id: number;
-        label: string;
-        prompt: {
-          id: number;
-          label: string;
-        };
-      };
-    }
-  ];
+  journal_entries: JournalEntry[];
+  responses: Response[];
 }
 
 export interface Participant {
@@ -37,7 +41,7 @@ export interface Meeting {
   id: number;
   starts_at: string;
   participants: Participant[];
-  meeting_notes: Array<MeetingNote>;
+  meeting_notes: MeetingNote[];
 }
 
 export interface MeetingNote {

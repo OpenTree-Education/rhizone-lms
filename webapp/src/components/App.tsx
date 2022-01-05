@@ -6,7 +6,7 @@ import Footer from './Footer';
 import MeetingPage from './MeetingPage';
 import MeetingsDrawer from './MeetingsDrawer';
 import Navbar from './Navbar';
-import Reflections from './Reflections';
+import ReflectionsPage from './ReflectionsPage';
 
 const App = () => {
   const [isMeetingDrawerOpen, setIsMeetingDrawerOpen] = useState(false);
@@ -15,7 +15,7 @@ const App = () => {
       <Navbar onCalendarClick={() => setIsMeetingDrawerOpen(true)} />
       <Container fixed>
         <Routes>
-          <Route path="/" element={<Reflections />} />
+          <Route path="/" element={<ReflectionsPage />} />
           <Route path="/meetings/:id" element={<MeetingPage />} />
         </Routes>
       </Container>
