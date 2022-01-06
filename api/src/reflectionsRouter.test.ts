@@ -97,7 +97,7 @@ describe('reflectionsRouter', () => {
       loginExistingUser(appAgent => {
         appAgent
           .post('/reflections')
-          .send({ raw_text: '', options: [] })
+          .send({ raw_text: '', selected_option_ids: [] })
           .expect(
             BadRequestError.prototype.status,
             errorEnvelope(
@@ -113,7 +113,7 @@ describe('reflectionsRouter', () => {
         trackerHelper(done);
         appAgent
           .post('/reflections')
-          .send({ options: [{ id: MOCK_OPTION_ID }] })
+          .send({ selected_option_ids: [MOCK_OPTION_ID] })
           .expect(201, itemEnvelope({ id: MOCK_REFLECTION_ID }), done);
       }, done);
     });
@@ -137,7 +137,7 @@ describe('reflectionsRouter', () => {
           .post('/reflections')
           .send({
             raw_text: 'Hello! I feel good today',
-            options: [{ id: MOCK_OPTION_ID }],
+            selected_option_ids: [MOCK_OPTION_ID],
           })
           .expect(201, itemEnvelope({ id: MOCK_REFLECTION_ID }), done);
       }, done);
@@ -150,7 +150,7 @@ describe('reflectionsRouter', () => {
           .post('/reflections')
           .send({
             raw_text: 'Hello! I feel good today',
-            options: [{ id: MOCK_OPTION_ID }, { id: MOCK_OPTION_ID + 1 }],
+            selected_option_ids: [MOCK_OPTION_ID, MOCK_OPTION_ID + 1],
           })
           .expect(201, itemEnvelope({ id: MOCK_REFLECTION_ID }), done);
       }, done);
@@ -178,10 +178,10 @@ describe('reflectionsRouter', () => {
           .post('/reflections')
           .send({
             raw_text: 'Hello! I feel good today',
-            options: [
-              { id: MOCK_OPTION_ID },
-              { id: MOCK_OPTION_ID + 1 },
-              { id: MOCK_OPTION_ID + 2 },
+            selected_option_ids: [
+              MOCK_OPTION_ID,
+              MOCK_OPTION_ID + 1,
+              MOCK_OPTION_ID + 2,
             ],
           })
           .expect(
