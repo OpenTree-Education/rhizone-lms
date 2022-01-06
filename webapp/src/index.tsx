@@ -2,12 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import './index.css';
-import App from './components/App';
+import AuthWall from './components/AuthWall';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <AuthWall />
   </React.StrictMode>,
   document.getElementById('root')
 );
