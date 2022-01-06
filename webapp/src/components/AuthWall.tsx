@@ -8,9 +8,10 @@ import WelcomePage from './WelcomePage';
 
 const AuthWall = () => {
   const [error, setError] = useState(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [user, setUser] = useState<User>({ principal_id: null });
+  const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   useEffect(() => {
+    setIsLoading(true);
     fetch(`${process.env.REACT_APP_API_ORIGIN}/user`, {
       credentials: 'include',
     })
@@ -18,11 +19,11 @@ const AuthWall = () => {
       .then(
         ({ data: user }) => {
           setUser(user);
-          setIsLoaded(true);
+          setIsLoading(false);
         },
         error => {
           setError(error);
-          setIsLoaded(true);
+          setIsLoading(false);
         }
       );
   }, []);
@@ -37,7 +38,7 @@ const AuthWall = () => {
       </Stack>
     );
   }
-  if (!isLoaded) {
+  if (isLoading) {
     return (
       <Stack
         alignItems="center"
@@ -47,6 +48,9 @@ const AuthWall = () => {
         <CircularProgress />
       </Stack>
     );
+  }
+  if (!user) {
+    return null;
   }
   return user.principal_id === null ? (
     <WelcomePage />

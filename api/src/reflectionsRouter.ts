@@ -12,15 +12,11 @@ import paginationValues from './paginationValues';
 
 const reflectionsRouter = Router();
 
-export interface Option {
-  id: number;
-}
-
 reflectionsRouter.post('/', async (req, res, next) => {
   const { principalId } = req.session;
   const rawText = req.body.raw_text;
-  const options: Array<Option> = req.body.options || [];
-  if (!rawText && options.length === 0) {
+  const selectedOptionIds: number[] = req.body.selected_option_ids || [];
+  if (!rawText && selectedOptionIds.length === 0) {
     next(
       new BadRequestError(
         'At least one option or journal entry must be present to complete this request'
@@ -30,8 +26,8 @@ reflectionsRouter.post('/', async (req, res, next) => {
   }
 
   if (
-    options.length !== 0 &&
-    !(await validateOptionIds(options.map(optionObj => optionObj.id)))
+    selectedOptionIds.length !== 0 &&
+    !(await validateOptionIds(selectedOptionIds))
   ) {
     next(new ValidationError());
     return;
@@ -52,11 +48,11 @@ reflectionsRouter.post('/', async (req, res, next) => {
         });
       }
 
-      if (options.length > 0) {
+      if (selectedOptionIds.length > 0) {
         await trx('responses').insert(
-          options.map(option => {
+          selectedOptionIds.map(optionId => {
             return {
-              option_id: option.id,
+              option_id: optionId,
               reflection_id: insertedReflectionId[0],
               principal_id: principalId,
             };

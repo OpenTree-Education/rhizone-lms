@@ -2,6 +2,8 @@ import { createContext } from 'react';
 
 import { User } from '../types/api';
 
-const UserContext = createContext<User>({ principal_id: null });
+const defaultUser = { principal_id: null };
+
+const UserContext = createContext<User>(defaultUser);
 
 export default UserContext;

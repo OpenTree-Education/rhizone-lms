@@ -18,16 +18,23 @@ const Meeting = ({ meetingId }: MeetingProps) => {
       credentials: 'include',
     })
       .then(res => res.json())
-      .then(
-        ({ data: meeting }) => setMeeting(meeting),
-        error => setError(error)
-      );
+      .then(({ data, error }) => {
+        if (error) {
+          setError(error);
+        }
+        if (data) {
+          setMeeting(data);
+        }
+      })
+      .catch(error => {
+        setError(error);
+      });
   }, [meetingId]);
   if (error) {
     return <div>There was an error loading the meeting.</div>;
   }
   if (!meeting) {
-    return <div>Loading...</div>;
+    return null;
   }
   const currentParticipantId = meeting.participants.find(
     ({ principal_id }) => principal_id === user.principal_id

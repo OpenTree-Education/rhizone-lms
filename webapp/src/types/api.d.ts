@@ -4,26 +4,32 @@ export interface CreationResponseEnvelope {
   };
 }
 
-export type Prompt = {
+export interface Prompt {
   id: number;
   label: string;
-};
+  options: Option[];
+  query_text: string;
+}
 
-export type Option = {
+export interface Option {
   id: number;
   label: string;
   prompt: Prompt;
-};
+}
 
-export type Response = {
+export interface Questionnaire {
+  prompts: Prompt[];
+}
+
+export interface Response {
   id: number;
   option: Option;
-};
+}
 
-export type JournalEntry = {
+export interface JournalEntry {
   id: number;
   raw_text: string;
-};
+}
 
 export interface Reflection {
   id: number;
@@ -54,4 +60,8 @@ export interface MeetingNote {
 
 export interface User {
   principal_id: number | null;
+}
+
+export interface Settings {
+  default_questionnaire_id: string;
 }
