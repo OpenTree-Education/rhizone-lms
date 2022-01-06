@@ -1,5 +1,4 @@
 FROM node:16
-WORKDIR /webapp
-COPY package.json yarn.lock /webapp/
+WORKDIR /app
+COPY . .
 RUN yarn install
-CMD yarn start

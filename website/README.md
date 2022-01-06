@@ -6,7 +6,9 @@ This site is built on [Gatsby](https://www.gatsbyjs.com/).
 
 Run `yarn install` and you're good to go!
 
-Run `yarn start` to start the dev server.
+Run `yarn develop` to start the dev server.
+
+Run `yarn build && yarn serve` to run the production build locally.
 
 ## Read the docs and experiment
 

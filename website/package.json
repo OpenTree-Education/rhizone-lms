@@ -1,15 +1,15 @@
 {
-  "name": "opentree-education-website",
-  "version": "1.0.0",
-  "private": true,
-  "description": "OpenTree Education",
+  "name": "website",
+  "version": "0",
+  "description": "OpenTree Education website",
   "author": "OpenTree Education Inc.",
   "license": "UNLICENSED",
+  "private": true,
   "scripts": {
-    "start": "ENABLE_GATSBY_REFRESH_ENDPOINT=true gatsby develop",
     "build": "gatsby build",
-    "serve": "gatsby serve",
     "clean": "gatsby clean",
+    "develop": "ENABLE_GATSBY_REFRESH_ENDPOINT=true gatsby develop",
+    "serve": "gatsby serve",
     "storybook": "start-storybook -p 6006"
   },
   "dependencies": {

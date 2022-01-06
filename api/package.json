@@ -1,13 +1,18 @@
 {
-  "name": "rhizone-lms-api",
-  "version": "1.0.0",
+  "name": "api",
+  "version": "0",
   "description": "Web API for Rhizone LMS",
-  "repository": "https://github.com/OpenTree-Education/rhizone-lms",
-  "author": "OpenTree Education",
+  "author": "OpenTree Education Inc.",
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "start": "HOST=0.0.0.0 yarn nodemon --watch 'src/**/*.ts' --exec ts-node src/server.ts"
+    "build": "tsc",
+    "develop": "HOST=0.0.0.0 yarn nodemon --watch 'src/**/*.ts' --exec ts-node src/server.ts",
+    "eslint:fix": "eslint --fix 'src/**/*.ts'",
+    "delint": "yarn eslint:fix; yarn prettier:write",
+    "prettier:write": "prettier --write 'src/**/*.ts'",
+    "start": "node dist/server.js",
+    "test": "jest"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
