@@ -1,5 +1,4 @@
 FROM node:16
-WORKDIR /api
-COPY package.json yarn.lock /api/
+WORKDIR /app
+COPY . .
 RUN yarn install
-CMD yarn start
