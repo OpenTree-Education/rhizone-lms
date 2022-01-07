@@ -1104,7 +1104,7 @@ binary-extensions@^2.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
   integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
 
-bluebird@^3.4.1:
+bluebird@^3.4.1, bluebird@^3.7.2:
   version "3.7.2"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.7.2.tgz#9f229c15be272454ffa973ace0dbee79a1b0c36f"
   integrity sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==
@@ -1347,6 +1347,11 @@ colorette@1.2.1:
   resolved "https://registry.yarnpkg.com/colorette/-/colorette-1.2.1.tgz#4d0b921325c14faf92633086a536db6e89564b1b"
   integrity sha512-puCDz0CzydiSYOrnXpz/PKd69zRrribezjtE9yd4zvytoRc8+RY/KJPvtPFKZS3E3wP6neGyMe0vOTlHO5L3Pw==
 
+colorette@2.0.16:
+  version "2.0.16"
+  resolved "https://registry.yarnpkg.com/colorette/-/colorette-2.0.16.tgz#713b9af84fdb000139f04546bd4a93f62a5085da"
+  integrity sha512-hUewv7oMjCp+wkBv5Rm0v87eJhq4woh5rSR+42YSQJKecCqgIqNkZ6lAlQms/BwHPJA5NKMRlpxPRv0n8HQW6g==
+
 combined-stream@^1.0.8:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/combined-stream/-/combined-stream-1.0.8.tgz#c3d45a8b34fd730631a110a8a2520682b31d5a7f"
@@ -1380,6 +1385,14 @@ configstore@^5.0.1:
     unique-string "^2.0.0"
     write-file-atomic "^3.0.0"
     xdg-basedir "^4.0.0"
+
+connect-session-knex@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/connect-session-knex/-/connect-session-knex-2.1.1.tgz#3543417a0c2bb6700b219e3c88f4e1b4b304f09a"
+  integrity sha512-gIOqwoU4mWe9uwkWsnBI9KsBr2sYp0IyXX6NJG7oGW6wJjy5CpWufB3FoJPEYb2OqNPMmshr07vS12pcMfok2g==
+  dependencies:
+    bluebird "^3.7.2"
+    knex "^0.95.6"
 
 content-disposition@0.5.3:
   version "0.5.3"
@@ -3006,6 +3019,25 @@ knex@^0.95.11:
   integrity sha512-grDetD91O8VoQVCFqeWTgkzdq5406W6rggF/lK1hHuwzmjDs/0m9KxyncGdZbklTi7aUgHvw3+Cfy4x7FvpdaQ==
   dependencies:
     colorette "1.2.1"
+    commander "^7.1.0"
+    debug "4.3.2"
+    escalade "^3.1.1"
+    esm "^3.2.25"
+    getopts "2.2.5"
+    interpret "^2.2.0"
+    lodash "^4.17.21"
+    pg-connection-string "2.5.0"
+    rechoir "0.7.0"
+    resolve-from "^5.0.0"
+    tarn "^3.0.1"
+    tildify "2.0.0"
+
+knex@^0.95.6:
+  version "0.95.15"
+  resolved "https://registry.yarnpkg.com/knex/-/knex-0.95.15.tgz#39d7e7110a6e2ad7de5d673d2dea94143015e0e7"
+  integrity sha512-Loq6WgHaWlmL2bfZGWPsy4l8xw4pOE+tmLGkPG0auBppxpI0UcK+GYCycJcqz9W54f2LiGewkCVLBm3Wq4ur/w==
+  dependencies:
+    colorette "2.0.16"
     commander "^7.1.0"
     debug "4.3.2"
     escalade "^3.1.1"

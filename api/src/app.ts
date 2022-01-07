@@ -1,10 +1,12 @@
 import bodyParser from 'body-parser';
+import connectSessionKnex from 'connect-session-knex';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import session from 'express-session';
 
 import authRouter from './authRouter';
+import db from './db';
 import { handleErrors, handleNotFound } from './errorHandlingMiddleware';
 import journalEntriesRouter from './journalEntriesRouter';
 import { loggedIn } from './authMiddleware';
@@ -34,16 +36,21 @@ app.use(bodyParser.json());
 
 app.set('trust proxy', 1);
 
+const KnexSessionStore = connectSessionKnex(session);
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || 'default session secret',
-    name: 'session_id',
-    resave: true,
-    saveUninitialized: true,
     cookie: {
       sameSite: true,
       secure: app.get('secure'),
     },
+    name: 'session_id',
+    resave: true,
+    secret: process.env.SESSION_SECRET || 'default session secret',
+    saveUninitialized: true,
+    store: new KnexSessionStore({
+      createtable: false,
+      knex: db,
+    }),
   })
 );
 
