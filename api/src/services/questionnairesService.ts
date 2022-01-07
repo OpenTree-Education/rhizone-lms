@@ -7,7 +7,7 @@ export const findQuestionnaire = async (
   const [questionnaire] = await builder('questionnaires')
     .select('id')
     .where({ id: questionnaireId });
-  if (questionnaire) {
+  if (!questionnaire) {
     return null;
   }
   const prompts = await builder('prompts')
