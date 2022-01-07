@@ -139,7 +139,7 @@ communicates with the api.
 The `/website` folder contains a Gatsby site that is published as the marketing
 website for OpenTree Education.
 
-## Troubleshooting and tips
+## Hints and troubleshooting
 
 ### Create an alias for docker-compose
 
