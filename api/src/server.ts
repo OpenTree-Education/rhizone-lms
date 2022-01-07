@@ -8,7 +8,6 @@ import helmet from 'helmet';
 
 import authRouter from './authRouter';
 import { handleErrors, handleNotFound } from './errorHandlingMiddleware';
-import journalEntriesRouter from './journalEntriesRouter';
 import { loggedIn } from './authMiddleware';
 import meetingsRouter from './meetingsRouter';
 import questionnairesRouter from './questionnairesRouter';
@@ -55,7 +54,6 @@ const start = async () => {
   });
   app.use(withCors, authRouter);
   app.use('/user', withCors, userRouter);
-  app.use('/journalentries', withCors, loggedIn, journalEntriesRouter);
   app.use('/meetings', withCors, loggedIn, meetingsRouter);
   app.use('/questionnaires', withCors, loggedIn, questionnairesRouter);
   app.use('/reflections', withCors, loggedIn, reflectionsRouter);
