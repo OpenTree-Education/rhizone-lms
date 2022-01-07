@@ -52,6 +52,25 @@
     "ts-node": "^10.4.0",
     "typescript": "^4.4.4"
   },
+  "eslintConfig": {
+    "env": {
+      "node": true,
+      "es2021": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "prettier"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaVersion": 2021,
+      "sourceType": "module"
+    },
+    "plugins": [
+      "@typescript-eslint"
+    ]
+  },
   "jest": {
     "clearMocks": true,
     "modulePathIgnorePatterns": [
