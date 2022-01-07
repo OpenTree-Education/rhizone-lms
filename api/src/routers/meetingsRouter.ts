@@ -9,14 +9,14 @@ import {
   findParticipantIdForPrincipal,
 } from '../services/meetingsService';
 import db from '../db';
-import paginationValues from '../paginationValues';
 import { BadRequestError, NotFoundError, ValidationError } from '../httpErrors';
+import { parsePaginationParams } from '../middleware/paginationParamsMiddleware';
 
 const meetingsRouter = Router();
 
-meetingsRouter.get('/', async (req, res, next) => {
+meetingsRouter.get('/', parsePaginationParams(), async (req, res, next) => {
   const { principalId } = req.session;
-  const { limit, offset } = paginationValues(req.query.page, req.query.perpage);
+  const { limit, offset } = req.pagination;
   let meetings;
   let meetingsCount;
   try {

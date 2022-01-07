@@ -8,7 +8,9 @@ import {
   countReflections,
   validateOptionIds,
 } from '../services/reflectionsService';
-import paginationValues from '../paginationValues';
+import {
+  parsePaginationParams
+} from "../middleware/paginationParamsMiddleware";
 
 const reflectionsRouter = Router();
 
@@ -67,9 +69,9 @@ reflectionsRouter.post('/', async (req, res, next) => {
   res.status(201).json(itemEnvelope({ id: insertedReflectionId[0] }));
 });
 
-reflectionsRouter.get('/', async (req, res, next) => {
+reflectionsRouter.get('/', parsePaginationParams(), async (req, res, next) => {
   const { principalId } = req.session;
-  const { limit, offset } = paginationValues(req.query.page, req.query.perpage);
+  const { limit, offset } = req.pagination;
   let reflections;
   let reflectionsCount;
   try {
