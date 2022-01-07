@@ -84,5 +84,9 @@
     "setupFilesAfterEnv": [
       "<rootDir>/src/setupTests.ts"
     ]
+  },
+  "prettier": {
+    "arrowParens": "avoid",
+    "singleQuote": true
   }
 }
