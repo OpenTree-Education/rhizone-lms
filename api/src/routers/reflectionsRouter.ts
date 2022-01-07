@@ -8,9 +8,7 @@ import {
   countReflections,
   validateOptionIds,
 } from '../services/reflectionsService';
-import {
-  parsePaginationParams
-} from "../middleware/paginationParamsMiddleware";
+import { parsePaginationParams } from '../middleware/paginationParamsMiddleware';
 
 const reflectionsRouter = Router();
 
@@ -75,12 +73,10 @@ reflectionsRouter.get('/', parsePaginationParams(), async (req, res, next) => {
   let reflections;
   let reflectionsCount;
   try {
-    await db.transaction(async trx => {
-      [reflections, reflectionsCount] = await Promise.all([
-        listReflections(principalId, limit, offset, trx),
-        countReflections(principalId, trx),
-      ]);
-    });
+    [reflections, reflectionsCount] = await Promise.all([
+      listReflections(principalId, limit, offset),
+      countReflections(principalId),
+    ]);
   } catch (err) {
     next(err);
     return;

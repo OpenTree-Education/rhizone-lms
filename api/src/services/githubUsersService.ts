@@ -9,8 +9,8 @@ export const findGithubUserByGithubId = async (githubId: number) => {
 
 export const createGithubUser = async (githubId: number) => {
   const githubUser: {
+    github_id: number;
     id?: number;
-    github_id?: number;
     principal_id?: number;
   } = { github_id: githubId };
   await db.transaction(async trx => {

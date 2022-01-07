@@ -20,12 +20,10 @@ meetingsRouter.get('/', parsePaginationParams(), async (req, res, next) => {
   let meetings;
   let meetingsCount;
   try {
-    await db.transaction(async trx => {
-      [meetings, meetingsCount] = await Promise.all([
-        listMeetings(principalId, limit, offset, trx),
-        countMeetings(principalId, trx),
-      ]);
-    });
+    [meetings, meetingsCount] = await Promise.all([
+      listMeetings(principalId, limit, offset),
+      countMeetings(principalId),
+    ]);
   } catch (err) {
     next(err);
     return;
