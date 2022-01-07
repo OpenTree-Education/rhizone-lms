@@ -1,8 +1,11 @@
 import { agent, SuperAgentTest } from 'supertest';
+import express from 'express';
 
-import app from './app';
 import { getGithubAccessToken, getGithubUser } from './githubApi';
 import { tracker } from './mockDb';
+
+// FIXME Replaced app with this fake one in preparation for a big refactor
+const app = express();
 
 export const loginFirstTime = (
   onLogin: (appAgent: SuperAgentTest) => unknown,
