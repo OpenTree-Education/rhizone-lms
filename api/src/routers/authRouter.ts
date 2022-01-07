@@ -1,6 +1,9 @@
 import { Router } from 'express';
 
-import db from '../db';
+import {
+  createGithubUser,
+  findGithubUserByGithubId,
+} from '../services/githubUsersService';
 import {
   getGithubAccessToken,
   getGithubUser,
@@ -33,28 +36,13 @@ authRouter.get(`/auth/github/callback`, async (req, res) => {
     return;
   }
   const accessToken = await getGithubAccessToken(String(code));
-  const githubUser = await getGithubUser(accessToken);
-  let principalId;
-  const githubId = githubUser.id;
-  const findGhUser = await db('github_users')
-    .select('principal_id')
-    .where({ github_id: githubId });
-  if (findGhUser.length) {
-    principalId = findGhUser[0].principal_id;
-  } else {
-    await db.transaction(async trx => {
-      const insertPrincipal = await trx('principals').insert(
-        { entity_type: 'user' },
-        ['id']
-      );
-      principalId = insertPrincipal[0];
-      await trx('github_users').insert({
-        github_id: githubId,
-        principal_id: principalId,
-      });
-    });
+  const githubApiUser = await getGithubUser(accessToken);
+  const githubId = githubApiUser.id;
+  let githubUser = await findGithubUserByGithubId(githubId);
+  if (!githubUser) {
+    githubUser = await createGithubUser(githubId);
   }
-  req.session.principalId = principalId;
+  req.session.principalId = githubUser.principal_id;
   res.redirect(process.env.WEBAPP_ORIGIN);
 });
 
