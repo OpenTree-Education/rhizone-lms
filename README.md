@@ -112,21 +112,6 @@ ESLint and Prettier can automatically fix many mistakes that will cause
 automated checks to fail. It is recommended to use the preconfigured
 `yarn delint` command before committing to a module that supports it.
 
-### Developing a database migration
-
-Database migrations run automatically when `docker-compose up` is run. However,
-while developing a migration, it is sometimes required to run Flyway commands
-manually. Those commands can be run with Docker Compose to inherit the
-configuration from `docker-compose.yml`. For example, to print info on the
-status of migrations, run:
-
-```
-docker-compose run flyway info
-```
-
-For more commands, see the
-[Flyway CLI docs](https://flywaydb.org/documentation/usage/commandline/).
-
 ## Modules
 
 ### `/api`
