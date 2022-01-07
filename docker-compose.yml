@@ -8,13 +8,13 @@ services:
       - GITHUB_REDIRECT_URI=http://api.rhi.zone-development/auth/github/callback
       - WEBAPP_ORIGIN=http://rhi.zone-development
       - MYSQL_DATABASE=rhizone_lms_development
-      - MYSQL_HOST=db
+      - MYSQL_HOST=mysql
       - MYSQL_PASSWORD=dev
       - MYSQL_USER=dev
     volumes:
       - ./api:/app
       - api_node_modules:/app/node_modules
-  db:
+  mysql:
     command: --default-authentication-plugin=mysql_native_password
     environment:
       - MYSQL_DATABASE=rhizone_lms_development
@@ -27,11 +27,11 @@ services:
   flyway:
     command: migrate
     depends_on:
-      - db
+      - mysql
     environment:
       - FLYWAY_CONNECT_RETRIES=10
       - FLYWAY_PASSWORD=dev
-      - FLYWAY_URL=jdbc:mysql://db/rhizone_lms_development
+      - FLYWAY_URL=jdbc:mysql://mysql/rhizone_lms_development
       - FLYWAY_USER=dev
     image: flyway/flyway:8
     volumes:
@@ -45,6 +45,8 @@ services:
       - 80:80
     volumes:
       - ./nginx/development/nginx.conf:/etc/nginx/nginx.conf
+  redis:
+    image: redis:6
   webapp:
     build: ./webapp
     command: yarn develop
