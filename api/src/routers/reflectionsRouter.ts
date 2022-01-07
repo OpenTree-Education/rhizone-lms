@@ -12,6 +12,23 @@ import { parsePaginationParams } from '../middleware/paginationParamsMiddleware'
 
 const reflectionsRouter = Router();
 
+reflectionsRouter.get('/', parsePaginationParams(), async (req, res, next) => {
+  const { principalId } = req.session;
+  const { limit, offset } = req.pagination;
+  let reflections;
+  let reflectionsCount;
+  try {
+    [reflections, reflectionsCount] = await Promise.all([
+      listReflections(principalId, limit, offset),
+      countReflections(principalId),
+    ]);
+  } catch (err) {
+    next(err);
+    return;
+  }
+  res.json(collectionEnvelope(reflections, reflectionsCount));
+});
+
 reflectionsRouter.post('/', async (req, res, next) => {
   const { principalId } = req.session;
   const rawText = req.body.raw_text;
@@ -65,23 +82,6 @@ reflectionsRouter.post('/', async (req, res, next) => {
     return;
   }
   res.status(201).json(itemEnvelope({ id: insertedReflectionId[0] }));
-});
-
-reflectionsRouter.get('/', parsePaginationParams(), async (req, res, next) => {
-  const { principalId } = req.session;
-  const { limit, offset } = req.pagination;
-  let reflections;
-  let reflectionsCount;
-  try {
-    [reflections, reflectionsCount] = await Promise.all([
-      listReflections(principalId, limit, offset),
-      countReflections(principalId),
-    ]);
-  } catch (err) {
-    next(err);
-    return;
-  }
-  res.json(collectionEnvelope(reflections, reflectionsCount));
 });
 
 export default reflectionsRouter;
