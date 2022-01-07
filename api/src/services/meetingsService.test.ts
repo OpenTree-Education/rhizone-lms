@@ -3,7 +3,7 @@ import { Knex } from 'knex';
 import {
   countMeetings,
   findMeeting,
-  findParticipantIdForPrincipal,
+  findParticipantForPrincipalInMeeting,
   insertMeetingNote,
   listMeetings,
 } from './meetingsService';
@@ -218,7 +218,7 @@ describe('meetingsService', () => {
           throw new Error(`Unexpected query: ${sql}`);
         }
       });
-      expect(await findParticipantIdForPrincipal(2, 3)).toEqual(3);
+      expect(await findParticipantForPrincipalInMeeting(2, 3)).toEqual(3);
     });
 
     it(`should return null if a meeting participant is not found`, async () => {
@@ -233,7 +233,7 @@ describe('meetingsService', () => {
           throw new Error(`Unexpected query: ${sql}`);
         }
       });
-      expect(await findParticipantIdForPrincipal(2, 0)).toEqual(null);
+      expect(await findParticipantForPrincipalInMeeting(2, 0)).toEqual(null);
     });
 
     it('should reject with the database error', () => {
@@ -241,7 +241,7 @@ describe('meetingsService', () => {
       tracker.on('query', ({ reject }) => {
         reject(databaseError);
       });
-      return expect(findParticipantIdForPrincipal(2, 3)).rejects.toBe(
+      return expect(findParticipantForPrincipalInMeeting(2, 3)).rejects.toBe(
         databaseError
       );
     });

@@ -1,15 +1,14 @@
 import { Router } from 'express';
 
+import { BadRequestError, NotFoundError, ValidationError } from '../httpErrors';
 import { collectionEnvelope, itemEnvelope } from '../responseEnvelope';
 import {
   countMeetings,
   findMeeting,
   insertMeetingNote,
   listMeetings,
-  findParticipantIdForPrincipal,
+  findParticipantForPrincipalInMeeting,
 } from '../services/meetingsService';
-import db from '../db';
-import { BadRequestError, NotFoundError, ValidationError } from '../httpErrors';
 import { parsePaginationParams } from '../middleware/paginationParamsMiddleware';
 
 const meetingsRouter = Router();
@@ -56,33 +55,29 @@ meetingsRouter.get('/:id', async (req, res, next) => {
 });
 
 meetingsRouter.post('/:id/notes', async (req, res, next) => {
+  const { id } = req.params;
   const { principalId } = req.session;
-  const meetingId = Number(req.params.id);
-  const agendaOwningParticipantId = req.body.agenda_owning_participant_id;
-  const noteText = req.body.note_text;
-  const sortOrder = req.body.sort_order;
-
-  if (!(Number.isInteger(meetingId) && meetingId > 0)) {
-    next(new ValidationError('Meeting id must be a positive integer.'));
+  const {
+    agenda_owning_participant_id: agendaOwningParticipantId,
+    note_text: noteText,
+    sort_order: sortOrder,
+  } = req.body;
+  const meetingId = Number(id);
+  if (!Number.isInteger(meetingId) || meetingId < 1) {
+    next(new BadRequestError(`"${id}" is not a valid meeting id.`));
     return;
   }
   if (typeof noteText !== 'string') {
-    next(new ValidationError('note_text must be of type string.'));
+    next(new ValidationError('note_text must be a string.'));
     return;
   }
   if (!Number.isFinite(sortOrder)) {
-    next(
-      new ValidationError(
-        'sort_order must be of type number and neither positive Infinity, negative Infinity, nor NaN'
-      )
-    );
+    next(new ValidationError('sort_order must be a number'));
     return;
   }
   if (
-    !(
-      Number.isInteger(agendaOwningParticipantId) &&
-      agendaOwningParticipantId > 0
-    ) &&
+    (!Number.isInteger(agendaOwningParticipantId) ||
+      agendaOwningParticipantId < 1) &&
     agendaOwningParticipantId !== null
   ) {
     next(
@@ -92,38 +87,35 @@ meetingsRouter.post('/:id/notes', async (req, res, next) => {
     );
     return;
   }
-
-  let insertedNoteId: number;
-  let participantId: number;
+  let authoringParticipant;
   try {
-    await db.transaction(async trx => {
-      participantId = await findParticipantIdForPrincipal(
-        principalId,
-        meetingId,
-        trx
-      );
-
-      if (participantId) {
-        insertedNoteId = await insertMeetingNote(
-          agendaOwningParticipantId,
-          participantId,
-          noteText,
-          sortOrder,
-          trx
-        );
-      }
-    });
+    authoringParticipant = await findParticipantForPrincipalInMeeting(
+      principalId,
+      meetingId
+    );
   } catch (err) {
     next(err);
     return;
   }
-  if (!participantId) {
+  if (!authoringParticipant) {
     next(
-      new NotFoundError(`Participant for meeting ${meetingId} is not found.`)
+      new NotFoundError(`A meeting with the id "${id}" could not be found.`)
     );
     return;
   }
-  res.status(201).json(itemEnvelope({ id: insertedNoteId }));
+  let meetingNote;
+  try {
+    meetingNote = await insertMeetingNote(
+      agendaOwningParticipantId,
+      authoringParticipant.id,
+      noteText,
+      sortOrder
+    );
+  } catch (err) {
+    next(err);
+    return;
+  }
+  res.status(201).json(itemEnvelope(meetingNote));
 });
 
 export default meetingsRouter;

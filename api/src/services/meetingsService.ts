@@ -82,29 +82,27 @@ export const listMeetings = async (
   return Array.from(meetingsById.values());
 };
 
-export const findParticipantIdForPrincipal = async (
-  meetingId: number,
+export const findParticipantForPrincipalInMeeting = async (
   principalId: number,
-  builder = db
+  meetingId: number
 ) => {
-  const participants = await builder('participants')
+  const [participant] = await db('participants')
     .select('id')
     .where({ meeting_id: meetingId, principal_id: principalId });
-  return participants.length ? participants[0].id : null;
+  return participant || null;
 };
 
 export const insertMeetingNote = async (
   agendaOwningParticipantId: number | null,
-  participantId: number,
+  authoringParticipantId: number,
   noteText: string,
-  sortOrder: number,
-  builder = db
+  sortOrder: number
 ) => {
-  const insertedNoteIds = await builder('meeting_notes').insert({
+  const [id] = await db('meeting_notes').insert({
     agenda_owning_participant_id: agendaOwningParticipantId,
-    authoring_participant_id: participantId,
+    authoring_participant_id: authoringParticipantId,
     note_text: noteText,
     sort_order: sortOrder,
   });
-  return insertedNoteIds[0];
+  return { id };
 };
