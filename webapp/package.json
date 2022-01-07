@@ -8,8 +8,10 @@
   "scripts": {
     "build": "react-scripts build",
     "develop": "HOST=0.0.0.0 react-scripts start",
+    "eslint:check": "eslint 'src/**/*.{ts,tsx}'",
     "eslint:fix": "eslint --fix 'src/**/*.{ts,tsx}'",
     "delint": "yarn eslint:fix; yarn prettier:write",
+    "prettier:check": "prettier --check 'src/**/*.{ts,tsx,css}'",
     "prettier:write": "prettier --write 'src/**/*.{ts,tsx,css}'",
     "test": "TZ=UTC react-scripts test"
   },

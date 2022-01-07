@@ -8,8 +8,10 @@
   "scripts": {
     "build": "tsc",
     "develop": "HOST=0.0.0.0 yarn nodemon --watch 'src/**/*.ts' --exec ts-node src/server.ts",
+    "eslint:check": "eslint 'src/**/*.ts'",
     "eslint:fix": "eslint --fix 'src/**/*.ts'",
     "delint": "yarn eslint:fix; yarn prettier:write",
+    "prettier:check": "prettier --check 'src/**/*.ts'",
     "prettier:write": "prettier --write 'src/**/*.ts'",
     "start": "node dist/server.js",
     "test": "jest"

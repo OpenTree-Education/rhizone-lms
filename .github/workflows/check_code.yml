@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  all_checks:
-    name: Lint and test packages
+  check_api:
+    name: api lint and tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -15,44 +15,69 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version: "16"
           cache: yarn
-          cache-dependency-path: |
-            api/yarn.lock
-            webapp/yarn.lock
-
+          cache-dependency-path: api/yarn.lock
       - name: Install API dependencies
         if: always()
         working-directory: api
         run: yarn install
-      - name: Check API formatting
+      - name: Check api formatting
         if: always()
         working-directory: api
-        run: yarn prettier --check 'src/**/*.ts'
-      - name: Check API lint
+        run: yarn prettier:check
+      - name: Check api lint
         if: always()
         working-directory: api
-        run: yarn eslint 'src/**/*.ts'
+        run: yarn eslint:check
+      - name: Run api tests
+        if: always()
+        working-directory: api
+        run: yarn test
 
-      - name: Install web app dependencies
+  check_webapp:
+    name: webapp lint and tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: yarn
+          cache-dependency-path: webapp/yarn.lock
+      - name: Install webapp dependencies
         if: always()
         working-directory: webapp
         run: yarn install
-      - name: Check web app formatting
+      - name: Check webapp formatting
         if: always()
         working-directory: webapp
         run: yarn prettier --check 'src/**/*.{ts,tsx,css}'
-      - name: Check web app lint
+      - name: Check webapp lint
         if: always()
         working-directory: webapp
         run: yarn eslint 'src/**/*.{ts,tsx}'
-      - name: Run web app tests
+      - name: Run webapp tests
         if: always()
         working-directory: webapp
         env:
           CI: true
-        run: yarn test --passWithNoTests
+        run: yarn test
 
+  check_website:
+    name: website lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: yarn
+          cache-dependency-path: website/yarn.lock
       - name: Install website dependencies
         if: always()
         working-directory: website
@@ -60,8 +85,8 @@ jobs:
       - name: Check website formatting
         if: always()
         working-directory: website
-        run: yarn prettier --check 'src/**/*.{ts,tsx}'
+        run: yarn prettier:check
       - name: Check website lint
         if: always()
         working-directory: website
-        run: yarn eslint 'src/**/*.{ts,tsx}'
+        run: yarn eslint:check

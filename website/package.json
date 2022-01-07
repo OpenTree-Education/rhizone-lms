@@ -9,6 +9,11 @@
     "build": "gatsby build",
     "clean": "gatsby clean",
     "develop": "ENABLE_GATSBY_REFRESH_ENDPOINT=true gatsby develop",
+    "eslint:check": "eslint 'src/**/*.{ts,tsx}'",
+    "eslint:fix": "eslint --fix 'src/**/*.{ts,tsx}'",
+    "delint": "yarn eslint:fix; yarn prettier:write",
+    "prettier:check": "prettier --check 'src/**/*.{ts,tsx,css}'",
+    "prettier:write": "prettier --write 'src/**/*.{ts,tsx,css}'",
     "serve": "gatsby serve",
     "storybook": "start-storybook -p 6006"
   },
