@@ -33,10 +33,6 @@ jobs:
         if: always()
         working-directory: api
         run: yarn eslint 'src/**/*.ts'
-      - name: Run API tests
-        if: always()
-        working-directory: api
-        run: yarn jest --passWithNoTests
 
       - name: Install web app dependencies
         if: always()
