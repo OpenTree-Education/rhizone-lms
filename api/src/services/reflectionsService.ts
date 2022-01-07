@@ -2,10 +2,10 @@ import db from '../db';
 
 export const countReflections = async (principalId: number, builder = db) => {
   const countAlias = 'total_count';
-  const reflectionsCounts = await builder('reflections')
+  const [count] = await builder('reflections')
     .count({ [countAlias]: '*' })
     .where({ principal_id: principalId });
-  return reflectionsCounts[0][countAlias];
+  return count[countAlias];
 };
 
 export const listReflections = async (

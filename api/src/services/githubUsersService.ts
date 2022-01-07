@@ -1,10 +1,10 @@
 import db from '../db';
 
 export const findGithubUserByGithubId = async (githubId: number) => {
-  const githubUsers = await db('github_users')
+  const [githubUser] = await db('github_users')
     .select('id', 'principal_id')
     .where({ github_id: githubId });
-  return githubUsers.length ? githubUsers[0] : null;
+  return githubUser || null;
 };
 
 export const createGithubUser = async (githubId: number) => {

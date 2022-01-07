@@ -4,11 +4,10 @@ export const findQuestionnaire = async (
   questionnaireId: number,
   builder = db
 ) => {
-  const questionnaireRows = await builder('questionnaires')
+  const [questionnaire] = await builder('questionnaires')
     .select('id')
-    .where({ id: questionnaireId })
-    .limit(1);
-  if (!questionnaireRows.length) {
+    .where({ id: questionnaireId });
+  if (questionnaire) {
     return null;
   }
   const prompts = await builder('prompts')
@@ -35,7 +34,7 @@ export const findQuestionnaire = async (
     }
   }
   return {
-    ...questionnaireRows[0],
+    ...questionnaire,
     prompts: Array.from(promptsById.values()),
   };
 };

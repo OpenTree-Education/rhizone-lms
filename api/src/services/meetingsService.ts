@@ -2,53 +2,50 @@ import db from '../db';
 
 export const countMeetings = async (principalId: number, builder = db) => {
   const countAlias = 'total_count';
-  const meetingCounts = await builder('meetings')
+  const [count] = await builder('meetings')
     .count({ [countAlias]: '*' })
     .join('participants', 'participants.meeting_id', 'meetings.id')
     .where({ 'participants.principal_id': principalId });
-  return meetingCounts[0][countAlias];
+  return count[countAlias];
 };
 
 export const findMeeting = async (
   id: number,
   principalId: number
 ): Promise<object | null> => {
-  let meeting;
-  await db.transaction(async trx => {
-    [meeting] = await trx('meetings')
-      .select('meetings.id AS id', 'starts_at')
-      .join('participants', 'participants.meeting_id', 'meetings.id')
-      .where({ 'meetings.id': id, 'participants.principal_id': principalId });
-    if (!meeting) {
-      return;
-    }
-    [meeting.meeting_notes, meeting.participants] = await Promise.all([
-      trx('meeting_notes')
-        .select(
-          'meeting_notes.id AS id',
-          'note_text',
-          'sort_order',
-          'authoring_participant_id',
-          'agenda_owning_participant_id'
-        )
-        .join(
-          'participants',
-          'participants.id',
-          'meeting_notes.authoring_participant_id'
-        )
-        .where({ 'participants.meeting_id': id })
-        .orderBy([
-          'agenda_owning_participant_id',
-          'sort_order',
-          'meeting_notes.created_at',
-        ]),
-      trx('participants')
-        .select('id', 'principal_id')
-        .where({ meeting_id: id })
-        .orderBy('created_at', 'id'),
-    ]);
-  });
-  return meeting || null;
+  const [meeting] = await db('meetings')
+    .select('meetings.id AS id', 'starts_at')
+    .join('participants', 'participants.meeting_id', 'meetings.id')
+    .where({ 'meetings.id': id, 'participants.principal_id': principalId });
+  if (!meeting) {
+    return null;
+  }
+  [meeting.meeting_notes, meeting.participants] = await Promise.all([
+    db('meeting_notes')
+      .select(
+        'meeting_notes.id AS id',
+        'note_text',
+        'sort_order',
+        'authoring_participant_id',
+        'agenda_owning_participant_id'
+      )
+      .join(
+        'participants',
+        'participants.id',
+        'meeting_notes.authoring_participant_id'
+      )
+      .where({ 'participants.meeting_id': id })
+      .orderBy([
+        'agenda_owning_participant_id',
+        'sort_order',
+        'meeting_notes.created_at',
+      ]),
+    db('participants')
+      .select('id', 'principal_id')
+      .where({ meeting_id: id })
+      .orderBy('created_at', 'id'),
+  ]);
+  return meeting;
 };
 
 export const listMeetings = async (
