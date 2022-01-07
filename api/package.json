@@ -27,6 +27,7 @@
     "superagent": "^6.1.0"
   },
   "devDependencies": {
+    "@types/connect-redis": "^0.0.18",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
     "@types/express-session": "^1.17.4",
