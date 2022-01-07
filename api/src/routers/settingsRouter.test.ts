@@ -1,6 +1,6 @@
-import { itemEnvelope } from './responseEnvelope';
-import { loginExistingUser } from './loginHelpers';
-import { tracker } from './mockDb';
+import { itemEnvelope } from '../responseEnvelope';
+import { loginExistingUser } from '../loginHelpers';
+import { tracker } from '../mockDb';
 
 describe('settingsRouter', () => {
   describe('GET /settings/:category', () => {

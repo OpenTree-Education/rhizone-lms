@@ -1,5 +1,5 @@
 import { findQuestionnaire } from './questionnairesService';
-import { tracker } from './mockDb';
+import { tracker } from '../mockDb';
 
 describe('questionnairesService', () => {
   describe('findQuestionnaire', () => {

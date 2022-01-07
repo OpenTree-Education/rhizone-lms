@@ -7,8 +7,8 @@ import {
   insertMeetingNote,
   listMeetings,
 } from './meetingsService';
-import db from './db';
-import { tracker } from './mockDb';
+import db from '../db';
+import { tracker } from '../mockDb';
 
 describe('meetingsService', () => {
   describe('countMeetings', () => {

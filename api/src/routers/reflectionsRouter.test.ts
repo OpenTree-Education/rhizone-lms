@@ -1,11 +1,11 @@
-import { loginExistingUser } from './loginHelpers';
-import { errorEnvelope, itemEnvelope } from './responseEnvelope';
-import { tracker } from './mockDb';
+import { loginExistingUser } from '../loginHelpers';
+import { errorEnvelope, itemEnvelope } from '../responseEnvelope';
+import { tracker } from '../mockDb';
 import {
   BadRequestError,
   InternalServerError,
   ValidationError,
-} from './httpErrors';
+} from '../httpErrors';
 
 const MOCK_REFLECTION_ID = 2;
 const MOCK_JOURNAL_ENTRY_ID = 3;

@@ -1,8 +1,8 @@
 import { Knex } from 'knex';
 
 import { countReflections, listReflections } from './reflectionsService';
-import db from './db';
-import { tracker } from './mockDb';
+import db from '../db';
+import { tracker } from '../mockDb';
 
 describe('reflectionsService', () => {
   describe('countReflections', () => {

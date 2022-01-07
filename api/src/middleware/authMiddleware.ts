@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { UnauthorizedError } from './httpErrors';
+import { UnauthorizedError } from '../httpErrors';
 
 declare module 'express-session' {
   interface Session {

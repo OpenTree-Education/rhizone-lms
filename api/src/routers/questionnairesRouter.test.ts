@@ -1,8 +1,8 @@
 import { mocked } from 'ts-jest/utils';
 
-import { errorEnvelope, itemEnvelope } from './responseEnvelope';
-import { findQuestionnaire } from './questionnairesService';
-import { loginExistingUser } from './loginHelpers';
+import { errorEnvelope, itemEnvelope } from '../responseEnvelope';
+import { findQuestionnaire } from '../questionnairesService';
+import { loginExistingUser } from '../loginHelpers';
 
 jest.mock('./questionnairesService');
 

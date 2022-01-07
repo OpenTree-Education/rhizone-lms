@@ -4,16 +4,16 @@ import {
   collectionEnvelope,
   errorEnvelope,
   itemEnvelope,
-} from './responseEnvelope';
+} from '../responseEnvelope';
 import {
   countMeetings,
   findMeeting,
   findParticipantIdForPrincipal,
   insertMeetingNote,
   listMeetings,
-} from './meetingsService';
-import { loginExistingUser } from './loginHelpers';
-import { tracker } from './mockDb';
+} from '../meetingsService';
+import { loginExistingUser } from '../loginHelpers';
+import { tracker } from '../mockDb';
 
 jest.mock('./meetingsService');
 

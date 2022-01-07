@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { itemEnvelope } from './responseEnvelope';
+import { itemEnvelope } from '../responseEnvelope';
 
 const userRouter = Router();
 

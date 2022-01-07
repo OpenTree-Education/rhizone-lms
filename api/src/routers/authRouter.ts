@@ -1,9 +1,9 @@
 import querystring from 'querystring';
 import { Router } from 'express';
 
-import db from './db';
-import { getGithubAccessToken, getGithubUser } from './githubApi';
-import { itemEnvelope } from './responseEnvelope';
+import db from '../db';
+import { getGithubAccessToken, getGithubUser } from '../services/githubApi';
+import { itemEnvelope } from '../responseEnvelope';
 
 const authRouter = Router();
 

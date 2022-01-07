@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
-import db from './db';
-import { itemEnvelope } from './responseEnvelope';
+import db from '../db';
+import { itemEnvelope } from '../responseEnvelope';
 
 const settingsRouter = Router();
 

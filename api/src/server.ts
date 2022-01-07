@@ -6,14 +6,17 @@ import express from 'express';
 import expressSession from 'express-session';
 import helmet from 'helmet';
 
-import authRouter from './authRouter';
-import { handleErrors, handleNotFound } from './errorHandlingMiddleware';
-import { loggedIn } from './authMiddleware';
-import meetingsRouter from './meetingsRouter';
-import questionnairesRouter from './questionnairesRouter';
-import reflectionsRouter from './reflectionsRouter';
-import settingsRouter from './settingsRouter';
-import userRouter from './userRouter';
+import authRouter from './routers/authRouter';
+import {
+  handleErrors,
+  handleNotFound,
+} from './middleware/errorHandlingMiddleware';
+import { loggedIn } from './middleware/authMiddleware';
+import meetingsRouter from './routers/meetingsRouter';
+import questionnairesRouter from './routers/questionnairesRouter';
+import reflectionsRouter from './routers/reflectionsRouter';
+import settingsRouter from './routers/settingsRouter';
+import userRouter from './routers/userRouter';
 
 const start = async () => {
   const host = process.env.HOST || 'localhost';

@@ -1,16 +1,16 @@
 import { Router } from 'express';
 
-import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
+import { collectionEnvelope, itemEnvelope } from '../responseEnvelope';
 import {
   countMeetings,
   findMeeting,
   insertMeetingNote,
   listMeetings,
   findParticipantIdForPrincipal,
-} from './meetingsService';
-import db from './db';
-import paginationValues from './paginationValues';
-import { BadRequestError, NotFoundError, ValidationError } from './httpErrors';
+} from '../services/meetingsService';
+import db from '../db';
+import paginationValues from '../paginationValues';
+import { BadRequestError, NotFoundError, ValidationError } from '../httpErrors';
 
 const meetingsRouter = Router();
 

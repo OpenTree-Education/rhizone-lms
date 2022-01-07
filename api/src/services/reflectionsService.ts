@@ -1,4 +1,4 @@
-import db from './db';
+import db from '../db';
 
 export const countReflections = async (principalId: number, builder = db) => {
   const countAlias = 'total_count';

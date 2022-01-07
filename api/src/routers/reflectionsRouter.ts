@@ -1,14 +1,14 @@
 import { Router } from 'express';
 
-import { BadRequestError, ValidationError } from './httpErrors';
-import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
-import db from './db';
+import { BadRequestError, ValidationError } from '../httpErrors';
+import { collectionEnvelope, itemEnvelope } from '../responseEnvelope';
+import db from '../db';
 import {
   listReflections,
   countReflections,
   validateOptionIds,
-} from './reflectionsService';
-import paginationValues from './paginationValues';
+} from '../services/reflectionsService';
+import paginationValues from '../paginationValues';
 
 const reflectionsRouter = Router();
 
