@@ -41,9 +41,7 @@ meetingsRouter.get('/:id', async (req, res, next) => {
   }
   let meeting;
   try {
-    await db.transaction(async trx => {
-      meeting = await findMeeting(meetingId, principalId, trx);
-    });
+    meeting = await findMeeting(meetingId, principalId);
   } catch (err) {
     next(err);
     return;

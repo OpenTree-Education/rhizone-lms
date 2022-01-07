@@ -11,44 +11,44 @@ export const countMeetings = async (principalId: number, builder = db) => {
 
 export const findMeeting = async (
   id: number,
-  principalId: number,
-  builder = db
-) => {
-  const meetingRows = await builder('meetings')
-    .select('meetings.id AS id', 'starts_at')
-    .join('participants', 'participants.meeting_id', 'meetings.id')
-    .where({ 'meetings.id': id, 'participants.principal_id': principalId });
-  if (meetingRows.length === 0) {
-    return null;
-  }
-  const meetingNotes = await builder('meeting_notes')
-    .select(
-      'meeting_notes.id AS id',
-      'note_text',
-      'sort_order',
-      'authoring_participant_id',
-      'agenda_owning_participant_id'
-    )
-    .join(
-      'participants',
-      'participants.id',
-      'meeting_notes.authoring_participant_id'
-    )
-    .where({ 'participants.meeting_id': id })
-    .orderBy([
-      { column: 'agenda_owning_participant_id', order: 'desc' },
-      { column: 'sort_order', order: 'asc' },
-      'meeting_notes.created_at',
+  principalId: number
+): Promise<object | null> => {
+  let meeting;
+  await db.transaction(async trx => {
+    [meeting] = await trx('meetings')
+      .select('meetings.id AS id', 'starts_at')
+      .join('participants', 'participants.meeting_id', 'meetings.id')
+      .where({ 'meetings.id': id, 'participants.principal_id': principalId });
+    if (!meeting) {
+      return;
+    }
+    [meeting.meeting_notes, meeting.participants] = await Promise.all([
+      trx('meeting_notes')
+        .select(
+          'meeting_notes.id AS id',
+          'note_text',
+          'sort_order',
+          'authoring_participant_id',
+          'agenda_owning_participant_id'
+        )
+        .join(
+          'participants',
+          'participants.id',
+          'meeting_notes.authoring_participant_id'
+        )
+        .where({ 'participants.meeting_id': id })
+        .orderBy([
+          'agenda_owning_participant_id',
+          'sort_order',
+          'meeting_notes.created_at',
+        ]),
+      trx('participants')
+        .select('id', 'principal_id')
+        .where({ meeting_id: id })
+        .orderBy('created_at', 'id'),
     ]);
-  const participants = await builder('participants')
-    .select('id', 'principal_id')
-    .where({ meeting_id: id })
-    .orderBy('created_at', 'id');
-  return {
-    ...meetingRows[0],
-    participants,
-    meeting_notes: meetingNotes,
-  };
+  });
+  return meeting || null;
 };
 
 export const listMeetings = async (
