@@ -1,14 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 
-declare module 'express-serve-static-core' {
-  interface Request {
-    pagination: {
-      limit: number;
-      offset: number;
-    };
-  }
-}
-
 export const parsePaginationParams =
   (defaultPage = 1, defaultPerPage = 50) =>
   (req: Request, res: Response, next: NextFunction) => {

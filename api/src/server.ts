@@ -17,6 +17,21 @@ import questionnairesRouter from './routers/questionnairesRouter';
 import reflectionsRouter from './routers/reflectionsRouter';
 import settingsRouter from './routers/settingsRouter';
 
+declare module 'express-session' {
+  interface Session {
+    principalId: number;
+  }
+}
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    pagination: {
+      limit: number;
+      offset: number;
+    };
+  }
+}
+
 const start = async () => {
   const host = process.env.HOST || 'localhost';
   const port = Number(process.env.PORT) || 8491;
