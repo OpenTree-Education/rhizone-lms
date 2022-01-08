@@ -2,23 +2,23 @@ import { CircularProgress, Stack } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
 import App from './App';
-import { User } from '../types/api';
-import UserContext from './UserContext';
+import { SessionData } from '../types/api';
+import SessionContext from './SessionContext';
 import WelcomePage from './WelcomePage';
 
 const AuthWall = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<SessionData | null>(null);
   useEffect(() => {
     setIsLoading(true);
-    fetch(`${process.env.REACT_APP_API_ORIGIN}/user`, {
+    fetch(`${process.env.REACT_APP_API_ORIGIN}/auth/session`, {
       credentials: 'include',
     })
       .then(res => res.json())
       .then(
-        ({ data: user }) => {
-          setUser(user);
+        ({ data }) => {
+          setSession(data);
           setIsLoading(false);
         },
         error => {
@@ -49,15 +49,15 @@ const AuthWall = () => {
       </Stack>
     );
   }
-  if (!user) {
+  if (!session) {
     return null;
   }
-  return user.principal_id === null ? (
+  return session.principal_id === null ? (
     <WelcomePage />
   ) : (
-    <UserContext.Provider value={user}>
+    <SessionContext.Provider value={session}>
       <App />
-    </UserContext.Provider>
+    </SessionContext.Provider>
   );
 };
 

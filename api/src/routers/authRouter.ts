@@ -13,7 +13,8 @@ import { itemEnvelope } from '../responseEnvelope';
 const authRouter = Router();
 
 authRouter.get('/auth/session', (req, res) => {
-  res.json(itemEnvelope({ authenticated: !!req.session.principalId }));
+  const { principalId } = req.session;
+  res.json(itemEnvelope({ principal_id: principalId || null }));
 });
 
 authRouter.get('/auth/logout', (req, res) => {

@@ -16,7 +16,6 @@ import meetingsRouter from './routers/meetingsRouter';
 import questionnairesRouter from './routers/questionnairesRouter';
 import reflectionsRouter from './routers/reflectionsRouter';
 import settingsRouter from './routers/settingsRouter';
-import userRouter from './routers/userRouter';
 
 const start = async () => {
   const host = process.env.HOST || 'localhost';
@@ -56,7 +55,6 @@ const start = async () => {
     origin: process.env.WEBAPP_ORIGIN,
   });
   app.use(withCors, authRouter);
-  app.use('/user', withCors, userRouter);
   app.use('/meetings', withCors, loggedIn, meetingsRouter);
   app.use('/questionnaires', withCors, loggedIn, questionnairesRouter);
   app.use('/reflections', withCors, loggedIn, reflectionsRouter);
