@@ -29,16 +29,9 @@ const start = async () => {
   app.use(bodyParser.json());
 
   const RedisStore = connectRedis(expressSession);
-  const redisClient = createRedisClient({
-    url: 'redis://redis',
-    // The connect-redis module currently expects the redis@3 api, but redis@4
-    // is the latest client release. Once connect-redis supports the redix@4 api
-    // this can be removed.
-    legacyMode: true,
-  });
+  const redisClient = createRedisClient({ host: 'redis' });
   redisClient.on('connect', () => console.log(`redis client connected`));
   redisClient.on('error', error => console.log(`redis client error: ${error}`));
-  await redisClient.connect();
   app.use(
     expressSession({
       cookie: { sameSite: true, secure },
