@@ -80,9 +80,6 @@
     "testEnvironment": "node",
     "testMatch": [
       "<rootDir>/src/**/*.test.ts"
-    ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/setupTests.ts"
     ]
   },
   "prettier": {
