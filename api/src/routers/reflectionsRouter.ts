@@ -2,10 +2,10 @@ import { Router } from 'express';
 
 import { BadRequestError, ValidationError } from '../httpErrors';
 import { collectionEnvelope, itemEnvelope } from '../responseEnvelope';
-import db from '../db';
 import {
-  listReflections,
   countReflections,
+  createReflection,
+  listReflections,
   validateOptionIds,
 } from '../services/reflectionsService';
 import { parsePaginationParams } from '../middleware/paginationParamsMiddleware';
@@ -31,57 +31,50 @@ reflectionsRouter.get('/', parsePaginationParams(), async (req, res, next) => {
 
 reflectionsRouter.post('/', async (req, res, next) => {
   const { principalId } = req.session;
-  const rawText = req.body.raw_text;
-  const selectedOptionIds: number[] = req.body.selected_option_ids || [];
-  if (!rawText && selectedOptionIds.length === 0) {
+  const { raw_text: rawText, selected_option_ids: selectedOptionIds } =
+    req.body;
+  const optionIds = Array.isArray(selectedOptionIds) ? selectedOptionIds : [];
+  if (!rawText && optionIds.length === 0) {
     next(
       new BadRequestError(
-        'At least one option or journal entry must be present to complete this request'
+        'At least one option id or journal entry text must be given to create a reflection.'
       )
     );
     return;
   }
-
-  if (
-    selectedOptionIds.length !== 0 &&
-    !(await validateOptionIds(selectedOptionIds))
-  ) {
-    next(new ValidationError());
-    return;
-  }
-
-  let insertedReflectionId: number[];
-  try {
-    await db.transaction(async trx => {
-      insertedReflectionId = await trx('reflections').insert({
-        principal_id: principalId,
-      });
-
-      if (rawText) {
-        await trx('journal_entries').insert({
-          raw_text: rawText,
-          principal_id: principalId,
-          reflection_id: insertedReflectionId[0],
-        });
-      }
-
-      if (selectedOptionIds.length > 0) {
-        await trx('responses').insert(
-          selectedOptionIds.map(optionId => {
-            return {
-              option_id: optionId,
-              reflection_id: insertedReflectionId[0],
-              principal_id: principalId,
-            };
-          })
+  if (optionIds.length) {
+    for (const optionId of optionIds) {
+      if (!Number.isInteger(optionId) || optionId < 0) {
+        next(
+          new ValidationError(
+            `selected_option_ids must be an array of positive integers.`
+          )
         );
+        return;
       }
-    });
+    }
+    let areOptionIdsValid;
+    try {
+      areOptionIdsValid = await validateOptionIds(optionIds);
+    } catch (err) {
+      next(err);
+      return;
+    }
+    if (!areOptionIdsValid) {
+      next(
+        new ValidationError('The given selected_option_ids were not valid.')
+      );
+      return;
+    }
+  }
+  let reflection;
+  try {
+    reflection = await createReflection(rawText, optionIds, principalId);
   } catch (error) {
     next(error);
     return;
   }
-  res.status(201).json(itemEnvelope({ id: insertedReflectionId[0] }));
+  res.status(201).json(itemEnvelope(reflection));
 });
 
 export default reflectionsRouter;

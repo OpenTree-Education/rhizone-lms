@@ -72,10 +72,40 @@ export const listReflections = async (
   return Array.from(reflectionsById.values());
 };
 
-export const validateOptionIds = async (optionIds: number[], builder = db) => {
+export const validateOptionIds = async (optionIds: number[]) => {
   const uniqueOptionIds = [...new Set(optionIds)];
-  const optionIdsCount = await builder('options')
+  const [count] = await db('options')
     .count('id', { as: 'option_id_count' })
     .whereIn('id', uniqueOptionIds);
-  return optionIdsCount[0].option_id_count === uniqueOptionIds.length;
+  return count.option_id_count === uniqueOptionIds.length;
+};
+
+export const createReflection = async (
+  rawText: string,
+  optionIds: number[],
+  principalId: number
+) => {
+  const reflection: { id?: number } = {};
+  await db.transaction(async trx => {
+    [reflection.id] = await trx('reflections').insert({
+      principal_id: principalId,
+    });
+    if (rawText) {
+      await trx('journal_entries').insert({
+        raw_text: rawText,
+        principal_id: principalId,
+        reflection_id: reflection.id,
+      });
+    }
+    if (optionIds.length) {
+      await trx('responses').insert(
+        optionIds.map(optionId => ({
+          option_id: optionId,
+          reflection_id: reflection.id,
+          principal_id: principalId,
+        }))
+      );
+    }
+  });
+  return reflection;
 };
