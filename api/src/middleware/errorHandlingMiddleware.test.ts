@@ -10,7 +10,7 @@ import {
 } from '../httpErrors';
 import { handleErrors, handleNotFound } from './errorHandlingMiddleware';
 
-describe('errorHandlingMiddleware.ts', () => {
+describe('errorHandlingMiddleware', () => {
   describe('handleErrors', () => {
     it('should delegate to the next handler if response headers have been sent', () => {
       const err = new Error();
@@ -90,6 +90,7 @@ describe('errorHandlingMiddleware.ts', () => {
       });
     });
   });
+
   describe('handleNotFound', () => {
     it('should send a response with a default not found error', () => {
       const status = jest.fn();
