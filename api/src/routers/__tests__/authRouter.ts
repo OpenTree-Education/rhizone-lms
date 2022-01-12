@@ -1,25 +1,25 @@
 import { mocked } from 'jest-mock';
 
-import authRouter from './authRouter';
+import authRouter from '../authRouter';
 import {
   createAppAgentForRouter,
   mockPrincipalId,
   sessionDestroyMock,
-} from './routerTestUtils';
+} from '../routerTestUtils';
 import {
   createGithubUser,
   findGithubUserByGithubId,
-} from '../services/githubUsersService';
+} from '../../services/githubUsersService';
 import {
   getGithubAccessToken,
   getGithubUser,
-} from '../services/githubApiService';
+} from '../../services/githubApiService';
 
-jest.mock('../services/githubApiService');
+jest.mock('../../services/githubApiService');
 const mockGetGithubAccessToken = mocked(getGithubAccessToken);
 const mockGetGithubUser = mocked(getGithubUser);
 
-jest.mock('../services/githubUsersService');
+jest.mock('../../services/githubUsersService');
 const mockCreateGithubUser = mocked(createGithubUser);
 const mockFindGithubUserByGithubId = mocked(findGithubUserByGithubId);
 
@@ -73,7 +73,7 @@ describe('authRouter', () => {
       appAgent.get('/auth/github/callback').expect(400, done);
     });
 
-    it('should redirect to the web app with an authenticated session for a principal with a known GitHub user id', done => {
+    it('should redirect to the web app for a principal with a known GitHub user id', done => {
       mockGetGithubAccessToken.mockResolvedValue('MOCK_ACCESS_TOKEN');
       mockGetGithubUser.mockResolvedValue({ id: 1000 });
       mockFindGithubUserByGithubId.mockResolvedValue({ principal_id: 1 });
@@ -85,13 +85,11 @@ describe('authRouter', () => {
           expect(getGithubUser).toHaveBeenCalledWith('MOCK_ACCESS_TOKEN');
           expect(mockFindGithubUserByGithubId).toHaveBeenCalledWith(1000);
           expect(mockCreateGithubUser).not.toHaveBeenCalled();
-          appAgent
-            .get('/auth/session')
-            .expect(200, { data: { principal_id: 1 } }, done);
+          done();
         });
     });
 
-    it('should insert a new principal and GitHub user and then redirect to the web app with an authenticated session for a principal with an unknown GitHub user id', done => {
+    it('should insert a new principal and GitHub user and then redirect to the web app for a principal with an unknown GitHub user id', done => {
       mockGetGithubAccessToken.mockResolvedValue('MOCK_ACCESS_TOKEN');
       mockGetGithubUser.mockResolvedValue({ id: 1000 });
       mockFindGithubUserByGithubId.mockResolvedValue(null);
@@ -108,9 +106,7 @@ describe('authRouter', () => {
           expect(getGithubUser).toHaveBeenCalledWith('MOCK_ACCESS_TOKEN');
           expect(mockFindGithubUserByGithubId).toHaveBeenCalledWith(1000);
           expect(mockCreateGithubUser).toHaveBeenCalledWith(1000);
-          appAgent
-            .get('/auth/session')
-            .expect(200, { data: { principal_id: 1 } }, done);
+          done();
         });
     });
   });

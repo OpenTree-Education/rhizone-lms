@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import { loggedIn } from './authMiddleware';
-import { UnauthorizedError } from '../httpErrors';
+import { loggedIn } from '../authMiddleware';
+import { UnauthorizedError } from '../../httpErrors';
 
 describe('authMiddleware', () => {
   describe('loggedIn', () => {

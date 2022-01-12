@@ -73,15 +73,12 @@
     ]
   },
   "jest": {
-    "resetMocks": true,
     "modulePathIgnorePatterns": [
       "<rootDir>/dist/"
     ],
     "preset": "ts-jest",
-    "testEnvironment": "node",
-    "testMatch": [
-      "<rootDir>/src/**/*.test.ts"
-    ]
+    "resetMocks": true,
+    "testEnvironment": "node"
   },
   "prettier": {
     "arrowParens": "avoid",

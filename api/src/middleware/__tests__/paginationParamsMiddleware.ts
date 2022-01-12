@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { parsePaginationParams } from './paginationParamsMiddleware';
+import { parsePaginationParams } from '../paginationParamsMiddleware';
 
 describe('paginationParamsMiddleware', () => {
   describe('parsePaginationParams', () => {
@@ -39,7 +39,9 @@ describe('paginationParamsMiddleware', () => {
 
     it('should use default values when non-numeric values are in the query string', () => {
       const middleware = parsePaginationParams();
-      const req = { query: { page: 'foo', perpage: 'bar' } } as unknown as Request;
+      const req = {
+        query: { page: 'foo', perpage: 'bar' },
+      } as unknown as Request;
       const res = {} as Response;
       const next = jest.fn();
       middleware(req, res, next);

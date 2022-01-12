@@ -7,8 +7,8 @@ import {
   NotFoundError,
   UnauthorizedError,
   ValidationError,
-} from '../httpErrors';
-import { handleErrors, handleNotFound } from './errorHandlingMiddleware';
+} from '../../httpErrors';
+import { handleErrors, handleNotFound } from '../errorHandlingMiddleware';
 
 describe('errorHandlingMiddleware', () => {
   describe('handleErrors', () => {
