@@ -27,9 +27,9 @@ beforeEach(() => {
     }
     // istanbul ignore next
     throw new Error(
-      `Error: Unexpected query. sql=${JSON.stringify(
+      `Error: Unexpected query.\n\tsql=${JSON.stringify(
         sql
-      )}, bindings=${JSON.stringify(bindings)}`
+      )}\n\tbindings=${JSON.stringify(bindings)}`
     );
   });
 });
@@ -39,9 +39,9 @@ afterEach(() => {
     // istanbul ignore next
     if (!wasCalled) {
       throw new Error(
-        `Error: Mocked query was never called. sql=${JSON.stringify(
+        `Error: Mocked query was never called.\n\tsql=${JSON.stringify(
           sql
-        )}, bindings=${JSON.stringify(bindings)}, response=${JSON.stringify(
+        )}\n\tbindings=${JSON.stringify(bindings)}\n\tresponse=${JSON.stringify(
           response
         )}`
       );

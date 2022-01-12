@@ -1,8 +1,8 @@
 import db from './db';
 
-export const countMeetings = async (principalId: number, builder = db) => {
+export const countMeetings = async (principalId: number) => {
   const countAlias = 'total_count';
-  const [count] = await builder('meetings')
+  const [count] = await db('meetings')
     .count({ [countAlias]: '*' })
     .join('participants', 'participants.meeting_id', 'meetings.id')
     .where({ 'participants.principal_id': principalId });
@@ -10,13 +10,16 @@ export const countMeetings = async (principalId: number, builder = db) => {
 };
 
 export const findMeeting = async (
-  id: number,
+  meetingId: number,
   principalId: number
 ): Promise<object | null> => {
   const [meeting] = await db('meetings')
     .select('meetings.id AS id', 'starts_at')
     .join('participants', 'participants.meeting_id', 'meetings.id')
-    .where({ 'meetings.id': id, 'participants.principal_id': principalId });
+    .where({
+      'meetings.id': meetingId,
+      'participants.principal_id': principalId,
+    });
   if (!meeting) {
     return null;
   }
@@ -34,7 +37,7 @@ export const findMeeting = async (
         'participants.id',
         'meeting_notes.authoring_participant_id'
       )
-      .where({ 'participants.meeting_id': id })
+      .where({ 'participants.meeting_id': meetingId })
       .orderBy([
         'agenda_owning_participant_id',
         'sort_order',
@@ -42,7 +45,7 @@ export const findMeeting = async (
       ]),
     db('participants')
       .select('id', 'principal_id')
-      .where({ meeting_id: id })
+      .where({ meeting_id: meetingId })
       .orderBy('created_at', 'id'),
   ]);
   return meeting;
@@ -51,10 +54,9 @@ export const findMeeting = async (
 export const listMeetings = async (
   principalId: number,
   limit: number,
-  offset: number,
-  builder = db
+  offset: number
 ) => {
-  const meetings = await builder('meetings')
+  const meetings = await db('meetings')
     .select('meetings.id AS id', 'starts_at')
     .join('participants', 'participants.meeting_id', 'meetings.id')
     .where({ 'participants.principal_id': principalId })
@@ -65,7 +67,7 @@ export const listMeetings = async (
     return [];
   }
   const meetingIds = meetings.map(({ id }) => id);
-  const participants = await builder('participants')
+  const participants = await db('participants')
     .select('id', 'meeting_id', 'principal_id')
     .whereIn('meeting_id', meetingIds)
     .orderBy('created_at', 'id');
