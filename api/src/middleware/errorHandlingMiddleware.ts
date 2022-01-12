@@ -10,11 +10,9 @@ export const handleErrors: ErrorRequestHandler = (err, req, res, next) => {
     next(err);
     return;
   }
-  if (process.env.NODE_ENV !== 'test') {
-    // This call to console.log is required so that error details are printed to
-    // the server logs.
-    console.log(err);
-  }
+  // This call to console.log is required so that error details are printed to
+  // the server logs.
+  console.log(err);
   if (err instanceof HttpError) {
     res.status(err.status);
     res.json(errorEnvelope(err.message));

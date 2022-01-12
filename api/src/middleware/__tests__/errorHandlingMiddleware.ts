@@ -12,6 +12,17 @@ import { handleErrors, handleNotFound } from '../errorHandlingMiddleware';
 
 describe('errorHandlingMiddleware', () => {
   describe('handleErrors', () => {
+    let originalConsoleLog: typeof console.log;
+
+    beforeEach(() => {
+      originalConsoleLog = console.log;
+      console.log = jest.fn();
+    });
+
+    afterEach(() => {
+      console.log = originalConsoleLog;
+    });
+
     it('should delegate to the next handler if response headers have been sent', () => {
       const err = new Error();
       const next = jest.fn();
@@ -24,6 +35,20 @@ describe('errorHandlingMiddleware', () => {
       );
       expect(next).toHaveBeenCalledWith(err);
       expect(status).not.toHaveBeenCalled();
+    });
+
+    it('should log the error to stdout', () => {
+      const err = new Error();
+      const json = jest.fn();
+      const next = jest.fn();
+      const status = jest.fn();
+      handleErrors(
+        err,
+        {} as Request,
+        { json, status } as unknown as Response,
+        next
+      );
+      expect(console.log).toHaveBeenCalledWith(err);
     });
 
     it('should send a generic internal server error response for errors that are not HTTP errors', () => {

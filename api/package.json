@@ -78,6 +78,9 @@
     ],
     "preset": "ts-jest",
     "resetMocks": true,
+    "setupFilesAfterEnv": [
+      "./src/jest.setup.ts"
+    ],
     "testEnvironment": "node"
   },
   "prettier": {
