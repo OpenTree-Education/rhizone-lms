@@ -109,5 +109,31 @@ describe('authRouter', () => {
           done();
         });
     });
+
+    it('should send an internal server error if the call to get an access token fails', done => {
+      mockGetGithubAccessToken.mockRejectedValue(new Error());
+      appAgent.get('/auth/github/callback?code=MOCK_CODE').expect(500, done);
+    });
+
+    it('should send an internal server error if the call to get the github user fails', done => {
+      mockGetGithubAccessToken.mockResolvedValue('MOCK_ACCESS_TOKEN');
+      mockGetGithubUser.mockRejectedValue(new Error());
+      appAgent.get('/auth/github/callback?code=MOCK_CODE').expect(500, done);
+    });
+
+    it('should send an internal server error if the call to get the github user fails', done => {
+      mockGetGithubAccessToken.mockResolvedValue('MOCK_ACCESS_TOKEN');
+      mockGetGithubUser.mockResolvedValue({ id: 1000 });
+      mockFindGithubUserByGithubId.mockRejectedValue(new Error());
+      appAgent.get('/auth/github/callback?code=MOCK_CODE').expect(500, done);
+    });
+
+    it('should send an internal server error if the call to get the github user fails', done => {
+      mockGetGithubAccessToken.mockResolvedValue('MOCK_ACCESS_TOKEN');
+      mockGetGithubUser.mockResolvedValue({ id: 1000 });
+      mockFindGithubUserByGithubId.mockResolvedValue(null);
+      mockCreateGithubUser.mockRejectedValue(new Error());
+      appAgent.get('/auth/github/callback?code=MOCK_CODE').expect(500, done);
+    });
   });
 });

@@ -30,18 +30,41 @@ authRouter.get('/auth/github/login', (req, res) => {
   res.redirect(`https://github.com/login/oauth/authorize?${params.toString()}`);
 });
 
-authRouter.get(`/auth/github/callback`, async (req, res) => {
+authRouter.get(`/auth/github/callback`, async (req, res, next) => {
   const { code } = req.query;
   if (!code) {
     res.sendStatus(400);
     return;
   }
-  const accessToken = await getGithubAccessToken(String(code));
-  const githubApiUser = await getGithubUser(accessToken);
+  let accessToken;
+  try {
+    accessToken = await getGithubAccessToken(String(code));
+  } catch (err) {
+    next(err);
+    return;
+  }
+  let githubApiUser;
+  try {
+    githubApiUser = await getGithubUser(accessToken);
+  } catch (err) {
+    next(err);
+    return;
+  }
   const githubId = githubApiUser.id;
-  let githubUser = await findGithubUserByGithubId(githubId);
+  let githubUser;
+  try {
+    githubUser = await findGithubUserByGithubId(githubId);
+  } catch (err) {
+    next(err);
+    return;
+  }
   if (!githubUser) {
-    githubUser = await createGithubUser(githubId);
+    try {
+      githubUser = await createGithubUser(githubId);
+    } catch (err) {
+      next(err);
+      return;
+    }
   }
   req.session.principalId = githubUser.principal_id;
   res.redirect(process.env.WEBAPP_ORIGIN);
