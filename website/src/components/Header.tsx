@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import GlobalStyles from '@mui/material/GlobalStyles';
-import { ImgixGatsbyImage } from '@imgix/gatsby';
 import { Link as GatsbyLink } from 'gatsby';
 import React from 'react';
 import Stack from '@mui/material/Stack';

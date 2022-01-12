@@ -22,6 +22,7 @@ services:
       - MYSQL_RANDOM_ROOT_PASSWORD=true
       - MYSQL_USER=dev
     image: mysql:8
+    platform: linux/x86_64
     ports:
       - 3306:3306
   flyway:

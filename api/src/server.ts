@@ -1,3 +1,4 @@
+// istanbul ignore file
 import bodyParser from 'body-parser';
 import connectRedis from 'connect-redis';
 import cors from 'cors';
@@ -6,15 +7,31 @@ import express from 'express';
 import expressSession from 'express-session';
 import helmet from 'helmet';
 
-import authRouter from './authRouter';
-import { handleErrors, handleNotFound } from './errorHandlingMiddleware';
-import journalEntriesRouter from './journalEntriesRouter';
-import { loggedIn } from './authMiddleware';
-import meetingsRouter from './meetingsRouter';
-import questionnairesRouter from './questionnairesRouter';
-import reflectionsRouter from './reflectionsRouter';
-import settingsRouter from './settingsRouter';
-import userRouter from './userRouter';
+import authRouter from './middleware/authRouter';
+import {
+  handleErrors,
+  handleNotFound,
+} from './middleware/errorHandlingMiddleware';
+import { loggedIn } from './middleware/authMiddleware';
+import meetingsRouter from './middleware/meetingsRouter';
+import questionnairesRouter from './middleware/questionnairesRouter';
+import reflectionsRouter from './middleware/reflectionsRouter';
+import settingsRouter from './middleware/settingsRouter';
+
+declare module 'express-session' {
+  interface Session {
+    principalId: number;
+  }
+}
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    pagination: {
+      limit: number;
+      offset: number;
+    };
+  }
+}
 
 const start = async () => {
   const host = process.env.HOST || 'localhost';
@@ -28,16 +45,9 @@ const start = async () => {
   app.use(bodyParser.json());
 
   const RedisStore = connectRedis(expressSession);
-  const redisClient = createRedisClient({
-    url: 'redis://redis',
-    // The connect-redis module currently expects the redis@3 api, but redis@4
-    // is the latest client release. Once connect-redis supports the redix@4 api
-    // this can be removed.
-    legacyMode: true,
-  });
+  const redisClient = createRedisClient({ host: 'redis' });
   redisClient.on('connect', () => console.log(`redis client connected`));
   redisClient.on('error', error => console.log(`redis client error: ${error}`));
-  await redisClient.connect();
   app.use(
     expressSession({
       cookie: { sameSite: true, secure },
@@ -54,8 +64,6 @@ const start = async () => {
     origin: process.env.WEBAPP_ORIGIN,
   });
   app.use(withCors, authRouter);
-  app.use('/user', withCors, userRouter);
-  app.use('/journalentries', withCors, loggedIn, journalEntriesRouter);
   app.use('/meetings', withCors, loggedIn, meetingsRouter);
   app.use('/questionnaires', withCors, loggedIn, questionnairesRouter);
   app.use('/reflections', withCors, loggedIn, reflectionsRouter);

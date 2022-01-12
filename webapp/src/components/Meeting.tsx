@@ -3,14 +3,14 @@ import { Grid } from '@mui/material';
 
 import { formatDate, formatTime } from '../helpers/dateTime';
 import { Meeting as APIMeeting } from '../types/api';
-import UserContext from './UserContext';
+import SessionContext from './SessionContext';
 
 interface MeetingProps {
   meetingId?: number | string;
 }
 
 const Meeting = ({ meetingId }: MeetingProps) => {
-  const user = useContext(UserContext);
+  const sessionData = useContext(SessionContext);
   const [error, setError] = useState(null);
   const [meeting, setMeeting] = useState<APIMeeting>();
   useEffect(() => {
@@ -37,7 +37,7 @@ const Meeting = ({ meetingId }: MeetingProps) => {
     return null;
   }
   const currentParticipantId = meeting.participants.find(
-    ({ principal_id }) => principal_id === user.principal_id
+    ({ principal_id }) => principal_id === sessionData.principal_id
   )?.id;
   return (
     <Grid>

@@ -58,7 +58,7 @@ export interface MeetingNote {
   agenda_owning_participant_id: number | null;
 }
 
-export interface User {
+export interface SessionData {
   principal_id: number | null;
 }
 
