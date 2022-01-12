@@ -1,4 +1,4 @@
-import request from 'superagent';
+import request from './request';
 
 export const getGithubAccessToken = async (code: string) => {
   const params = new URLSearchParams();
