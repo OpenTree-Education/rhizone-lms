@@ -79,25 +79,24 @@ export const listMeetings = async (
   return Array.from(meetingsById.values());
 };
 
-export const findParticipantForPrincipalInMeeting = async (
+export const createMeetingNote = async (
+  meetingId: number,
   principalId: number,
-  meetingId: number
-) => {
-  const [participant] = await db('participants')
-    .select('id')
-    .where({ meeting_id: meetingId, principal_id: principalId });
-  return participant || null;
-};
-
-export const insertMeetingNote = async (
   agendaOwningParticipantId: number | null,
-  authoringParticipantId: number,
   noteText: string,
   sortOrder: number
 ) => {
+  const [authoringParticipant] = await db('participants')
+    .select('id')
+    .where({ meeting_id: meetingId, principal_id: principalId });
+  // An authoring participant may not be found if the meeting id is invalid or
+  // if the principal is not a participant in the meeting with that id.
+  if (!authoringParticipant) {
+    return null;
+  }
   const [id] = await db('meeting_notes').insert({
     agenda_owning_participant_id: agendaOwningParticipantId,
-    authoring_participant_id: authoringParticipantId,
+    authoring_participant_id: authoringParticipant.id,
     note_text: noteText,
     sort_order: sortOrder,
   });

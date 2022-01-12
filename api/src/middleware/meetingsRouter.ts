@@ -4,10 +4,9 @@ import { BadRequestError, NotFoundError, ValidationError } from './httpErrors';
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
 import {
   countMeetings,
+  createMeetingNote,
   findMeeting,
-  insertMeetingNote,
   listMeetings,
-  findParticipantForPrincipalInMeeting,
 } from '../services/meetingsService';
 import { parsePaginationParams } from './paginationParamsMiddleware';
 
@@ -87,32 +86,23 @@ meetingsRouter.post('/:id/notes', async (req, res, next) => {
     );
     return;
   }
-  let authoringParticipant;
-  try {
-    authoringParticipant = await findParticipantForPrincipalInMeeting(
-      principalId,
-      meetingId
-    );
-  } catch (err) {
-    next(err);
-    return;
-  }
-  if (!authoringParticipant) {
-    next(
-      new NotFoundError(`A meeting with the id "${id}" could not be found.`)
-    );
-    return;
-  }
   let meetingNote;
   try {
-    meetingNote = await insertMeetingNote(
+    meetingNote = await createMeetingNote(
+      meetingId,
+      principalId,
       agendaOwningParticipantId,
-      authoringParticipant.id,
       noteText,
       sortOrder
     );
   } catch (err) {
     next(err);
+    return;
+  }
+  if (!meetingNote) {
+    next(
+      new NotFoundError(`A meeting with the id "${id}" could not be found.`)
+    );
     return;
   }
   res.status(201).json(itemEnvelope(meetingNote));

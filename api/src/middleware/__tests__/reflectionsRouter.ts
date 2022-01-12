@@ -38,7 +38,7 @@ describe('reflectionsRouter', () => {
       appAgent.get('/').expect(500, done);
     });
 
-    it('should respond with an internal server error if an error was thrown while counting reflections', done => {
+    it('should respond with an internal server error if an error was thrown while listing reflections', done => {
       mockCountReflections.mockResolvedValue(0);
       mockListReflections.mockRejectedValue(new Error());
       appAgent.get('/').expect(500, done);
@@ -67,7 +67,7 @@ describe('reflectionsRouter', () => {
         });
     });
 
-    it('should respond with a bad request error if no test or responses are given', done => {
+    it('should respond with a bad request error if no text or responses are given', done => {
       appAgent
         .post('/')
         .send({ raw_text: '', selected_option_ids: [] })
