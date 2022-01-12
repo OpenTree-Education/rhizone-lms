@@ -14,7 +14,8 @@
     "prettier:check": "prettier --check 'src/**/*.ts'",
     "prettier:write": "prettier --write 'src/**/*.ts'",
     "start": "node dist/server.js",
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watchAll --coverage"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
