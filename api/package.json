@@ -15,7 +15,7 @@
     "prettier:write": "prettier --write 'src/**/*.ts'",
     "start": "node dist/server.js",
     "test": "jest",
-    "test:watch": "jest --watchAll --coverage"
+    "test:watch": "jest --watchAll"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -73,6 +73,18 @@
     ]
   },
   "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "./src/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    },
     "modulePathIgnorePatterns": [
       "<rootDir>/dist/"
     ],
