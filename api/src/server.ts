@@ -1,5 +1,4 @@
 // istanbul ignore file
-import bodyParser from 'body-parser';
 import connectRedis from 'connect-redis';
 import cors from 'cors';
 import { createClient as createRedisClient } from 'redis';
@@ -42,7 +41,7 @@ const start = async () => {
   app.set('trust proxy', 1);
 
   app.use(helmet());
-  app.use(bodyParser.json());
+  app.use(express.json());
 
   const RedisStore = connectRedis(expressSession);
   const redisClient = createRedisClient({ host: 'redis' });
