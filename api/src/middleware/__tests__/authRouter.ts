@@ -14,6 +14,7 @@ import {
   getGithubAccessToken,
   getGithubUser,
 } from '../../services/githubApiService';
+import { itemEnvelope } from '../responseEnvelope';
 
 jest.mock('../../services/githubApiService');
 const mockGetGithubAccessToken = mocked(getGithubAccessToken);
@@ -30,14 +31,14 @@ describe('authRouter', () => {
     it('should respond with an anonymous session if no principal has authenticated', done => {
       appAgent
         .get('/auth/session')
-        .expect(200, { data: { principal_id: null } }, done);
+        .expect(200, itemEnvelope({ principal_id: null }), done);
     });
 
     it('should respond with session data for an authenticated user', done => {
       mockPrincipalId(1);
       appAgent
         .get('/auth/session')
-        .expect(200, { data: { principal_id: 1 } }, done);
+        .expect(200, itemEnvelope({ principal_id: 1 }), done);
     });
   });
 

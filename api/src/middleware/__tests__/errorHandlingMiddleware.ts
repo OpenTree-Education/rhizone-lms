@@ -8,6 +8,7 @@ import {
   UnauthorizedError,
   ValidationError,
 } from '../httpErrors';
+import { errorEnvelope } from '../responseEnvelope';
 import { handleErrors, handleNotFound } from '../errorHandlingMiddleware';
 
 describe('errorHandlingMiddleware', () => {
@@ -64,9 +65,9 @@ describe('errorHandlingMiddleware', () => {
       );
       expect(next).not.toHaveBeenCalled();
       expect(status).toHaveBeenCalledWith(InternalServerError.prototype.status);
-      expect(json).toHaveBeenCalledWith({
-        error: { message: InternalServerError.prototype.message },
-      });
+      expect(json).toHaveBeenCalledWith(
+        errorEnvelope(InternalServerError.prototype.message)
+      );
     });
 
     [
@@ -92,9 +93,9 @@ describe('errorHandlingMiddleware', () => {
         expect(status).toHaveBeenCalledWith(
           HttpErrorConstructor.prototype.status
         );
-        expect(json).toHaveBeenCalledWith({
-          error: { message: HttpErrorConstructor.prototype.message },
-        });
+        expect(json).toHaveBeenCalledWith(
+          errorEnvelope(HttpErrorConstructor.prototype.message)
+        );
       });
 
       it(`should send a response with a custom message for ${HttpErrorConstructor.name} errors`, () => {
@@ -109,9 +110,7 @@ describe('errorHandlingMiddleware', () => {
           { status, json } as unknown as Response,
           next
         );
-        expect(json).toHaveBeenCalledWith({
-          error: { message: customErrorMessage },
-        });
+        expect(json).toHaveBeenCalledWith(errorEnvelope(customErrorMessage));
       });
     });
   });
@@ -128,9 +127,9 @@ describe('errorHandlingMiddleware', () => {
       );
       expect(next).not.toHaveBeenCalled();
       expect(status).toHaveBeenCalledWith(NotFoundError.prototype.status);
-      expect(json).toHaveBeenCalledWith({
-        error: { message: NotFoundError.prototype.message },
-      });
+      expect(json).toHaveBeenCalledWith(
+        errorEnvelope(NotFoundError.prototype.message)
+      );
     });
   });
 });
