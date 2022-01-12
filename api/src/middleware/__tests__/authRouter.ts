@@ -1,5 +1,3 @@
-import { mocked } from 'jest-mock';
-
 import authRouter from '../authRouter';
 import {
   createAppAgentForRouter,
@@ -17,12 +15,12 @@ import {
 import { itemEnvelope } from '../responseEnvelope';
 
 jest.mock('../../services/githubApiService');
-const mockGetGithubAccessToken = mocked(getGithubAccessToken);
-const mockGetGithubUser = mocked(getGithubUser);
+const mockGetGithubAccessToken = jest.mocked(getGithubAccessToken);
+const mockGetGithubUser = jest.mocked(getGithubUser);
 
 jest.mock('../../services/githubUsersService');
-const mockCreateGithubUser = mocked(createGithubUser);
-const mockFindGithubUserByGithubId = mocked(findGithubUserByGithubId);
+const mockCreateGithubUser = jest.mocked(createGithubUser);
+const mockFindGithubUserByGithubId = jest.mocked(findGithubUserByGithubId);
 
 describe('authRouter', () => {
   const appAgent = createAppAgentForRouter(authRouter);
