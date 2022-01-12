@@ -21,5 +21,23 @@ describe('questionnairesRouter', () => {
           done(err);
         });
     });
+
+    it('should respond with a bad request error if the given id is not an integer', done => {
+      appAgent.get('/invalid').expect(400, done);
+    });
+
+    it('should respond with a bad request error if the given id is less than 1', done => {
+      appAgent.get('/0').expect(400, done);
+    });
+
+    it('should respond with a not found error if no questionnaire with the given id exists', done => {
+      mockFindQuestionnaire.mockResolvedValue(null);
+      appAgent.get('/1').expect(404, done);
+    });
+
+    it('should respond with an internal server error if an error was thrown while finding the questionnaire', done => {
+      mockFindQuestionnaire.mockRejectedValue(new Error());
+      appAgent.get('/1').expect(500, done);
+    });
   });
 });
