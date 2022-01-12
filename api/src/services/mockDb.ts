@@ -25,7 +25,7 @@ beforeEach(() => {
         return;
       }
     }
-    /* istanbul ignore next */
+    // istanbul ignore next
     throw new Error(
       `Error: Unexpected query. sql=${JSON.stringify(
         sql
@@ -36,7 +36,7 @@ beforeEach(() => {
 
 afterEach(() => {
   for (const [{ bindings, response, sql }, wasCalled] of mockedQueries) {
-    /* istanbul ignore next */
+    // istanbul ignore next
     if (!wasCalled) {
       throw new Error(
         `Error: Mocked query was never called. sql=${JSON.stringify(
