@@ -1,3 +1,4 @@
+// istanbul ignore file
 import bodyParser from 'body-parser';
 import connectRedis from 'connect-redis';
 import cors from 'cors';
