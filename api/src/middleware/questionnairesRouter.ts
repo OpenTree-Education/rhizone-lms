@@ -1,8 +1,8 @@
 import { Router } from 'express';
 
-import { BadRequestError, NotFoundError } from '../httpErrors';
+import { BadRequestError, NotFoundError } from './httpErrors';
 import { findQuestionnaire } from '../services/questionnairesService';
-import { itemEnvelope } from '../responseEnvelope';
+import { itemEnvelope } from './responseEnvelope';
 
 const questionnairesRouter = Router();
 

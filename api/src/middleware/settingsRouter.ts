@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { findSettings } from '../services/settingsService';
-import { itemEnvelope } from '../responseEnvelope';
+import { itemEnvelope } from './responseEnvelope';
 
 const settingsRouter = Router();
 

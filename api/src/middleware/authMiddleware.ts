@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { UnauthorizedError } from '../httpErrors';
+import { UnauthorizedError } from './httpErrors';
 
 export const loggedIn = (req: Request, res: Response, next: NextFunction) => {
   if (req.session.principalId) {

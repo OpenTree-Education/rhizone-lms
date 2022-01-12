@@ -1,4 +1,4 @@
-import db from '../db';
+import db from './db';
 
 export const findSettings = async (category: string) => {
   const settings = await db('settings')

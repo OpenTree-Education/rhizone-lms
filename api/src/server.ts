@@ -6,16 +6,16 @@ import express from 'express';
 import expressSession from 'express-session';
 import helmet from 'helmet';
 
-import authRouter from './routers/authRouter';
+import authRouter from './middleware/authRouter';
 import {
   handleErrors,
   handleNotFound,
 } from './middleware/errorHandlingMiddleware';
 import { loggedIn } from './middleware/authMiddleware';
-import meetingsRouter from './routers/meetingsRouter';
-import questionnairesRouter from './routers/questionnairesRouter';
-import reflectionsRouter from './routers/reflectionsRouter';
-import settingsRouter from './routers/settingsRouter';
+import meetingsRouter from './middleware/meetingsRouter';
+import questionnairesRouter from './middleware/questionnairesRouter';
+import reflectionsRouter from './middleware/reflectionsRouter';
+import settingsRouter from './middleware/settingsRouter';
 
 declare module 'express-session' {
   interface Session {

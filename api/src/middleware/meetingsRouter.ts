@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
-import { BadRequestError, NotFoundError, ValidationError } from '../httpErrors';
-import { collectionEnvelope, itemEnvelope } from '../responseEnvelope';
+import { BadRequestError, NotFoundError, ValidationError } from './httpErrors';
+import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
 import {
   countMeetings,
   findMeeting,
@@ -9,7 +9,7 @@ import {
   listMeetings,
   findParticipantForPrincipalInMeeting,
 } from '../services/meetingsService';
-import { parsePaginationParams } from '../middleware/paginationParamsMiddleware';
+import { parsePaginationParams } from './paginationParamsMiddleware';
 
 const meetingsRouter = Router();
 

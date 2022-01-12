@@ -1,14 +1,14 @@
 import { Router } from 'express';
 
-import { BadRequestError, ValidationError } from '../httpErrors';
-import { collectionEnvelope, itemEnvelope } from '../responseEnvelope';
+import { BadRequestError, ValidationError } from './httpErrors';
+import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
 import {
   countReflections,
   createReflection,
   listReflections,
   validateOptionIds,
 } from '../services/reflectionsService';
-import { parsePaginationParams } from '../middleware/paginationParamsMiddleware';
+import { parsePaginationParams } from './paginationParamsMiddleware';
 
 const reflectionsRouter = Router();
 

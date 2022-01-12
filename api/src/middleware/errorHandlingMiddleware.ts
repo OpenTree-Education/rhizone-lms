@@ -1,7 +1,7 @@
 import { ErrorRequestHandler, RequestHandler } from 'express';
 
-import { errorEnvelope } from '../responseEnvelope';
-import { HttpError, InternalServerError, NotFoundError } from '../httpErrors';
+import { errorEnvelope } from './responseEnvelope';
+import { HttpError, InternalServerError, NotFoundError } from './httpErrors';
 
 export const handleErrors: ErrorRequestHandler = (err, req, res, next) => {
   // If headers have been sent, delegate to the default Express error handler.

@@ -1,4 +1,4 @@
-import db from '../db';
+import db from './db';
 
 export const findGithubUserByGithubId = async (githubId: number) => {
   const [githubUser] = await db('github_users')

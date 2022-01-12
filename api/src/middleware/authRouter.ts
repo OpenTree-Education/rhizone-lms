@@ -8,7 +8,7 @@ import {
   getGithubAccessToken,
   getGithubUser,
 } from '../services/githubApiService';
-import { itemEnvelope } from '../responseEnvelope';
+import { itemEnvelope } from './responseEnvelope';
 
 const authRouter = Router();
 
