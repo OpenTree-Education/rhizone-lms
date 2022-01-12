@@ -1,8 +1,8 @@
 import db from './db';
 
-export const countReflections = async (principalId: number, builder = db) => {
+export const countReflections = async (principalId: number) => {
   const countAlias = 'total_count';
-  const [count] = await builder('reflections')
+  const [count] = await db('reflections')
     .count({ [countAlias]: '*' })
     .where({ principal_id: principalId });
   return count[countAlias];
@@ -11,10 +11,9 @@ export const countReflections = async (principalId: number, builder = db) => {
 export const listReflections = async (
   principalId: number,
   limit: number,
-  offset: number,
-  builder = db
+  offset: number
 ) => {
-  const reflections = await builder('reflections')
+  const reflections = await db('reflections')
     .select('id', 'created_at')
     .where({ principal_id: principalId })
     .orderBy('created_at', 'desc')
@@ -25,11 +24,11 @@ export const listReflections = async (
   }
   const reflectionIds = reflections.map(({ id }) => id);
   const [journalEntries, responses] = await Promise.all([
-    builder('journal_entries')
+    db('journal_entries')
       .select('id', 'raw_text', 'reflection_id')
       .whereIn('reflection_id', reflectionIds)
       .orderBy('id'),
-    builder('responses')
+    db('responses')
       .select({
         id: 'responses.id',
         reflection_id: 'reflection_id',
