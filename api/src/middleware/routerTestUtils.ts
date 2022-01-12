@@ -12,6 +12,7 @@ export const sessionDestroyMock = jest.fn();
 
 export const createAppAgentForRouter = (router: Router): SuperAgentTest => {
   const app = express();
+  app.use(express.json());
   app.use(
     expressSession({
       resave: true,

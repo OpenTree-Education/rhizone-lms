@@ -6,7 +6,6 @@ import {
   countReflections,
   createReflection,
   listReflections,
-  validateOptionIds,
 } from '../services/reflectionsService';
 import { parsePaginationParams } from './paginationParamsMiddleware';
 
@@ -34,7 +33,7 @@ reflectionsRouter.post('/', async (req, res, next) => {
   const { raw_text: rawText, selected_option_ids: selectedOptionIds } =
     req.body;
   const optionIds = Array.isArray(selectedOptionIds) ? selectedOptionIds : [];
-  if (!rawText && optionIds.length === 0) {
+  if (!rawText && !optionIds.length) {
     next(
       new BadRequestError(
         'At least one option id or journal entry text must be given to create a reflection.'
@@ -42,30 +41,13 @@ reflectionsRouter.post('/', async (req, res, next) => {
     );
     return;
   }
-  if (optionIds.length) {
-    for (const optionId of optionIds) {
-      if (!Number.isInteger(optionId) || optionId < 0) {
-        next(
-          new ValidationError(
-            `selected_option_ids must be an array of positive integers.`
-          )
-        );
-        return;
-      }
-    }
-    let areOptionIdsValid;
-    try {
-      areOptionIdsValid = await validateOptionIds(optionIds);
-    } catch (err) {
-      next(err);
-      return;
-    }
-    if (!areOptionIdsValid) {
-      next(
-        new ValidationError('The given selected_option_ids were not valid.')
-      );
-      return;
-    }
+  if (optionIds.some(optionId => !Number.isInteger(optionId) || optionId < 1)) {
+    next(
+      new ValidationError(
+        `selected_option_ids must be an array of positive integers.`
+      )
+    );
+    return;
   }
   let reflection;
   try {
