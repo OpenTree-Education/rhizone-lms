@@ -69,7 +69,10 @@
     },
     "plugins": [
       "@typescript-eslint"
-    ]
+    ],
+    "rules": {
+      "prefer-destructuring": "error"
+    }
   },
   "jest": {
     "collectCoverage": true,

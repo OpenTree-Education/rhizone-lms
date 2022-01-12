@@ -40,7 +40,10 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "prefer-destructuring": "error"
+    }
   },
   "browserslist": {
     "production": [
