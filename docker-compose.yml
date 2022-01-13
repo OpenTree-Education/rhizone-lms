@@ -38,14 +38,15 @@ services:
       - FLYWAY_URL=jdbc:mysql://mysql/${MYSQL_DATABASE}
       - FLYWAY_USER=${MYSQL_USER}
   nginx:
+    build:
+      context: ./nginx/
+      args:
+        - BUILD_ENV=development
     depends_on:
       - api
       - webapp
-    image: nginx:1
     ports:
       - 80:80
-    volumes:
-      - ./nginx/development/nginx.conf:/etc/nginx/nginx.conf
   redis:
     image: redis:6.2-alpine
     ports:

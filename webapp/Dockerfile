@@ -6,5 +6,5 @@ COPY ./ ./
 RUN yarn install --ignore-platform --frozen-lockfile
 RUN yarn build
 
-FROM httpd:2.4-alpine
-COPY --from=build /app/build/ /usr/local/apache2/htdocs/
+FROM nginx:1.21-alpine
+COPY --from=build /app/build/ /usr/share/nginx/html/
