@@ -19,6 +19,13 @@ describe('githubApiService', () => {
         `https://github.com/login/oauth/access_token?client_id=undefined&client_secret=undefined&code=${code}`
       );
     });
+
+    it('throws an error if the response from github described an error response', async () => {
+      mockRequestPost.mockResolvedValue({
+        body: { error: 'bad_verification_code' },
+      } as Response);
+      await expect(getGithubAccessToken('bad_code')).rejects.toThrow();
+    });
   });
 
   describe('getGithubUser', () => {

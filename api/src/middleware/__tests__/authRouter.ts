@@ -68,7 +68,7 @@ describe('authRouter', () => {
   });
 
   describe('GET /auth/github/callback', () => {
-    it('should respond to requests without a code in the query string with Bad Request', done => {
+    it('should respond with a bad request error to requests without a code in the query string', done => {
       appAgent.get('/auth/github/callback').expect(400, done);
     });
 

@@ -9,6 +9,7 @@ import {
   getGithubUser,
 } from '../services/githubApiService';
 import { itemEnvelope } from './responseEnvelope';
+import { BadRequestError } from './httpErrors';
 
 const authRouter = Router();
 
@@ -33,7 +34,7 @@ authRouter.get('/auth/github/login', (req, res) => {
 authRouter.get(`/auth/github/callback`, async (req, res, next) => {
   const { code } = req.query;
   if (!code) {
-    res.sendStatus(400);
+    next(new BadRequestError('A "code" query string parameter is required.'));
     return;
   }
   let accessToken;

@@ -8,6 +8,9 @@ export const getGithubAccessToken = async (code: string) => {
   const response = await request.post(
     `https://github.com/login/oauth/access_token?${params.toString()}`
   );
+  if (response.body.error) {
+    throw new Error(response.body.error);
+  }
   return response.body.access_token;
 };
 
