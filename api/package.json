@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "develop": "HOST=0.0.0.0 yarn nodemon --watch 'src/**/*.ts' --exec ts-node src/server.ts",
+    "develop": "yarn nodemon --watch 'src/**/*.ts' --exec ts-node --require dotenv/config src/server.ts dotenv_config_path=../.env",
     "eslint:check": "eslint 'src/**/*.ts'",
     "eslint:fix": "eslint --fix 'src/**/*.ts'",
     "delint": "yarn eslint:fix; yarn prettier:write",
@@ -41,6 +41,7 @@
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.1.0",
     "@typescript-eslint/parser": "^5.1.0",
+    "dotenv": "^11.0.0",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.3.0",
     "jest": "^27.4.7",

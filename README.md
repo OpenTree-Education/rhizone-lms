@@ -55,6 +55,20 @@ at once.
    web browser to use the app.
 4. When finished developing, press `CTRL + C` to stop Docker Compose.
 
+### 4. Running the dev servers
+
+When accessing http://rhi.zone-development/ or http://api.rhi.zone-development/, 
+the Nginx configuration that Docker Compose uses first checks to see whether the
+webapp or api are running on `localhost`, respectively. If they are, the
+requests are forwarded to `localhost`, otherwise they're forwarded to their
+Docker containers.
+
+While working on the api, run `yarn develop` from the `./api/` directory while
+`docker-compose up` is also running.
+
+While working on the webapp, run `yarn develop` from the `./webapp/` directory
+while `docker-compose up` is also running.
+
 ## Common tasks
 
 ### Adding dependencies
@@ -154,3 +168,15 @@ source ~/.profile
 
 Then any `docker-compose` command would be able to be run with `dc`. For
 example, `docker-compose up`, would be simply `dc up`.
+
+### Create a global `.gitignore` file
+
+Your operating system and IDE may create files and folders inside the project
+directory. Since the project can't account for which operating systems and IDEs
+its contributors use, these paths are not listed in the project's `.gitignore`
+file.
+
+To prevent these files from getting picked up by Git across your machine, create
+a global `.gitignore` file. Check out
+[this Gist](https://gist.github.com/subfuzion/db7f57fff2fb6998a16c) for more
+info.
