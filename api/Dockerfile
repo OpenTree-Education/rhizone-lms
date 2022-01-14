@@ -9,5 +9,5 @@ WORKDIR /app/
 COPY --from=build /app/dist/ ./dist/
 COPY --from=build /app/package.json /app/yarn.lock ./
 ENV NODE_ENV=production
-RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile && yarn cache clean
 CMD yarn start
