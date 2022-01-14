@@ -6,6 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  IMAGE_BASE_NAME: ${{ github.repository }}
 
 jobs:
   build_and_push_api:
@@ -27,7 +28,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: ${{ env.REGISTRY }}/rhizone-lms_api
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_BASE_NAME }}_api
+          tags: |
+            type=sha
+            type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
       - name: Build and push api image
         uses: docker/build-push-action@v2
         with:
@@ -55,7 +59,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: ${{ env.REGISTRY }}/rhizone-lms_nginx
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_BASE_NAME }}_nginx
+          tags: |
+            type=sha
+            type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
       - name: Build and push nginx image
         uses: docker/build-push-action@v2
         with:
