@@ -55,62 +55,26 @@ at once.
    web browser to use the app.
 4. When finished developing, press `CTRL + C` to stop Docker Compose.
 
-## Common tasks
+### 4. Running the dev servers
 
-### Adding dependencies
+When accessing http://rhi.zone-development/ or http://api.rhi.zone-development/, 
+the Nginx configuration that Docker Compose uses first checks to see whether the
+webapp or api are running on `localhost`, respectively. If they are, the
+requests are forwarded to `localhost`, otherwise they're forwarded to their
+Docker containers.
 
-All Node dependencies are installed and run in the Docker containers—**_not_**
-on the Docker host.
+While working on the api, run `yarn develop` from the `./api/` directory while
+`docker-compose up` is also running.
 
-To run `yarn` commands against a module, use `docker-compose run`. For example:
+While working on the webapp, run `yarn develop` from the `./webapp/` directory
+while `docker-compose up` is also running.
 
-```
-docker-compose run api yarn add cowsay
-```
+### 5. Rebuilding images
 
-The above command would install the `cowsay` NPM package to the `api` module.
-The package will be installed into the Docker volume for the `api`
-`node_modules`, and the `package.json` and `yarn.lock` files will be updated and
-synced to the host so that they can be committed.
-
-### Pulling changes from GitHub
-
-If changes are pulled that update `package.json` or `yarn.lock` files,
-`yarn install` will need to be run in the appropriate container. For example, if
-a change was made to the dependencies of `webapp`, the following command would
-update the dependencies in the Docker volume for the `webapp` `node_modules`.
-
-```
-docker-compose run webapp yarn install
-```
-
-### Running tests
-
-Test are run inside the Docker containers. For example, to run the `api` tests,
-the command would be:
-
-```
-docker-compose run api yarn test
-```
-
-### TypeScript, ESLint, and Prettier
-
-The Node.js modules use TypeScript, ESLint, and Prettier, which many IDEs have
-features to integrate with. The IDEs will require some `node_modules` in order
-to work. However, the `node_modules` are installed into Docker volumes and not
-synced with the host. Unfortunately, that means that the `node_modules` would
-have to be installed on the host as well.
-
-If you want to have the packages available for your IDEs integrations, feel free
-to run `yarn install` in the relevant module, but keep in mind that dependencies
-now need to be installed and updated both inside the containers and also on the
-Docker host.
-
-### Automatically fixing files before committing
-
-ESLint and Prettier can automatically fix many mistakes that will cause
-automated checks to fail. It is recommended to use the preconfigured
-`yarn delint` command before committing to a module that supports it.
+When working on tasks such as Nginx configuration or database migrations, or
+after pulling changes to the webapp or api from GitHub, the images need to be
+rebuilt before starting Docker Compose again. This can be done with either
+`docker-compose build` or `docker-compose up --build`.
 
 ## Modules
 
@@ -154,3 +118,24 @@ source ~/.profile
 
 Then any `docker-compose` command would be able to be run with `dc`. For
 example, `docker-compose up`, would be simply `dc up`.
+
+### Create a global `.gitignore` file
+
+Your operating system and IDE may create files and folders inside the project
+directory. Since the project can't account for which operating systems and IDEs
+its contributors use, these paths are not listed in the project's `.gitignore`
+file.
+
+To prevent these files from getting picked up by Git across your machine, create
+a global `.gitignore` file. Check out
+[this Gist](https://gist.github.com/subfuzion/db7f57fff2fb6998a16c) for more
+info.
+
+### Automatically fix files before committing
+
+ESLint and Prettier can automatically fix many mistakes that will cause
+automated checks to fail. It is recommended to use the preconfigured
+`yarn delint` command before committing to a module that supports it.
+
+For files that aren't reformatted by Prettier, configure your IDE to ensure
+there is a newline at the end of the file on save.

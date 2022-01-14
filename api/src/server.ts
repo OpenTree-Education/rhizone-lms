@@ -33,8 +33,8 @@ declare module 'express-serve-static-core' {
 }
 
 const start = async () => {
-  const host = process.env.HOST || 'localhost';
-  const port = Number(process.env.PORT) || 8491;
+  const host = process.env.API_HOST || 'localhost';
+  const port = 8491;
   const secure = process.env.SECURE === 'true';
   const app = express();
 
@@ -44,7 +44,9 @@ const start = async () => {
   app.use(express.json());
 
   const RedisStore = connectRedis(expressSession);
-  const redisClient = createRedisClient({ host: 'redis' });
+  const redisClient = createRedisClient({
+    host: process.env.REDIS_HOST || 'localhost',
+  });
   redisClient.on('connect', () => console.log(`redis client connected`));
   redisClient.on('error', error => console.log(`redis client error: ${error}`));
   app.use(
@@ -53,7 +55,7 @@ const start = async () => {
       name: 'session_id',
       resave: true,
       saveUninitialized: true,
-      secret: process.env.SESSION_SECRET || 'default session secret',
+      secret: process.env.SESSION_SECRET,
       store: new RedisStore({ client: redisClient }),
     })
   );
