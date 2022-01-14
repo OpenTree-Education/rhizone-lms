@@ -6,27 +6,27 @@ services:
       - redis
     environment:
       - API_HOST=0.0.0.0
-      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
-      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
-      - GITHUB_REDIRECT_URI=${GITHUB_REDIRECT_URI}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - GITHUB_CLIENT_ID
+      - GITHUB_CLIENT_SECRET
+      - GITHUB_REDIRECT_URI
+      - MYSQL_DATABASE
       - MYSQL_HOST=mysql
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD
+      - MYSQL_USER
       - REDIS_HOST=redis
-      - SESSION_SECRET=${SESSION_SECRET}
-      - WEBAPP_ORIGIN=${WEBAPP_ORIGIN}
+      - SESSION_SECRET
+      - WEBAPP_ORIGIN
   mysql:
     command: --default-authentication-plugin=mysql_native_password
     environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE
+      - MYSQL_PASSWORD
       - MYSQL_RANDOM_ROOT_PASSWORD=true
-      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_USER
     image: mysql:8.0
     platform: linux/x86_64
     ports:
-      - 3306:3306
+      - "3306:3306"
   flyway:
     build: ./db/
     command: migrate
@@ -46,11 +46,11 @@ services:
       - api
       - webapp
     ports:
-      - 80:80
+      - "80:80"
   redis:
     image: redis:6.2-alpine
     ports:
-      - 6379:6379
+      - "6379:6379"
   webapp:
     build:
       context: ./webapp/
