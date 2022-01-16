@@ -2,11 +2,12 @@ import { Alert, Card, CardContent, Snackbar, TextField } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import React, { FormEventHandler, useContext, useState } from 'react';
 
+import { EntityId } from '../types/api';
 import SettingsContext from './SettingsContext';
 import Questionnaire from './Questionnaire';
 
 interface CreateReflectionFormProps {
-  onReflectionCreated?: (id: number) => void;
+  onReflectionCreated?: (id: EntityId) => void;
 }
 
 const CreateReflectionForm = ({
@@ -20,7 +21,7 @@ const CreateReflectionForm = ({
   const [journalEntryText, setJournalEntryText] = useState('');
   const [journalEntryTextRows, setJournalEntryTextRows] = useState(1);
   const [selectedOptionIds, setSelectedOptionIds] = useState(
-    new Map<number, number>()
+    new Map<EntityId, EntityId>()
   );
   const onSubmit: FormEventHandler = event => {
     event.preventDefault();
