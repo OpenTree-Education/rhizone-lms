@@ -9,9 +9,7 @@ This site is built on [Gatsby](https://www.gatsbyjs.com/).
    Node, run `npm install --global yarn`.
 2. Install project dependencies with `yarn install`.
 3. Run the development server with `yarn develop`.
-4. If needed, update any environment variables related to this project in the
-   shared `.env` file one directory above this one.
-5. To run the production build locally, run `yarn build && yarn serve`.
+4. To run the production build locally, run `yarn build && yarn serve`.
 
 ## Read the docs and experiment
 

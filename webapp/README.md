@@ -10,5 +10,3 @@ The `webapp` module was scaffolded from
    Node, run `npm install --global yarn`.
 2. Install project dependencies with `yarn install`.
 3. Run the development server with `yarn develop`.
-4. If needed, update any environment variables related to this project in the
-   shared `.env` file one directory above this one.
