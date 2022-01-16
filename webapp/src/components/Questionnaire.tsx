@@ -7,12 +7,12 @@ import {
 } from '@mui/material';
 import React, { Fragment, useEffect, useState } from 'react';
 
-import { Questionnaire as APIQuestionnaire } from '../types/api';
+import { EntityId, Questionnaire as APIQuestionnaire } from '../types/api';
 
 declare interface QuestionnaireProps {
-  onChange?: (selectedOptionIds: Map<number, number>) => void;
-  questionnaireId: number | string;
-  selectedOptionIds: Map<number, number>;
+  onChange?: (selectedOptionIds: Map<EntityId, EntityId>) => void;
+  questionnaireId: EntityId;
+  selectedOptionIds: Map<EntityId, EntityId>;
 }
 
 const Questionnaire = ({

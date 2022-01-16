@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Grid } from '@mui/material';
 
+import { EntityId, Meeting as APIMeeting } from '../types/api';
 import { formatDate, formatTime } from '../helpers/dateTime';
-import { Meeting as APIMeeting } from '../types/api';
 import SessionContext from './SessionContext';
 
 interface MeetingProps {
-  meetingId?: number | string;
+  meetingId?: EntityId;
 }
 
 const Meeting = ({ meetingId }: MeetingProps) => {

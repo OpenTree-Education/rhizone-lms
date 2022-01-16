@@ -2,7 +2,7 @@ import { createContext } from 'react';
 
 import { SessionData } from '../types/api';
 
-const anonymousSession = { principal_id: null };
+const anonymousSession = { id: null, principal_id: null };
 
 const SessionContext = createContext<SessionData>(anonymousSession);
 

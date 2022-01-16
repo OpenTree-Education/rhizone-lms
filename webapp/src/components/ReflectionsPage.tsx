@@ -2,7 +2,7 @@ import { Box, Grid, Stack } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
 import CreateReflectionForm from './CreateReflectionForm';
-import { Reflection } from '../types/api';
+import { EntityId, Reflection } from '../types/api';
 import ReflectionCard from './ReflectionCard';
 
 const ReflectionsPage = () => {
@@ -10,7 +10,7 @@ const ReflectionsPage = () => {
   const [isLoadingReflections, setIsLoadingReflections] = useState(false);
   const [reflections, setReflections] = useState<Reflection[]>([]);
   const [newlyCreatedReflectionIds, setNewlyCreatedReflectionIds] = useState<
-    number[]
+    EntityId[]
   >([]);
   useEffect(() => {
     setIsLoadingReflections(true);
