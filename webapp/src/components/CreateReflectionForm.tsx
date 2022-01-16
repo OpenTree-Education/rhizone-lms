@@ -19,7 +19,8 @@ const CreateReflectionForm = ({
   const [saveReflectionError, setSaveReflectionError] = useState(null);
   const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
   const [journalEntryText, setJournalEntryText] = useState('');
-  const [journalEntryTextRows, setJournalEntryTextRows] = useState(1);
+  const [wasJournalEntryTextTouched, setWasJournalEntryTextTouched] =
+    useState(false);
   const [selectedOptionIds, setSelectedOptionIds] = useState(
     new Map<EntityId, EntityId>()
   );
@@ -74,8 +75,8 @@ const CreateReflectionForm = ({
           <TextField
             fullWidth
             label="How is it going?"
-            onFocus={() => setJournalEntryTextRows(4)}
-            minRows={journalEntryTextRows}
+            onFocus={() => setWasJournalEntryTextTouched(true)}
+            minRows={wasJournalEntryTextTouched ? 4 : 1}
             multiline
             onChange={event => setJournalEntryText(event.target.value)}
             value={journalEntryText}
