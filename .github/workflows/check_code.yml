@@ -9,6 +9,9 @@ jobs:
   check_api:
     name: Lint and test api
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./api/
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -20,24 +23,23 @@ jobs:
           node-version-file: ./api/.nvmrc
       - name: Install API dependencies
         if: always()
-        working-directory: ./api/
         run: yarn install
       - name: Check api formatting
         if: always()
-        working-directory: ./api/
         run: yarn prettier:check
       - name: Check api lint
         if: always()
-        working-directory: ./api/
         run: yarn eslint:check
       - name: Run api tests
         if: always()
-        working-directory: ./api/
         run: yarn test
 
   check_webapp:
     name: Lint and test webapp
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./webapp/
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -49,19 +51,15 @@ jobs:
           node-version-file: ./webapp/.nvmrc
       - name: Install webapp dependencies
         if: always()
-        working-directory: ./webapp/
         run: yarn install
       - name: Check webapp formatting
         if: always()
-        working-directory: ./webapp/
         run: yarn prettier:check
       - name: Check webapp lint
         if: always()
-        working-directory: ./webapp/
         run: yarn eslint:check
       - name: Run webapp tests
         if: always()
-        working-directory: ./webapp/
         env:
           CI: true
         run: yarn test
@@ -69,6 +67,9 @@ jobs:
   check_website:
     name: Lint website
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./website/
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -80,13 +81,10 @@ jobs:
           node-version-file: ./website/.nvmrc
       - name: Install website dependencies
         if: always()
-        working-directory: ./website/
         run: yarn install
       - name: Check website formatting
         if: always()
-        working-directory: ./website/
         run: yarn prettier:check
       - name: Check website lint
         if: always()
-        working-directory: ./website/
         run: yarn eslint:check
