@@ -17,11 +17,13 @@
     "test": "TZ=UTC react-scripts test"
   },
   "dependencies": {
+    "@babel/core": "^7.16.7",
     "@emotion/react": "^11.5.0",
     "@emotion/styled": "^11.3.0",
     "@mui/icons-material": "^5.2.1",
     "@mui/lab": "^5.0.0-alpha.63",
     "@mui/material": "^5.0.4",
+    "@testing-library/dom": "^8.11.2",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
