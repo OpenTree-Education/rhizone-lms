@@ -1,14 +1,17 @@
-# OpenTree Education Website
+# `website`
 
 This site is built on [Gatsby](https://www.gatsbyjs.com/).
 
 ## Getting Started
 
-Run `yarn install` and you're good to go!
-
-Run `yarn develop` to start the dev server.
-
-Run `yarn build && yarn serve` to run the production build locally.
+1. Ensure you are using the right version of Node and Yarn. If you have `nvm`,
+   run `nvm use`. To install Yarn globally for the current managed version of
+   Node, run `npm install --global yarn`.
+2. Install project dependencies with `yarn install`.
+3. Run the development server with `yarn develop`.
+4. If needed, update any environment variables related to this project in the
+   shared `.env` file one directory above this one.
+5. To run the production build locally, run `yarn build && yarn serve`.
 
 ## Read the docs and experiment
 

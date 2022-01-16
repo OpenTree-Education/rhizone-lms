@@ -1,10 +1,11 @@
 {
-  "name": "website",
-  "version": "0",
-  "description": "OpenTree Education website",
-  "author": "OpenTree Education Inc.",
-  "license": "UNLICENSED",
+  "name": "@rhizone-lms/website",
+  "version": "0.0.0",
   "private": true,
+  "engines": {
+    "node": "^16.13.0",
+    "yarn": "^1.22.0"
+  },
   "scripts": {
     "build": "gatsby build",
     "clean": "gatsby clean",

@@ -1,10 +1,11 @@
 {
-  "name": "webapp",
-  "version": "0",
-  "description": "Browser client app for Rhizone LMS",
-  "author": "OpenTree Education Inc.",
-  "license": "UNLICENSED",
+  "name": "@rhizone-lms/webapp",
+  "version": "0.0.0",
   "private": true,
+  "engines": {
+    "node": "^16.13.0",
+    "yarn": "^1.22.0"
+  },
   "scripts": {
     "build": "react-scripts build",
     "develop": "BROWSER=none REACT_APP_API_ORIGIN=http://api.rhi.zone-development react-scripts start",

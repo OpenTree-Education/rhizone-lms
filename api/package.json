@@ -1,10 +1,11 @@
 {
-  "name": "api",
-  "version": "0",
-  "description": "Web API for Rhizone LMS",
-  "author": "OpenTree Education Inc.",
-  "license": "UNLICENSED",
+  "name": "@rhizone-lms/api",
+  "version": "0.0.0",
   "private": true,
+  "engines": {
+    "node": "^16.13.0",
+    "yarn": "^1.22.0"
+  },
   "scripts": {
     "build": "tsc",
     "develop": "yarn nodemon --watch 'src/**/*.ts' --exec ts-node --require dotenv/config src/server.ts dotenv_config_path=../.env",

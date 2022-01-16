@@ -105,6 +105,16 @@ website for OpenTree Education.
 
 ## Hints and troubleshooting
 
+### Use a version manager for Node
+
+This project expects specific versions of Node and Yarn to be used. It is
+recommended to install [Node Version Manager](https://github.com/nvm-sh/nvm) and
+call `nvm use` from each project directory before running Node scripts.
+
+`nvm` offers additional tips in its documentation about
+[deeper shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration)
+such as automatically calling `nvm use` when using the `cd` command.
+
 ### Create an alias for docker-compose
 
 `docker-compose` takes longer to type than `dc`, so add an alias in your shell
