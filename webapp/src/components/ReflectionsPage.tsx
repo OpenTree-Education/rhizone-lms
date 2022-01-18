@@ -1,4 +1,4 @@
-import { Box, Grid, Stack } from '@mui/material';
+import { Box, Container, Grid, Stack } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
 import CreateReflectionForm from './CreateReflectionForm';
@@ -30,39 +30,41 @@ const ReflectionsPage = () => {
       );
   }, [newlyCreatedReflectionIds]);
   return (
-    <Grid container justifyContent="center">
-      <Grid item xs={12} md={8}>
-        <Box my={12}>
-          <CreateReflectionForm
-            onReflectionCreated={id =>
-              setNewlyCreatedReflectionIds([...newlyCreatedReflectionIds, id])
-            }
-          />
-        </Box>
-        {reflections.length > 0 && <h2>Your previous entries</h2>}
-        {error && (
-          <div>There was an error fetching the list of past reflections.</div>
-        )}
-        {isLoadingReflections && <div>Loading...</div>}
-        <Stack spacing={3}>
-          {reflections.map(
-            ({
-              id,
-              created_at: createdAt,
-              journal_entries: journalEntries,
-              responses,
-            }) => (
-              <ReflectionCard
-                key={id}
-                createdAt={createdAt}
-                journalEntries={journalEntries}
-                responses={responses}
-              />
-            )
+    <Container fixed>
+      <Grid container justifyContent="center">
+        <Grid item xs={12} md={8}>
+          <Box my={12}>
+            <CreateReflectionForm
+              onReflectionCreated={id =>
+                setNewlyCreatedReflectionIds([...newlyCreatedReflectionIds, id])
+              }
+            />
+          </Box>
+          {reflections.length > 0 && <h2>Your previous entries</h2>}
+          {error && (
+            <div>There was an error fetching the list of past reflections.</div>
           )}
-        </Stack>
+          {isLoadingReflections && <div>Loading...</div>}
+          <Stack spacing={3}>
+            {reflections.map(
+              ({
+                id,
+                created_at: createdAt,
+                journal_entries: journalEntries,
+                responses,
+              }) => (
+                <ReflectionCard
+                  key={id}
+                  createdAt={createdAt}
+                  journalEntries={journalEntries}
+                  responses={responses}
+                />
+              )
+            )}
+          </Stack>
+        </Grid>
       </Grid>
-    </Grid>
+    </Container>
   );
 };
 
