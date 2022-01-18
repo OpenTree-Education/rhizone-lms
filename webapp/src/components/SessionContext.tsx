@@ -1,15 +1,27 @@
 import { CircularProgress, Stack } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useEffect, useState } from 'react';
 
-import App from './App';
-import { SessionData } from '../types/api';
-import SessionContext from './SessionContext';
-import WelcomePage from './WelcomePage';
+import { EntityId, SessionData } from '../types/api';
 
-const AuthWall = () => {
+const SessionContext = createContext<{
+  isAuthenticated: boolean;
+  principalId: EntityId;
+}>({
+  isAuthenticated: false,
+  principalId: null,
+});
+
+declare interface SessionProviderProps {
+  children: ReactNode;
+}
+
+export const SessionProvider = ({ children }: SessionProviderProps) => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [session, setSession] = useState<SessionData | null>(null);
+  const [session, setSession] = useState<SessionData>({
+    id: null,
+    principal_id: null,
+  });
   useEffect(() => {
     setIsLoading(true);
     fetch(`${process.env.REACT_APP_API_ORIGIN}/auth/session`, {
@@ -52,13 +64,16 @@ const AuthWall = () => {
   if (!session) {
     return null;
   }
-  return session.principal_id === null ? (
-    <WelcomePage />
-  ) : (
-    <SessionContext.Provider value={session}>
-      <App />
+  return (
+    <SessionContext.Provider
+      value={{
+        isAuthenticated: !!session.principal_id,
+        principalId: session.principal_id,
+      }}
+    >
+      {children}
     </SessionContext.Provider>
   );
 };
 
-export default AuthWall;
+export default SessionContext;
