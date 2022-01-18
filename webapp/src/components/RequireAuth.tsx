@@ -1,10 +1,10 @@
-import React, { ReactNode, useContext } from 'react';
+import React, { useContext } from 'react';
 
 import SessionContext from './SessionContext';
 import LoginPage from './LoginPage';
 
 declare interface RequireAuthProps {
-  children: ReactNode;
+  children: JSX.Element;
 }
 
 const RequireAuth = ({ children }: RequireAuthProps) => {
