@@ -21,13 +21,12 @@ export const MeetingsDrawerProvider = ({ children }: PropsWithChildren<{}>) => {
   const [isOpen, setIsOpen] = useState(false);
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
-  const { data: meetings } = useApiData<APIMeeting[]>(
-    '/meetings',
-    true,
-    [isOpen],
-    null,
-    () => isOpen
-  );
+  const { data: meetings } = useApiData<APIMeeting[]>({
+    deps: [isOpen],
+    path: '/meetings',
+    sendCredentials: true,
+    shouldFetch: () => isOpen,
+  });
   const [upcomingMeetings, pastMeetings] = useMemo(() => {
     if (!meetings) {
       return [[], []];

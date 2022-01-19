@@ -14,9 +14,11 @@ const ReflectionsPage = () => {
     data: reflections,
     error,
     isLoading,
-  } = useApiData<Reflection[]>('/reflections', true, [
-    newlyCreatedReflectionIds,
-  ]);
+  } = useApiData<Reflection[]>({
+    deps: [newlyCreatedReflectionIds],
+    path: '/reflections',
+    sendCredentials: true,
+  });
   return (
     <Container fixed>
       <Grid container justifyContent="center">

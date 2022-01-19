@@ -11,12 +11,10 @@ const defaultSettings = {
 const SettingsContext = createContext<Settings>(defaultSettings);
 
 export const SettingsProvider = ({ children }: PropsWithChildren<{}>) => {
-  const { data: settings } = useApiData<Settings>(
-    '/settings/webapp',
-    false,
-    [],
-    defaultSettings
-  );
+  const { data: settings } = useApiData<Settings>({
+    initialData: defaultSettings,
+    path: '/settings/webapp',
+  });
   if (!settings) {
     return null;
   }

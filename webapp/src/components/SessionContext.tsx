@@ -17,7 +17,7 @@ export const SessionProvider = ({ children }: PropsWithChildren<{}>) => {
     data: session,
     error,
     isLoading,
-  } = useApiData<SessionData>('/auth/session', true);
+  } = useApiData<SessionData>({ path: '/auth/session', sendCredentials: true });
   if (error) {
     return (
       <Stack

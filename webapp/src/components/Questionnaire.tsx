@@ -25,13 +25,12 @@ const Questionnaire = ({
     data: questionnaire,
     error,
     isLoading,
-  } = useApiData<APIQuestionnaire>(
-    `/questionnaires/${questionnaireId}`,
-    true,
-    [questionnaireId],
-    null,
-    () => !!questionnaireId
-  );
+  } = useApiData<APIQuestionnaire>({
+    deps: [questionnaireId],
+    path: `/questionnaires/${questionnaireId}`,
+    sendCredentials: true,
+    shouldFetch: () => !!questionnaireId,
+  });
   if (error) {
     return <div>There was an error loading the questionnaire.</div>;
   }

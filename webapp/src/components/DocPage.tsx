@@ -9,9 +9,10 @@ interface DocsPageProps {
 }
 
 const DocPage = ({ docId }: DocsPageProps) => {
-  const { data: doc, error } = useApiData<Doc>(`/docs/${docId}`, false, [
-    docId,
-  ]);
+  const { data: doc, error } = useApiData<Doc>({
+    deps: [docId],
+    path: `/docs/${docId}`,
+  });
   if (error) {
     return (
       <Container>

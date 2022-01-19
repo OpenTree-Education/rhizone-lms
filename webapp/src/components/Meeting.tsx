@@ -12,11 +12,11 @@ interface MeetingProps {
 
 const Meeting = ({ meetingId }: MeetingProps) => {
   const { principalId } = useContext(SessionContext);
-  const { data: meeting, error } = useApiData<APIMeeting>(
-    `/meetings/${meetingId}`,
-    true,
-    [meetingId]
-  );
+  const { data: meeting, error } = useApiData<APIMeeting>({
+    deps: [meetingId],
+    path: `/meetings/${meetingId}`,
+    sendCredentials: true,
+  });
   if (error) {
     return <div>There was an error loading the meeting.</div>;
   }
