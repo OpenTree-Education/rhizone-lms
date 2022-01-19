@@ -8,6 +8,13 @@ export interface CreationResponseEnvelope {
   data: Entity;
 }
 
+export interface Doc {
+  id: EntityId;
+  slug: string;
+  title: string;
+  content: string;
+}
+
 export interface Prompt extends Entity {
   label: string;
   options: Option[];
