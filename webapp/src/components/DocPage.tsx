@@ -11,8 +11,11 @@ const DocPage = ({ docId }: DocsPageProps) => {
   const [error, setError] = useState(null);
   const [doc, setDoc] = useState<Doc | null>(null);
   useEffect(() => {
+    const controller = new AbortController();
+    const { signal } = controller;
     fetch(`${process.env.REACT_APP_API_ORIGIN}/docs/${docId}`, {
       credentials: 'include',
+      signal,
     })
       .then(res => res.json())
       .then(({ data, error }) => {
@@ -24,8 +27,12 @@ const DocPage = ({ docId }: DocsPageProps) => {
         }
       })
       .catch(error => {
+        if (error.name === 'AbortError') {
+          return;
+        }
         setError(error);
       });
+    return () => controller.abort();
   }, [docId]);
   if (error) {
     return (
