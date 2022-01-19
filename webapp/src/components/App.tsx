@@ -9,45 +9,42 @@ import Navbar from './Navbar';
 import ReflectionsPage from './ReflectionsPage';
 import RequireAuth from './RequireAuth';
 import SessionContext from './SessionContext';
-import { SettingsProvider } from './SettingsContext';
 
 const App = () => {
   const { isAuthenticated } = useContext(SessionContext);
   return (
-    <SettingsProvider>
-      <BrowserRouter>
-        <MeetingsDrawerProvider>
-          {isAuthenticated && <Navbar />}
-          <Routes>
-            <Route
-              path="/terms-of-use"
-              element={<DocPage docId="terms-of-use" />}
-            />
-            <Route
-              path="/privacy-policy"
-              element={<DocPage docId="privacy-policy" />}
-            />
-            <Route
-              path="/"
-              element={
-                <RequireAuth>
-                  <ReflectionsPage />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/meetings/:id"
-              element={
-                <RequireAuth>
-                  <MeetingPage />
-                </RequireAuth>
-              }
-            />
-          </Routes>
-          <Footer />
-        </MeetingsDrawerProvider>
-      </BrowserRouter>
-    </SettingsProvider>
+    <BrowserRouter>
+      <MeetingsDrawerProvider>
+        {isAuthenticated && <Navbar />}
+        <Routes>
+          <Route
+            path="/terms-of-use"
+            element={<DocPage docId="terms-of-use" />}
+          />
+          <Route
+            path="/privacy-policy"
+            element={<DocPage docId="privacy-policy" />}
+          />
+          <Route
+            path="/"
+            element={
+              <RequireAuth>
+                <ReflectionsPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/meetings/:id"
+            element={
+              <RequireAuth>
+                <MeetingPage />
+              </RequireAuth>
+            }
+          />
+        </Routes>
+        <Footer />
+      </MeetingsDrawerProvider>
+    </BrowserRouter>
   );
 };
 

@@ -5,12 +5,15 @@ import './index.css';
 import App from './components/App';
 import reportWebVitals from './reportWebVitals';
 import { SessionProvider } from './components/SessionContext';
+import { SettingsProvider } from './components/SettingsContext';
 
 ReactDOM.render(
   <React.StrictMode>
-    <SessionProvider>
-      <App />
-    </SessionProvider>
+    <SettingsProvider>
+      <SessionProvider>
+        <App />
+      </SessionProvider>
+    </SettingsProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
