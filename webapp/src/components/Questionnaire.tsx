@@ -5,9 +5,10 @@ import {
   Radio,
   RadioGroup,
 } from '@mui/material';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment } from 'react';
 
 import { EntityId, Questionnaire as APIQuestionnaire } from '../types/api';
+import useApiData from '../helpers/useApiData';
 
 interface QuestionnaireProps {
   onChange?: (selectedOptionIds: Map<EntityId, EntityId>) => void;
@@ -20,39 +21,21 @@ const Questionnaire = ({
   questionnaireId,
   selectedOptionIds,
 }: QuestionnaireProps) => {
-  const [questionnaire, setQuestionnaire] = useState<APIQuestionnaire | null>(
-    null
+  const {
+    data: questionnaire,
+    error,
+    isLoading,
+  } = useApiData<APIQuestionnaire>(
+    `/questionnaires/${questionnaireId}`,
+    true,
+    [questionnaireId],
+    null,
+    () => !!questionnaireId
   );
-  const [isLoadingQuestionnaire, setIsLoadingQuestionnaire] = useState(false);
-  const [loadQuestionnaireError, setLoadQuestionnaireError] = useState(null);
-  useEffect(() => {
-    if (!questionnaireId) {
-      return;
-    }
-    setIsLoadingQuestionnaire(true);
-    fetch(
-      `${process.env.REACT_APP_API_ORIGIN}/questionnaires/${questionnaireId}`,
-      { credentials: 'include' }
-    )
-      .then(res => res.json())
-      .then(({ data, error }) => {
-        setIsLoadingQuestionnaire(false);
-        if (error) {
-          setLoadQuestionnaireError(error);
-        }
-        if (data) {
-          setQuestionnaire(data);
-        }
-      })
-      .catch(error => {
-        setIsLoadingQuestionnaire(false);
-        setLoadQuestionnaireError(error);
-      });
-  }, [questionnaireId]);
-  if (loadQuestionnaireError) {
+  if (error) {
     return <div>There was an error loading the questionnaire.</div>;
   }
-  if (isLoadingQuestionnaire) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
   if (!questionnaire) {

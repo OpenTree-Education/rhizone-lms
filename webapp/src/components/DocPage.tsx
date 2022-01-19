@@ -1,39 +1,17 @@
 import { Container, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { Doc, EntityId } from '../types/api';
+import useApiData from '../helpers/useApiData';
 
 interface DocsPageProps {
   docId: EntityId;
 }
 
 const DocPage = ({ docId }: DocsPageProps) => {
-  const [error, setError] = useState(null);
-  const [doc, setDoc] = useState<Doc | null>(null);
-  useEffect(() => {
-    const controller = new AbortController();
-    const { signal } = controller;
-    fetch(`${process.env.REACT_APP_API_ORIGIN}/docs/${docId}`, {
-      credentials: 'include',
-      signal,
-    })
-      .then(res => res.json())
-      .then(({ data, error }) => {
-        if (error) {
-          setError(error);
-        }
-        if (data) {
-          setDoc(data);
-        }
-      })
-      .catch(error => {
-        if (error.name === 'AbortError') {
-          return;
-        }
-        setError(error);
-      });
-    return () => controller.abort();
-  }, [docId]);
+  const { data: doc, error } = useApiData<Doc>(`/docs/${docId}`, false, [
+    docId,
+  ]);
   if (error) {
     return (
       <Container>

@@ -1,7 +1,8 @@
 import { CircularProgress, Stack } from '@mui/material';
-import React, { createContext, ReactNode, useEffect, useState } from 'react';
+import React, { createContext, PropsWithChildren } from 'react';
 
 import { EntityId, SessionData } from '../types/api';
+import useApiData from '../helpers/useApiData';
 
 const SessionContext = createContext<{
   isAuthenticated: boolean;
@@ -11,34 +12,12 @@ const SessionContext = createContext<{
   principalId: null,
 });
 
-interface SessionProviderProps {
-  children: ReactNode;
-}
-
-export const SessionProvider = ({ children }: SessionProviderProps) => {
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [session, setSession] = useState<SessionData>({
-    id: null,
-    principal_id: null,
-  });
-  useEffect(() => {
-    setIsLoading(true);
-    fetch(`${process.env.REACT_APP_API_ORIGIN}/auth/session`, {
-      credentials: 'include',
-    })
-      .then(res => res.json())
-      .then(
-        ({ data }) => {
-          setSession(data);
-          setIsLoading(false);
-        },
-        error => {
-          setError(error);
-          setIsLoading(false);
-        }
-      );
-  }, []);
+export const SessionProvider = ({ children }: PropsWithChildren<{}>) => {
+  const {
+    data: session,
+    error,
+    isLoading,
+  } = useApiData<SessionData>('/auth/session', true);
   if (error) {
     return (
       <Stack
