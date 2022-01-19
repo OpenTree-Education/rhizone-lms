@@ -9,7 +9,7 @@ const defaultSettings = {
 
 const SettingsContext = createContext<Settings>(defaultSettings);
 
-declare interface SettingsProviderProps {
+interface SettingsProviderProps {
   children: ReactNode;
 }
 

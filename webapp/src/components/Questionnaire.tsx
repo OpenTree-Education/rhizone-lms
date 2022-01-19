@@ -9,7 +9,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 
 import { EntityId, Questionnaire as APIQuestionnaire } from '../types/api';
 
-declare interface QuestionnaireProps {
+interface QuestionnaireProps {
   onChange?: (selectedOptionIds: Map<EntityId, EntityId>) => void;
   questionnaireId: EntityId;
   selectedOptionIds: Map<EntityId, EntityId>;

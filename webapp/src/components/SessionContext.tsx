@@ -11,7 +11,7 @@ const SessionContext = createContext<{
   principalId: null,
 });
 
-declare interface SessionProviderProps {
+interface SessionProviderProps {
   children: ReactNode;
 }
 

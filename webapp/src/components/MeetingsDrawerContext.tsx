@@ -11,7 +11,7 @@ const MeetingsDrawerContext = createContext({
   close: () => {},
 });
 
-declare interface MeetingsDrawerProviderProps {
+interface MeetingsDrawerProviderProps {
   children: ReactNode;
 }
 

@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import SessionContext from './SessionContext';
 import LoginPage from './LoginPage';
 
-declare interface RequireAuthProps {
+interface RequireAuthProps {
   children: JSX.Element;
 }
 
