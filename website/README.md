@@ -8,8 +8,9 @@ This site is built on [Gatsby](https://www.gatsbyjs.com/).
    run `nvm use`. To install Yarn globally for the current managed version of
    Node, run `npm install --global yarn`.
 2. Install project dependencies with `yarn install`.
-3. Run the development server with `yarn develop`.
-4. To run the production build locally, run `yarn build && yarn serve`.
+3. Clone the content repository into a subdirectory named `./content/`.
+4. Run the development server with `yarn develop`.
+5. To run the production build locally, run `yarn build:preview && yarn serve`.
 
 ## Read the docs and experiment
 

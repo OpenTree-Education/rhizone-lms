@@ -7,7 +7,8 @@
     "yarn": "^1.22.0"
   },
   "scripts": {
-    "build": "gatsby build",
+    "build": "git clone --depth 1 $CONTENT_REPO content && gatsby build",
+    "build:preview": "gatsby build",
     "clean": "gatsby clean",
     "develop": "ENABLE_GATSBY_REFRESH_ENDPOINT=true gatsby develop",
     "eslint:check": "eslint 'src/**/*.{ts,tsx}'",
