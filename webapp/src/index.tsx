@@ -2,12 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import './index.css';
-import AuthWall from './components/AuthWall';
+import App from './components/App';
 import reportWebVitals from './reportWebVitals';
+import { SessionProvider } from './components/SessionContext';
 
 ReactDOM.render(
   <React.StrictMode>
-    <AuthWall />
+    <SessionProvider>
+      <App />
+    </SessionProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

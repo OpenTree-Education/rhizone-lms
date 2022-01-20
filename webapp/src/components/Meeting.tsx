@@ -10,7 +10,7 @@ interface MeetingProps {
 }
 
 const Meeting = ({ meetingId }: MeetingProps) => {
-  const sessionData = useContext(SessionContext);
+  const { principalId } = useContext(SessionContext);
   const [error, setError] = useState(null);
   const [meeting, setMeeting] = useState<APIMeeting>();
   useEffect(() => {
@@ -37,7 +37,7 @@ const Meeting = ({ meetingId }: MeetingProps) => {
     return null;
   }
   const currentParticipantId = meeting.participants.find(
-    ({ principal_id }) => principal_id === sessionData.principal_id
+    ({ principal_id }) => principal_id === principalId
   )?.id;
   return (
     <Grid>

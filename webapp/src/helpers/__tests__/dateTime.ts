@@ -1,4 +1,4 @@
-import { formatDate, formatTime, formatDateTime } from './dateTime';
+import { formatDate, formatTime, formatDateTime } from '../dateTime';
 
 describe('dateTime', () => {
   describe('formatDate', () => {

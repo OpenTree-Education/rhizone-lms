@@ -68,7 +68,7 @@ const start = async () => {
   app.use('/meetings', withCors, loggedIn, meetingsRouter);
   app.use('/questionnaires', withCors, loggedIn, questionnairesRouter);
   app.use('/reflections', withCors, loggedIn, reflectionsRouter);
-  app.use('/settings', withCors, loggedIn, settingsRouter);
+  app.use('/settings', withCors, settingsRouter);
   app.get('/', (_, res) => {
     res.json({});
   });
