@@ -1,9 +1,15 @@
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import { Divider, Drawer, List, ListItem, Typography } from '@mui/material';
-import React, { createContext, ReactNode, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  PropsWithChildren,
+  useMemo,
+  useState,
+} from 'react';
 
-import { Meeting } from '../types/api';
+import { Meeting as APIMeeting } from '../types/api';
 import MeetingDateTime from './MeetingDateTime';
+import useApiData from '../helpers/useApiData';
 
 const MeetingsDrawerContext = createContext({
   isOpen: false,
@@ -11,41 +17,33 @@ const MeetingsDrawerContext = createContext({
   close: () => {},
 });
 
-declare interface MeetingsDrawerProviderProps {
-  children: ReactNode;
-}
-
-export const MeetingsDrawerProvider = ({
-  children,
-}: MeetingsDrawerProviderProps) => {
+export const MeetingsDrawerProvider = ({ children }: PropsWithChildren<{}>) => {
   const [isOpen, setIsOpen] = useState(false);
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
-  const [upcomingMeetings, setUpcomingMeetings] = useState<Meeting[]>([]);
-  const [pastMeetings, setPastMeetings] = useState<Meeting[]>([]);
-  useEffect(() => {
-    if (!isOpen) {
-      return;
+  const { data: meetings } = useApiData<APIMeeting[]>({
+    deps: [isOpen],
+    path: '/meetings',
+    sendCredentials: true,
+    shouldFetch: () => isOpen,
+  });
+  const [upcomingMeetings, pastMeetings] = useMemo(() => {
+    if (!meetings) {
+      return [[], []];
     }
-    fetch(`${process.env.REACT_APP_API_ORIGIN}/meetings`, {
-      credentials: 'include',
-    })
-      .then(res => res.json())
-      .then(({ data: allMeetings }) => {
-        const now = Date.now();
-        let startIndexOfPastMeeting = allMeetings.length;
-        for (let i = 0; i < allMeetings.length; i++) {
-          if (Date.parse(allMeetings[i].starts_at) < now) {
-            startIndexOfPastMeeting = i;
-            break;
-          }
-        }
-        setUpcomingMeetings(
-          allMeetings.slice(0, startIndexOfPastMeeting).reverse()
-        );
-        setPastMeetings(allMeetings.slice(startIndexOfPastMeeting));
-      });
-  }, [isOpen]);
+    const now = Date.now();
+    let startIndexOfPastMeeting = meetings.length;
+    for (let i = 0; i < meetings.length; i++) {
+      if (Date.parse(meetings[i].starts_at) < now) {
+        startIndexOfPastMeeting = i;
+        break;
+      }
+    }
+    return [
+      meetings.slice(0, startIndexOfPastMeeting).reverse(),
+      meetings.slice(startIndexOfPastMeeting),
+    ];
+  }, [meetings]);
   return (
     <MeetingsDrawerContext.Provider value={{ isOpen, open, close }}>
       {children}

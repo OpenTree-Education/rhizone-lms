@@ -4,7 +4,7 @@ import React from 'react';
 import { formatDateTime } from '../helpers/dateTime';
 import { JournalEntry, Response } from '../types/api';
 
-declare interface ReflectionCardProps {
+interface ReflectionCardProps {
   createdAt: string;
   responses: Response[];
   journalEntries: JournalEntry[];

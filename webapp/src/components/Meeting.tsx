@@ -1,9 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { Grid } from '@mui/material';
 
 import { EntityId, Meeting as APIMeeting } from '../types/api';
 import { formatDate, formatTime } from '../helpers/dateTime';
 import SessionContext from './SessionContext';
+import useApiData from '../helpers/useApiData';
 
 interface MeetingProps {
   meetingId?: EntityId;
@@ -11,25 +12,11 @@ interface MeetingProps {
 
 const Meeting = ({ meetingId }: MeetingProps) => {
   const { principalId } = useContext(SessionContext);
-  const [error, setError] = useState(null);
-  const [meeting, setMeeting] = useState<APIMeeting>();
-  useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_ORIGIN}/meetings/${meetingId}`, {
-      credentials: 'include',
-    })
-      .then(res => res.json())
-      .then(({ data, error }) => {
-        if (error) {
-          setError(error);
-        }
-        if (data) {
-          setMeeting(data);
-        }
-      })
-      .catch(error => {
-        setError(error);
-      });
-  }, [meetingId]);
+  const { data: meeting, error } = useApiData<APIMeeting>({
+    deps: [meetingId],
+    path: `/meetings/${meetingId}`,
+    sendCredentials: true,
+  });
   if (error) {
     return <div>There was an error loading the meeting.</div>;
   }

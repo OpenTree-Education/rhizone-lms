@@ -1,6 +1,7 @@
-import React, { createContext, ReactNode, useEffect, useState } from 'react';
+import React, { createContext, PropsWithChildren } from 'react';
 
 import { Settings } from '../types/api';
+import useApiData from '../helpers/useApiData';
 
 const defaultSettings = {
   id: null,
@@ -9,19 +10,14 @@ const defaultSettings = {
 
 const SettingsContext = createContext<Settings>(defaultSettings);
 
-declare interface SettingsProviderProps {
-  children: ReactNode;
-}
-
-export const SettingsProvider = ({ children }: SettingsProviderProps) => {
-  const [settings, setSettings] = useState<Settings>(defaultSettings);
-  useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_ORIGIN}/settings/webapp`, {
-      credentials: 'include',
-    })
-      .then(res => res.json())
-      .then(({ data }) => data && setSettings(data));
-  }, []);
+export const SettingsProvider = ({ children }: PropsWithChildren<{}>) => {
+  const { data: settings } = useApiData<Settings>({
+    initialData: defaultSettings,
+    path: '/settings/webapp',
+  });
+  if (!settings) {
+    return null;
+  }
   return (
     <SettingsContext.Provider value={settings}>
       {children}
