@@ -1,9 +1,7 @@
 import { Box, Button, Container, Stack, Typography } from '@mui/material';
 import React from 'react';
 
-import Footer from './Footer';
-
-const WelcomePage = () => (
+const LoginPage = () => (
   <Container fixed sx={{ pt: 12 }}>
     <Stack alignItems="center">
       <h1>Rhizone</h1>
@@ -19,9 +17,8 @@ const WelcomePage = () => (
           Sign In with GitHub
         </Button>
       </Box>
-      <Footer />
     </Stack>
   </Container>
 );
 
-export default WelcomePage;
+export default LoginPage;

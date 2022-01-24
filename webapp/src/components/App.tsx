@@ -1,42 +1,50 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Container } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import React, { useContext } from 'react';
 
+import DocPage from './DocPage';
 import Footer from './Footer';
 import MeetingPage from './MeetingPage';
-import MeetingsDrawer from './MeetingsDrawer';
+import { MeetingsDrawerProvider } from './MeetingsDrawerContext';
 import Navbar from './Navbar';
 import ReflectionsPage from './ReflectionsPage';
-import { Settings } from '../types/api';
-import SettingsContext, { defaultSettings } from './SettingsContext';
+import RequireAuth from './RequireAuth';
+import SessionContext from './SessionContext';
 
 const App = () => {
-  const [isMeetingDrawerOpen, setIsMeetingDrawerOpen] = useState(false);
-  const [settings, setSettings] = useState<Settings>(defaultSettings);
-  useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_ORIGIN}/settings/webapp`, {
-      credentials: 'include',
-    })
-      .then(res => res.json())
-      .then(({ data }) => data && setSettings(data));
-  }, []);
+  const { isAuthenticated } = useContext(SessionContext);
   return (
-    <SettingsContext.Provider value={settings}>
-      <BrowserRouter>
-        <Navbar onCalendarClick={() => setIsMeetingDrawerOpen(true)} />
-        <Container fixed>
-          <Routes>
-            <Route path="/" element={<ReflectionsPage />} />
-            <Route path="/meetings/:id" element={<MeetingPage />} />
-          </Routes>
-        </Container>
-        <MeetingsDrawer
-          isOpen={isMeetingDrawerOpen}
-          onClose={() => setIsMeetingDrawerOpen(false)}
-        />
+    <BrowserRouter>
+      <MeetingsDrawerProvider>
+        {isAuthenticated && <Navbar />}
+        <Routes>
+          <Route
+            path="/terms-of-use"
+            element={<DocPage docId="terms-of-use" />}
+          />
+          <Route
+            path="/privacy-policy"
+            element={<DocPage docId="privacy-policy" />}
+          />
+          <Route
+            path="/"
+            element={
+              <RequireAuth>
+                <ReflectionsPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/meetings/:id"
+            element={
+              <RequireAuth>
+                <MeetingPage />
+              </RequireAuth>
+            }
+          />
+        </Routes>
         <Footer />
-      </BrowserRouter>
-    </SettingsContext.Provider>
+      </MeetingsDrawerProvider>
+    </BrowserRouter>
   );
 };
 
