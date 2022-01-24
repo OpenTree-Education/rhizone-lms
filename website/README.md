@@ -14,8 +14,8 @@ This site is built on [Gatsby](https://www.gatsbyjs.com/).
 
 ## Read the docs and experiment
 
-Storybook is used for documentation for this site and experimenting with React
-components.
+[Storybook](https://storybook.js.org/docs/react/get-started/introduction) is
+used for documentation for this site and experimenting with React components.
 
 Run `yarn storybook` to start the Storybook server and open the docs in the
 browser.
