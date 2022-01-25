@@ -63,28 +63,3 @@ jobs:
         env:
           CI: true
         run: yarn test
-
-  check_website:
-    name: Lint website
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./website/
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Setup node
-        uses: actions/setup-node@v2
-        with:
-          cache: yarn
-          cache-dependency-path: ./website/yarn.lock
-          node-version-file: ./website/.nvmrc
-      - name: Install website dependencies
-        if: always()
-        run: yarn install
-      - name: Check website formatting
-        if: always()
-        run: yarn prettier:check
-      - name: Check website lint
-        if: always()
-        run: yarn eslint:check
