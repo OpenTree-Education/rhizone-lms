@@ -98,11 +98,6 @@ environments.
 The `/webapp` folder contains a React app that enables user functionality and
 communicates with the api.
 
-### `/website`
-
-The `/website` folder contains a Gatsby site that is published as the marketing
-website for OpenTree Education.
-
 ## Hints and troubleshooting
 
 ### Use a version manager for Node
