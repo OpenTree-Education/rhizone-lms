@@ -5,9 +5,7 @@ const LoginPage = () => (
   <Container fixed sx={{ pt: 12 }}>
     <Stack alignItems="center">
       <h1>Rhizone</h1>
-      <Typography variant="subtitle1">
-        The OpenTree Education Learning Management System
-      </Typography>
+      <Typography variant="subtitle1">Learning Management System</Typography>
       <Box my={12}>
         <Button
           component="a"
