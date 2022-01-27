@@ -2,18 +2,21 @@ import { listCompetencies } from '../competenciesService';
 import { mockQuery } from '../mockDb';
 
 describe('listCompetencies', () => {
-  it('should load a page that lists the competencies in the database with their titles and descriptions.', async () => {
+  it('should query the lists of the competencies in the database with their titles and descriptions.', async () => {
+    const competencies = [
+      {
+        id: 2,
+        label: 'label',
+        description: 'description',
+      },
+    ];
+    const limit = 3;
+    const offset = 4;
     mockQuery(
       'select `id`, `label`, `description` from `competencies` limit ? offset ?',
-      [10, 10],
-      [{ id: 1, label: 'Code', description: 'To code or not to code...' }]
+      [limit, offset],
+      competencies
     );
-    expect(await listCompetencies(10, 10)).toEqual([
-      {
-        id: 1,
-        label: 'Code',
-        description: 'To code or not to code...',
-      },
-    ]);
+    expect(await listCompetencies(limit, offset)).toEqual(competencies);
   });
 });
