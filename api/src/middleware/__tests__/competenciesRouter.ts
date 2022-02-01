@@ -39,7 +39,14 @@ describe('competenciesRouter', () => {
         );
     });
 
+    it('should respond with an internal server error if an error was thrown while counting competencies', done => {
+      mockCountCompetencies.mockRejectedValue(new Error());
+      mockListCompetencies.mockResolvedValue([]);
+      appAgent.get('/').expect(500, done);
+    });
+
     it('should respond with an internal server error if an error was thrown while listing competencies', done => {
+      mockCountCompetencies.mockResolvedValue(0);
       mockListCompetencies.mockRejectedValue(new Error());
       appAgent.get('/').expect(500, done);
     });
