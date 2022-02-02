@@ -7,6 +7,7 @@ import expressSession from 'express-session';
 import helmet from 'helmet';
 
 import authRouter from './middleware/authRouter';
+import competenciesRouter from './middleware/competenciesRouter';
 import docsRouter from './middleware/docsRouter';
 import {
   handleErrors,
@@ -66,11 +67,13 @@ const start = async () => {
     origin: process.env.WEBAPP_ORIGIN,
   });
   app.use(withCors, authRouter);
+  app.use('/competencies', withCors, loggedIn, competenciesRouter);
   app.use('/docs', withCors, docsRouter);
   app.use('/meetings', withCors, loggedIn, meetingsRouter);
   app.use('/questionnaires', withCors, loggedIn, questionnairesRouter);
   app.use('/reflections', withCors, loggedIn, reflectionsRouter);
   app.use('/settings', withCors, settingsRouter);
+
   app.get('/', (_, res) => {
     res.json({});
   });
