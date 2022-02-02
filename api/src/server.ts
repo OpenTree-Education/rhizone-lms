@@ -17,6 +17,7 @@ import meetingsRouter from './middleware/meetingsRouter';
 import questionnairesRouter from './middleware/questionnairesRouter';
 import reflectionsRouter from './middleware/reflectionsRouter';
 import settingsRouter from './middleware/settingsRouter';
+import competenciesRouter from './middleware/competenciesRouter';
 
 declare module 'express-session' {
   interface Session {
@@ -71,6 +72,7 @@ const start = async () => {
   app.use('/questionnaires', withCors, loggedIn, questionnairesRouter);
   app.use('/reflections', withCors, loggedIn, reflectionsRouter);
   app.use('/settings', withCors, settingsRouter);
+  app.use('/competencies', withCors, loggedIn, competenciesRouter);
   app.get('/', (_, res) => {
     res.json({});
   });
