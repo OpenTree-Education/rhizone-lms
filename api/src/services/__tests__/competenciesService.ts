@@ -1,4 +1,8 @@
-import { countCompetencies, listCompetencies } from '../competenciesService';
+import {
+  countCompetencies,
+  listCompetencies,
+  createCompetency,
+} from '../competenciesService';
 import { mockQuery } from '../mockDb';
 
 describe('competenciesService', () => {
@@ -31,6 +35,23 @@ describe('competenciesService', () => {
         competencies
       );
       expect(await listCompetencies(limit, offset)).toEqual(competencies);
+    });
+  });
+
+  describe('createCompetency', () => {
+    it('should create a given competency in the system', async () => {
+      const principalId = 2;
+      const label = 'label';
+      const description = 'description';
+      const competencyId = 3;
+      mockQuery(
+        'insert into `competencies` (`description`, `label`, `principal_id`) values (?, ?, ?)',
+        [description, label, principalId],
+        [competencyId]
+      );
+      expect(await createCompetency(principalId, label, description)).toEqual({
+        id: competencyId,
+      });
     });
   });
 });

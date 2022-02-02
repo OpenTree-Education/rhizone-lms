@@ -14,3 +14,16 @@ export const listCompetencies = async (limit: number, offset: number) => {
 
   return competencies;
 };
+
+export const createCompetency = async (
+  principalId: number,
+  label: string,
+  description: string
+) => {
+  const [id] = await db('competencies').insert({
+    principal_id: principalId,
+    label: label,
+    description: description,
+  });
+  return { id };
+};
