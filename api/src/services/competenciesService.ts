@@ -20,10 +20,17 @@ export const createCompetency = async (
   label: string,
   description: string
 ) => {
-  const [id] = await db('competencies').insert({
-    principal_id: principalId,
-    label: label,
-    description: description,
+  let competencyId: number;
+  await db.transaction(async trx => {
+    [competencyId] = await trx('competencies').insert({
+      principal_id: principalId,
+      label: label,
+      description: description,
+    });
+    await trx('model_competencies').insert({
+      principal_id: principalId,
+      competency_id: competencyId,
+    });
   });
-  return { id };
+  return { id: competencyId };
 };
