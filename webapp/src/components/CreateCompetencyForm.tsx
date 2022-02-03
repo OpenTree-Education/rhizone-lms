@@ -1,10 +1,16 @@
 import { Alert, Card, CardContent, Snackbar, TextField } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import React, { FormEventHandler, useContext, useState } from 'react';
+import React, { FormEventHandler, useState } from 'react';
 
-// import { EntityId } from '../types/api';
+import { EntityId } from '../types/api';
 
-export const CreateCompetencyForm = () => {
+interface CreateCompetencyFormProps {
+  onCompetencyCreated?: (id: EntityId) => void;
+}
+
+const CreateCompetencyForm = ({
+  onCompetencyCreated,
+}: CreateCompetencyFormProps) => {
   const [isSavingCompetency, setIsSavingCompetency] = useState(false);
   const [saveCompetencyError, setSaveCompetencyError] = useState(null);
   const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
@@ -12,11 +18,18 @@ export const CreateCompetencyForm = () => {
   const [descriptionEntryText, setDescriptionEntryText] = useState('');
   const [wasCompetencyEntryTextTouched, setWasCompetencyEntryTextTouched] =
     useState(false);
-
   const onSubmit: FormEventHandler = event => {
     event.preventDefault();
     setIsSavingCompetency(true);
-    fetch(``, {})
+    fetch(`${process.env.REACT_APP_API_ORIGIN}/competencies`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        label: competencyNameEntryText,
+        description: descriptionEntryText
+      })
+    })
       .then(res => res.json())
       .then(({ data, error }) => {
         setIsSavingCompetency(false);
@@ -27,6 +40,9 @@ export const CreateCompetencyForm = () => {
           setIsSuccessMessageVisible(true);
           setCompetencyNameEntryText('');
           setDescriptionEntryText('');
+          if (onCompetencyCreated) {
+            onCompetencyCreated(data.id);
+          }
         }
       })
       .catch(error => {
@@ -43,7 +59,7 @@ export const CreateCompetencyForm = () => {
         <CardContent sx={{ pt: 0 }}>
           <TextField
             sx={{ mb: 2, width: '50%'}}
-            label="Competency"
+            label="Title"
             onChange={event => setCompetencyNameEntryText(event.target.value)}
             value={competencyNameEntryText}
           />
@@ -93,5 +109,7 @@ export const CreateCompetencyForm = () => {
         </Snackbar>
       )}
     </form>
-  )
+  );
 };
+
+export default CreateCompetencyForm;
