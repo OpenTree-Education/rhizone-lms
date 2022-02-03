@@ -39,16 +39,24 @@ describe('competenciesService', () => {
   });
 
   describe('createCompetency', () => {
-    it('should create a given competency in the system', async () => {
+    it('should create a competency and model competency in a transaction', async () => {
       const principalId = 2;
       const label = 'label';
       const description = 'description';
       const competencyId = 3;
+      const model_competency_id = 4;
+      mockQuery('BEGIN;');
       mockQuery(
         'insert into `competencies` (`description`, `label`, `principal_id`) values (?, ?, ?)',
         [description, label, principalId],
         [competencyId]
       );
+      mockQuery(
+        'insert into `model_competencies` (`competency_id`, `principal_id`) values (?, ?)',
+        [competencyId, principalId],
+        [model_competency_id]
+      );
+      mockQuery('COMMIT;');
       expect(await createCompetency(principalId, label, description)).toEqual({
         id: competencyId,
       });

@@ -28,3 +28,7 @@ process.env.DEBUG = '*';
 ```
 
 Nodemon should restart the server and the console will have debug messages.
+
+## Testing
+
+To run the tests, run `yarn test`.
