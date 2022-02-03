@@ -12,6 +12,12 @@ export interface APIError {
   message: string;
 }
 
+export interface Competency {
+  id: EntityId;
+  label: string;
+  description: string;
+}
+
 export interface Doc {
   id: EntityId;
   slug: string;
