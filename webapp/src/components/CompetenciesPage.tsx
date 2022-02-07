@@ -12,7 +12,7 @@ const CompetenciesPage = () => {
     sendCredentials: true,
   });
   if (error) {
-    return <div>There was an error loading the competencies.</div>;
+    return <p>There was an error loading the competencies.</p>;
   }
   if (!competencies) {
     return null;
