@@ -11,20 +11,16 @@ export interface CreationResponseEnvelope {
 export interface APIError {
   message: string;
 }
-
-export interface Competency {
-  id: EntityId;
-  label: string;
-  description: string;
-}
-
 export interface Doc {
   id: EntityId;
   slug: string;
   title: string;
   content: string;
 }
-
+export interface Competency extends Entity {
+  label: string;
+  description: string;
+}
 export interface Prompt extends Entity {
   label: string;
   options: Option[];
