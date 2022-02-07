@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import React, { useContext } from 'react';
 
+import CompetenciesPage from './CompetenciesPage';
 import DocPage from './DocPage';
 import Footer from './Footer';
 import MeetingPage from './MeetingPage';
@@ -9,7 +10,6 @@ import Navbar from './Navbar';
 import ReflectionsPage from './ReflectionsPage';
 import RequireAuth from './RequireAuth';
 import SessionContext from './SessionContext';
-import CompetenciesPage from './CompetenciesPage';
 
 const App = () => {
   const { isAuthenticated } = useContext(SessionContext);
