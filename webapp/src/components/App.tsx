@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import React, { useContext } from 'react';
 
+import CompetenciesPage from './CompetenciesPage';
 import DocPage from './DocPage';
 import Footer from './Footer';
 import MeetingPage from './MeetingPage';
@@ -30,6 +31,14 @@ const App = () => {
             element={
               <RequireAuth>
                 <ReflectionsPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/competencies"
+            element={
+              <RequireAuth>
+                <CompetenciesPage />
               </RequireAuth>
             }
           />
