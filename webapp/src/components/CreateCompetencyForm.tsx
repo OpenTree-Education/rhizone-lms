@@ -27,8 +27,8 @@ const CreateCompetencyForm = ({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         label: competencyNameEntryText,
-        description: descriptionEntryText
-      })
+        description: descriptionEntryText,
+      }),
     })
       .then(res => res.json())
       .then(({ data, error }) => {
@@ -59,7 +59,7 @@ const CreateCompetencyForm = ({
         <CardContent sx={{ pt: 0 }}>
           <TextField
             required
-            sx={{ mb: 2, width: '50%'}}
+            sx={{ mb: 2, width: '50%' }}
             label="Title"
             onChange={event => setCompetencyNameEntryText(event.target.value)}
             value={competencyNameEntryText}
@@ -73,7 +73,7 @@ const CreateCompetencyForm = ({
             multiline
             onChange={event => setDescriptionEntryText(event.target.value)}
             value={descriptionEntryText}
-          />  
+          />
         </CardContent>
         {saveCompetencyError && (
           <CardContent>
@@ -87,11 +87,11 @@ const CreateCompetencyForm = ({
         )}
         <CardContent>
           <LoadingButton
-              type="submit"
-              variant="contained"
-              loading={isSavingCompetency}
-            >
-              Save competency
+            type="submit"
+            variant="contained"
+            loading={isSavingCompetency}
+          >
+            Save competency
           </LoadingButton>
         </CardContent>
       </Card>
