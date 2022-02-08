@@ -58,12 +58,14 @@ const CreateCompetencyForm = ({
         </CardContent>
         <CardContent sx={{ pt: 0 }}>
           <TextField
+            required
             sx={{ mb: 2, width: '50%'}}
             label="Title"
             onChange={event => setCompetencyNameEntryText(event.target.value)}
             value={competencyNameEntryText}
           />
           <TextField
+            required
             fullWidth
             label="Description"
             onFocus={() => setWasCompetencyEntryTextTouched(true)}
