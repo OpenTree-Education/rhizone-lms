@@ -2,9 +2,6 @@ version: "3.7"
 
 services:
   api:
-    depends_on:
-      - flyway
-      - redis
     environment:
       - API_HOST=0.0.0.0
       - GITHUB_CLIENT_ID
@@ -26,9 +23,6 @@ services:
     secrets:
       - FLYWAY_CONFIG
   nginx:
-    depends_on:
-      - api
-      - webapp
     image: ghcr.io/opentree-education/rhizone-lms_nginx:latest
     ports:
       - "80:80"
@@ -38,6 +32,4 @@ services:
   redis:
     image: redis:6.2-alpine
   webapp:
-    depends_on:
-      - api
     image: ghcr.io/opentree-education/rhizone-lms_webapp:latest
