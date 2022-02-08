@@ -8,7 +8,7 @@ export const countCompetencies = async () => {
 
 export const listCompetencies = async (limit: number, offset: number) => {
   const competencies = await db('competencies')
-    .select('id', 'label', 'description')
+    .select('id', 'principal_id', 'label', 'description')
     .orderBy('label', 'asc')
     .orderBy('id', 'asc')
     .limit(limit)
@@ -30,8 +30,8 @@ export const createCompetency = async (
       description: description,
     });
     await trx('model_competencies').insert({
-      principal_id: principalId,
       competency_id: competencyId,
+      principal_id: principalId,
     });
   });
   return { id: competencyId };
