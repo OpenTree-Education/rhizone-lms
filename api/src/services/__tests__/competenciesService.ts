@@ -2,6 +2,7 @@ import {
   countCompetencies,
   listCompetencies,
   createCompetency,
+  updateCompetency,
 } from '../competenciesService';
 import { mockQuery } from '../mockDb';
 
@@ -60,6 +61,26 @@ describe('competenciesService', () => {
       expect(await createCompetency(principalId, label, description)).toEqual({
         id: competencyId,
       });
+    });
+  });
+
+  describe('updateCompetency', () => {
+    it('should update the specified competency if the current user is the one who originally authored the competency', async () => {
+      const competency = {
+        description: 'description',
+        id: 2,
+        label: 'label',
+        principal_id: 3,
+      };
+      const id = 2;
+      const principalId = 3;
+
+      mockQuery(
+        'select `description`, `id`, `label`, `principal_id` from `competencies` where `id` = ? and `principal_id` = ?',
+        [id, principalId],
+        competency
+      );
+      expect(await updateCompetency(id, principalId)).toEqual(competency);
     });
   });
 });
