@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Log in to the Container registry
+      - name: Log in to the container registry
         uses: docker/login-action@v1
         with:
           registry: ${{ env.REGISTRY }}
@@ -49,7 +49,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Log in to the Container registry
+      - name: Log in to the container registry
         uses: docker/login-action@v1
         with:
           registry: ${{ env.REGISTRY }}
@@ -68,6 +68,39 @@ jobs:
         with:
           context: ./nginx/
           build-args: BUILD_ENV=production
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+
+  build_and_push_webapp:
+    name: Build webapp image and push to registry
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Log in to the container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_BASE_NAME }}_webapp
+          tags: |
+            type=sha
+            type=raw,value=latest
+      - name: Build and push webapp image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./webapp/
+          build-args: REACT_APP_API_ORIGIN=http://api.rhi.zone
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
