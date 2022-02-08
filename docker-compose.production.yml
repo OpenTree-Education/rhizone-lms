@@ -3,6 +3,7 @@ version: "3.7"
 services:
   api:
     depends_on:
+      - flyway
       - redis
     environment:
       - API_HOST=0.0.0.0
@@ -17,6 +18,13 @@ services:
       - SESSION_SECRET
       - WEBAPP_ORIGIN=https://rhi.zone
     image: ghcr.io/opentree-education/rhizone-lms_api:latest
+  flyway:
+    command: -configFiles=/run/secrets/FLYWAY_CONFIG migrate
+    deploy:
+      replicas: 1
+    image: ghcr.io/opentree-education/rhizone-lms_flyway:latest
+    secrets:
+      - FLYWAY_CONFIG
   nginx:
     depends_on:
       - api
@@ -30,4 +38,6 @@ services:
   redis:
     image: redis:6.2-alpine
   webapp:
+    depends_on:
+      - api
     image: ghcr.io/opentree-education/rhizone-lms_webapp:latest

@@ -40,6 +40,37 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+  build_and_push_flyway:
+    name: Build flyway image and push to registry
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Log in to the container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_BASE_NAME }}_flyway
+          tags: |
+            type=sha
+            type=raw,value=latest
+      - name: Build and push flyway image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./db/
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
   build_and_push_nginx:
     name: Build nginx image and push to registry
     runs-on: ubuntu-latest
