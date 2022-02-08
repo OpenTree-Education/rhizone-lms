@@ -20,6 +20,7 @@ services:
   nginx:
     depends_on:
       - api
+      - webapp
     image: ghcr.io/opentree-education/rhizone-lms_nginx:latest
     ports:
       - "80:80"
@@ -28,3 +29,5 @@ services:
       - /etc/letsencrypt/:/etc/letsencrypt/
   redis:
     image: redis:6.2-alpine
+  webapp:
+    image: ghcr.io/opentree-education/rhizone-lms_webapp:latest
