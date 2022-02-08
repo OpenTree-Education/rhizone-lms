@@ -100,7 +100,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./webapp/
-          build-args: REACT_APP_API_ORIGIN=http://api.rhi.zone
+          build-args: REACT_APP_API_ORIGIN=https://api.rhi.zone
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
