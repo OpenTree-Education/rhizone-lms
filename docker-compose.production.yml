@@ -15,13 +15,6 @@ services:
       - SESSION_SECRET
       - WEBAPP_ORIGIN=https://rhi.zone
     image: ghcr.io/opentree-education/rhizone-lms_api:latest
-  flyway:
-    command: -configFiles=/run/secrets/FLYWAY_CONFIG migrate
-    deploy:
-      replicas: 1
-    image: ghcr.io/opentree-education/rhizone-lms_flyway:latest
-    secrets:
-      - FLYWAY_CONFIG
   nginx:
     image: ghcr.io/opentree-education/rhizone-lms_nginx:latest
     ports:
