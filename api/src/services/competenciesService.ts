@@ -34,3 +34,11 @@ export const createCompetency = async (
   });
   return { id: competencyId };
 };
+
+export const updateCompetency = async (id: number, principalId: number) => {
+  const competency = await db('competencies')
+    .select('description', 'id', 'label', 'principal_id')
+    .where({ id: id, principal_id: principalId });
+
+  return competency;
+};
