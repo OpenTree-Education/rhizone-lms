@@ -8,6 +8,5 @@
 /docker-compose.production.yml @OpenTree-Education/production-engineers
 /webapp/.dockerignore @OpenTree-Education/production-engineers
 /webapp/Dockerfile @OpenTree-Education/production-engineers
-/webapp/netlify.toml @OpenTree-Education/production-engineers
 /webapp/package.json @OpenTree-Education/production-engineers
 /webapp/yarn.lock @OpenTree-Education/production-engineers
