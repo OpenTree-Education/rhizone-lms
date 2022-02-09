@@ -2,8 +2,6 @@ version: "3.7"
 
 services:
   api:
-    depends_on:
-      - redis
     environment:
       - API_HOST=0.0.0.0
       - GITHUB_CLIENT_ID
@@ -17,10 +15,14 @@ services:
       - SESSION_SECRET
       - WEBAPP_ORIGIN=https://rhi.zone
     image: ghcr.io/opentree-education/rhizone-lms_api:latest
+  flyway:
+    command: -configFiles=/run/secrets/FLYWAY_CONFIG migrate
+    deploy:
+      replicas: 1
+    image: ghcr.io/opentree-education/rhizone-lms_flyway:latest
+    secrets:
+      - FLYWAY_CONFIG
   nginx:
-    depends_on:
-      - api
-      - webapp
     image: ghcr.io/opentree-education/rhizone-lms_nginx:latest
     ports:
       - "80:80"
