@@ -35,11 +35,13 @@ export const createCompetency = async (
   return { id: competencyId };
 };
 
-export const updateCompetency = (
+export const updateCompetency = async (
   id: number,
   label: string,
   description: string
-) => db('competencies').where({ id }).update({ label, description });
+) => {
+  await db('competencies').where({ id }).update({ label, description });
+};
 
 export const authorizeCompetencyUpdate = async (
   principalId: number,
@@ -48,5 +50,6 @@ export const authorizeCompetencyUpdate = async (
   const [competency] = await db('competencies')
     .select('id')
     .where({ id: competencyId, principal_id: principalId });
+
   return !!competency;
 };
