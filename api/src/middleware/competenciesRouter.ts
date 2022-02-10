@@ -1,11 +1,13 @@
 import { Router } from 'express';
 
-import { ValidationError } from './httpErrors';
+import { BadRequestError, NotFoundError, ValidationError } from './httpErrors';
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
 import {
+  authorizeCompetencyUpdate,
   countCompetencies,
-  listCompetencies,
   createCompetency,
+  listCompetencies,
+  updateCompetency,
 } from '../services/competenciesService';
 import { parsePaginationParams } from './paginationParamsMiddleware';
 
@@ -46,6 +48,49 @@ competenciesRouter.post('/', async (req, res, next) => {
     return;
   }
   res.status(201).json(itemEnvelope(competency));
+});
+
+competenciesRouter.put('/:id', async (req, res, next) => {
+  const { principalId } = req.session;
+  const { id } = req.params;
+
+  const competencyId = Number(id);
+  if (!Number.isInteger(competencyId) || competencyId < 1) {
+    next(new BadRequestError(`"${id}" is not a valid competency id.`));
+    return;
+  }
+
+  let isAuthorized;
+  try {
+    isAuthorized = await authorizeCompetencyUpdate(principalId, competencyId);
+  } catch (error) {
+    next(error);
+    return;
+  }
+  if (!isAuthorized) {
+    next(
+      new NotFoundError(
+        `A competency with the id "${competencyId}" could not be found.`
+      )
+    );
+    return;
+  }
+  const { label, description } = req.body;
+  if (typeof label !== 'string') {
+    next(new ValidationError('label must be a string'));
+    return;
+  }
+  if (typeof description !== 'string') {
+    next(new ValidationError('description must be a string'));
+    return;
+  }
+  try {
+    await updateCompetency(competencyId, label, description);
+  } catch (error) {
+    next(error);
+    return;
+  }
+  res.status(200).json(itemEnvelope({ id: competencyId }));
 });
 
 export default competenciesRouter;
