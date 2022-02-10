@@ -1,4 +1,5 @@
 import {
+  authorizeCompetencyUpdate,
   countCompetencies,
   listCompetencies,
   createCompetency,
@@ -66,21 +67,25 @@ describe('competenciesService', () => {
 
   describe('updateCompetency', () => {
     it('should update the specified competency if the current user is the one who originally authored the competency', async () => {
-      const competency = {
-        description: 'description',
-        id: 2,
-        label: 'label',
-        principal_id: 3,
-      };
       const id = 2;
-      const principalId = 3;
-
+      const label = 'label';
+      const description = 'description';
       mockQuery(
-        'select `description`, `id`, `label`, `principal_id` from `competencies` where `id` = ? and `principal_id` = ?',
-        [id, principalId],
-        competency
+        'update `competencies` set `label` = ?, `description` = ? where `id` = ?',
+        [label, description, id],
+        1
       );
-      expect(await updateCompetency(id, principalId)).toEqual(competency);
+      await updateCompetency(id, label, description);
+    });
+    it('should authorizeCompetencyUpdate for a user who authored the competency', async () => {
+      const principalId = 2;
+      const competencyId = 3;
+      mockQuery(
+        'select `id` from `competencies` where `id` = ? and `principal_id` = ?',
+        [competencyId, principalId],
+        [competencyId, principalId]
+      );
+      await authorizeCompetencyUpdate(principalId, competencyId);
     });
   });
 });
