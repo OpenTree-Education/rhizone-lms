@@ -5,24 +5,32 @@ import React, { FormEventHandler, useState } from 'react';
 import { EntityId } from '../types/api';
 
 interface CreateCompetencyFormProps {
-  onCompetencyCreated?: (id: EntityId) => void;
+  competencyId?: EntityId;
+  defaultDescription?: string;
+  defaultLabel?: string;
+  id?: EntityId;
+  onCompetenciesChanged?: (id: EntityId) => void;
 }
 
 const CreateCompetencyForm = ({
-  onCompetencyCreated,
+  defaultDescription = '',
+  defaultLabel = '',
+  competencyId,
+  onCompetenciesChanged,
 }: CreateCompetencyFormProps) => {
   const [isSavingCompetency, setIsSavingCompetency] = useState(false);
   const [saveCompetencyError, setSaveCompetencyError] = useState(null);
   const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
-  const [competencyNameEntryText, setCompetencyNameEntryText] = useState('');
-  const [descriptionEntryText, setDescriptionEntryText] = useState('');
+  const [competencyNameEntryText, setCompetencyNameEntryText] = useState(defaultLabel);
+  const [descriptionEntryText, setDescriptionEntryText] = useState(defaultDescription);
   const [wasCompetencyEntryTextTouched, setWasCompetencyEntryTextTouched] =
     useState(false);
   const onSubmit: FormEventHandler = event => {
     event.preventDefault();
     setIsSavingCompetency(true);
-    fetch(`${process.env.REACT_APP_API_ORIGIN}/competencies`, {
-      method: 'POST',
+
+    fetch(`${process.env.REACT_APP_API_ORIGIN}/competencies/${competencyId}`, {
+      method: competencyId ? 'PUT' : 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -40,8 +48,8 @@ const CreateCompetencyForm = ({
           setIsSuccessMessageVisible(true);
           setCompetencyNameEntryText('');
           setDescriptionEntryText('');
-          if (onCompetencyCreated) {
-            onCompetencyCreated(data.id);
+          if (onCompetenciesChanged) {
+            onCompetenciesChanged(data.id);
           }
         }
       })
@@ -54,7 +62,7 @@ const CreateCompetencyForm = ({
     <form onSubmit={onSubmit}>
       <Card>
         <CardContent sx={{ pb: 0 }}>
-          <h2>New Competency</h2>
+          {competencyId ? <h3>Edit Competency</h3> : <h2>New Competency</h2>}
         </CardContent>
         <CardContent sx={{ pt: 0 }}>
           <TextField
