@@ -9,6 +9,8 @@ export const countCompetencies = async () => {
 export const listCompetencies = async (limit: number, offset: number) => {
   const competencies = await db('competencies')
     .select('id', 'label', 'description')
+    .orderBy('label', 'asc')
+    .orderBy('id', 'asc')
     .limit(limit)
     .offset(offset);
 

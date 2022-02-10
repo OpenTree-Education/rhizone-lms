@@ -30,7 +30,7 @@ describe('competenciesService', () => {
       const limit = 3;
       const offset = 4;
       mockQuery(
-        'select `id`, `label`, `description` from `competencies` limit ? offset ?',
+        'select `id`, `label`, `description` from `competencies` order by `label` asc, `id` asc limit ? offset ?',
         [limit, offset],
         competencies
       );
