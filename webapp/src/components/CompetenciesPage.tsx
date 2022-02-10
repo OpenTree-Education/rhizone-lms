@@ -35,8 +35,8 @@ const CompetenciesPage = () => {
           </Box>
           <Box my={6}>
             {competencies.length === 0 && <p>There are no competencies.</p>}
-            {competencies.map(({ id, label, description }) => (
-              <Competency key={id} description={description} label={label} />
+            {competencies.map(({ id, label, description, principal_id }) => (
+              <Competency key={id} description={description} label={label} principal_id={principal_id} />
             ))}
           </Box>
         </Grid>
