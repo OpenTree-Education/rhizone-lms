@@ -1,12 +1,14 @@
 import knex from 'knex';
 
+import { findConfig } from './configService';
+
 const db = knex({
   client: 'mysql',
   connection: {
-    database: process.env.MYSQL_DATABASE,
-    host: process.env.MYSQL_HOST || 'localhost',
-    password: process.env.MYSQL_PASSWORD,
-    user: process.env.MYSQL_USER,
+    database: findConfig('MYSQL_DATABASE', ''),
+    host: findConfig('MYSQL_HOST', 'localhost'),
+    password: findConfig('MYSQL_PASSWORD', ''),
+    user: findConfig('MYSQL_USER', ''),
   },
 });
 
