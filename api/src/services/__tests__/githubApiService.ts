@@ -16,7 +16,7 @@ describe('githubApiService', () => {
       } as Response);
       expect(await getGithubAccessToken(code)).toEqual(accessToken);
       expect(mockRequestPost).toHaveBeenCalledWith(
-        `https://github.com/login/oauth/access_token?client_id=undefined&client_secret=undefined&code=${code}`
+        `https://github.com/login/oauth/access_token?client_id=&client_secret=&code=${code}`
       );
     });
 

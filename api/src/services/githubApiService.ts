@@ -1,9 +1,10 @@
+import { findConfig } from './configService';
 import request from './request';
 
 export const getGithubAccessToken = async (code: string) => {
   const params = new URLSearchParams();
-  params.set('client_id', process.env.GITHUB_CLIENT_ID);
-  params.set('client_secret', process.env.GITHUB_CLIENT_SECRET);
+  params.set('client_id', findConfig('GITHUB_CLIENT_ID', ''));
+  params.set('client_secret', findConfig('GITHUB_CLIENT_SECRET', ''));
   params.set('code', code);
   const response = await request.post(
     `https://github.com/login/oauth/access_token?${params.toString()}`
