@@ -28,14 +28,14 @@ const CompetenciesPage = () => {
         <Grid item xs={12} md={8}>
           <Box>
             <CreateCompetencyForm
-              onCompetenciesChanged={id =>
+              onCompetencyChanged={id =>
                 setChangedCompetencyIds([...changedCompetencyIds, id])}
             />
           </Box>
           <Box my={6}>
             {competencies.length === 0 && <p>There are no competencies.</p>}
-            {competencies.map(({ id, label, description, principal_id }) => (
-              <Competency key={id} id={id} description={description} label={label} principal_id={principal_id} onCompetenciesChanged={id =>
+            {competencies.map(({ id, label, description, principal_id: principalId }) => (
+              <Competency key={id} id={id} description={description} label={label} principalId={principalId} onCompetencyChanged={id =>
                 setChangedCompetencyIds([...changedCompetencyIds, id])} />
             ))}
           </Box>

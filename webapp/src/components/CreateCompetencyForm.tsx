@@ -9,14 +9,14 @@ interface CreateCompetencyFormProps {
   defaultDescription?: string;
   defaultLabel?: string;
   id?: EntityId;
-  onCompetenciesChanged?: (id: EntityId) => void;
+  onCompetencyChanged?: (id: EntityId) => void;
 }
 
 const CreateCompetencyForm = ({
   defaultDescription = '',
   defaultLabel = '',
   competencyId,
-  onCompetenciesChanged,
+  onCompetencyChanged,
 }: CreateCompetencyFormProps) => {
   const [isSavingCompetency, setIsSavingCompetency] = useState(false);
   const [saveCompetencyError, setSaveCompetencyError] = useState(null);
@@ -29,7 +29,7 @@ const CreateCompetencyForm = ({
     event.preventDefault();
     setIsSavingCompetency(true);
 
-    fetch(`${process.env.REACT_APP_API_ORIGIN}/competencies/${competencyId}`, {
+    fetch(competencyId ? `${process.env.REACT_APP_API_ORIGIN}/competencies/${competencyId}` : `${process.env.REACT_APP_API_ORIGIN}/competencies/`, {
       method: competencyId ? 'PUT' : 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -48,8 +48,8 @@ const CreateCompetencyForm = ({
           setIsSuccessMessageVisible(true);
           setCompetencyNameEntryText('');
           setDescriptionEntryText('');
-          if (onCompetenciesChanged) {
-            onCompetenciesChanged(data.id);
+          if (onCompetencyChanged) {
+            onCompetencyChanged(data.id);
           }
         }
       })
