@@ -1,0 +1,53 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment
+        type: environment
+        required: true
+
+jobs:
+  deploy_to_production:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    env:
+      FLYWAY_PASSWORD: ${{ secrets.FLYWAY_PASSWORD }}
+      FLYWAY_URL: ${{ secrets.FLYWAY_URL }}
+      FLYWAY_USER: ${{ secrets.FLYWAY_USER }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_KEY: ${{ secrets.SSH_KEY }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Configure ssh
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/${{ github.event.inputs.environment }}.key
+          chmod 600 ~/.ssh/${{ github.event.inputs.environment }}.key
+          cat >>~/.ssh/config <<END
+          Host ${{ github.event.inputs.environment }}
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/${{ github.event.inputs.environment }}.key
+          END
+          ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+      - name: Log in to container registry
+        run: |
+          echo "$GITHUB_TOKEN" | ssh ${{ github.event.inputs.environment }} 'docker login ghcr.io --username ${{ github.actor }} --password-stdin'
+      - name: Run database schema migrations
+        run: |
+          cat >>./flyway.conf <<END
+          flyway.password=$FLYWAY_PASSWORD
+          flyway.url=$FLYWAY_URL
+          flyway.user=$FLYWAY_USER
+          END
+          scp ./flyway.conf ${{ github.event.inputs.environment }}:~/flyway.conf
+          ssh ${{ github.event.inputs.environment }} 'docker run --rm --pull always -v $HOME/flyway.conf:/flyway/conf/flyway.conf ghcr.io/opentree-education/rhizone-lms_flyway:latest migrate; rm ~/flyway.conf'
+      - name: Deploy services
+        run: |
+          cat docker-compose.production.yml | ssh production 'docker stack deploy --with-registry-auth --compose-file - rhizone-lms'
