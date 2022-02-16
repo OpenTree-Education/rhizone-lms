@@ -21,7 +21,7 @@ const Competency = ({ description, id, label, onCompetencyChanged, principalId }
     <div>
       <h2>{label}</h2>
       <p>{description}</p>
-      {principalId === sessionPrincipalId && <Button onClick={() => setToggleForm(true)}>Edit Competency</Button>}
+      {principalId === sessionPrincipalId && <Button onClick={() => setToggleForm(!toggleForm)}>Edit Competency</Button>}
       {toggleForm && <CreateCompetencyForm competencyId={id}
         onCompetencyChanged={onCompetencyChanged} defaultLabel={label} defaultDescription={description} />
       }
