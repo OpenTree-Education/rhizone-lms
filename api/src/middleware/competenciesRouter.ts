@@ -90,7 +90,7 @@ competenciesRouter.put('/:id', async (req, res, next) => {
     next(error);
     return;
   }
-  res.status(200).json(itemEnvelope({ id: competencyId }));
+  res.json(itemEnvelope({ id: competencyId }));
 });
 
 export default competenciesRouter;
