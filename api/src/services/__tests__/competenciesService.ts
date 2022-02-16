@@ -66,7 +66,7 @@ describe('competenciesService', () => {
   });
 
   describe('updateCompetency', () => {
-    it('should update the specified competency if the current user is the one who originally authored the competency', async () => {
+    it('should update the specified/selected competency', async () => {
       const id = 2;
       const label = 'label';
       const description = 'description';
@@ -77,13 +77,16 @@ describe('competenciesService', () => {
       );
       await updateCompetency(id, label, description);
     });
-    it('should authorizeCompetencyUpdate for a user who authored the competency', async () => {
+  });
+
+  describe('authorizeCompetencyUpdate', () => {
+    it('should authorize the specific competency update ', async () => {
       const principalId = 2;
       const competencyId = 3;
       mockQuery(
         'select `id` from `competencies` where `id` = ? and `principal_id` = ?',
         [competencyId, principalId],
-        [competencyId, principalId]
+        [competencyId]
       );
       await authorizeCompetencyUpdate(principalId, competencyId);
     });
