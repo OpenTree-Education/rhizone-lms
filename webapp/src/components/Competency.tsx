@@ -21,21 +21,26 @@ const Competency = ({
   principalId,
 }: CompetencyProps) => {
   const { principalId: sessionPrincipalId } = useContext(SessionContext);
-  const [toggleForm, setToggleForm] = useState(false);
+  const [isFormShown, setIsFormShown] = useState(false);
 
   return (
     <div>
       <h2>{label}</h2>
       <p>{description}</p>
       {principalId === sessionPrincipalId && (
-        <Button onClick={() => setToggleForm(!toggleForm)}>
+        <Button onClick={() => setIsFormShown(!isFormShown)}>
           Edit Competency
         </Button>
       )}
-      {toggleForm && (
+      {isFormShown && (
         <CreateOrUpdateCompetencyForm
           competencyId={id}
-          onCompetencyChanged={onCompetencyChanged}
+          onCompetencyChanged={id => {
+            if (onCompetencyChanged) {
+              onCompetencyChanged(id);
+            }
+            setIsFormShown(false);
+          }}
           defaultLabel={label}
           defaultDescription={description}
         />

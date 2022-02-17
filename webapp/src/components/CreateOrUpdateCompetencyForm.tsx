@@ -32,9 +32,7 @@ const CreateOrUpdateCompetencyForm = ({
     setIsSavingCompetency(true);
 
     fetch(
-      competencyId
-        ? `${process.env.REACT_APP_API_ORIGIN}/competencies/${competencyId}`
-        : `${process.env.REACT_APP_API_ORIGIN}/competencies/`,
+      `${process.env.REACT_APP_API_ORIGIN}/competencies/${competencyId || ''}`,
       {
         method: competencyId ? 'PUT' : 'POST',
         credentials: 'include',
