@@ -1,7 +1,9 @@
 import {
+  authorizeCompetencyUpdate,
   countCompetencies,
   listCompetencies,
   createCompetency,
+  updateCompetency,
 } from '../competenciesService';
 import { mockQuery } from '../mockDb';
 
@@ -60,6 +62,48 @@ describe('competenciesService', () => {
       expect(await createCompetency(principalId, label, description)).toEqual({
         id: competencyId,
       });
+    });
+  });
+
+  describe('updateCompetency', () => {
+    it('should update the specified/selected competency', async () => {
+      const id = 2;
+      const label = 'label';
+      const description = 'description';
+      mockQuery(
+        'update `competencies` set `label` = ?, `description` = ? where `id` = ?',
+        [label, description, id],
+        1
+      );
+      await updateCompetency(id, label, description);
+    });
+  });
+
+  describe('authorizeCompetencyUpdate', () => {
+    it('should return true if user is authorized to update specific competency', async () => {
+      const principalId = 2;
+      const competencyId = 3;
+      mockQuery(
+        'select `id` from `competencies` where `id` = ? and `principal_id` = ?',
+        [competencyId, principalId],
+        [{ id: competencyId }]
+      );
+      expect(
+        await authorizeCompetencyUpdate(principalId, competencyId)
+      ).toEqual(true);
+    });
+
+    it('should return false if user is not authorized to update the specific competency', async () => {
+      const principalId = 2;
+      const competencyId = 3;
+      mockQuery(
+        'select `id` from `competencies` where `id` = ? and `principal_id` = ?',
+        [competencyId, principalId],
+        []
+      );
+      expect(
+        await authorizeCompetencyUpdate(principalId, competencyId)
+      ).toEqual(false);
     });
   });
 });
