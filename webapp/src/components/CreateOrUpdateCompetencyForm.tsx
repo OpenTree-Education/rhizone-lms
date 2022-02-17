@@ -53,8 +53,10 @@ const CreateOrUpdateCompetencyForm = ({
         }
         if (data) {
           setIsSuccessMessageVisible(true);
-          setCompetencyLabelEntryText('');
-          setDescriptionEntryText('');
+          if (!competencyId) {
+            setCompetencyLabelEntryText('');
+            setDescriptionEntryText('');
+          }
           if (onCompetencyChanged) {
             onCompetencyChanged(data.id);
           }
