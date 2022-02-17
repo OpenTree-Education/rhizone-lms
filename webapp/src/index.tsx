@@ -6,12 +6,15 @@ import App from './components/App';
 import reportWebVitals from './reportWebVitals';
 import { SessionProvider } from './components/SessionContext';
 import { SettingsProvider } from './components/SettingsContext';
+import { WebSocketProvider } from './components/WebSocketContext';
 
 ReactDOM.render(
   <React.StrictMode>
     <SettingsProvider>
       <SessionProvider>
-        <App />
+        <WebSocketProvider>
+          <App />
+        </WebSocketProvider>
       </SessionProvider>
     </SettingsProvider>
   </React.StrictMode>,
