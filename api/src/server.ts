@@ -41,6 +41,13 @@ const start = async () => {
   const secure = findConfig('SECURE', 'false') === 'true';
   const app = express();
 
+  const server = require('http').createServer(app);
+  const io = require('socket.io')(server, {
+    cors: {
+      origin: [findConfig('WEBAPP_ORIGIN', '')],
+    },
+  });
+
   app.set('trust proxy', 1);
 
   app.use(helmet());
@@ -86,7 +93,7 @@ const start = async () => {
   // all middlewares and request handlers are handled consistently.
   await app.use(handleErrors);
 
-  app.listen(Number(port), host, () => {
+  server.listen(Number(port), host, () => {
     console.log(`api listening on ${host}:${port}`);
   });
 };
