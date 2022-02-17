@@ -13,7 +13,13 @@ interface CompetencyProps {
   principalId: EntityId;
 }
 
-const Competency = ({ description, id, label, onCompetencyChanged, principalId }: CompetencyProps) => {
+const Competency = ({
+  description,
+  id,
+  label,
+  onCompetencyChanged,
+  principalId,
+}: CompetencyProps) => {
   const { principalId: sessionPrincipalId } = useContext(SessionContext);
   const [toggleForm, setToggleForm] = useState(false);
 
@@ -21,10 +27,19 @@ const Competency = ({ description, id, label, onCompetencyChanged, principalId }
     <div>
       <h2>{label}</h2>
       <p>{description}</p>
-      {principalId === sessionPrincipalId && <Button onClick={() => setToggleForm(!toggleForm)}>Edit Competency</Button>}
-      {toggleForm && <CreateCompetencyForm competencyId={id}
-        onCompetencyChanged={onCompetencyChanged} defaultLabel={label} defaultDescription={description} />
-      }
+      {principalId === sessionPrincipalId && (
+        <Button onClick={() => setToggleForm(!toggleForm)}>
+          Edit Competency
+        </Button>
+      )}
+      {toggleForm && (
+        <CreateCompetencyForm
+          competencyId={id}
+          onCompetencyChanged={onCompetencyChanged}
+          defaultLabel={label}
+          defaultDescription={description}
+        />
+      )}
     </div>
   );
 };

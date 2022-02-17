@@ -7,9 +7,9 @@ import { EntityId, Competency as APICompetency } from '../types/api';
 import useApiData from '../helpers/useApiData';
 
 const CompetenciesPage = () => {
-  const [changedCompetencyIds, setChangedCompetencyIds] = useState<
-    EntityId[]
-  >([]);
+  const [changedCompetencyIds, setChangedCompetencyIds] = useState<EntityId[]>(
+    []
+  );
   const { data: competencies, error } = useApiData<APICompetency[]>({
     deps: [changedCompetencyIds],
     path: `/competencies`,
@@ -29,15 +29,26 @@ const CompetenciesPage = () => {
           <Box>
             <CreateCompetencyForm
               onCompetencyChanged={id =>
-                setChangedCompetencyIds([...changedCompetencyIds, id])}
+                setChangedCompetencyIds([...changedCompetencyIds, id])
+              }
             />
           </Box>
           <Box my={6}>
             {competencies.length === 0 && <p>There are no competencies.</p>}
-            {competencies.map(({ id, label, description, principal_id: principalId }) => (
-              <Competency key={id} id={id} description={description} label={label} principalId={principalId} onCompetencyChanged={id =>
-                setChangedCompetencyIds([...changedCompetencyIds, id])} />
-            ))}
+            {competencies.map(
+              ({ id, label, description, principal_id: principalId }) => (
+                <Competency
+                  key={id}
+                  id={id}
+                  description={description}
+                  label={label}
+                  principalId={principalId}
+                  onCompetencyChanged={id =>
+                    setChangedCompetencyIds([...changedCompetencyIds, id])
+                  }
+                />
+              )
+            )}
           </Box>
         </Grid>
       </Grid>

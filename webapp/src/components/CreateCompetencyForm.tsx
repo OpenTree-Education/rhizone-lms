@@ -21,23 +21,30 @@ const CreateCompetencyForm = ({
   const [isSavingCompetency, setIsSavingCompetency] = useState(false);
   const [saveCompetencyError, setSaveCompetencyError] = useState(null);
   const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
-  const [competencyNameEntryText, setCompetencyNameEntryText] = useState(defaultLabel);
-  const [descriptionEntryText, setDescriptionEntryText] = useState(defaultDescription);
+  const [competencyNameEntryText, setCompetencyNameEntryText] =
+    useState(defaultLabel);
+  const [descriptionEntryText, setDescriptionEntryText] =
+    useState(defaultDescription);
   const [wasCompetencyEntryTextTouched, setWasCompetencyEntryTextTouched] =
     useState(false);
   const onSubmit: FormEventHandler = event => {
     event.preventDefault();
     setIsSavingCompetency(true);
 
-    fetch(competencyId ? `${process.env.REACT_APP_API_ORIGIN}/competencies/${competencyId}` : `${process.env.REACT_APP_API_ORIGIN}/competencies/`, {
-      method: competencyId ? 'PUT' : 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        label: competencyNameEntryText,
-        description: descriptionEntryText,
-      }),
-    })
+    fetch(
+      competencyId
+        ? `${process.env.REACT_APP_API_ORIGIN}/competencies/${competencyId}`
+        : `${process.env.REACT_APP_API_ORIGIN}/competencies/`,
+      {
+        method: competencyId ? 'PUT' : 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          label: competencyNameEntryText,
+          description: descriptionEntryText,
+        }),
+      }
+    )
       .then(res => res.json())
       .then(({ data, error }) => {
         setIsSavingCompetency(false);
@@ -62,7 +69,7 @@ const CreateCompetencyForm = ({
     <form onSubmit={onSubmit}>
       <Card>
         <CardContent sx={{ pb: 0 }}>
-          {competencyId ? <h3>Edit Competency</h3> : <h2>New Competency</h2>}
+          {competencyId ? <h3>Edit Competency</h3> : <h3>New Competency</h3>}
         </CardContent>
         <CardContent sx={{ pt: 0 }}>
           <TextField
