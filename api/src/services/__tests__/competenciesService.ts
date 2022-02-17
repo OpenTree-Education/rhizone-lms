@@ -80,7 +80,7 @@ describe('competenciesService', () => {
   });
 
   describe('authorizeCompetencyUpdate', () => {
-    it('should authorize the specific competency update ', async () => {
+    it('should return true if user is authorized to update specific competency', async () => {
       const principalId = 2;
       const competencyId = 3;
       mockQuery(
@@ -88,7 +88,22 @@ describe('competenciesService', () => {
         [competencyId, principalId],
         [{ id: competencyId }]
       );
-      await authorizeCompetencyUpdate(principalId, competencyId);
+      expect(
+        await authorizeCompetencyUpdate(principalId, competencyId)
+      ).toEqual(true);
+    });
+
+    it('should return false if user is not authorized to update the specific competency', async () => {
+      const principalId = 2;
+      const competencyId = 3;
+      mockQuery(
+        'select `id` from `competencies` where `id` = ? and `principal_id` = ?',
+        [competencyId, principalId],
+        []
+      );
+      expect(
+        await authorizeCompetencyUpdate(principalId, competencyId)
+      ).toEqual(false);
     });
   });
 });
