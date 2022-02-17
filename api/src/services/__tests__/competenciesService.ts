@@ -86,7 +86,7 @@ describe('competenciesService', () => {
       mockQuery(
         'select `id` from `competencies` where `id` = ? and `principal_id` = ?',
         [competencyId, principalId],
-        [competencyId]
+        [{ id: competencyId }]
       );
       await authorizeCompetencyUpdate(principalId, competencyId);
     });
