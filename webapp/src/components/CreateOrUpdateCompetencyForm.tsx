@@ -21,7 +21,7 @@ const CreateOrUpdateCompetencyForm = ({
   const [isSavingCompetency, setIsSavingCompetency] = useState(false);
   const [saveCompetencyError, setSaveCompetencyError] = useState(null);
   const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
-  const [competencyNameEntryText, setCompetencyNameEntryText] =
+  const [competencyLabelEntryText, setCompetencyLabelEntryText] =
     useState(defaultLabel);
   const [descriptionEntryText, setDescriptionEntryText] =
     useState(defaultDescription);
@@ -40,7 +40,7 @@ const CreateOrUpdateCompetencyForm = ({
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          label: competencyNameEntryText,
+          label: competencyLabelEntryText,
           description: descriptionEntryText,
         }),
       }
@@ -53,7 +53,7 @@ const CreateOrUpdateCompetencyForm = ({
         }
         if (data) {
           setIsSuccessMessageVisible(true);
-          setCompetencyNameEntryText('');
+          setCompetencyLabelEntryText('');
           setDescriptionEntryText('');
           if (onCompetencyChanged) {
             onCompetencyChanged(data.id);
@@ -76,8 +76,8 @@ const CreateOrUpdateCompetencyForm = ({
             required
             sx={{ mb: 2, width: '50%' }}
             label="Title"
-            onChange={event => setCompetencyNameEntryText(event.target.value)}
-            value={competencyNameEntryText}
+            onChange={event => setCompetencyLabelEntryText(event.target.value)}
+            value={competencyLabelEntryText}
           />
           <TextField
             required
