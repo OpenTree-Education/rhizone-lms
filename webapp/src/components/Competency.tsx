@@ -1,7 +1,7 @@
 import { Button } from '@mui/material';
 import React, { useContext, useState } from 'react';
 
-import CreateCompetencyForm from './CreateCompetencyForm';
+import CreateOrUpdateCompetencyForm from './CreateOrUpdateCompetencyForm';
 import { EntityId } from '../types/api';
 import SessionContext from './SessionContext';
 
@@ -33,7 +33,7 @@ const Competency = ({
         </Button>
       )}
       {toggleForm && (
-        <CreateCompetencyForm
+        <CreateOrUpdateCompetencyForm
           competencyId={id}
           onCompetencyChanged={onCompetencyChanged}
           defaultLabel={label}

@@ -4,7 +4,7 @@ import React, { FormEventHandler, useState } from 'react';
 
 import { EntityId } from '../types/api';
 
-interface CreateCompetencyFormProps {
+interface CreateOrUpdateCompetencyFormProps {
   competencyId?: EntityId;
   defaultDescription?: string;
   defaultLabel?: string;
@@ -12,12 +12,12 @@ interface CreateCompetencyFormProps {
   onCompetencyChanged?: (id: EntityId) => void;
 }
 
-const CreateCompetencyForm = ({
+const CreateOrUpdateCompetencyForm = ({
   defaultDescription = '',
   defaultLabel = '',
   competencyId,
   onCompetencyChanged,
-}: CreateCompetencyFormProps) => {
+}: CreateOrUpdateCompetencyFormProps) => {
   const [isSavingCompetency, setIsSavingCompetency] = useState(false);
   const [saveCompetencyError, setSaveCompetencyError] = useState(null);
   const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
@@ -129,4 +129,4 @@ const CreateCompetencyForm = ({
   );
 };
 
-export default CreateCompetencyForm;
+export default CreateOrUpdateCompetencyForm;

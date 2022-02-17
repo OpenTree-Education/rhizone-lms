@@ -2,7 +2,7 @@ import { Box, Container, Grid } from '@mui/material';
 import React, { useState } from 'react';
 
 import Competency from './Competency';
-import CreateCompetencyForm from './CreateCompetencyForm';
+import CreateOrUpdateCompetencyForm from './CreateOrUpdateCompetencyForm';
 import { EntityId, Competency as APICompetency } from '../types/api';
 import useApiData from '../helpers/useApiData';
 
@@ -27,7 +27,7 @@ const CompetenciesPage = () => {
       <Grid container justifyContent="center">
         <Grid item xs={12} md={8}>
           <Box>
-            <CreateCompetencyForm
+            <CreateOrUpdateCompetencyForm
               onCompetencyChanged={id =>
                 setChangedCompetencyIds([...changedCompetencyIds, id])
               }
