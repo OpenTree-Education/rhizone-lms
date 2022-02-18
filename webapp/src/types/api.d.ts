@@ -20,6 +20,7 @@ export interface Doc {
 export interface Competency extends Entity {
   label: string;
   description: string;
+  principal_id: number;
 }
 export interface Prompt extends Entity {
   label: string;

@@ -4,32 +4,45 @@ import React, { FormEventHandler, useState } from 'react';
 
 import { EntityId } from '../types/api';
 
-interface CreateCompetencyFormProps {
-  onCompetencyCreated?: (id: EntityId) => void;
+interface CreateOrUpdateCompetencyFormProps {
+  competencyId?: EntityId;
+  defaultDescription?: string;
+  defaultLabel?: string;
+  id?: EntityId;
+  onCompetencyChanged?: (id: EntityId) => void;
 }
 
-const CreateCompetencyForm = ({
-  onCompetencyCreated,
-}: CreateCompetencyFormProps) => {
+const CreateOrUpdateCompetencyForm = ({
+  defaultDescription = '',
+  defaultLabel = '',
+  competencyId,
+  onCompetencyChanged,
+}: CreateOrUpdateCompetencyFormProps) => {
   const [isSavingCompetency, setIsSavingCompetency] = useState(false);
   const [saveCompetencyError, setSaveCompetencyError] = useState(null);
   const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
-  const [competencyNameEntryText, setCompetencyNameEntryText] = useState('');
-  const [descriptionEntryText, setDescriptionEntryText] = useState('');
+  const [competencyLabelEntryText, setCompetencyLabelEntryText] =
+    useState(defaultLabel);
+  const [descriptionEntryText, setDescriptionEntryText] =
+    useState(defaultDescription);
   const [wasCompetencyEntryTextTouched, setWasCompetencyEntryTextTouched] =
     useState(false);
   const onSubmit: FormEventHandler = event => {
     event.preventDefault();
     setIsSavingCompetency(true);
-    fetch(`${process.env.REACT_APP_API_ORIGIN}/competencies`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        label: competencyNameEntryText,
-        description: descriptionEntryText,
-      }),
-    })
+
+    fetch(
+      `${process.env.REACT_APP_API_ORIGIN}/competencies/${competencyId || ''}`,
+      {
+        method: competencyId ? 'PUT' : 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          label: competencyLabelEntryText,
+          description: descriptionEntryText,
+        }),
+      }
+    )
       .then(res => res.json())
       .then(({ data, error }) => {
         setIsSavingCompetency(false);
@@ -38,10 +51,12 @@ const CreateCompetencyForm = ({
         }
         if (data) {
           setIsSuccessMessageVisible(true);
-          setCompetencyNameEntryText('');
-          setDescriptionEntryText('');
-          if (onCompetencyCreated) {
-            onCompetencyCreated(data.id);
+          if (!competencyId) {
+            setCompetencyLabelEntryText('');
+            setDescriptionEntryText('');
+          }
+          if (onCompetencyChanged) {
+            onCompetencyChanged(data.id);
           }
         }
       })
@@ -54,15 +69,15 @@ const CreateCompetencyForm = ({
     <form onSubmit={onSubmit}>
       <Card>
         <CardContent sx={{ pb: 0 }}>
-          <h2>New Competency</h2>
+          {competencyId ? <h3>Edit Competency</h3> : <h3>New Competency</h3>}
         </CardContent>
         <CardContent sx={{ pt: 0 }}>
           <TextField
             required
             sx={{ mb: 2, width: '50%' }}
             label="Title"
-            onChange={event => setCompetencyNameEntryText(event.target.value)}
-            value={competencyNameEntryText}
+            onChange={event => setCompetencyLabelEntryText(event.target.value)}
+            value={competencyLabelEntryText}
           />
           <TextField
             required
@@ -114,4 +129,4 @@ const CreateCompetencyForm = ({
   );
 };
 
-export default CreateCompetencyForm;
+export default CreateOrUpdateCompetencyForm;
