@@ -1,0 +1,41 @@
+name: Build and Push nginx
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'nginx/**'
+
+jobs:
+  build_and_push_nginx:
+    name: Build nginx image and push to registry
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Log in to the container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ghcr.io/${{ github.repository }}_nginx
+          tags: |
+            type=sha
+            type=raw,value=latest
+      - name: Build and push nginx image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./nginx/
+          build-args: BUILD_ENV=production
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
