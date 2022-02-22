@@ -2,9 +2,11 @@
 import connectRedis from 'connect-redis';
 import cors from 'cors';
 import { createClient as createRedisClient } from 'redis';
+import { createServer } from 'http';
 import express from 'express';
 import expressSession from 'express-session';
 import helmet from 'helmet';
+import { Server } from 'socket.io';
 
 import authRouter from './middleware/authRouter';
 import competenciesRouter from './middleware/competenciesRouter';
@@ -40,6 +42,17 @@ const start = async () => {
   const port = findConfig('API_PORT', '8491');
   const secure = findConfig('SECURE', 'false') === 'true';
   const app = express();
+
+  const server = createServer(app);
+  const io = new Server(server, {
+    cors: {
+      origin: [findConfig('WEBAPP_ORIGIN', '')],
+    },
+  });
+
+  io.on('connection', socket => {
+    console.log(`Connection for ${socket.id}`);
+  });
 
   app.set('trust proxy', 1);
 
@@ -86,7 +99,7 @@ const start = async () => {
   // all middlewares and request handlers are handled consistently.
   await app.use(handleErrors);
 
-  app.listen(Number(port), host, () => {
+  server.listen(Number(port), host, () => {
     console.log(`api listening on ${host}:${port}`);
   });
 };
