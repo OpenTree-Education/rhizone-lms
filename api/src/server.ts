@@ -2,9 +2,11 @@
 import connectRedis from 'connect-redis';
 import cors from 'cors';
 import { createClient as createRedisClient } from 'redis';
+import { createServer } from 'http';
 import express from 'express';
 import expressSession from 'express-session';
 import helmet from 'helmet';
+import { Server } from 'socket.io';
 
 import authRouter from './middleware/authRouter';
 import competenciesRouter from './middleware/competenciesRouter';
@@ -41,11 +43,15 @@ const start = async () => {
   const secure = findConfig('SECURE', 'false') === 'true';
   const app = express();
 
-  const server = require('http').createServer(app);
-  const io = require('socket.io')(server, {
+  const server = createServer(app);
+  const io = new Server(server, {
     cors: {
       origin: [findConfig('WEBAPP_ORIGIN', '')],
     },
+  });
+
+  io.on('connection', socket => {
+    console.log(`Connection for ${socket.id}`);
   });
 
   app.set('trust proxy', 1);
