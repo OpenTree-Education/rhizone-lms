@@ -5,7 +5,7 @@ const WebSocketContext = createContext<Socket | null>(null);
 let websocket: Socket | null = null;
 export const WebSocketProvider = ({ children }: PropsWithChildren<{}>) => {
   if (!websocket) {
-    websocket = io('http://api.rhi.zone-development');
+    websocket = io(process.env.REACT_APP_API_ORIGIN || {});
   }
   return (
     <WebSocketContext.Provider value={websocket}>
