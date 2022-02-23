@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from 'react';
 import { Grid } from '@mui/material';
+import React, { useContext, useEffect } from 'react';
 
 import { EntityId, Meeting as APIMeeting } from '../types/api';
 import { formatDate, formatTime } from '../helpers/dateTime';
