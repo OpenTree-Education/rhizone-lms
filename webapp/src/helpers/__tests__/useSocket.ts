@@ -12,7 +12,7 @@ describe('useSocket', () => {
     const socket1 = useSocket();
     expect(mockIo).toHaveBeenCalledWith(process.env.REACT_APP_API_ORIGIN);
     const socket2 = useSocket();
-    expect(socket1).toEqual(socket2);
+    expect(socket1).toBe(socket2);
     expect(mockIo.mock.calls.length).toEqual(1);
     delete process.env.REACT_APP_API_ORIGIN;
   });
