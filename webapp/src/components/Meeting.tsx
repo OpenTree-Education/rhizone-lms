@@ -1,8 +1,9 @@
 import { Grid } from '@mui/material';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { EntityId, Meeting as APIMeeting } from '../types/api';
 import { formatDate, formatTime } from '../helpers/dateTime';
+import CreateMeetingNoteForm from './CreateMeetingNoteForm';
 import SessionContext from './SessionContext';
 import useApiData from '../helpers/useApiData';
 import useSocket from '../helpers/useSocket';
@@ -20,8 +21,12 @@ const Meeting = ({ meetingId }: MeetingProps) => {
     };
   }, [socket, meetingId]);
   const { principalId } = useContext(SessionContext);
+  const [changedMeetingNoteIds, setChangedMeetingNoteIds] = useState<
+    EntityId[]
+  >([]);
+
   const { data: meeting, error } = useApiData<APIMeeting>({
-    deps: [meetingId],
+    deps: [meetingId, changedMeetingNoteIds],
     path: `/meetings/${meetingId}`,
     sendCredentials: true,
   });
@@ -34,6 +39,9 @@ const Meeting = ({ meetingId }: MeetingProps) => {
   const currentParticipantId = meeting.participants.find(
     ({ principal_id }) => principal_id === principalId
   )?.id;
+  const [greatestSortOrderNumber] = meeting.meeting_notes
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .slice(-1);
   return (
     <Grid>
       <h1>{`Meeting on ${formatDate(meeting.starts_at)} at ${formatTime(
@@ -58,6 +66,13 @@ const Meeting = ({ meetingId }: MeetingProps) => {
           </ul>
         </React.Fragment>
       ))}
+      <CreateMeetingNoteForm
+        greatestSortOrderOfMeetingNotesList={greatestSortOrderNumber.sort_order}
+        meetingId={meeting.id}
+        onMeetingNoteChanged={id =>
+          setChangedMeetingNoteIds([...changedMeetingNoteIds, id])
+        }
+      />
     </Grid>
   );
 };
