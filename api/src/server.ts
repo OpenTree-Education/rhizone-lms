@@ -1,4 +1,5 @@
 // istanbul ignore file
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import connectRedis from 'connect-redis';
 import cors from 'cors';
 import { createClient as createRedisClient } from 'redis';
