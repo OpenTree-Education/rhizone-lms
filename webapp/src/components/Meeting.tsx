@@ -1,16 +1,24 @@
 import { Grid } from '@mui/material';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 
 import { EntityId, Meeting as APIMeeting } from '../types/api';
 import { formatDate, formatTime } from '../helpers/dateTime';
 import SessionContext from './SessionContext';
 import useApiData from '../helpers/useApiData';
+import useSocket from '../helpers/useSocket';
 
 interface MeetingProps {
   meetingId?: EntityId;
 }
 
 const Meeting = ({ meetingId }: MeetingProps) => {
+  const socket = useSocket();
+  useEffect(() => {
+    socket.emit('meeting:join', meetingId);
+    return () => {
+      socket.emit('meeting:leave', meetingId);
+    };
+  }, [socket, meetingId]);
   const { principalId } = useContext(SessionContext);
   const { data: meeting, error } = useApiData<APIMeeting>({
     deps: [meetingId],
