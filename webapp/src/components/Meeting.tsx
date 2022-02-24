@@ -14,9 +14,9 @@ interface MeetingProps {
 const Meeting = ({ meetingId }: MeetingProps) => {
   const socket = useSocket();
   useEffect(() => {
-    socket.emit('join:meeting', meetingId);
+    socket.emit('meeting:join', meetingId);
     return () => {
-      socket.emit('leave:meeting', meetingId);
+      socket.emit('meeting:leave', meetingId);
     };
   }, [socket, meetingId]);
   const { principalId } = useContext(SessionContext);
