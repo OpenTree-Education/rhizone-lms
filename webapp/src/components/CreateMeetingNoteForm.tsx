@@ -6,18 +6,19 @@ import { EntityId } from '../types/api';
 import SessionContext from './SessionContext';
 
 interface CreateMeetingNoteFormProps {
+  agendaOwningParticipantId: EntityId;
   meetingId: EntityId;
   onMeetingNoteChanged?: (id: EntityId) => void;
   greatestSortOrderOfMeetingNotesList: number;
 }
 
 const CreateMeetingNoteForm = ({
+  agendaOwningParticipantId,
   meetingId,
   onMeetingNoteChanged,
   greatestSortOrderOfMeetingNotesList,
 }: CreateMeetingNoteFormProps) => {
   const { principalId } = useContext(SessionContext);
-
   const [isSavingMeetingNote, setIsSavingMeetingNote] = useState(false);
   const [saveMeetingNoteError, setSaveMeetingNoteError] = useState(null);
   const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
@@ -25,13 +26,12 @@ const CreateMeetingNoteForm = ({
   const onSubmit: FormEventHandler = event => {
     event.preventDefault();
     setIsSavingMeetingNote(true);
-
     fetch(`${process.env.REACT_APP_API_ORIGIN}/meetings/${meetingId}/notes`, {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        agenda_owning_participant_id: principalId,
+        agenda_owning_participant_id: agendaOwningParticipantId,
         note_text: meetingNoteText,
         sort_order: greatestSortOrderOfMeetingNotesList + 1,
       }),
@@ -57,39 +57,35 @@ const CreateMeetingNoteForm = ({
   };
   return (
     <form onSubmit={onSubmit}>
-      <Card>
-        <CardContent sx={{ pb: 0 }}>
-          <h3>Add Meeting Note</h3>
-        </CardContent>
-        <CardContent sx={{ pt: 0 }}>
+      Add an agenda Item
           <TextField
+            fullWidth
+            multiline
             required
-            sx={{ mb: 2, width: '50%' }}
-            label="Note Text"
+            sx={{ 
+              mt: 2,
+              mb: 2, 
+            }}
             onChange={event => setMeetingNoteText(event.target.value)}
             value={meetingNoteText}
           />
-        </CardContent>
         {saveMeetingNoteError && (
-          <CardContent>
+          <div>
             <Alert
               onClose={() => setSaveMeetingNoteError(null)}
               severity="error"
             >
-              The meeting note was not saved.
+              Item was not added.
             </Alert>
-          </CardContent>
+          </div>
         )}
-        <CardContent>
           <LoadingButton
             type="submit"
             variant="contained"
             loading={isSavingMeetingNote}
           >
-            Save meeting note
+            Save Agenda Item
           </LoadingButton>
-        </CardContent>
-      </Card>
       {isSuccessMessageVisible && (
         <Snackbar
           open={true}
