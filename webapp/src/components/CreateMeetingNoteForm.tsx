@@ -41,6 +41,8 @@ const CreateMeetingNoteForm = ({
         setIsSavingMeetingNote(false);
         if (error) {
           setSaveMeetingNoteError(error);
+        } else {
+          setSaveMeetingNoteError(null);
         }
         if (data) {
           setIsSuccessMessageVisible(true);
