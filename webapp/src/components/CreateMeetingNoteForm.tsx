@@ -82,6 +82,7 @@ const CreateMeetingNoteForm = ({
           </div>
         )}
           <LoadingButton
+            fullWidth
             type="submit"
             variant="contained"
             loading={isSavingMeetingNote}
