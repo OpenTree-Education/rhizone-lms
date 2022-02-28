@@ -10,7 +10,9 @@ describe('useSocket', () => {
     process.env.REACT_APP_API_ORIGIN = 'http://test.api/origin';
     mockIo.mockReturnValue({} as unknown as Socket);
     const socket1 = useSocket();
-    expect(mockIo).toHaveBeenCalledWith(process.env.REACT_APP_API_ORIGIN);
+    expect(mockIo).toHaveBeenCalledWith(process.env.REACT_APP_API_ORIGIN, {
+      withCredentials: true,
+    });
     const socket2 = useSocket();
     expect(socket1).toBe(socket2);
     expect(mockIo.mock.calls.length).toEqual(1);

@@ -1,4 +1,5 @@
 // istanbul ignore file
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import connectRedis from 'connect-redis';
 import cors from 'cors';
 import { createClient as createRedisClient } from 'redis';
@@ -30,6 +31,7 @@ declare module 'express-session' {
 
 declare module 'express-serve-static-core' {
   interface Request {
+    io: Server;
     pagination: {
       limit: number;
       offset: number;
@@ -47,35 +49,42 @@ const start = async () => {
   const io = new Server(server, {
     cors: {
       origin: [findConfig('WEBAPP_ORIGIN', '')],
+      credentials: true,
     },
   });
-
-  io.on('connection', socket => {
-    console.log(`Connection for ${socket.id}`);
-  });
-
-  app.set('trust proxy', 1);
-
-  app.use(helmet());
-  app.use(express.json());
-
   const RedisStore = connectRedis(expressSession);
   const redisClient = createRedisClient({
     host: findConfig('REDIS_HOST', 'localhost'),
   });
   redisClient.on('connect', () => console.log(`redis client connected`));
   redisClient.on('error', error => console.log(`redis client error: ${error}`));
-  app.use(
-    expressSession({
-      cookie: { sameSite: true, secure },
-      name: 'session_id',
-      resave: true,
-      saveUninitialized: true,
-      secret: findConfig('SESSION_SECRET', ''),
-      store: new RedisStore({ client: redisClient }),
-    })
-  );
 
+  const sessionMiddleware = expressSession({
+    cookie: { sameSite: true, secure },
+    name: 'session_id',
+    resave: true,
+    saveUninitialized: true,
+    secret: findConfig('SESSION_SECRET', ''),
+    store: new RedisStore({ client: redisClient }),
+  });
+
+  io.use((socket, next) => {
+    // This code was taken from the documentation for using Socket.IO with express-session:
+    // https://socket.io/docs/v4/faq/#usage-with-express-session
+    // This was not designed with typescript in mind so it shows that the types are incompatible
+    // @ts-ignore
+    sessionMiddleware(socket.request, {}, next);
+  });
+
+  app.set('trust proxy', 1);
+
+  app.use(helmet());
+  app.use(express.json());
+  app.use(sessionMiddleware);
+  app.use((req, res, next) => {
+    req.io = io;
+    next();
+  });
   const withCors = cors({
     credentials: true,
     origin: findConfig('WEBAPP_ORIGIN', ''),
@@ -97,7 +106,7 @@ const start = async () => {
 
   // This error handler must come after all other middleware so that errors in
   // all middlewares and request handlers are handled consistently.
-  await app.use(handleErrors);
+  app.use(handleErrors);
 
   server.listen(Number(port), host, () => {
     console.log(`api listening on ${host}:${port}`);
