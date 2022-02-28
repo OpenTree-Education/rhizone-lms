@@ -72,6 +72,7 @@ const Meeting = ({ meetingId }: MeetingProps) => {
         onMeetingNoteChanged={id =>
           setChangedMeetingNoteIds([...changedMeetingNoteIds, id])
         }
+        agendaOwningParticipantId={currentParticipantId}
       />
     </Grid>
   );
