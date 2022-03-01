@@ -1,4 +1,4 @@
-import { Alert, Snackbar, TextField, Typography } from '@mui/material';
+import { Alert, Snackbar, TextField, Stack } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import React, { FormEventHandler, useState } from 'react';
 
@@ -56,35 +56,29 @@ const CreateMeetingNoteForm = ({
   };
   return (
     <form onSubmit={onSubmit}>
-      <Typography sx={{ mt: 2, fontWeight: 'bold' }}>
-        Add an agenda Item
-      </Typography>
-      <TextField
-        fullWidth
-        multiline
-        required
-        sx={{
-          mt: 2,
-          mb: 2,
-        }}
-        onChange={event => setMeetingNoteText(event.target.value)}
-        value={meetingNoteText}
-      />
-      {saveMeetingNoteError && (
-        <div>
+      <Stack spacing={1}>
+        <b>Add an agenda item</b>
+        <TextField
+          fullWidth
+          multiline
+          required
+          onChange={event => setMeetingNoteText(event.target.value)}
+          value={meetingNoteText}
+        />
+        {saveMeetingNoteError && (
           <Alert onClose={() => setSaveMeetingNoteError(null)} severity="error">
             Item was not added.
           </Alert>
-        </div>
-      )}
-      <LoadingButton
-        fullWidth
-        type="submit"
-        variant="contained"
-        loading={isSavingMeetingNote}
-      >
-        Save Agenda Item
-      </LoadingButton>
+        )}
+        <LoadingButton
+          fullWidth
+          type="submit"
+          variant="contained"
+          loading={isSavingMeetingNote}
+        >
+          Save Agenda Item
+        </LoadingButton>
+      </Stack>
       {isSuccessMessageVisible && (
         <Snackbar
           open={true}

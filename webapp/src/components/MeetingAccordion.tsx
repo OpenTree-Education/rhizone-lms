@@ -11,7 +11,7 @@ import { Link as ReactRouterLink } from 'react-router-dom';
 import React from 'react';
 
 import { formatDate, formatTime } from '../helpers/dateTime';
-import Meeting from './Meeting';
+import MeetingQuickView from './MeetingQuickView';
 import { Meeting as APIMeeting } from '../types/api';
 
 interface MeetingAccordionProps {
@@ -33,14 +33,14 @@ const MeetingAccordion = ({ meeting }: MeetingAccordionProps) => {
             }}
           >
             <ListItemText
-              primary={formatDate(meeting.starts_at)}
+              primary={`Meeting on ${formatDate(meeting.starts_at)}`}
               secondary={formatTime(meeting.starts_at)}
             />
           </MuiLink>
         </ListItem>
       </AccordionSummary>
       <AccordionDetails>
-        <Meeting meetingId={meeting.id} />
+        <MeetingQuickView meetingId={meeting.id} />
       </AccordionDetails>
     </Accordion>
   );
