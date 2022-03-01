@@ -1,24 +1,21 @@
-import { Alert, Card, CardContent, Snackbar, TextField } from '@mui/material';
+import { Alert, Snackbar, TextField, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import React, { FormEventHandler, useState, useContext } from 'react';
+import React, { FormEventHandler, useState } from 'react';
 
 import { EntityId } from '../types/api';
-import SessionContext from './SessionContext';
-
 interface CreateMeetingNoteFormProps {
   agendaOwningParticipantId: EntityId;
   meetingId: EntityId;
   onMeetingNoteChanged?: (id: EntityId) => void;
-  greatestSortOrderOfMeetingNotesList: number;
+  sortOrder: number | undefined;
 }
 
 const CreateMeetingNoteForm = ({
   agendaOwningParticipantId,
   meetingId,
   onMeetingNoteChanged,
-  greatestSortOrderOfMeetingNotesList,
+  sortOrder,
 }: CreateMeetingNoteFormProps) => {
-  const { principalId } = useContext(SessionContext);
   const [isSavingMeetingNote, setIsSavingMeetingNote] = useState(false);
   const [saveMeetingNoteError, setSaveMeetingNoteError] = useState(null);
   const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
@@ -33,7 +30,7 @@ const CreateMeetingNoteForm = ({
       body: JSON.stringify({
         agenda_owning_participant_id: agendaOwningParticipantId,
         note_text: meetingNoteText,
-        sort_order: greatestSortOrderOfMeetingNotesList + 1,
+        sort_order: sortOrder,
       }),
     })
       .then(res => res.json())
@@ -59,36 +56,35 @@ const CreateMeetingNoteForm = ({
   };
   return (
     <form onSubmit={onSubmit}>
-      Add an agenda Item
-          <TextField
-            fullWidth
-            multiline
-            required
-            sx={{ 
-              mt: 2,
-              mb: 2, 
-            }}
-            onChange={event => setMeetingNoteText(event.target.value)}
-            value={meetingNoteText}
-          />
-        {saveMeetingNoteError && (
-          <div>
-            <Alert
-              onClose={() => setSaveMeetingNoteError(null)}
-              severity="error"
-            >
-              Item was not added.
-            </Alert>
-          </div>
-        )}
-          <LoadingButton
-            fullWidth
-            type="submit"
-            variant="contained"
-            loading={isSavingMeetingNote}
-          >
-            Save Agenda Item
-          </LoadingButton>
+      <Typography sx={{ mt: 2, fontWeight: 'bold' }}>
+        Add an agenda Item
+      </Typography>
+      <TextField
+        fullWidth
+        multiline
+        required
+        sx={{
+          mt: 2,
+          mb: 2,
+        }}
+        onChange={event => setMeetingNoteText(event.target.value)}
+        value={meetingNoteText}
+      />
+      {saveMeetingNoteError && (
+        <div>
+          <Alert onClose={() => setSaveMeetingNoteError(null)} severity="error">
+            Item was not added.
+          </Alert>
+        </div>
+      )}
+      <LoadingButton
+        fullWidth
+        type="submit"
+        variant="contained"
+        loading={isSavingMeetingNote}
+      >
+        Save Agenda Item
+      </LoadingButton>
       {isSuccessMessageVisible && (
         <Snackbar
           open={true}

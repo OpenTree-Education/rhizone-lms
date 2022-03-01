@@ -24,7 +24,6 @@ const Meeting = ({ meetingId }: MeetingProps) => {
   const [changedMeetingNoteIds, setChangedMeetingNoteIds] = useState<
     EntityId[]
   >([]);
-
   const { data: meeting, error } = useApiData<APIMeeting>({
     deps: [meetingId, changedMeetingNoteIds],
     path: `/meetings/${meetingId}`,
@@ -39,9 +38,19 @@ const Meeting = ({ meetingId }: MeetingProps) => {
   const currentParticipantId = meeting.participants.find(
     ({ principal_id }) => principal_id === principalId
   )?.id;
-  const [greatestSortOrderNumber] = meeting.meeting_notes
-    .sort((a, b) => a.sort_order - b.sort_order)
-    .slice(-1);
+  let nextMeetingNoteSortOrder;
+  for (
+    let i = meeting.meeting_notes.length - 1;
+    i > meeting.meeting_notes.length - 2;
+    i--
+  ) {
+    if (
+      meeting.meeting_notes[i].agenda_owning_participant_id ===
+      currentParticipantId
+    ) {
+      nextMeetingNoteSortOrder = meeting.meeting_notes[i].sort_order + 1;
+    }
+  }
   return (
     <Grid>
       <h1>{`Meeting on ${formatDate(meeting.starts_at)} at ${formatTime(
@@ -67,7 +76,7 @@ const Meeting = ({ meetingId }: MeetingProps) => {
         </React.Fragment>
       ))}
       <CreateMeetingNoteForm
-        greatestSortOrderOfMeetingNotesList={greatestSortOrderNumber.sort_order}
+        sortOrder={nextMeetingNoteSortOrder}
         meetingId={meeting.id}
         onMeetingNoteChanged={id =>
           setChangedMeetingNoteIds([...changedMeetingNoteIds, id])
