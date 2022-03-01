@@ -41,13 +41,11 @@ jobs:
           echo "$GITHUB_TOKEN" | ssh ${{ github.event.inputs.environment }} 'docker login ghcr.io --username ${{ github.actor }} --password-stdin'
       - name: Run database schema migrations
         run: |
-          cat >>./flyway.conf <<END
+          cat <<END | ssh ${{ github.event.inputs.environment }} 'docker run --rm --interactive --pull always ghcr.io/opentree-education/rhizone-lms_flyway:latest migrate'
           flyway.password=$FLYWAY_PASSWORD
           flyway.url=$FLYWAY_URL
           flyway.user=$FLYWAY_USER
           END
-          scp ./flyway.conf ${{ github.event.inputs.environment }}:~/flyway.conf
-          ssh ${{ github.event.inputs.environment }} 'docker run --rm --pull always -v $HOME/flyway.conf:/flyway/conf/flyway.conf ghcr.io/opentree-education/rhizone-lms_flyway:latest migrate; rm ~/flyway.conf'
       - name: Deploy services
         run: |
           cat docker-compose.production.yml | ssh production 'docker stack deploy --with-registry-auth --compose-file - rhizone-lms'
