@@ -21,6 +21,7 @@ services:
     environment:
       - API_HOST=0.0.0.0
       - GITHUB_REDIRECT_URI=https://api.rhi.zone/auth/github/callback
+      - NODE_ENV=production
       - REDIS_HOST=redis
       - WEBAPP_ORIGIN=https://rhi.zone
     image: ghcr.io/opentree-education/rhizone-lms_api:latest
