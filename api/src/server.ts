@@ -18,6 +18,7 @@ import {
 } from './middleware/errorHandlingMiddleware';
 import { loggedIn } from './middleware/authMiddleware';
 import meetingsRouter from './middleware/meetingsRouter';
+import { participantExists } from './services/meetingsService';
 import questionnairesRouter from './middleware/questionnairesRouter';
 import reflectionsRouter from './middleware/reflectionsRouter';
 import settingsRouter from './middleware/settingsRouter';
@@ -52,6 +53,22 @@ const start = async () => {
       credentials: true,
     },
   });
+
+  io.on('connection', async socket => {
+    socket.on('meeting:join', meetingId => {
+      //@ts-ignore
+      const { principalId } = socket.request.session;
+      if (participantExists(meetingId, principalId)) {
+        socket.join(`meeting:${meetingId}`);
+        socket.emit('meeting:joined', meetingId);
+      }
+    });
+    socket.on('meeting:leave', meetingId => {
+      socket.leave(`meeting:${meetingId}`);
+      socket.emit('meeting:left', meetingId);
+    });
+  });
+
   const RedisStore = connectRedis(expressSession);
   const redisClient = createRedisClient({
     host: findConfig('REDIS_HOST', 'localhost'),
