@@ -3,6 +3,7 @@ import {
   createMeetingNote,
   findMeeting,
   listMeetings,
+  participantExists,
 } from '../meetingsService';
 import { mockQuery } from '../mockDb';
 
@@ -107,6 +108,19 @@ describe('meetingsService', () => {
         []
       );
       expect(await listMeetings(principalId, limit, offset)).toEqual([]);
+    });
+  });
+
+  describe('participantExists', () => {
+    it('should query for the participant with the given id and associated meeting with given id', async () => {
+      const meetingId = 2;
+      const principalId = 3;
+      mockQuery(
+        'select `principal_id` from `participants` where `meeting_id` = ? and `principal_id` = ?',
+        [meetingId, principalId],
+        [3]
+      );
+      expect(await participantExists(meetingId, principalId)).toEqual(true);
     });
   });
 

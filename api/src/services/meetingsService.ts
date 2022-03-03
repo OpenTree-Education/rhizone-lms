@@ -109,7 +109,7 @@ export const participantExists = async (
   meetingId: number,
   principalId: number
 ) => {
-  const [participant] = await db('participants').select(1).where({
+  const [participant] = await db('participants').select('principal_id').where({
     meeting_id: meetingId,
     principal_id: principalId,
   });
