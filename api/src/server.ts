@@ -5,7 +5,7 @@ import cors from 'cors';
 import { createClient as createRedisClient } from 'redis';
 import { createServer } from 'http';
 import express from 'express';
-import expressSession from 'express-session';
+import expressSession, { Session } from 'express-session';
 import helmet from 'helmet';
 import { Server } from 'socket.io';
 
@@ -18,6 +18,7 @@ import {
 } from './middleware/errorHandlingMiddleware';
 import { loggedIn } from './middleware/authMiddleware';
 import meetingsRouter from './middleware/meetingsRouter';
+import { participantExists } from './services/meetingsService';
 import questionnairesRouter from './middleware/questionnairesRouter';
 import reflectionsRouter from './middleware/reflectionsRouter';
 import settingsRouter from './middleware/settingsRouter';
@@ -26,6 +27,12 @@ import { findConfig } from './services/configService';
 declare module 'express-session' {
   interface Session {
     principalId: number;
+  }
+}
+
+declare module 'http' {
+  interface IncomingMessage {
+    session: Session;
   }
 }
 
@@ -52,6 +59,21 @@ const start = async () => {
       credentials: true,
     },
   });
+
+  io.on('connection', socket => {
+    socket.on('meeting:join', async meetingId => {
+      const { principalId } = socket.request.session;
+      if (await participantExists(meetingId, principalId)) {
+        socket.join(`meeting:${meetingId}`);
+        socket.emit('meeting:joined', meetingId);
+      }
+    });
+    socket.on('meeting:leave', meetingId => {
+      socket.leave(`meeting:${meetingId}`);
+      socket.emit('meeting:left', meetingId);
+    });
+  });
+
   const RedisStore = connectRedis(expressSession);
   const redisClient = createRedisClient({
     host: findConfig('REDIS_HOST', 'localhost'),

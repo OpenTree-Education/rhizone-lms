@@ -104,3 +104,14 @@ export const createMeetingNote = async (
   });
   return { id };
 };
+
+export const participantExists = async (
+  meetingId: number,
+  principalId: number
+) => {
+  const [participant] = await db('participants').select('id').where({
+    meeting_id: meetingId,
+    principal_id: principalId,
+  });
+  return !!participant;
+};
