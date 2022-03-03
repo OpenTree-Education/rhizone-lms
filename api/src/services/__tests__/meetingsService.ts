@@ -118,7 +118,7 @@ describe('meetingsService', () => {
       mockQuery(
         'select `id` from `participants` where `meeting_id` = ? and `principal_id` = ?',
         [meetingId, principalId],
-        [2]
+        [{ id: 2 }]
       );
       expect(await participantExists(meetingId, principalId)).toEqual(true);
     });
