@@ -116,11 +116,21 @@ describe('meetingsService', () => {
       const meetingId = 2;
       const principalId = 3;
       mockQuery(
-        'select `principal_id` from `participants` where `meeting_id` = ? and `principal_id` = ?',
+        'select `meeting_id` from `participants` where `meeting_id` = ? and `principal_id` = ?',
         [meetingId, principalId],
-        [3]
+        [2]
       );
       expect(await participantExists(meetingId, principalId)).toEqual(true);
+    });
+    it('should should not query for participants if no meetings were found', async () => {
+      const meetingId = 2;
+      const principalId = 3;
+      mockQuery(
+        'select `meeting_id` from `participants` where `meeting_id` = ? and `principal_id` = ?',
+        [meetingId, principalId],
+        []
+      );
+      expect(await participantExists(meetingId, principalId)).toEqual(false);
     });
   });
 

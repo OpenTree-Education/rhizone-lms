@@ -60,10 +60,10 @@ const start = async () => {
     },
   });
 
-  io.on('connection', async socket => {
-    socket.on('meeting:join', meetingId => {
+  io.on('connection', socket => {
+    socket.on('meeting:join', async meetingId => {
       const { principalId } = socket.request.session;
-      if (participantExists(meetingId, principalId)) {
+      if (await participantExists(meetingId, principalId)) {
         socket.join(`meeting:${meetingId}`);
         socket.emit('meeting:joined', meetingId);
       }
