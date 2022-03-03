@@ -116,7 +116,7 @@ describe('meetingsService', () => {
       const meetingId = 2;
       const principalId = 3;
       mockQuery(
-        'select `meeting_id` from `participants` where `meeting_id` = ? and `principal_id` = ?',
+        'select `id` from `participants` where `meeting_id` = ? and `principal_id` = ?',
         [meetingId, principalId],
         [2]
       );
@@ -126,7 +126,7 @@ describe('meetingsService', () => {
       const meetingId = 2;
       const principalId = 3;
       mockQuery(
-        'select `meeting_id` from `participants` where `meeting_id` = ? and `principal_id` = ?',
+        'select `id` from `participants` where `meeting_id` = ? and `principal_id` = ?',
         [meetingId, principalId],
         []
       );
