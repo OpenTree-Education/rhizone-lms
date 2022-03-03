@@ -13,6 +13,8 @@ secrets:
     external: true
   MYSQL_USER:
     external: true
+  ROLLBAR_SERVER_ACCESS_TOKEN:
+    external: true
   SESSION_SECRET:
     external: true
 
@@ -32,6 +34,7 @@ services:
       - MYSQL_HOST
       - MYSQL_PASSWORD
       - MYSQL_USER
+      - ROLLBAR_SERVER_ACCESS_TOKEN
       - SESSION_SECRET
   nginx:
     image: ghcr.io/opentree-education/rhizone-lms_nginx:latest

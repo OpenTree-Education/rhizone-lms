@@ -40,14 +40,15 @@ declare module 'express-serve-static-core' {
   }
 }
 
-const rollbar = new Rollbar({
-  accessToken: 'b3dd59cea1914e2ab473881cd21597d3',
-  captureUncaught: true,
-  captureUnhandledRejections: true,
-  payload: {
-    environment: process.env.NODE_ENV || 'development',
-  },
-});
+const logger =
+  process.env.NODE_ENV === 'production'
+    ? new Rollbar({
+        accessToken: findConfig('ROLLBAR_SERVER_ACCESS_TOKEN', ''),
+        captureUncaught: true,
+        captureUnhandledRejections: true,
+        payload: { environment: 'production' },
+      })
+    : console;
 
 const start = async () => {
   const host = findConfig('API_HOST', 'localhost');
@@ -116,13 +117,7 @@ const start = async () => {
 
   // This error handler must come after all other middleware so that errors in
   // all middlewares and request handlers are handled consistently.
-  app.use(
-    handleErrors(
-      process.env.NODE_ENV === 'production'
-        ? rollbar.error.bind(rollbar)
-        : console.log.bind(console)
-    )
-  );
+  app.use(handleErrors(logger.error.bind(logger)));
 
   server.listen(Number(port), host, () => {
     console.log(
