@@ -51,64 +51,64 @@ const CreateMeetingNoteForm = ({
         } else {
           setSaveMeetingNoteError(null);
         }
-if (data) {
-  setIsSuccessMessageVisible(true);
-  setMeetingNoteText('');
-  updateSaveMeetingNoteButton();
-  if (onMeetingNoteChanged) {
-    onMeetingNoteChanged(data.id);
-  }
-}
-})
-.catch(error => {
-setIsSavingMeetingNote(false);
-setSaveMeetingNoteError(error);
-});
-};
-return (
-<form onSubmit={onSubmit}>
-<Stack spacing={1}>
-<b>Add an agenda item</b>
-<TextField
-  fullWidth
-  multiline
-  required
-  onChange={event => setMeetingNoteText(event.target.value)}
-  value={meetingNoteText}
-/>
-{saveMeetingNoteError && (
-  <Alert onClose={() => setSaveMeetingNoteError(null)} severity="error">
-    Item was not added.
-  </Alert>
-)}
-<LoadingButton
-  fullWidth
-  type="submit"
-  variant="contained"
-  loading={isSavingMeetingNote}
-  color={isSuccessIndicator ? 'success' : 'primary'}
-  startIcon={isSuccessIndicator ? <CheckCircleOutlineIcon /> : ''}
->
-  {isSuccessIndicator ? 'Saved' : 'Save Agenda Item'}
-</LoadingButton>
-</Stack>
-{isSuccessMessageVisible && (
-<Snackbar
-  open={true}
-  autoHideDuration={6000}
-  onClose={() => setIsSuccessMessageVisible(false)}
->
-  <Alert
-    onClose={() => setIsSuccessMessageVisible(false)}
-    severity="success"
-    sx={{ width: '100%' }}
-  >
-    The meeting note was saved.
-  </Alert>
-</Snackbar>
-)}
-</form>
-);
+        if (data) {
+          setIsSuccessMessageVisible(true);
+          setMeetingNoteText('');
+          updateSaveMeetingNoteButton();
+          if (onMeetingNoteChanged) {
+            onMeetingNoteChanged(data.id);
+          }
+        }
+      })
+      .catch(error => {
+        setIsSavingMeetingNote(false);
+        setSaveMeetingNoteError(error);
+      });
+  };
+  return (
+    <form onSubmit={onSubmit}>
+      <Stack spacing={1}>
+        <b>Add an agenda item</b>
+        <TextField
+          fullWidth
+          multiline
+          required
+          onChange={event => setMeetingNoteText(event.target.value)}
+          value={meetingNoteText}
+        />
+        {saveMeetingNoteError && (
+          <Alert onClose={() => setSaveMeetingNoteError(null)} severity="error">
+            Item was not added.
+          </Alert>
+        )}
+        <LoadingButton
+          fullWidth
+          type="submit"
+          variant="contained"
+          loading={isSavingMeetingNote}
+          color={isSuccessIndicator ? 'success' : 'primary'}
+          startIcon={isSuccessIndicator ? <CheckCircleOutlineIcon /> : ''}
+        >
+          {isSuccessIndicator ? 'Saved' : 'Save Agenda Item'}
+        </LoadingButton>
+      </Stack>
+      {isSuccessMessageVisible && (
+        <Snackbar
+          open={true}
+          autoHideDuration={6000}
+          onClose={() => setIsSuccessMessageVisible(false)}
+        >
+          <Alert
+            onClose={() => setIsSuccessMessageVisible(false)}
+            severity="success"
+            sx={{ width: '100%' }}
+          >
+            The meeting note was saved.
+          </Alert>
+        </Snackbar>
+      )}
+    </form>
+  );
 };
 
 export default CreateMeetingNoteForm;
