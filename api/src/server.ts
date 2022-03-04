@@ -56,6 +56,9 @@ const start = async () => {
 
   io.on('connection', socket => {
     socket.on('meeting:join', async meetingId => {
+      // There was a type conflict when declaring types for socket.request that
+      // caused the build to break.
+      // See: https://github.com/OpenTree-Education/rhizone-lms/pull/328
       // @ts-ignore
       const { principalId } = socket.request.session;
       if (await participantExists(meetingId, principalId)) {
