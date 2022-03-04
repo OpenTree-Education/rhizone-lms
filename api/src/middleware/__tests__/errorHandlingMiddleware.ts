@@ -13,22 +13,11 @@ import { handleErrors, handleNotFound } from '../errorHandlingMiddleware';
 
 describe('errorHandlingMiddleware', () => {
   describe('handleErrors', () => {
-    let originalConsoleLog: typeof console.log;
-
-    beforeEach(() => {
-      originalConsoleLog = console.log;
-      console.log = jest.fn();
-    });
-
-    afterEach(() => {
-      console.log = originalConsoleLog;
-    });
-
     it('should delegate to the next handler if response headers have been sent', () => {
       const err = new Error();
       const next = jest.fn();
       const status = jest.fn();
-      handleErrors(
+      handleErrors(jest.fn())(
         err,
         {} as Request,
         { headersSent: true, status } as unknown as Response,
@@ -43,13 +32,14 @@ describe('errorHandlingMiddleware', () => {
       const json = jest.fn();
       const next = jest.fn();
       const status = jest.fn();
-      handleErrors(
+      const logger = jest.fn();
+      handleErrors(logger)(
         err,
         {} as Request,
         { json, status } as unknown as Response,
         next
       );
-      expect(console.log).toHaveBeenCalledWith(err);
+      expect(logger).toHaveBeenCalledWith(err);
     });
 
     it('should send a generic internal server error response for errors that are not HTTP errors', () => {
@@ -57,7 +47,7 @@ describe('errorHandlingMiddleware', () => {
       const next = jest.fn();
       const status = jest.fn();
       const json = jest.fn();
-      handleErrors(
+      handleErrors(jest.fn())(
         err,
         {} as Request,
         { status, json } as unknown as Response,
@@ -83,7 +73,7 @@ describe('errorHandlingMiddleware', () => {
         const next = jest.fn();
         const status = jest.fn();
         const json = jest.fn();
-        handleErrors(
+        handleErrors(jest.fn())(
           err,
           {} as Request,
           { status, json } as unknown as Response,
@@ -104,7 +94,7 @@ describe('errorHandlingMiddleware', () => {
         const next = jest.fn();
         const status = jest.fn();
         const json = jest.fn();
-        handleErrors(
+        handleErrors(jest.fn())(
           err,
           {} as Request,
           { status, json } as unknown as Response,

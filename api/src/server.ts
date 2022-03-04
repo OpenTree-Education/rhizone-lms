@@ -7,6 +7,7 @@ import { createServer } from 'http';
 import express from 'express';
 import expressSession from 'express-session';
 import helmet from 'helmet';
+import Rollbar from 'rollbar';
 import { Server } from 'socket.io';
 
 import authRouter from './middleware/authRouter';
@@ -39,6 +40,16 @@ declare module 'express-serve-static-core' {
     };
   }
 }
+
+const logger =
+  process.env.NODE_ENV === 'production'
+    ? new Rollbar({
+        accessToken: findConfig('ROLLBAR_SERVER_ACCESS_TOKEN', ''),
+        captureUncaught: true,
+        captureUnhandledRejections: true,
+        payload: { environment: 'production' },
+      })
+    : console;
 
 const start = async () => {
   const host = findConfig('API_HOST', 'localhost');
@@ -126,10 +137,14 @@ const start = async () => {
 
   // This error handler must come after all other middleware so that errors in
   // all middlewares and request handlers are handled consistently.
-  app.use(handleErrors);
+  app.use(handleErrors(logger.error.bind(logger)));
 
   server.listen(Number(port), host, () => {
-    console.log(`api listening on ${host}:${port}`);
+    console.log(
+      `api listening on ${host}:${port} in ${
+        process.env.NODE_ENV || 'development'
+      } mode`
+    );
   });
 };
 

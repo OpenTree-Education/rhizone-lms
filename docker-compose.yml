@@ -56,3 +56,4 @@ services:
       context: ./webapp/
       args:
         - REACT_APP_API_ORIGIN=http://api.rhi.zone-development
+        - REACT_APP_ROLLBAR_ACCESS_TOKEN=

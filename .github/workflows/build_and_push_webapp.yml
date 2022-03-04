@@ -11,6 +11,7 @@ jobs:
   build_and_push_webapp:
     name: Build webapp image and push to registry
     runs-on: ubuntu-latest
+    environment: production
     permissions:
       contents: read
       packages: write
@@ -35,7 +36,9 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./webapp/
-          build-args: REACT_APP_API_ORIGIN=https://api.rhi.zone
+          build-args: |
+            REACT_APP_API_ORIGIN=https://api.rhi.zone
+            REACT_APP_ROLLBAR_ACCESS_TOKEN=${{ secrets.ROLLBAR_CLIENT_ACCESS_TOKEN }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
