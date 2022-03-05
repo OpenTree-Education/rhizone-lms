@@ -5,7 +5,7 @@ import cors from 'cors';
 import { createClient as createRedisClient } from 'redis';
 import { createServer } from 'http';
 import express from 'express';
-import expressSession from 'express-session';
+import expressSession, { Session } from 'express-session';
 import helmet from 'helmet';
 import Rollbar from 'rollbar';
 import { Server } from 'socket.io';
@@ -28,6 +28,12 @@ import { findConfig } from './services/configService';
 declare module 'express-session' {
   interface Session {
     principalId: number;
+  }
+}
+
+declare module 'http' {
+  interface IncomingMessage {
+    session: Session;
   }
 }
 
@@ -67,10 +73,6 @@ const start = async () => {
 
   io.on('connection', socket => {
     socket.on('meeting:join', async meetingId => {
-      // There was a type conflict when declaring types for socket.request that
-      // caused the build to break.
-      // See: https://github.com/OpenTree-Education/rhizone-lms/pull/328
-      // @ts-ignore
       const { principalId } = socket.request.session;
       if (await participantExists(meetingId, principalId)) {
         socket.join(`meeting:${meetingId}`);
