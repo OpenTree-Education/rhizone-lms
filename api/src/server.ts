@@ -5,7 +5,7 @@ import cors from 'cors';
 import { createClient as createRedisClient } from 'redis';
 import { createServer } from 'http';
 import express from 'express';
-import expressSession, { Session } from 'express-session';
+import expressSession, { Session, SessionData } from 'express-session';
 import helmet from 'helmet';
 import Rollbar from 'rollbar';
 import { Server } from 'socket.io';
@@ -33,7 +33,7 @@ declare module 'express-session' {
 
 declare module 'http' {
   interface IncomingMessage {
-    session: Session;
+    session: Session & Partial<SessionData>;
   }
 }
 
