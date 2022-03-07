@@ -1,4 +1,4 @@
-import { Stack } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import React, { useContext, useState } from 'react';
 
 import { EntityId, Meeting as APIMeeting } from '../types/api';
@@ -38,26 +38,28 @@ const MeetingQuickView = ({ meetingId }: MeetingQuickViewProps) => {
     }
   }
   return (
-    <Stack spacing={1}>
-      {meeting.meeting_notes.map((meetingNote, index, meetingNotes) => (
-        <React.Fragment key={meetingNote.id}>
-          {(index === 0 ||
-            meetingNote.agenda_owning_participant_id !==
-              meetingNotes[index - 1].agenda_owning_participant_id) && (
-            <b>
-              {meetingNote.agenda_owning_participant_id === null
-                ? 'Action items'
-                : meetingNote.agenda_owning_participant_id ===
-                  currentParticipantId
-                ? 'Your agenda items'
-                : 'Their agenda items'}
-            </b>
-          )}
-          <ul>
-            <li>{meetingNote.note_text}</li>
-          </ul>
-        </React.Fragment>
-      ))}
+    <Stack spacing={2}>
+      <Stack spacing={1}>
+        {meeting.meeting_notes.map((meetingNote, index, meetingNotes) => (
+          <React.Fragment key={meetingNote.id}>
+            {(index === 0 ||
+              meetingNote.agenda_owning_participant_id !==
+                meetingNotes[index - 1].agenda_owning_participant_id) && (
+              <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                {meetingNote.agenda_owning_participant_id === null
+                  ? 'Action items'
+                  : meetingNote.agenda_owning_participant_id ===
+                    currentParticipantId
+                  ? 'My agenda items'
+                  : 'Their agenda items'}
+              </Typography>
+            )}
+            <Typography variant="body2" pl={1}>
+              {meetingNote.note_text}
+            </Typography>
+          </React.Fragment>
+        ))}
+      </Stack>
       <CreateMeetingNoteForm
         sortOrder={nextMeetingNoteSortOrder}
         meetingId={meeting.id}

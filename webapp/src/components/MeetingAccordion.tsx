@@ -3,10 +3,11 @@ import {
   AccordionDetails,
   AccordionSummary,
   Link as MuiLink,
-  ListItem,
-  ListItemText,
+  Typography,
 } from '@mui/material';
+
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import IconButton from '@mui/material/IconButton';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import React from 'react';
 
@@ -21,23 +22,39 @@ interface MeetingAccordionProps {
 const MeetingAccordion = ({ meeting }: MeetingAccordionProps) => {
   return (
     <Accordion>
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <ListItem>
-          <MuiLink
-            component={ReactRouterLink}
-            to={`/meetings/${meeting.id}`}
-            underline="none"
-            sx={{ color: 'text.primary' }}
-            onClick={e => {
-              e.stopPropagation();
+      <AccordionSummary
+        expandIcon={
+          <IconButton>
+            <ExpandMoreIcon />
+          </IconButton>
+        }
+        sx={{
+          '&:hover': {
+            backgroundColor: 'grey.200',
+          },
+        }}
+      >
+        <MuiLink
+          component={ReactRouterLink}
+          to={`/meetings/${meeting.id}`}
+          underline="none"
+          sx={{ color: 'text.primary' }}
+          onClick={e => {
+            e.stopPropagation();
+          }}
+        >
+          <Typography variant="body1">
+            Meeting on {formatDate(meeting.starts_at)}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              opacity: 0.87,
             }}
           >
-            <ListItemText
-              primary={`Meeting on ${formatDate(meeting.starts_at)}`}
-              secondary={formatTime(meeting.starts_at)}
-            />
-          </MuiLink>
-        </ListItem>
+            {formatTime(meeting.starts_at)}
+          </Typography>
+        </MuiLink>
       </AccordionSummary>
       <AccordionDetails>
         <MeetingQuickView meetingId={meeting.id} />

@@ -1,4 +1,4 @@
-import { Alert, Snackbar, Stack, TextField } from '@mui/material';
+import { Alert, Stack, TextField, Typography } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { LoadingButton } from '@mui/lab';
 import React, { FormEventHandler, useState } from 'react';
@@ -8,7 +8,7 @@ interface CreateMeetingNoteFormProps {
   agendaOwningParticipantId: EntityId;
   meetingId: EntityId;
   onMeetingNoteChanged?: (id: EntityId) => void;
-  sortOrder: number | undefined;
+  sortOrder: number;
 }
 
 const CreateMeetingNoteForm = ({
@@ -19,16 +19,8 @@ const CreateMeetingNoteForm = ({
 }: CreateMeetingNoteFormProps) => {
   const [isSavingMeetingNote, setIsSavingMeetingNote] = useState(false);
   const [saveMeetingNoteError, setSaveMeetingNoteError] = useState(null);
-  const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
   const [meetingNoteText, setMeetingNoteText] = useState('');
-  const [isSuccessIndicator, setIsSuccessIndicator] = useState(false);
-
-  const updateSaveMeetingNoteButton = () => {
-    setIsSuccessIndicator(true);
-    setTimeout(() => {
-      setIsSuccessIndicator(false);
-    }, 2000);
-  };
+  const [isSuccessIndicated, setisSuccessIndicated] = useState(false);
 
   const onSubmit: FormEventHandler = event => {
     event.preventDefault();
@@ -52,9 +44,11 @@ const CreateMeetingNoteForm = ({
           setSaveMeetingNoteError(null);
         }
         if (data) {
-          setIsSuccessMessageVisible(true);
           setMeetingNoteText('');
-          updateSaveMeetingNoteButton();
+          setisSuccessIndicated(true);
+          setTimeout(() => {
+            setisSuccessIndicated(false);
+          }, 2000);
           if (onMeetingNoteChanged) {
             onMeetingNoteChanged(data.id);
           }
@@ -68,7 +62,9 @@ const CreateMeetingNoteForm = ({
   return (
     <form onSubmit={onSubmit}>
       <Stack spacing={1}>
-        <b>Add an agenda item</b>
+        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+          Add an agenda item
+        </Typography>
         <TextField
           fullWidth
           multiline
@@ -87,10 +83,10 @@ const CreateMeetingNoteForm = ({
           type="submit"
           variant="contained"
           loading={isSavingMeetingNote}
-          color={isSuccessIndicator ? 'success' : 'primary'}
-          startIcon={isSuccessIndicator ? <CheckCircleOutlineIcon /> : ''}
+          color={isSuccessIndicated ? 'success' : 'primary'}
+          startIcon={isSuccessIndicated ? <CheckCircleOutlineIcon /> : ''}
         >
-          {isSuccessIndicator ? 'Saved' : 'Save Agenda Item'}
+          {isSuccessIndicated ? 'Saved' : 'Save Agenda Item'}
         </LoadingButton>
       </Stack>
     </form>

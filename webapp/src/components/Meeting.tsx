@@ -49,7 +49,7 @@ const Meeting = ({ meetingId }: MeetingProps) => {
                 ? 'Action items'
                 : meetingNote.agenda_owning_participant_id ===
                   currentParticipantId
-                ? 'Your agenda items'
+                ? 'My agenda items'
                 : 'Their agenda items'}
             </h2>
           )}
