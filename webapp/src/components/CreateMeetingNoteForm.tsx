@@ -93,21 +93,6 @@ const CreateMeetingNoteForm = ({
           {isSuccessIndicator ? 'Saved' : 'Save Agenda Item'}
         </LoadingButton>
       </Stack>
-      {isSuccessMessageVisible && (
-        <Snackbar
-          open={true}
-          autoHideDuration={6000}
-          onClose={() => setIsSuccessMessageVisible(false)}
-        >
-          <Alert
-            onClose={() => setIsSuccessMessageVisible(false)}
-            severity="success"
-            sx={{ width: '100%' }}
-          >
-            The meeting note was saved.
-          </Alert>
-        </Snackbar>
-      )}
     </form>
   );
 };
