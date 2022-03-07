@@ -74,6 +74,7 @@ const CreateMeetingNoteForm = ({
           multiline
           required
           onChange={event => setMeetingNoteText(event.target.value)}
+          size="small"
           value={meetingNoteText}
         />
         {saveMeetingNoteError && (
