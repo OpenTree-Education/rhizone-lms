@@ -39,7 +39,8 @@ export const findMeeting = async (
       )
       .where({ 'participants.meeting_id': meetingId })
       .orderBy([
-        'agenda_owning_participant_id',
+        {column:'agenda_owning_participant_id', order:
+        'desc'},
         'sort_order',
         'meeting_notes.created_at',
       ]),
