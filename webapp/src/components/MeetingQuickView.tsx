@@ -1,13 +1,13 @@
-import { Stack, Typography } from '@mui/material';
 import React, { useContext, useState } from 'react';
+import { Stack, Typography } from '@mui/material';
 
-import { EntityId, Meeting as APIMeeting } from '../types/api';
 import CreateMeetingNoteForm from './CreateMeetingNoteForm';
+import { EntityId, Meeting as APIMeeting } from '../types/api';
 import SessionContext from './SessionContext';
 import useApiData from '../helpers/useApiData';
 
 interface MeetingQuickViewProps {
-  meetingId?: EntityId;
+  meetingId: EntityId;
 }
 
 const MeetingQuickView = ({ meetingId }: MeetingQuickViewProps) => {
