@@ -102,7 +102,22 @@ export const createMeetingNote = async (
     note_text: noteText,
     sort_order: sortOrder,
   });
-  return { id };
+  if (!id) {
+    return null;
+  }
+  const [meetingNote] = await db('meeting_notes')
+    .select(
+      'id',
+      'agenda_owning_participant_id',
+      'authoring_participant_id',
+      'sort_order',
+      'note_text',
+      'created_at'
+    )
+    .where({
+      id,
+    });
+  return meetingNote || null;
 };
 
 export const participantExists = async (
