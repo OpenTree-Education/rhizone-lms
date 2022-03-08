@@ -45,6 +45,8 @@ services:
     depends_on:
       - api
       - webapp
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "80:80"
   redis:
