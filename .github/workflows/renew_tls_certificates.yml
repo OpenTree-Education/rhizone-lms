@@ -2,8 +2,8 @@ name: Renew TLS Certificates
 
 on:
   schedule:
-# Every Sunday at 08:00
-    - cron: '0 8 * * 0'
+# Every Monday at 17:00 UTC, 09:00 PST (-08:00)
+    - cron: '0 17 * * 1'
 
 jobs:
   run_certbot_renew:
