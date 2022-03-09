@@ -72,7 +72,7 @@ const MeetingQuickView = ({ meeting }: MeetingQuickViewProps) => {
       .then(res => res.json())
       .then(({ data, error }) => {
         setIsSavingMeetingNote(false);
-        setSaveMeetingNoteError(error);
+        setSaveMeetingNoteError(error || null);
         if (data) {
           setMeetingNoteText('');
           setIsSuccessIndicated(true);
@@ -142,7 +142,7 @@ const MeetingQuickView = ({ meeting }: MeetingQuickViewProps) => {
           </Stack>
           <form onSubmit={onSubmit}>
             <Stack spacing={1}>
-              <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+              <Typography sx={{ fontWeight: 'bold' }}>
                 Add an agenda item
               </Typography>
               <TextField
