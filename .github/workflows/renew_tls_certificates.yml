@@ -1,0 +1,33 @@
+name: Renew TLS Certificates
+
+on:
+  schedule:
+# Every Sunday at 08:00
+    - cron: '0 8 * * 0'
+
+jobs:
+  run_certbot_renew:
+    name: Run certbot renew on production
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Configure ssh
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/production.key
+          chmod 600 ~/.ssh/production.key
+          cat >>~/.ssh/config <<END
+          Host production
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/production.key
+          END
+          ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+      - name: Renew certificates and redeploy
+        run: |
+          ssh production docker service rm rhizone-lms_nginx
+          ssh production certbot renew
+          echo "$GITHUB_TOKEN" | ssh production docker login ghcr.io --username ${{ github.actor }} --password-stdin
+          cat docker-compose.production.yml | ssh production docker stack deploy --with-registry-auth --compose-file - rhizone-lms
