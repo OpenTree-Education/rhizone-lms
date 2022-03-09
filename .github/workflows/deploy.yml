@@ -48,4 +48,4 @@ jobs:
           END
       - name: Deploy services
         run: |
-          cat docker-compose.production.yml | ssh production 'docker stack deploy --with-registry-auth --compose-file - rhizone-lms'
+          cat docker-compose.production.yml | ssh ${{ github.event.inputs.environment }} 'docker stack deploy --with-registry-auth --compose-file - rhizone-lms'
