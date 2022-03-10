@@ -105,6 +105,9 @@ meetingsRouter.post('/:id/notes', async (req, res, next) => {
     );
     return;
   }
+
+  req.io.to(`meeting:${meetingId}`).emit('meeting_note:created', meetingNote);
+
   res.status(201).json(itemEnvelope(meetingNote));
 });
 
