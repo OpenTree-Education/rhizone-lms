@@ -44,7 +44,7 @@ describe('meetingsService', () => {
         [{ id: meetingId, starts_at: startsAt }]
       );
       mockQuery(
-        'select `meeting_notes`.`id` as `id`, `note_text`, `sort_order`, `authoring_participant_id`, `agenda_owning_participant_id` from `meeting_notes` inner join `participants` on `participants`.`id` = `meeting_notes`.`authoring_participant_id` where `participants`.`meeting_id` = ? order by `agenda_owning_participant_id` asc, `sort_order` asc, `meeting_notes`.`created_at` asc',
+        'select `meeting_notes`.`id` as `id`, `note_text`, `sort_order`, `authoring_participant_id`, `agenda_owning_participant_id` from `meeting_notes` inner join `participants` on `participants`.`id` = `meeting_notes`.`authoring_participant_id` where `participants`.`meeting_id` = ? order by agenda_owning_participant_id is null, `agenda_owning_participant_id` asc, `sort_order` asc, `meeting_notes`.`created_at` asc',
         [meetingId],
         meetingNotes
       );
