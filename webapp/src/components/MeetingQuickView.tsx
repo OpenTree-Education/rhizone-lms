@@ -121,12 +121,9 @@ const MeetingQuickView = ({ meeting }: MeetingQuickViewProps) => {
         <Stack spacing={2}>
           <Stack spacing={1}>
             {loadMeetingNotesError && (
-              <Box>
-                <Alert severity="error">
-                  There was an error loading the meeting notes. Please try
-                  again.
-                </Alert>
-              </Box>
+              <Alert severity="error">
+                There was an error loading the meeting notes. Please try again.
+              </Alert>
             )}
             {meetingNotes.map((meetingNote, index, meetingNotes) => (
               <React.Fragment key={meetingNote.id}>
