@@ -145,12 +145,12 @@ describe('meetingsService', () => {
       const authoringParticipantId = 6;
       const createdAt = '2000-01-01 00:00:00';
       const meetingNote = {
-        meetingNoteId,
-        agendaOwningParticipantId,
-        authoringParticipantId,
-        sortOrder,
-        noteText,
-        createdAt,
+        id: meetingNoteId,
+        agenda_owning_participant_id: agendaOwningParticipantId,
+        authoring_participant_id: authoringParticipantId,
+        sort_order: sortOrder,
+        note_text: noteText,
+        created_at: createdAt,
       };
       mockQuery(
         'select `id` from `participants` where `meeting_id` = ? and `principal_id` = ?',
