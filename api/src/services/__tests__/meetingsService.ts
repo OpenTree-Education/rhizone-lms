@@ -135,65 +135,7 @@ describe('meetingsService', () => {
   });
 
   describe('createMeetingNote', () => {
-    it('should insert a meeting note with the authoring participant id of the given principal in the given meeting', async () => {
-      const meetingId = 2;
-      const principalId = 3;
-      const agendaOwningParticipantId = 4;
-      const noteText = '';
-      const sortOrder = 0;
-      const meetingNoteId = 5;
-      mockQuery(
-        'select `id` from `participants` where `meeting_id` = ? and `principal_id` = ?',
-        [meetingId, principalId],
-        [{ id: 6 }]
-      );
-      mockQuery(
-        'insert into `meeting_notes` (`agenda_owning_participant_id`, `authoring_participant_id`, `note_text`, `sort_order`) values (?, ?, ?, ?)',
-        [agendaOwningParticipantId, 6, noteText, sortOrder],
-        [meetingNoteId]
-      );
-      mockQuery(
-        'select `id`, `agenda_owning_participant_id`, `authoring_participant_id`, `sort_order`, `note_text`, `created_at` from `meeting_notes` where `id` = ?',
-        [meetingNoteId],
-        [{ id: 5 }]
-      );
-      expect(
-        await createMeetingNote(
-          meetingId,
-          principalId,
-          agendaOwningParticipantId,
-          noteText,
-          sortOrder
-        )
-      ).toEqual({ id: meetingNoteId });
-    });
-    it('should resolve to null if no meeting note id exists', async () => {
-      const meetingId = 2;
-      const principalId = 3;
-      const agendaOwningParticipantId = 4;
-      const noteText = '';
-      const sortOrder = 0;
-      mockQuery(
-        'select `id` from `participants` where `meeting_id` = ? and `principal_id` = ?',
-        [meetingId, principalId],
-        [{ id: 6 }]
-      );
-      mockQuery(
-        'insert into `meeting_notes` (`agenda_owning_participant_id`, `authoring_participant_id`, `note_text`, `sort_order`) values (?, ?, ?, ?)',
-        [agendaOwningParticipantId, 6, noteText, sortOrder],
-        []
-      );
-      expect(
-        await createMeetingNote(
-          meetingId,
-          principalId,
-          agendaOwningParticipantId,
-          noteText,
-          sortOrder
-        )
-      ).toEqual(null);
-    });
-    it('should return a meetingNote object from a given meeting note id', async () => {
+    it('should insert a meeting note with the authoring participant id of the given principal in the given meeting and returns a complete meeting note object', async () => {
       const meetingId = 2;
       const principalId = 3;
       const agendaOwningParticipantId = 4;
@@ -201,7 +143,7 @@ describe('meetingsService', () => {
       const sortOrder = 0;
       const meetingNoteId = 5;
       const authoringParticipantId = 6;
-      const createdAt = '';
+      const createdAt = '2000-01-01 00:00:00';
       const meetingNote = {
         meetingNoteId,
         agendaOwningParticipantId,
@@ -234,6 +176,32 @@ describe('meetingsService', () => {
           sortOrder
         )
       ).toEqual(meetingNote);
+    });
+    it('should resolve to null when the query to insert a meeting note responds with an empty array', async () => {
+      const meetingId = 2;
+      const principalId = 3;
+      const agendaOwningParticipantId = 4;
+      const noteText = '';
+      const sortOrder = 0;
+      mockQuery(
+        'select `id` from `participants` where `meeting_id` = ? and `principal_id` = ?',
+        [meetingId, principalId],
+        [{ id: 6 }]
+      );
+      mockQuery(
+        'insert into `meeting_notes` (`agenda_owning_participant_id`, `authoring_participant_id`, `note_text`, `sort_order`) values (?, ?, ?, ?)',
+        [agendaOwningParticipantId, 6, noteText, sortOrder],
+        []
+      );
+      expect(
+        await createMeetingNote(
+          meetingId,
+          principalId,
+          agendaOwningParticipantId,
+          noteText,
+          sortOrder
+        )
+      ).toEqual(null);
     });
     it('should return a null value if a meetingNote cannot be found from the meeting note id', async () => {
       const meetingId = 2;
