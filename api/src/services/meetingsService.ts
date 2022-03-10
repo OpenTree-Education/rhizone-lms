@@ -38,6 +38,7 @@ export const findMeeting = async (
         'meeting_notes.authoring_participant_id'
       )
       .where({ 'participants.meeting_id': meetingId })
+      .orderByRaw('agenda_owning_participant_id is null')
       .orderBy([
         'agenda_owning_participant_id',
         'sort_order',
