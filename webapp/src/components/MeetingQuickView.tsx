@@ -3,6 +3,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Alert,
+  Box,
   Link as MuiLink,
   Stack,
   TextField,
@@ -36,12 +37,13 @@ const MeetingQuickView = ({ meeting }: MeetingQuickViewProps) => {
   ] = useState(false);
   const [meetingNoteText, setMeetingNoteText] = useState('');
   const [saveMeetingNoteError, setSaveMeetingNoteError] = useState(null);
-  const { data: meetingWithNotes, error } = useApiData<APIMeeting>({
-    deps: [changedMeetingNoteIds, isAccordionExpanded],
-    path: `/meetings/${meeting.id}`,
-    sendCredentials: true,
-    shouldFetch: () => isAccordionExpanded,
-  });
+  const { data: meetingWithNotes, error: loadMeetingNotesError } =
+    useApiData<APIMeeting>({
+      deps: [changedMeetingNoteIds, isAccordionExpanded],
+      path: `/meetings/${meeting.id}`,
+      sendCredentials: true,
+      shouldFetch: () => isAccordionExpanded,
+    });
   const currentParticipantId = meeting.participants.find(
     ({ principal_id }) => principal_id === principalId
   )?.id;
@@ -118,7 +120,14 @@ const MeetingQuickView = ({ meeting }: MeetingQuickViewProps) => {
       <AccordionDetails>
         <Stack spacing={2}>
           <Stack spacing={1}>
-            {error && <div>There was an error loading the meeting.</div>}
+            {loadMeetingNotesError && (
+              <Box>
+                <Alert severity="error">
+                  There was an error loading the meeting notes. Please try
+                  again.
+                </Alert>
+              </Box>
+            )}
             {meetingNotes.map((meetingNote, index, meetingNotes) => (
               <React.Fragment key={meetingNote.id}>
                 {(index === 0 ||
