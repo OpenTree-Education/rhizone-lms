@@ -28,29 +28,27 @@ const MeetingQuickView = ({ meeting }: MeetingQuickViewProps) => {
   const [changedMeetingNoteIds, setChangedMeetingNoteIds] = useState<
     EntityId[]
   >([]);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isAccordionExpanded, setIsAccordionExpanded] = useState(false);
   const [isSavingMeetingNote, setIsSavingMeetingNote] = useState(false);
-  const [isSuccessIndicated, setIsSuccessIndicated] = useState(false);
+  const [
+    isMeetingNoteSaveSuccessIndicated,
+    setIsMeetingNoteSaveSuccessIndicated,
+  ] = useState(false);
   const [meetingNoteText, setMeetingNoteText] = useState('');
   const [saveMeetingNoteError, setSaveMeetingNoteError] = useState(null);
-
   const { data: meetingWithNotes, error } = useApiData<APIMeeting>({
-    deps: [changedMeetingNoteIds],
+    deps: [changedMeetingNoteIds, isAccordionExpanded],
     path: `/meetings/${meeting.id}`,
     sendCredentials: true,
+    shouldFetch: () => isAccordionExpanded,
   });
-  if (error) {
-    return <div>There was an error loading the meeting.</div>;
-  }
-  if (!meetingWithNotes) {
-    return null;
-  }
-  const currentParticipantId = meetingWithNotes.participants.find(
+  const currentParticipantId = meeting.participants.find(
     ({ principal_id }) => principal_id === principalId
   )?.id;
   let nextMeetingNoteSortOrder = 1;
-  for (let i = meetingWithNotes.meeting_notes.length - 1; i >= 0; i--) {
-    const meetingNote = meetingWithNotes.meeting_notes[i];
+  const meetingNotes = meetingWithNotes?.meeting_notes || [];
+  for (let i = meetingNotes.length - 1; i >= 0; i--) {
+    const meetingNote = meetingNotes[i];
     if (meetingNote.agenda_owning_participant_id === currentParticipantId) {
       nextMeetingNoteSortOrder = meetingNote.sort_order + 1;
       break;
@@ -75,9 +73,9 @@ const MeetingQuickView = ({ meeting }: MeetingQuickViewProps) => {
         setSaveMeetingNoteError(error || null);
         if (data) {
           setMeetingNoteText('');
-          setIsSuccessIndicated(true);
+          setIsMeetingNoteSaveSuccessIndicated(true);
           setTimeout(() => {
-            setIsSuccessIndicated(false);
+            setIsMeetingNoteSaveSuccessIndicated(false);
           }, 2000);
           setChangedMeetingNoteIds([...changedMeetingNoteIds, data.id]);
         }
@@ -89,8 +87,10 @@ const MeetingQuickView = ({ meeting }: MeetingQuickViewProps) => {
   };
   return (
     <Accordion
-      expanded={isExpanded}
-      onChange={(event, newIsExpanded) => setIsExpanded(newIsExpanded)}
+      expanded={isAccordionExpanded}
+      onChange={(event, newIsAccordionExpanded) =>
+        setIsAccordionExpanded(newIsAccordionExpanded)
+      }
     >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
@@ -118,27 +118,26 @@ const MeetingQuickView = ({ meeting }: MeetingQuickViewProps) => {
       <AccordionDetails>
         <Stack spacing={2}>
           <Stack spacing={1}>
-            {meetingWithNotes.meeting_notes.map(
-              (meetingNote, index, meetingNotes) => (
-                <React.Fragment key={meetingNote.id}>
-                  {(index === 0 ||
-                    meetingNote.agenda_owning_participant_id !==
-                      meetingNotes[index - 1].agenda_owning_participant_id) && (
-                    <Typography sx={{ fontWeight: 'bold' }}>
-                      {meetingNote.agenda_owning_participant_id === null
-                        ? 'Action items'
-                        : meetingNote.agenda_owning_participant_id ===
-                          currentParticipantId
-                        ? 'My agenda items'
-                        : 'Their agenda items'}
-                    </Typography>
-                  )}
-                  <Typography variant="body2" pl={1}>
-                    {meetingNote.note_text}
+            {error && <div>There was an error loading the meeting.</div>}
+            {meetingNotes.map((meetingNote, index, meetingNotes) => (
+              <React.Fragment key={meetingNote.id}>
+                {(index === 0 ||
+                  meetingNote.agenda_owning_participant_id !==
+                    meetingNotes[index - 1].agenda_owning_participant_id) && (
+                  <Typography sx={{ fontWeight: 'bold' }}>
+                    {meetingNote.agenda_owning_participant_id === null
+                      ? 'Action items'
+                      : meetingNote.agenda_owning_participant_id ===
+                        currentParticipantId
+                      ? 'My agenda items'
+                      : 'Their agenda items'}
                   </Typography>
-                </React.Fragment>
-              )
-            )}
+                )}
+                <Typography variant="body2" pl={1}>
+                  {meetingNote.note_text}
+                </Typography>
+              </React.Fragment>
+            ))}
           </Stack>
           <form onSubmit={onSubmit}>
             <Stack spacing={1}>
@@ -166,10 +165,20 @@ const MeetingQuickView = ({ meeting }: MeetingQuickViewProps) => {
                 type="submit"
                 variant="contained"
                 loading={isSavingMeetingNote}
-                color={isSuccessIndicated ? 'success' : 'primary'}
-                startIcon={isSuccessIndicated ? <CheckCircleOutlineIcon /> : ''}
+                color={
+                  isMeetingNoteSaveSuccessIndicated ? 'success' : 'primary'
+                }
+                startIcon={
+                  isMeetingNoteSaveSuccessIndicated ? (
+                    <CheckCircleOutlineIcon />
+                  ) : (
+                    ''
+                  )
+                }
               >
-                {isSuccessIndicated ? 'Saved' : 'Save Agenda Item'}
+                {isMeetingNoteSaveSuccessIndicated
+                  ? 'Saved'
+                  : 'Save Agenda Item'}
               </LoadingButton>
             </Stack>
           </form>
