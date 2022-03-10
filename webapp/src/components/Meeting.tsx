@@ -1,7 +1,8 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Stack } from '@mui/material';
 
-import { EntityId, Meeting as APIMeeting } from '../types/api';
+import { compareMeetingNotes } from '../helpers/meetingsHelper';
+import { EntityId, Meeting as APIMeeting, MeetingNote } from '../types/api';
 import { formatDate, formatTime } from '../helpers/dateTime';
 import SessionContext from './SessionContext';
 import useApiData from '../helpers/useApiData';
@@ -13,9 +14,17 @@ interface MeetingProps {
 
 const Meeting = ({ meetingId }: MeetingProps) => {
   const socket = useSocket();
+  const [meetingNotes, setMeetingNotes] = useState<MeetingNote[]>([]);
   useEffect(() => {
     socket.emit('meeting:join', meetingId);
+    const handleNewMeetingNote = (meetingNote: MeetingNote) => {
+      setMeetingNotes(meetingNotes =>
+        [...meetingNotes, meetingNote].sort(compareMeetingNotes)
+      );
+    };
+    socket.on('meeting_note:created', handleNewMeetingNote);
     return () => {
+      socket.off('meeting_note:created', handleNewMeetingNote);
       socket.emit('meeting:leave', meetingId);
     };
   }, [socket, meetingId]);
@@ -25,6 +34,9 @@ const Meeting = ({ meetingId }: MeetingProps) => {
     path: `/meetings/${meetingId}`,
     sendCredentials: true,
   });
+  useEffect(() => {
+    meeting && setMeetingNotes(meeting.meeting_notes);
+  }, [meeting]);
   if (error) {
     return <div>There was an error loading the meeting.</div>;
   }
@@ -39,7 +51,7 @@ const Meeting = ({ meetingId }: MeetingProps) => {
       <h1>{`Meeting on ${formatDate(meeting.starts_at)} at ${formatTime(
         meeting.starts_at
       )}`}</h1>
-      {meeting.meeting_notes.map((meetingNote, index, meetingNotes) => (
+      {meetingNotes.map((meetingNote, index, meetingNotes) => (
         <React.Fragment key={meetingNote.id}>
           {(index === 0 ||
             meetingNote.agenda_owning_participant_id !==
