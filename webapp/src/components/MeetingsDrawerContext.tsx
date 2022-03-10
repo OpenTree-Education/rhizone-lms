@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 
 import { Meeting as APIMeeting } from '../types/api';
-import MeetingAccordion from './MeetingAccordion';
+import MeetingQuickView from './MeetingQuickView';
 import useApiData from '../helpers/useApiData';
 
 const MeetingsDrawerContext = createContext({
@@ -85,7 +85,7 @@ export const MeetingsDrawerProvider = ({ children }: PropsWithChildren<{}>) => {
             </Typography>
           </ListItem>
           {upcomingMeetings.map(meeting => (
-            <MeetingAccordion key={meeting.id} meeting={meeting} />
+            <MeetingQuickView key={meeting.id} meeting={meeting} />
           ))}
           {upcomingMeetings.length === 0 && <Divider />}
           <ListItem
@@ -99,7 +99,7 @@ export const MeetingsDrawerProvider = ({ children }: PropsWithChildren<{}>) => {
             </Typography>
           </ListItem>
           {pastMeetings.map(meeting => (
-            <MeetingAccordion key={meeting.id} meeting={meeting} />
+            <MeetingQuickView key={meeting.id} meeting={meeting} />
           ))}
         </List>
       </Drawer>

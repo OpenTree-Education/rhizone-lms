@@ -1,5 +1,5 @@
-import { Grid } from '@mui/material';
 import React, { useContext, useEffect } from 'react';
+import { Stack } from '@mui/material';
 
 import { EntityId, Meeting as APIMeeting } from '../types/api';
 import { formatDate, formatTime } from '../helpers/dateTime';
@@ -35,7 +35,7 @@ const Meeting = ({ meetingId }: MeetingProps) => {
     ({ principal_id }) => principal_id === principalId
   )?.id;
   return (
-    <Grid>
+    <Stack spacing={1}>
       <h1>{`Meeting on ${formatDate(meeting.starts_at)} at ${formatTime(
         meeting.starts_at
       )}`}</h1>
@@ -58,7 +58,7 @@ const Meeting = ({ meetingId }: MeetingProps) => {
           </ul>
         </React.Fragment>
       ))}
-    </Grid>
+    </Stack>
   );
 };
 
