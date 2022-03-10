@@ -3,7 +3,6 @@ import {
   AccordionDetails,
   AccordionSummary,
   Alert,
-  Box,
   Link as MuiLink,
   Stack,
   TextField,
@@ -122,7 +121,7 @@ const MeetingQuickView = ({ meeting }: MeetingQuickViewProps) => {
           <Stack spacing={1}>
             {loadMeetingNotesError && (
               <Alert severity="error">
-                There was an error loading the meeting notes. Please try again.
+                There was an error loading the meeting notes.
               </Alert>
             )}
             {meetingNotes.map((meetingNote, index, meetingNotes) => (
