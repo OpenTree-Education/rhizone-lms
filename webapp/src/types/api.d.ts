@@ -62,6 +62,7 @@ export interface Meeting extends Entity {
 }
 
 export interface MeetingNote extends Entity {
+  created_at: string;
   note_text: string;
   sort_order: number;
   authoring_participant_id: EntityId;
