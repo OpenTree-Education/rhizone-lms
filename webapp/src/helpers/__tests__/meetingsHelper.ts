@@ -3,7 +3,7 @@ import { MeetingNote } from '../../types/api';
 
 describe('meetingsHelper', () => {
   describe('compareMeetingNotes', () => {
-    it('should sort non-null participants first', () => {
+    it('should agenda items (non-null agenda-owning participants) before action items (null agenda-owning participants)', () => {
       expect(
         compareMeetingNotes(
           { agenda_owning_participant_id: 1 } as MeetingNote,
@@ -11,7 +11,7 @@ describe('meetingsHelper', () => {
         )
       ).toBeLessThan(0);
     });
-    it('should sort null participants last', () => {
+    it('should action items (null agenda-owning participants) after agenda items (non-null agenda-owning participants)', () => {
       expect(
         compareMeetingNotes(
           { agenda_owning_participant_id: null } as MeetingNote,
