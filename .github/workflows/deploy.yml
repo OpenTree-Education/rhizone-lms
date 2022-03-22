@@ -5,8 +5,12 @@ on:
     inputs:
       environment:
         description: Environment
-        type: environment
         required: true
+        type: environment
+      renew_tls_certs:
+        description: Renew TLS certificates?
+        required: true
+        type: boolean
 
 jobs:
   deploy_to_production:
@@ -46,6 +50,11 @@ jobs:
           flyway.url=$FLYWAY_URL
           flyway.user=$FLYWAY_USER
           END
+      - name: Renew TLS certificates
+        if: ${{ github.event.inputs.renew_tls_certs == 'true' }}
+        run: |
+          ssh ${{ github.event.inputs.environment }} docker service rm rhizone-lms_nginx
+          ssh ${{ github.event.inputs.environment }} certbot renew
       - name: Deploy services
         run: |
-          cat docker-compose.production.yml | ssh production 'docker stack deploy --with-registry-auth --compose-file - rhizone-lms'
+          cat docker-compose.production.yml | ssh ${{ github.event.inputs.environment }} 'docker stack deploy --with-registry-auth --compose-file - rhizone-lms'
