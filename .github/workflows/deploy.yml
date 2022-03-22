@@ -54,7 +54,7 @@ jobs:
         if: ${{ github.event.inputs.renew_tls_certs == 'true' }}
         run: |
           ssh ${{ github.event.inputs.environment }} docker service rm rhizone-lms_nginx
-          ssh ${{ github.event.inputs.environment }} certbot renew
+          ssh ${{ github.event.inputs.environment }} sudo certbot renew
       - name: Deploy services
         run: |
           cat docker-compose.production.yml | ssh ${{ github.event.inputs.environment }} 'docker stack deploy --with-registry-auth --compose-file - rhizone-lms'
