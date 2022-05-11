@@ -2,9 +2,10 @@ import { Alert, Card, CardContent, Snackbar, TextField } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import React, { FormEventHandler, useContext, useState } from 'react';
 
-import { EntityId } from '../types/api';
+import { EntityId, ProfileType } from '../types/api';
 import SettingsContext from './SettingsContext';
 import Questionnaire from './Questionnaire';
+import Profile from './Profile';
 
 interface CreateReflectionFormProps {
   onReflectionCreated?: (id: EntityId) => void;
@@ -56,9 +57,15 @@ const CreateReflectionForm = ({
         setSaveReflectionError(error);
       });
   };
+
+  const data = {id: 4, name: 'Antonina', email: 'student4@gmail.com', avatar: 'image-url', bio: 'sample bio for display', github: 'github-link.com', socialMedia: [], website: 'website.com', journalLink: '', competencies: '', meetingNotes: '', timeProgression: ''}
+
   return (
     <form onSubmit={onSubmit}>
       <Card>
+        <CardContent>
+          <Profile profileObj={data} />
+          </CardContent>
         <CardContent>
           <h1>New Reflection</h1>
         </CardContent>

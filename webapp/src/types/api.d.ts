@@ -4,6 +4,21 @@ export interface Entity {
   id: EntityId;
 }
 
+export interface ProfileType {
+  id: number;
+  name: string;
+  bio: string;
+  avatar: string;
+  email: string;
+  github: string;
+  socialMedia: string[];
+  website: string;
+  journalLink: string;
+  competencies: string;
+  meetingNotes: string;
+  timeProgression: string;
+}
+
 export interface CreationResponseEnvelope {
   data: Entity;
 }
