@@ -8,6 +8,8 @@ interface ProfileProps {
   profileObj: ProfileType;
 }
 
+// test
+
 const Profile = ({ profileObj }: ProfileProps) => {
   /* 
     Name - string
