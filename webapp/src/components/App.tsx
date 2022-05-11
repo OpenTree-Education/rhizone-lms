@@ -13,6 +13,7 @@ import SessionContext from './SessionContext';
 
 const App = () => {
   const { isAuthenticated } = useContext(SessionContext);
+  //test
   return (
     <BrowserRouter>
       <MeetingsDrawerProvider>
