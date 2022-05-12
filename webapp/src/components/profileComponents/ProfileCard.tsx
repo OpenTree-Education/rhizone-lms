@@ -16,10 +16,10 @@ import { UserData } from '../../types/profile.type';
 
 const useStyles = makeStyles({
   root: {
-    maxWidth: '70vw',
+    width: 'clamp(300px, 550vw, 600px)',
   },
   media: {
-    height: '60vw',
+    height: 'clamp(300px, 55vw, 600px)',
   },
   social: {
     justifyContent: 'space-around',

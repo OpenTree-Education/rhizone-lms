@@ -12,3 +12,8 @@ export interface UserData {
 export interface UserDataProps {
   userData: UserData;
 }
+
+export interface EditStateProps {
+  edit: boolean;
+  setEdit: React.Dispatch<React.SetStateAction<boolean>>
+}

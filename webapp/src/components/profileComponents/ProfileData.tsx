@@ -1,43 +1,54 @@
-import React from 'react';
-// Material UI Imports
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import { updateNamespaceExportDeclaration } from 'typescript';
+import * as React from 'react';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import { Button } from '@material-ui/core';
+import { EditStateProps } from '../../types/profile.type';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    '& > *': {
-      margin: theme.spacing(1),
-      width: '35ch',
-      display: 'flex',
-    },
-  },
-}));
+function createData(key:string, value:string) {
+  return { key, value, };
+}
 
-const ProfileData = () => {
-  const classes = useStyles();
+const rows = [
+  createData('Name', 'Ryan Cohen'),
+  createData('Email', 'rc@gmail.com'),
+  createData('Links', 'super-secrets.assasin'),
+  createData('Strengths', 'able to leap tall buildings'),
+  createData('Future Strenghts', 'turns into Ginger Bread Man'),
+  createData('Bio', "You think water moves fast? You should see ice. It moves like it has a mind. Like it knows it killed the world once and got a taste for murder. After the avalanche, it took us a week to climb out. Now, I don't know exactly when we turned on each other, but I know that seven of us survived the slide... and only five made it out. Now we took an oath, that I'm breaking now. We said we'd say it was the snow that killed the other two, but it wasn't. Nature is lethal but it doesn't hold a candle to man.")
+  
+];
+
+export default function BasicTable(props:EditStateProps) {
+
   return (
-    <div>
-      <form className={classes.root} noValidate autoComplete="off" style={{}}>
-        {'Ryan Cohen'}
-        <TextField id="outlined-basic" label="Name" variant="outlined" />
-        <Button variant="outlined">Submit</Button>
-        <TextField id="outlined-basic" label="Email" variant="outlined" />
-        <Button variant="outlined">Submit</Button>
-        <TextField id="outlined-basic" label="Links" variant="outlined" />
-        <Button variant="outlined">Submit</Button>
-        <TextField id="outlined-basic" label="Summary/Bio" variant="outlined" />
-        <Button variant="outlined">Submit</Button>
-        <TextField
-          id="outlined-basic"
-          label="Future Strengths"
-          variant="outlined"
-        />
-        <Button variant="outlined">Submit</Button>
-      </form>
-    </div>
-  );
-};
+    <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 650 }} aria-label="simple table">
 
-export default ProfileData;
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow
+              key={row.key}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            >
+              <TableCell component="th" scope="row">
+                {row.key}
+              </TableCell>
+              <TableCell component="th" scope="row">
+                {row.value}
+              </TableCell>
+
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <Button onClick={() => props.setEdit(true)}variant="outlined">Edit</Button>
+    </TableContainer>
+  );
+}
+
+
