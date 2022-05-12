@@ -18,6 +18,7 @@ import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import Typography from '@mui/material/Typography';
 import GroupsIcon from '@mui/icons-material/Groups';
 import BookIcon from '@mui/icons-material/Book';
+import EmailIcon from '@mui/icons-material/Email';
 
 const user = {
   name: 'Matthew Morenez',
@@ -49,22 +50,31 @@ const Profile = () => {
             display: 'flex',
           }}
         >
-          <Avatar sx={{ width: 100, height: 100 }} src={user.avatar}></Avatar>
+          <Avatar sx={{ width: 150, height: 150 }} src={user.avatar}></Avatar>
         </Grid>
         <Grid
           item
           xs={12}
-          md={4}
+          md={6}
           alignItems={{ md: 'flex-start', sm: 'center' }}
           display="flex"
           flexDirection="column"
         >
-          <h2>{user.name}&apos;s Profile</h2>
-          <p>{user.email}</p>
+          <Typography component="h2" variant="h4">
+            {user.name}&apos;s Profile
+          </Typography>
+          <Typography
+            component="p"
+            sx={{ display: 'flex', alignItems: 'center', mt: 1 }}
+          >
+            <EmailIcon sx={{ mr: 1 }} color="primary" />
+            {user.email}
+          </Typography>
           <Grid
             container
             justifyContent={{ md: 'flex-start', sm: 'center' }}
             display="flex"
+            sx={{ ml: -1, mt: 3 }}
           >
             <Grid item xs={1}>
               <Tooltip title="GitHub">
@@ -90,37 +100,42 @@ const Profile = () => {
           </Grid>
         </Grid>
       </Grid>
-      <Divider variant="fullWidth" />
-      <Grid container justifyContent="center">
-        <Grid item md={8}>
-          <h3>Summary</h3>
-          <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia,
-            sit impedit? Cupiditate veniam eaque suscipit eligendi. Sint
-            delectus enim earum non repellendus nihil numquam libero odit
-            temporibus et, natus eaque?
-          </p>
+      <Divider variant="middle" sx={{ maxWidth: '80%', margin: '35px auto' }} />
+      <Grid container justifyContent="center" spacing={4}>
+        <Grid item md={12}>
+          <Typography component="h3" variant="h4" sx={{ my: 2 }}>
+            Summary
+          </Typography>
+          <Typography component="p">{user.summary}</Typography>
         </Grid>
-        <Grid item md={8}>
-          <Button component="a" sx={{ mr: 1 }} href={'/competencies'}>
+        <Grid item md={12}>
+          <Button
+            component="a"
+            sx={{ mr: 1, height: '40px' }}
+            href={'/competencies'}
+          >
             <AutoGraphIcon sx={{ mr: 2 }} />
-            <Typography variant="button" display="block">
+            <Typography variant="button" display="block" sx={{ my: 2 }}>
               Competencies
             </Typography>
           </Button>
-          <Button component="a" sx={{ mr: 1 }} href="">
+          <Button component="a" sx={{ mr: 1, height: '40px' }} href="">
             <GroupsIcon sx={{ mr: 2 }} />
-            <Typography variant="button" display="block">
+            <Typography variant="button" display="block" sx={{ my: 2 }}>
               Meeting
             </Typography>
           </Button>
-          <Button component="a" sx={{ mr: 1 }} href="">
+          <Button component="a" sx={{ mr: 1, height: '40px' }} href="">
             <BookIcon sx={{ mr: 2 }} />
-            <Typography variant="button" display="block">
+            <Typography variant="button" display="block" sx={{ my: 2 }}>
               Journal
             </Typography>
           </Button>
-          <h4>Computational Thinking</h4>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography component="h4" variant="h5" sx={{ mt: 5, mb: 2 }}>
+            Computational Thinking
+          </Typography>
           <Tooltip title="Rating 3">
             <Rating
               value={3}
@@ -130,7 +145,9 @@ const Profile = () => {
               color="primary"
             />
           </Tooltip>
-          <h4>Learning</h4>
+          <Typography component="h4" variant="h5" sx={{ mt: 5, mb: 2 }}>
+            Learning
+          </Typography>
           <Tooltip title="Progress 80%">
             <LinearProgress
               value={80}
