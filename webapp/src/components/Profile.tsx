@@ -2,52 +2,88 @@ import React from 'react';
 import {
   Container,
   Grid,
-  Box,
   Avatar,
   Rating,
   Tooltip,
   LinearProgress,
-  Paper,
   Divider,
+  IconButton,
 } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import CircleIcon from '@mui/icons-material/Circle';
 import LanguageIcon from '@mui/icons-material/Language';
+import AutoGraphIcon from '@mui/icons-material/AutoGraph';
+import Typography from '@mui/material/Typography';
+import GroupsIcon from '@mui/icons-material/Groups';
+import BookIcon from '@mui/icons-material/Book';
+
+const user = {
+  name: 'Matthew Morenez',
+  email: 'profile@example.com',
+  avatar:
+    'https://media.volinspire.com/images/95/e4/99/95e499b759ba57975a61c7bf66a3414dd5a2625e_profile.jpg',
+  github: 'https://github.com',
+  website: 'https://example.com',
+  summary:
+    'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia, sit impedit? Cupiditate veniam eaque suscipit eligendi. Sint delectus enim earum non repellendus nihil numquam libero odit temporibus et, natus eaque?',
+  linkedIn: 'https://linkedin.com',
+};
 
 const Profile = () => {
   return (
     <Container fixed>
-      <Grid container justifyContent="center" alignItems="center" spacing={2}>
-        <Grid item xs={12} md={4}>
-          <Avatar
-            sx={{ width: 100, height: 100 }}
-            src="data:image/jpeg;base64,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"
-          ></Avatar>
+      <Grid
+        container
+        sx={{ justifyContent: 'center', alignItems: 'center', display: 'flex' }}
+        spacing={2}
+      >
+        <Grid
+          item
+          xs={12}
+          md={4}
+          sx={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            display: 'flex',
+          }}
+        >
+          <Avatar sx={{ width: 100, height: 100 }} src={user.avatar}></Avatar>
         </Grid>
-        <Grid item xs={12} md={4}>
-          <h2>Profile Name</h2>
-          <p>profile@example.com</p>
-          <Grid container>
+        <Grid
+          item
+          xs={12}
+          md={4}
+          alignItems={{ md: 'flex-start', sm: 'center' }}
+          display="flex"
+          flexDirection="column"
+        >
+          <h2>{user.name}&apos;s Profile</h2>
+          <p>{user.email}</p>
+          <Grid
+            container
+            justifyContent={{ md: 'flex-start', sm: 'center' }}
+            display="flex"
+          >
             <Grid item xs={1}>
               <Tooltip title="GitHub">
-                <a href="https://github.com">
+                <IconButton component="a" sx={{ mr: 1 }} href={user.github}>
                   <GitHubIcon color="primary" />
-                </a>
+                </IconButton>
               </Tooltip>
             </Grid>
             <Grid item xs={1}>
               <Tooltip title="LinkedIn">
-                <a href="https://linkedin.com">
+                <IconButton component="a" sx={{ mr: 1 }} href={user.linkedIn}>
                   <LinkedInIcon color="primary" />
-                </a>
+                </IconButton>
               </Tooltip>
             </Grid>
             <Grid item xs={1}>
               <Tooltip title="Porfolio">
-                <a href="https://linkedin.com">
+                <IconButton component="a" sx={{ mr: 1 }} href={user.website}>
                   <LanguageIcon color="primary" />
-                </a>
+                </IconButton>
               </Tooltip>
             </Grid>
           </Grid>
@@ -65,7 +101,24 @@ const Profile = () => {
           </p>
         </Grid>
         <Grid item md={8}>
-          <h3>Competencies</h3>
+          <IconButton component="a" sx={{ mr: 1 }} href={'/competencies'}>
+            <AutoGraphIcon sx={{ mr: 2 }} />
+            <Typography variant="button" display="block">
+              Competencies
+            </Typography>
+          </IconButton>
+          <IconButton component="a" sx={{ mr: 1 }} href="">
+            <GroupsIcon sx={{ mr: 2 }} />
+            <Typography variant="button" display="block">
+              Meeting
+            </Typography>
+          </IconButton>
+          <IconButton component="a" sx={{ mr: 1 }} href="">
+            <BookIcon sx={{ mr: 2 }} />
+            <Typography variant="button" display="block">
+              Journal
+            </Typography>
+          </IconButton>
           <h4>Computational Thinking</h4>
           <Tooltip title="Rating 3">
             <Rating
@@ -81,15 +134,9 @@ const Profile = () => {
             <LinearProgress
               value={80}
               variant="determinate"
-              sx={{ height: 25, borderRadius: 20 }}
+              sx={{ height: 20, borderRadius: 20 }}
             />
           </Tooltip>
-        </Grid>
-        <Grid item md={8}>
-          <h3>1:1 Meeting Notes</h3>
-        </Grid>
-        <Grid item md={8}>
-          <h3>Reflections</h3>
         </Grid>
       </Grid>
     </Container>

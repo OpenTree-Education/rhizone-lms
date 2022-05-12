@@ -13,8 +13,8 @@ const Navbar = () => {
         <h1>Rhizone</h1>
       </Grid>
       <Grid item xs="auto">
-        <Tooltip title='Profile'>
-          <IconButton component='a' sx={{ mr: 1 }} href={'/profile'}>
+        <Tooltip title="Profile">
+          <IconButton component="a" sx={{ mr: 1 }} href={'/profile'}>
             <PersonIcon />
           </IconButton>
         </Tooltip>
