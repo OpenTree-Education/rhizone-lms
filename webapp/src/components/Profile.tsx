@@ -8,6 +8,7 @@ import {
   LinearProgress,
   Divider,
   IconButton,
+  Button,
 } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
@@ -101,24 +102,24 @@ const Profile = () => {
           </p>
         </Grid>
         <Grid item md={8}>
-          <IconButton component="a" sx={{ mr: 1 }} href={'/competencies'}>
+          <Button component="a" sx={{ mr: 1 }} href={'/competencies'}>
             <AutoGraphIcon sx={{ mr: 2 }} />
             <Typography variant="button" display="block">
               Competencies
             </Typography>
-          </IconButton>
-          <IconButton component="a" sx={{ mr: 1 }} href="">
+          </Button>
+          <Button component="a" sx={{ mr: 1 }} href="">
             <GroupsIcon sx={{ mr: 2 }} />
             <Typography variant="button" display="block">
               Meeting
             </Typography>
-          </IconButton>
-          <IconButton component="a" sx={{ mr: 1 }} href="">
+          </Button>
+          <Button component="a" sx={{ mr: 1 }} href="">
             <BookIcon sx={{ mr: 2 }} />
             <Typography variant="button" display="block">
               Journal
             </Typography>
-          </IconButton>
+          </Button>
           <h4>Computational Thinking</h4>
           <Tooltip title="Rating 3">
             <Rating
