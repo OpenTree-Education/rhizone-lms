@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import React, { useContext } from 'react';
-
+import Profile from './Profile';
 import CompetenciesPage from './CompetenciesPage';
 import DocPage from './DocPage';
 import Footer from './Footer';
@@ -18,6 +18,10 @@ const App = () => {
       <MeetingsDrawerProvider>
         {isAuthenticated && <Navbar />}
         <Routes>
+          <Route
+          path="/profile"
+          element={<Profile />}
+          />
           <Route
             path="/terms-of-use"
             element={<DocPage docId="terms-of-use" />}
