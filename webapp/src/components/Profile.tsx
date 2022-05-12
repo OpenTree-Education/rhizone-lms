@@ -9,6 +9,7 @@ interface ProfileProps {
 }
 
 // test
+//test2
 
 const Profile = ({ profileObj }: ProfileProps) => {
   /* 
