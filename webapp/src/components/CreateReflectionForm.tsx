@@ -58,7 +58,20 @@ const CreateReflectionForm = ({
       });
   };
 
-  const data = {id: 4, name: 'Antonina', email: 'student4@gmail.com', avatar: 'image-url', bio: 'sample bio for display', github: 'github-link.com', socialMedia: [], website: 'website.com', journalLink: '', competencies: '', meetingNotes: '', timeProgression: ''}
+  const data = {
+      id: 4, 
+      name: 'Student Name', 
+      email: 'student4@gmail.com', 
+      avatar: 'https://cdn1.iconfinder.com/data/icons/avatars-1-5/136/87-512.png', 
+      bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", 
+      github: 'github-link.com', 
+      socialMedia: [], 
+      website: 'website.com', 
+      journalLink: '', 
+      competencies: '', 
+      meetingNotes: '', 
+      timeProgression: ''
+    }
 
   return (
     <form onSubmit={onSubmit}>
