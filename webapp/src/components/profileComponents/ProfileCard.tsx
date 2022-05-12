@@ -12,32 +12,44 @@ import { Link } from 'react-router-dom';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import { CallMissedSharp } from '@mui/icons-material';
-
+import { UserData } from '../../types/profile.type';
 
 const useStyles = makeStyles({
   root: {
-    maxWidth: '40%',
+    maxWidth: '70vw',
   },
   media: {
-    height: 600,
+    height: '60vw',
   },
   social: {
     justifyContent: 'space-around',
-  }
+  },
 });
 
-const userData = {
-  id: 1,
-  name: "Ryan Cohen",
-  email: "rc@gmail.com",
-  github: 'https://github.com/imryan',
-  summery: 'this is a summery',
-  bio: 'The chair man',
-  socialLinks: {twitter: 'https://twitter.com/ryancohen', linkIn: 'https://www.linkedin.com/in/ryandcohen/'},
-  avatar: '/images/avatar.jpg',
-}
+// const userData = {
+//   id: 1,
+//   name: 'Ryan Cohen',
+//   email: 'rc@gmail.com',
+//   github: 'https://github.com/imryan',
+//   summery: 'this is a summery',
+//   bio: 'The chair man',
+//   socialLinks: {
+//     twitter: 'https://twitter.com/ryancohen',
+//     linkIn: 'https://www.linkedin.com/in/ryandcohen/',
+//   },
+//   avatar: '/images/avatar.jpg',
+// };
 
-export default function MediaCard() {
+export default function MediaCard({
+  id,
+  name,
+  email,
+  github,
+  summery,
+  bio,
+  socialLinks,
+  avatar,
+}: UserData) {
   const classes = useStyles();
 
   return (
@@ -45,28 +57,26 @@ export default function MediaCard() {
       <CardActionArea>
         <CardMedia
           className={classes.media}
-          image={userData.avatar}
+          image={avatar}
           title="Contemplative Reptile"
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
-            {userData.name}
+            {name}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
-            {userData.bio}
+            {bio}
           </Typography>
         </CardContent>
       </CardActionArea>
       <CardActions className={classes.social}>
-
-        <IconButton sx={{ mr: 1 }} >
-          <TwitterIcon sx={{fontSize: '40px', color: 'lightBlue'}} />
-        </IconButton>
-        
-        <IconButton sx={{ mr: 1 }} >
-         <LinkedInIcon sx={{fontSize: '40px', color: 'lightBlue'}}/>
+        <IconButton sx={{ mr: 1 }}>
+          <TwitterIcon sx={{ fontSize: '40px', color: 'lightBlue' }} />
         </IconButton>
 
+        <IconButton sx={{ mr: 1 }}>
+          <LinkedInIcon sx={{ fontSize: '40px', color: 'lightBlue' }} />
+        </IconButton>
       </CardActions>
     </Card>
   );

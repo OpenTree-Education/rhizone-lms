@@ -1,5 +1,7 @@
 import React from 'react';
 import ProfileCard from './profileComponents/ProfileCard';
+import ProfileData from './profileComponents/ProfileData';
+import { Grid } from '@mui/material';
 
 const Profile = () => {
   const userData = {
@@ -20,7 +22,14 @@ const Profile = () => {
     <>
       <h2>Good day --name goes here--</h2>
       <div>Profile</div>
-      <ProfileCard />
+      <Grid container spacing={2}>
+        <Grid item xs={8}>
+          <ProfileCard {...userData} />
+        </Grid>
+        <Grid item xs={4}>
+          <ProfileData />
+        </Grid>
+      </Grid>
     </>
   );
 };
