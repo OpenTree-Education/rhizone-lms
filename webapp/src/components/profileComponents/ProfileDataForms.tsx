@@ -19,18 +19,14 @@ const ProfileData = () => {
   const classes = useStyles();
   return (
     <div>
-      <form className={classes.root} noValidate autoComplete="off" style={{}}>
+      <form className={classes.root} noValidate autoComplete="off">
         <TextField id="outlined-basic" label="Name" variant="outlined" />
         <Button variant="outlined">Submit</Button>
         <TextField id="outlined-basic" label="Email" variant="outlined" />
         <Button variant="outlined">Submit</Button>
         <TextField id="outlined-basic" label="Links" variant="outlined" />
         <Button variant="outlined">Submit</Button>
-        <TextField
-          id="outlined-basic"
-          label="Strengths"
-          variant="outlined"
-        />
+        <TextField id="outlined-basic" label="Strengths" variant="outlined" />
         <Button variant="outlined">Submit</Button>
         <TextField
           id="outlined-basic"
