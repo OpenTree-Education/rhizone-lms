@@ -9,13 +9,14 @@ import {
   Divider,
   IconButton,
   Button,
+  Typography,
 } from '@mui/material';
+
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import CircleIcon from '@mui/icons-material/Circle';
 import LanguageIcon from '@mui/icons-material/Language';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
-import Typography from '@mui/material/Typography';
 import GroupsIcon from '@mui/icons-material/Groups';
 import BookIcon from '@mui/icons-material/Book';
 import EmailIcon from '@mui/icons-material/Email';
@@ -37,7 +38,11 @@ const Profile = () => {
     <Container fixed>
       <Grid
         container
-        sx={{ justifyContent: 'center', alignItems: 'center', display: 'flex' }}
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          display: 'flex',
+        }}
         spacing={2}
       >
         <Grid
@@ -50,7 +55,15 @@ const Profile = () => {
             display: 'flex',
           }}
         >
-          <Avatar sx={{ width: 150, height: 150 }} src={user.avatar}></Avatar>
+          <Avatar
+            sx={{
+              width: 150,
+              height: 150,
+              border: '3px solid #fff',
+              outline: '2px solid #1976d2',
+            }}
+            src={user.avatar}
+          ></Avatar>
         </Grid>
         <Grid
           item
@@ -138,19 +151,19 @@ const Profile = () => {
           </Typography>
           <Tooltip title="Rating 3">
             <Rating
-              value={3}
+              value={3.7}
               readOnly
               icon={<CircleIcon />}
               emptyIcon={<CircleIcon />}
-              color="primary"
+              precision={0.1}
             />
           </Tooltip>
           <Typography component="h4" variant="h5" sx={{ mt: 5, mb: 2 }}>
-            Learning
+            Learning Progress
           </Typography>
-          <Tooltip title="Progress 80%">
+          <Tooltip title="83%">
             <LinearProgress
-              value={80}
+              value={83}
               variant="determinate"
               sx={{ height: 20, borderRadius: 20 }}
             />
