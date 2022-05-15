@@ -3,6 +3,7 @@
 This monorepo contains the applications and services that constitute the Rhizone
 Learning Management System.
 
+
 ## Getting started
 
 ### 1. GitHub authentication
@@ -57,7 +58,7 @@ at once.
 
 ### 4. Running the dev servers
 
-When accessing http://rhi.zone-development/ or http://api.rhi.zone-development/, 
+When accessing http://rhi.zone-development/ or http://api.rhi.zone-development/,
 the Nginx configuration that Docker Compose uses first checks to see whether the
 webapp or api are running on `localhost`, respectively. If they are, the
 requests are forwarded to `localhost`, otherwise they're forwarded to their

@@ -6,19 +6,19 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import Avatar from '@mui/material/Avatar';
 import TimelineIcon from '@mui/icons-material/Timeline';
-
+import { useNavigate } from "react-router-dom";
 interface ProfileProps {
   profileObj: ProfileType;
 }
 
 
 const Profile = ({ profileObj }: ProfileProps) => {
-  /* 
+  /*
     Name - string
-    Email - string 
+    Email - string
     Summary / Bio - string
     Avatar / Profile Picture - string
-    Github -> link 
+    Github -> link
     Social Media Links [] -> array of links (facebook, twitter, instagram, youtube)
     Link to Website -> link
     Journal -> link (reroute)
@@ -26,7 +26,11 @@ const Profile = ({ profileObj }: ProfileProps) => {
     1:1 Meeting Notes -> link (reroute)
     Time progression of improvement ?
 */
-
+let navigate = useNavigate();
+const routeChange = () =>{
+  let path = `competencies`;
+  navigate(path);
+}
   return (
         <Paper
         sx={{
@@ -60,7 +64,7 @@ const Profile = ({ profileObj }: ProfileProps) => {
               <Grid item>
               <Stack direction="row" spacing={2} sx={{ marginBottom: 2.5 }}>
                 <Button variant="outlined">Journal</Button>
-                <Button variant="outlined">Competencies</Button>
+                <Button variant="outlined" onClick={routeChange}>Competencies</Button>
                 <Button variant="outlined">Meeting Notes</Button>
               </Stack>
                </Grid>
