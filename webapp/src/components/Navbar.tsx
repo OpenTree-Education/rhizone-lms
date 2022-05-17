@@ -3,13 +3,16 @@ import EventNoteIcon from '@mui/icons-material/EventNote';
 import React, { useContext } from 'react';
 import PersonIcon from '@mui/icons-material/Person';
 import MeetingsDrawerContext from './MeetingsDrawerContext';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const { open: openMeetingsDrawer } = useContext(MeetingsDrawerContext);
   return (
     <Grid alignItems="center" container px={3}>
       <Grid item xs>
-        <h1>Rhizone</h1>
+        <Link style={{ textDecoration: 'none', color: 'black' }} to="/">
+          <h1>Rhizone</h1>
+        </Link>
       </Grid>
       <Grid item xs="auto">
         <Tooltip title="Profile">
