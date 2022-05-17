@@ -6,7 +6,7 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import Avatar from '@mui/material/Avatar';
 import TimelineIcon from '@mui/icons-material/Timeline';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 interface ProfileProps {
   profileObj: ProfileType;
 }
@@ -27,10 +27,18 @@ const Profile = ({ profileObj }: ProfileProps) => {
     Time progression of improvement ?
 */
 let navigate = useNavigate();
-const routeChange = () =>{
+const routeChangeComp = () =>{
   let path = `competencies`;
   navigate(path);
 }
+
+  const routeChangeMeet = () => {
+    let path = `meetings`;
+     navigate(path);
+    let { id } = useParams();
+
+  }
+
   return (
         <Paper
         sx={{
@@ -64,8 +72,8 @@ const routeChange = () =>{
               <Grid item>
               <Stack direction="row" spacing={2} sx={{ marginBottom: 2.5 }}>
                 <Button variant="outlined">Journal</Button>
-                <Button variant="outlined" onClick={routeChange}>Competencies</Button>
-                <Button variant="outlined">Meeting Notes</Button>
+                <Button variant="outlined" onClick={routeChangeComp}>Competencies</Button>
+                <Button variant="outlined" onClick={routeChangeMeet} >Meeting Notes</Button>
               </Stack>
                </Grid>
               <Grid item>

@@ -7,6 +7,7 @@ import Meeting from './Meeting';
 const MeetingPage = () => {
   const { id } = useParams();
   return (
+
     <Container fixed>
       <Meeting meetingId={id} />
     </Container>
