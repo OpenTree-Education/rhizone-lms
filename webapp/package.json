@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "react-scripts build",
-    "develop": "cross-env BROWSER=none REACT_APP_API_ORIGIN=http://api.rhi.zone-development react-scripts start",
+    "develop": "BROWSER=none REACT_APP_API_ORIGIN=http://api.rhi.zone-development react-scripts start",
     "eslint:check": "eslint 'src/**/*.{ts,tsx}'",
     "eslint:fix": "eslint --fix 'src/**/*.{ts,tsx}'",
     "delint": "yarn eslint:fix; yarn prettier:write",
