@@ -97,7 +97,7 @@ const Profile = () => {
               </Tooltip>
             </Grid>
             <Grid item xs={1}>
-              <Tooltip title="Porfolio">
+              <Tooltip title="Portfolio">
                 <IconButton component="a" sx={{ mr: 1 }} href={user.website}>
                   <LanguageIcon color="primary" />
                 </IconButton>
