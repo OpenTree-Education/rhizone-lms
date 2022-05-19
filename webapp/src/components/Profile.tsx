@@ -1,110 +1,122 @@
-
-
-import { Button, Grid, Stack, Typography, Paper, ButtonBase, Tooltip } from '@mui/material';
 import React from 'react';
-// import { ProfileType } from '../types/api';
+import {
+  Container,
+  Grid,
+  Avatar,
+  Tooltip,
+  Divider,
+  IconButton,
+  Typography,
+} from '@mui/material';
+
 import GitHubIcon from '@mui/icons-material/GitHub';
-import TwitterIcon from '@mui/icons-material/Twitter';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import Avatar from '@mui/material/Avatar';
-import TimelineIcon from '@mui/icons-material/Timeline';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import LanguageIcon from '@mui/icons-material/Language';
+import EmailIcon from '@mui/icons-material/Email';
 
-// interface ProfileProps {
-//   profileObj: ProfileType;
-// }
-const profileObj = {
-  id: 4, 
-  name: 'Student Name', 
-  email: 'student4@gmail.com', 
-  avatar: 'https://cdn1.iconfinder.com/data/icons/avatars-1-5/136/87-512.png', 
-  bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", 
-  github: 'github-link.com', 
-  socialMedia: [], 
-  website: 'website.com', 
-  journalLink: '', 
-  competencies: '', 
-  meetingNotes: '', 
-  timeProgression: ''
-}
-// { profileObj }: ProfileProps
+const user = {
+  name: 'Matthew Morenez',
+  email: 'profile@example.com',
+  avatar:
+    'https://media.volinspire.com/images/95/e4/99/95e499b759ba57975a61c7bf66a3414dd5a2625e_profile.jpg',
+  github: 'https://github.com',
+  website: 'https://example.com',
+  summary:
+    'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia, sit impedit? Cupiditate veniam eaque suscipit eligendi. Sint delectus enim earum non repellendus nihil numquam libero odit temporibus et, natus eaque?',
+  linkedIn: 'https://linkedin.com',
+};
+
 const Profile = () => {
-  /* 
-    Name - string
-    Email - string 
-    Summary / Bio - string
-    Avatar / Profile Picture - string
-    Github -> link 
-    Social Media Links [] -> array of links (facebook, twitter, instagram, youtube)
-    Link to Website -> link
-    Journal -> link (reroute)
-    Competencies -> link (reroute)
-    1:1 Meeting Notes -> link (reroute)
-    Time progression of improvement ?
-*/
-
-
   return (
-        <Paper
+    <Container fixed>
+      <Grid
+        container
         sx={{
-          p: 2,
-          margin: 'auto',
-          maxWidth: 'auto',
-          flexGrow: 1,
-          backgroundColor: (theme) =>
-            theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+          justifyContent: 'center',
+          alignItems: 'center',
+          display: 'flex',
         }}
+        spacing={2}
+      >
+        <Grid
+          item
+          xs={12}
+          md={4}
+          sx={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            display: 'flex',
+          }}
         >
-        <Grid container spacing={2}>
-          <Grid item>
-            <ButtonBase sx={{ width: 128, height: 128 }}>
-            <Avatar alt="user" src={profileObj.avatar} sx={{ width: 96, height: 96 }}/>
-            </ButtonBase>
-          </Grid>
-          <Grid item xs={12} sm container>
-            <Grid item xs container direction="column" spacing={2}>
-              <Grid item xs>
-                <Typography gutterBottom variant="h5" component="div">
-                  {profileObj.name}
-                </Typography>
-                <Typography variant="body1" color="black" sx={{marginBottom: 1.5}}>
-                {profileObj.email}
-                </Typography>
-                <Typography variant="body2" gutterBottom>
-                  {profileObj.bio}
-                </Typography>
-              </Grid>
-              <Grid item>
-              <Stack direction="row" spacing={2} sx={{ marginBottom: 2.5 }}>
-                <Button variant="outlined">Journal</Button>
-                <Button variant="outlined">Competencies</Button>
-                <Button variant="outlined">Meeting Notes</Button>
-              </Stack>
-               </Grid>
-              <Grid item>
-                <Button>
-                  <GitHubIcon />
-                </Button>
-                <Button>
-                  <TwitterIcon />
-                </Button>
-                <Button>
-                  <FacebookIcon />
-                </Button>
-                <Button href="#text-buttons">Portfolio</Button>
-              </Grid>
+          <Avatar
+            sx={{
+              width: 150,
+              height: 150,
+              border: '3px solid #fff',
+              outline: '2px solid #1976d2',
+            }}
+            src={user.avatar}
+          ></Avatar>
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          alignItems={{ md: 'flex-start', sm: 'center' }}
+          display="flex"
+          flexDirection="column"
+        >
+          <Typography component="h2" variant="h4">
+            {user.name}&apos;s Profile
+          </Typography>
+          <Typography
+            component="p"
+            sx={{ display: 'flex', alignItems: 'center', mt: 1 }}
+          >
+            <EmailIcon sx={{ mr: 1 }} color="primary" />
+            {user.email}
+          </Typography>
+          <Grid
+            container
+            justifyContent={{ md: 'flex-start', sm: 'center' }}
+            display="flex"
+            sx={{ ml: -1, mt: 3 }}
+          >
+            <Grid item xs={1}>
+              <Tooltip title="GitHub">
+                <IconButton component="a" sx={{ mr: 1 }} href={user.github}>
+                  <GitHubIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={1}>
+              <Tooltip title="LinkedIn">
+                <IconButton component="a" sx={{ mr: 1 }} href={user.linkedIn}>
+                  <LinkedInIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={1}>
+              <Tooltip title="Porfolio">
+                <IconButton component="a" sx={{ mr: 1 }} href={user.website}>
+                  <LanguageIcon color="primary" />
+                </IconButton>
+              </Tooltip>
             </Grid>
           </Grid>
-          <Grid item>
-            <Tooltip title="Improvement progress">
-              <Button>
-                <TimelineIcon />
-              </Button>
-            </Tooltip>
-          </Grid>
         </Grid>
-        </Paper>
+      </Grid>
+      <Divider variant="middle" sx={{ maxWidth: '80%', margin: '35px auto' }} />
+      <Grid container justifyContent="center" spacing={4}>
+        <Grid item md={12}>
+          <Typography component="h3" variant="h4" sx={{ my: 2 }}>
+            Summary
+          </Typography>
+          <Typography component="p">{user.summary}</Typography>
+        </Grid>
+      </Grid>
+    </Container>
   );
 };
 
 export default Profile;
-
