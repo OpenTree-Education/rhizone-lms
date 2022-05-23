@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import {
   Container,
@@ -31,17 +30,6 @@ const user = {
 };
 
 const Profile = () => {
-  let navigate = useNavigate();
-  const routeChangeCompetency = () => {
-    const path = `/competencies`;
-    navigate(path);
-  };
-
-  const routeChangeJournal = () => {
-    const path = `/`;
-    navigate(path);
-  };
-
   return (
     <div>
       <Container fixed>
@@ -134,10 +122,10 @@ const Profile = () => {
             <Typography component="p">{user.summary}</Typography>
           </Grid>
           <Stack spacing={2} direction="row" sx={{ mt: 4 }}>
-            <Button variant="outlined" onClick={routeChangeJournal}>
+            <Button variant="outlined" component="a" href={'/'}>
               Journal
             </Button>
-            <Button variant="outlined" onClick={routeChangeCompetency}>
+            <Button variant="outlined" component="a" href={'/competencies'}>
               Competencies
             </Button>
           </Stack>
