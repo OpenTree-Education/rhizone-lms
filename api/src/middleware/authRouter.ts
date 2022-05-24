@@ -11,6 +11,20 @@ import {
   getGithubUser,
 } from '../services/githubApiService';
 import { itemEnvelope } from './responseEnvelope';
+import { Interface } from 'readline';
+import { stringify } from 'querystring';
+
+
+
+export interface IUserData {
+  id: number;
+  fullname?: string;
+  email?: string;
+  bio?: string;
+  avatarUrl?: string;
+  twitterUsername?: string;
+  githubUsername?: string;
+}
 
 const authRouter = Router();
 
@@ -52,17 +66,31 @@ authRouter.get(`/auth/github/callback`, async (req, res, next) => {
     next(err);
     return;
   }
-  const githubId = githubApiUser.id;
+
+
+
+  const githubUserData : IUserData = {
+    id: githubApiUser.id,
+    fullname: githubApiUser.name,
+    email: githubApiUser.email,
+    bio: githubApiUser.bio,
+    avatarUrl: githubApiUser.avatar_url,
+    twitterUsername: githubApiUser.twitter_username,
+    githubUsername: githubApiUser.login
+
+  } ;
+
+  console.log(githubApiUser, "githubUser");
   let githubUser;
   try {
-    githubUser = await findGithubUserByGithubId(githubId);
+    githubUser = await findGithubUserByGithubId(githubUserData.id);
   } catch (err) {
     next(err);
     return;
   }
   if (!githubUser) {
     try {
-      githubUser = await createGithubUser(githubId);
+      githubUser = await createGithubUser(githubUserData);
     } catch (err) {
       next(err);
       return;

@@ -1,4 +1,5 @@
 import db from './db';
+import {IUserData} from "../middleware/authRouter";
 
 export const findGithubUserByGithubId = async (githubId: number) => {
   const [githubUser] = await db('github_users')
@@ -7,12 +8,12 @@ export const findGithubUserByGithubId = async (githubId: number) => {
   return githubUser || null;
 };
 
-export const createGithubUser = async (githubId: number) => {
+export const createGithubUser = async (githubUserData: IUserData) => {
   const githubUser: {
     github_id: number;
     id?: number;
     principal_id?: number;
-  } = { github_id: githubId };
+  } = { github_id: githubUserData.id };
   await db.transaction(async trx => {
     const insertedPrincipalIds = await trx('principals').insert({
       entity_type: 'user',
