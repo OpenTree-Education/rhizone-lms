@@ -31,107 +31,102 @@ const user = {
 
 const Profile = () => {
   return (
-    <div>
-      <Container fixed>
+    <Container fixed>
+      <Grid
+        container
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          display: 'flex',
+        }}
+        spacing={2}
+      >
         <Grid
-          container
+          item
+          xs={12}
+          md={4}
           sx={{
             justifyContent: 'center',
             alignItems: 'center',
             display: 'flex',
           }}
-          spacing={2}
         >
-          <Grid
-            item
-            xs={12}
-            md={4}
+          <Avatar
             sx={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              display: 'flex',
+              width: 150,
+              height: 150,
+              border: '3px solid #fff',
+              outline: '2px solid #1976d2',
             }}
+            src={user.avatar}
+          ></Avatar>
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          alignItems={{ md: 'flex-start', sm: 'center' }}
+          display="flex"
+          flexDirection="column"
+        >
+          <Typography component="h2" variant="h4">
+            {user.name}&apos;s Profile
+          </Typography>
+          <Typography
+            component="p"
+            sx={{ display: 'flex', alignItems: 'center', mt: 1 }}
           >
-            <Avatar
-              sx={{
-                width: 150,
-                height: 150,
-                border: '3px solid #fff',
-                outline: '2px solid #1976d2',
-              }}
-              src={user.avatar}
-            ></Avatar>
-          </Grid>
+            <EmailIcon sx={{ mr: 1 }} color="primary" />
+            {user.email}
+          </Typography>
           <Grid
-            item
-            xs={12}
-            md={6}
-            alignItems={{ md: 'flex-start', sm: 'center' }}
+            container
+            justifyContent={{ md: 'flex-start', sm: 'center' }}
             display="flex"
-            flexDirection="column"
+            sx={{ ml: -1, mt: 3 }}
           >
-            <Typography component="h2" variant="h4">
-              {user.name}&apos;s Profile
-            </Typography>
-            <Typography
-              component="p"
-              sx={{ display: 'flex', alignItems: 'center', mt: 1 }}
-            >
-              <EmailIcon sx={{ mr: 1 }} color="primary" />
-              {user.email}
-            </Typography>
-            <Grid
-              container
-              justifyContent={{ md: 'flex-start', sm: 'center' }}
-              display="flex"
-              sx={{ ml: -1, mt: 3 }}
-            >
-              <Grid item xs={1}>
-                <Tooltip title="GitHub">
-                  <IconButton component="a" sx={{ mr: 1 }} href={user.github}>
-                    <GitHubIcon color="primary" />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-              <Grid item xs={1}>
-                <Tooltip title="LinkedIn">
-                  <IconButton component="a" sx={{ mr: 1 }} href={user.linkedIn}>
-                    <LinkedInIcon color="primary" />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-              <Grid item xs={1}>
-                <Tooltip title="Portfolio">
-                  <IconButton component="a" sx={{ mr: 1 }} href={user.website}>
-                    <LanguageIcon color="primary" />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
+            <Grid item xs={1}>
+              <Tooltip title="GitHub">
+                <IconButton component="a" sx={{ mr: 1 }} href={user.github}>
+                  <GitHubIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={1}>
+              <Tooltip title="LinkedIn">
+                <IconButton component="a" sx={{ mr: 1 }} href={user.linkedIn}>
+                  <LinkedInIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={1}>
+              <Tooltip title="Portfolio">
+                <IconButton component="a" sx={{ mr: 1 }} href={user.website}>
+                  <LanguageIcon color="primary" />
+                </IconButton>
+              </Tooltip>
             </Grid>
           </Grid>
         </Grid>
-        <Divider
-          variant="middle"
-          sx={{ maxWidth: '80%', margin: '35px auto' }}
-        />
-        <Grid container justifyContent="center" spacing={4}>
-          <Grid item md={12}>
-            <Typography component="h3" variant="h4" sx={{ my: 2 }}>
-              Summary
-            </Typography>
-            <Typography component="p">{user.summary}</Typography>
-          </Grid>
-          <Stack spacing={2} direction="row" sx={{ mt: 4 }}>
-            <Button variant="outlined" component="a" href={'/'}>
-              Journal
-            </Button>
-            <Button variant="outlined" component="a" href={'/competencies'}>
-              Competencies
-            </Button>
-          </Stack>
+      </Grid>
+      <Divider variant="middle" sx={{ maxWidth: '80%', margin: '35px auto' }} />
+      <Grid container justifyContent="center" spacing={4}>
+        <Grid item md={12}>
+          <Typography component="h3" variant="h4" sx={{ my: 2 }}>
+            Summary
+          </Typography>
+          <Typography component="p">{user.summary}</Typography>
         </Grid>
-      </Container>
-    </div>
+        <Stack spacing={2} direction="row" sx={{ mt: 4 }}>
+          <Button variant="outlined" component="a" href={'/'}>
+            Journal
+          </Button>
+          <Button variant="outlined" component="a" href={'/competencies'}>
+            Competencies
+          </Button>
+        </Stack>
+      </Grid>
+    </Container>
   );
 };
 
