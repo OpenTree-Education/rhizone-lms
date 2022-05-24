@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {
   Container,
   Grid,
@@ -7,6 +8,8 @@ import {
   Divider,
   IconButton,
   Typography,
+  Button,
+  Stack,
 } from '@mui/material';
 
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -114,6 +117,14 @@ const Profile = () => {
           </Typography>
           <Typography component="p">{user.summary}</Typography>
         </Grid>
+        <Stack spacing={2} direction="row" sx={{ mt: 4 }}>
+          <Button variant="outlined" component="a" href={'/'}>
+            Journal
+          </Button>
+          <Button variant="outlined" component="a" href={'/competencies'}>
+            Competencies
+          </Button>
+        </Stack>
       </Grid>
     </Container>
   );
