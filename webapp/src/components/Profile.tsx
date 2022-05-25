@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   Container,
@@ -30,8 +30,36 @@ const user = {
 };
 
 const Profile = () => {
+  const getGreeting = () => {
+    const myDate = new Date();
+    const hrs = myDate.getHours();
+
+    let greet = '';
+
+    if (hrs < 12) greet = '🌅 Good Morning';
+    else if (hrs >= 12 && hrs <= 17) greet = '🌞 Good Afternoon';
+    else if (hrs >= 17 && hrs <= 24) greet = '🌇 Good Evening';
+
+    return greet;
+  };
+  const greeting = getGreeting();
+
   return (
     <Container fixed>
+      <Grid
+        container
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          display: 'flex',
+          mb: 4,
+        }}
+        spacing={2}
+      >
+        <Typography component="h2" variant="h6" color="primary">
+          Hello, {user.name}! {greeting}.
+        </Typography>
+      </Grid>
       <Grid
         container
         sx={{
