@@ -10,12 +10,16 @@ import {
   Typography,
   Button,
   Stack,
+  Rating,
+  LinearProgress,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import LanguageIcon from '@mui/icons-material/Language';
 import EmailIcon from '@mui/icons-material/Email';
+import CircleIcon from '@mui/icons-material/Circle';
 
 const user = {
   name: 'Matthew Morenez',
@@ -28,6 +32,12 @@ const user = {
     'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia, sit impedit? Cupiditate veniam eaque suscipit eligendi. Sint delectus enim earum non repellendus nihil numquam libero odit temporibus et, natus eaque?',
   linkedIn: 'https://linkedin.com',
 };
+
+const StyledRating = styled(Rating)({
+  '& .MuiRating-iconFilled': {
+    color: '#1976d2',
+  },
+});
 
 const Profile = () => {
   return (
@@ -125,6 +135,39 @@ const Profile = () => {
             Competencies
           </Button>
         </Stack>
+        <Grid
+          item
+          xs={12}
+          display="flex"
+          flexDirection={{ md: 'row', xs: 'column' }}
+        >
+          <Grid item xs={12} md={6}>
+            <Typography component="h4" variant="h5" sx={{ mt: 5, mb: 2 }}>
+              Computational Thinking
+            </Typography>
+            <Tooltip title="Rating 3">
+              <StyledRating
+                value={3.7}
+                readOnly
+                icon={<CircleIcon />}
+                emptyIcon={<CircleIcon />}
+                precision={0.1}
+              />
+            </Tooltip>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Typography component="h4" variant="h5" sx={{ mt: 5, mb: 2 }}>
+              Learning Progress
+            </Typography>
+            <Tooltip title="83%">
+              <LinearProgress
+                value={83}
+                variant="determinate"
+                sx={{ height: 10, borderRadius: 20 }}
+              />
+            </Tooltip>
+          </Grid>
+        </Grid>
       </Grid>
     </Container>
   );
