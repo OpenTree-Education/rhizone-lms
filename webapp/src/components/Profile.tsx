@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import {
   Container,
@@ -33,6 +33,7 @@ const Profile = () => {
   const getGreeting = () => {
     const myDate = new Date();
     const hrs = myDate.getHours();
+    console.log(hrs);
 
     let greet = '';
 
@@ -43,6 +44,21 @@ const Profile = () => {
     return greet;
   };
   const greeting = getGreeting();
+
+  const getLanguageGreeting = () => {
+    const { language } = window.navigator;
+    console.log(language);
+    switch (language) {
+      case 'en-US':
+        return 'Hello';
+      case 'fr-CA':
+        return 'Bonjour';
+      default:
+        break;
+    }
+  };
+
+  const languageGreeting = getLanguageGreeting();
 
   return (
     <Container fixed>
@@ -57,7 +73,7 @@ const Profile = () => {
         spacing={2}
       >
         <Typography component="h2" variant="h6" color="primary">
-          Hello, {user.name}! {greeting}.
+          {languageGreeting}, {user.name}! {greeting}.
         </Typography>
       </Grid>
       <Grid
