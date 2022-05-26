@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import {
   Container,
@@ -27,18 +27,123 @@ const user = {
   summary:
     'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia, sit impedit? Cupiditate veniam eaque suscipit eligendi. Sint delectus enim earum non repellendus nihil numquam libero odit temporibus et, natus eaque?',
   linkedIn: 'https://linkedin.com',
+  preferred_language: 'fr',
+};
+
+type GreetingType = {
+  greeting: string;
+  delimiter: string;
+  beginning_punct: string;
+  ending_punct: string;
+  ltr: 'ltr' | 'rtl';
+};
+
+let morning_greetings = new Map<string, GreetingType>();
+morning_greetings.set('en', {
+  beginning_punct: '',
+  greeting: 'Good morning',
+  delimiter: ', ',
+  ending_punct: '!',
+  ltr: 'ltr',
+});
+morning_greetings.set('fr', {
+  beginning_punct: '',
+  greeting: 'Bon matin',
+  delimiter: ', ',
+  ending_punct: '!',
+  ltr: 'ltr',
+});
+
+let afternoon_greetings = new Map<string, GreetingType>();
+afternoon_greetings.set('en', {
+  beginning_punct: '',
+  greeting: 'Good afternoon',
+  delimiter: ', ',
+  ending_punct: '!',
+  ltr: 'ltr',
+});
+afternoon_greetings.set('fr', {
+  beginning_punct: '',
+  greeting: 'Bonne après-midi',
+  delimiter: ', ',
+  ending_punct: '!',
+  ltr: 'ltr',
+});
+
+let evening_greetings = new Map<string, GreetingType>();
+evening_greetings.set('en', {
+  beginning_punct: '',
+  greeting: 'Good evening',
+  delimiter: ', ',
+  ending_punct: '!',
+  ltr: 'ltr',
+});
+evening_greetings.set('fr', {
+  beginning_punct: '',
+  greeting: 'Bonsoir',
+  delimiter: ', ',
+  ending_punct: '!',
+  ltr: 'ltr',
+});
+
+/**
+ * Returns the greeting string based on the different time of the day in a preferred language.
+ *
+ * @param kw - "morning", "afternoon" or "evening" depending on the time of the day
+ * @returns The user_greeting_string which includes the structure of the greeting string (ex. "Good morning, {username}!")
+ *
+ */
+const languageGreeting = (kw: string) => {
+  let user_greeting: GreetingType | any = {
+    // beginning_punct: '',
+    // greeting: '',
+    // delimiter: '',
+    // ending_punct: '',
+    // ltr: 'ltr',
+  };
+
+  if (kw === 'morning') {
+    user_greeting =
+      morning_greetings.get(user.preferred_language) ||
+      morning_greetings.get('en')!;
+  } else if (kw === 'afternoon') {
+    user_greeting =
+      afternoon_greetings.get(user.preferred_language) ||
+      afternoon_greetings.get('en')!;
+  } else if (kw === 'evening') {
+    user_greeting =
+      evening_greetings.get(user.preferred_language) ||
+      evening_greetings.get('en')!;
+  }
+
+  const user_greeting_string =
+    user_greeting.beginning_punct +
+    user_greeting.greeting +
+    user_greeting.delimiter +
+    user.name +
+    user_greeting.ending_punct;
+
+  return user_greeting_string;
 };
 
 const Profile = () => {
+  /**
+   * Gets hour based on Date() and returns the greeting string based on the different time of the day.
+   *
+   * @returns The string which includes the icon and the greeting string depending on the time of the day (ex. "🌅 Good morning, {username}!")
+   *
+   */
   const getGreeting = () => {
     const myDate = new Date();
     const hrs = myDate.getHours();
 
     let greet = '';
 
-    if (hrs < 12) greet = '🌅 Good Morning';
-    else if (hrs >= 12 && hrs <= 17) greet = '🌞 Good Afternoon';
-    else if (hrs >= 17 && hrs <= 24) greet = '🌇 Good Evening';
+    if (hrs >= 2 && hrs < 12) greet = `🌅 ${languageGreeting('morning')}`;
+    else if (hrs >= 12 && hrs <= 17)
+      greet = `🌞 ${languageGreeting('afternoon')}`;
+    else if (hrs >= 17 && hrs === 1)
+      greet = `🌇 ${languageGreeting('evening')}`;
 
     return greet;
   };
@@ -57,7 +162,7 @@ const Profile = () => {
         spacing={2}
       >
         <Typography component="h2" variant="h6" color="primary">
-          Hello, {user.name}! {greeting}.
+          {greeting}
         </Typography>
       </Grid>
       <Grid
