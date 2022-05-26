@@ -39,6 +39,45 @@ const StyledRating = styled(Rating)({
   },
 });
 
+/** 
+
+   @privateRemarks
+   the dates are placeholders for now. The actual date values will be pulled from the database later on 
+   
+   months read as: 0 - 11 instead of 1 - 12
+
+   will later add a function to convert the date string into the Date format 
+   */
+
+const start_date = new Date(2022, 4, 1).getTime();
+const end_date = new Date(2022, 5, 30).getTime();
+
+const today = new Date().getTime();
+
+let progress_pct: number;
+
+switch (true) {
+  case today >= end_date:
+    progress_pct = 100;
+    break;
+  case today > start_date:
+    const progress_period = today - start_date;
+    const time_period = end_date - start_date;
+    progress_pct = Math.round((100 * progress_period) / time_period);
+    break;
+  default:
+    progress_pct = 0;
+}
+
+/**
+ *
+ * @privateRemarks
+ * For the competency rating scale
+ *
+ */
+
+const rating = 3.6;
+
 const Profile = () => {
   return (
     <Container fixed>
@@ -145,23 +184,21 @@ const Profile = () => {
             <Typography component="h4" variant="h5" sx={{ mt: 5, mb: 2 }}>
               Computational Thinking
             </Typography>
-            <Tooltip title="Rating 3">
-              <StyledRating
-                value={3.7}
-                readOnly
-                icon={<CircleIcon />}
-                emptyIcon={<CircleIcon />}
-                precision={0.1}
-              />
-            </Tooltip>
+            <StyledRating
+              value={rating}
+              readOnly
+              icon={<CircleIcon />}
+              emptyIcon={<CircleIcon />}
+              precision={0.1}
+            />
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography component="h4" variant="h5" sx={{ mt: 5, mb: 2 }}>
               Learning Progress
             </Typography>
-            <Tooltip title="83%">
+            <Tooltip title={`${progress_pct}%`}>
               <LinearProgress
-                value={83}
+                value={progress_pct}
                 variant="determinate"
                 sx={{ height: 10, borderRadius: 20 }}
               />
