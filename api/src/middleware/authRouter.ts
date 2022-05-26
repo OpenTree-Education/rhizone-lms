@@ -11,19 +11,17 @@ import {
   getGithubUser,
 } from '../services/githubApiService';
 import { itemEnvelope } from './responseEnvelope';
-import { Interface } from 'readline';
-import { stringify } from 'querystring';
-
-
 
 export interface IUserData {
-  id: number;
-  fullname?: string;
+  id?: number;
+  github_id: number;
+  full_name?: string;
   email?: string;
   bio?: string;
-  avatarUrl?: string;
-  twitterUsername?: string;
-  githubUsername?: string;
+  avatar_url?: string;
+  twitter_username?: string;
+  github_username?: string;
+  principal_id?: number;
 }
 
 const authRouter = Router();
@@ -67,23 +65,19 @@ authRouter.get(`/auth/github/callback`, async (req, res, next) => {
     return;
   }
 
-
-
-  const githubUserData : IUserData = {
-    id: githubApiUser.id,
-    fullname: githubApiUser.name,
+  const githubUserData: IUserData = {
+    github_id: githubApiUser.id,
+    full_name: githubApiUser.name,
     email: githubApiUser.email,
     bio: githubApiUser.bio,
-    avatarUrl: githubApiUser.avatar_url,
-    twitterUsername: githubApiUser.twitter_username,
-    githubUsername: githubApiUser.login
+    avatar_url: githubApiUser.avatar_url,
+    twitter_username: githubApiUser.twitter_username,
+    github_username: githubApiUser.login,
+  };
 
-  } ;
-
-  console.log(githubApiUser, "githubUser");
   let githubUser;
   try {
-    githubUser = await findGithubUserByGithubId(githubUserData.id);
+    githubUser = await findGithubUserByGithubId(githubUserData.github_id);
   } catch (err) {
     next(err);
     return;

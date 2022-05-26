@@ -9,13 +9,13 @@ export const findGithubUserByGithubId = async (githubId: number) => {
 };
 
 export const createGithubUser = async (githubUserData: IUserData) => {
-  console.log('Creating GitHub user...');
-  const githubUser: {
-    github_id: number;
-    id?: number;
-    principal_id?: number;
-    full_name?: string;
-  } = { github_id: githubUserData.id, full_name: githubUserData.fullname };
+  const githubUser: IUserData = {
+    github_id: githubUserData.github_id,
+    full_name: githubUserData.full_name,
+    email: githubUserData.email,
+    bio: githubUserData.bio,
+    avatar_url: githubUserData.avatar_url,
+  };
   await db.transaction(async trx => {
     const insertedPrincipalIds = await trx('principals').insert({
       entity_type: 'user',
@@ -25,6 +25,19 @@ export const createGithubUser = async (githubUserData: IUserData) => {
     const insertedGithubUsers = await trx('github_users').insert(githubUser);
     const [id] = insertedGithubUsers;
     githubUser.id = id;
+
+    await trx('principal_social').insert([
+      {
+        principal_id: githubUser.principal_id,
+        network_id: 1, // GitHub id in social_networks table
+        data: githubUserData.github_username,
+      },
+      {
+        principal_id: githubUser.principal_id,
+        network_id: 3, // Twitter id in social_networks table
+        data: githubUserData.twitter_username,
+      },
+    ]);
   });
   return githubUser;
 };
