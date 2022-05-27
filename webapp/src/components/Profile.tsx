@@ -46,9 +46,11 @@ const Profile = () => {
         }}
         spacing={2}
       >
-        <Typography component="h2" variant="h6" color="primary">
-          {greeting}
-        </Typography>
+        <Grid item>
+          <Typography component="h2" variant="h6" color="primary">
+            {greeting}
+          </Typography>
+        </Grid>
       </Grid>
       <Grid
         container
