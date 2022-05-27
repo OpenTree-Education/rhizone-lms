@@ -1,4 +1,5 @@
 import React from 'react';
+import { getGreeting } from '../helpers/greeting';
 
 import {
   Container,
@@ -30,35 +31,7 @@ const user = {
 };
 
 const Profile = () => {
-  const getGreeting = () => {
-    const myDate = new Date();
-    const hrs = myDate.getHours();
-    console.log(hrs);
-
-    let greet = '';
-
-    if (hrs < 12) greet = '🌅 Good Morning';
-    else if (hrs >= 12 && hrs <= 17) greet = '🌞 Good Afternoon';
-    else if (hrs >= 17 && hrs <= 24) greet = '🌇 Good Evening';
-
-    return greet;
-  };
-  const greeting = getGreeting();
-
-  const getLanguageGreeting = () => {
-    const { language } = window.navigator;
-    console.log(language);
-    switch (language) {
-      case 'en-US':
-        return 'Hello';
-      case 'fr-CA':
-        return 'Bonjour';
-      default:
-        break;
-    }
-  };
-
-  const languageGreeting = getLanguageGreeting();
+  const greeting = getGreeting(user.name);
 
   return (
     <Container fixed>
@@ -72,9 +45,11 @@ const Profile = () => {
         }}
         spacing={2}
       >
-        <Typography component="h2" variant="h6" color="primary">
-          {languageGreeting}, {user.name}! {greeting}.
-        </Typography>
+        <Grid item>
+          <Typography component="h2" variant="h6" color="primary">
+            {greeting}
+          </Typography>
+        </Grid>
       </Grid>
       <Grid
         container
