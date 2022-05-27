@@ -10,16 +10,14 @@ import {
   Typography,
   Button,
   Stack,
-  Rating,
-  LinearProgress,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import LanguageIcon from '@mui/icons-material/Language';
 import EmailIcon from '@mui/icons-material/Email';
-import CircleIcon from '@mui/icons-material/Circle';
+import ProgressBar from './ProgressBar';
+import CompetencyRatings from './CompetencyRatings';
 
 const user = {
   name: 'Matthew Morenez',
@@ -32,51 +30,6 @@ const user = {
     'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia, sit impedit? Cupiditate veniam eaque suscipit eligendi. Sint delectus enim earum non repellendus nihil numquam libero odit temporibus et, natus eaque?',
   linkedIn: 'https://linkedin.com',
 };
-
-const StyledRating = styled(Rating)({
-  '& .MuiRating-iconFilled': {
-    color: '#1976d2',
-  },
-});
-
-/** 
-
-   @privateRemarks
-   the dates are placeholders for now. The actual date values will be pulled from the database later on 
-   
-   months read as: 0 - 11 instead of 1 - 12
-
-   will later add a function to convert the date string into the Date format 
-   */
-
-const start_date = new Date(2022, 4, 1).getTime();
-const end_date = new Date(2022, 5, 30).getTime();
-
-const today = new Date().getTime();
-
-let progress_pct: number;
-
-switch (true) {
-  case today >= end_date:
-    progress_pct = 100;
-    break;
-  case today > start_date:
-    const progress_period = today - start_date;
-    const time_period = end_date - start_date;
-    progress_pct = Math.round((100 * progress_period) / time_period);
-    break;
-  default:
-    progress_pct = 0;
-}
-
-/**
- *
- * @privateRemarks
- * For the competency rating scale
- *
- */
-
-const rating = 3.6;
 
 const Profile = () => {
   return (
@@ -181,28 +134,10 @@ const Profile = () => {
           flexDirection={{ md: 'row', xs: 'column' }}
         >
           <Grid item xs={12} md={6}>
-            <Typography component="h4" variant="h5" sx={{ mt: 5, mb: 2 }}>
-              Computational Thinking
-            </Typography>
-            <StyledRating
-              value={rating}
-              readOnly
-              icon={<CircleIcon />}
-              emptyIcon={<CircleIcon />}
-              precision={0.1}
-            />
+            <CompetencyRatings />
           </Grid>
           <Grid item xs={12} md={6}>
-            <Typography component="h4" variant="h5" sx={{ mt: 5, mb: 2 }}>
-              Learning Progress
-            </Typography>
-            <Tooltip title={`${progress_pct}%`}>
-              <LinearProgress
-                value={progress_pct}
-                variant="determinate"
-                sx={{ height: 10, borderRadius: 20 }}
-              />
-            </Tooltip>
+            <ProgressBar />
           </Grid>
         </Grid>
       </Grid>
