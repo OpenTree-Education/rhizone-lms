@@ -12,7 +12,8 @@ const CompetencyRatings = () => {
    *
    * @privateRemarks
    * For the competency rating scale
-   *
+   * In the future, the rating data will be pulled from the database (competency table)
+   * Currently, this data is hardcoded
    */
 
   const rating = 3.6;

@@ -2,20 +2,24 @@ import React from 'react';
 import { LinearProgress, Tooltip, Typography } from '@mui/material';
 
 const ProgressBar = () => {
-  /** 
-
-   @privateRemarks
-   the dates are placeholders for now. The actual date values will be pulled from the database later on 
-   
-   months read as: 0 - 11 instead of 1 - 12
-
-   will later add a function to convert the date string into the Date format 
+  /**
+   * @privateRemarks
+   * the dates are placeholders for now. The actual date values will be pulled from the database later on
+   * months read as: 0 - 11 instead of 1 - 12
+   * will later add a function to convert the date string into the Date format
    */
 
   const start_date = new Date(2022, 4, 1).getTime();
   const end_date = new Date(2022, 7, 30).getTime();
 
   const today = new Date().getTime();
+
+  /**
+   * @privateRemarks
+   * progress_pct should hold the integer percentage of date-based completion
+   * progress of the student during the active session in which they are
+   * enrolled.
+   */
 
   let progress_pct: number;
 

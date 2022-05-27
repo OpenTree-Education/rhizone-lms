@@ -19,6 +19,11 @@ import EmailIcon from '@mui/icons-material/Email';
 import ProgressBar from './ProgressBar';
 import CompetencyRatings from './CompetencyRatings';
 
+/**
+ * @privateRemarks
+ * User data is currently hardcoded but it will be pulling data from the database (github_users)
+ */
+
 const user = {
   name: 'Matthew Morenez',
   email: 'profile@example.com',
