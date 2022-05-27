@@ -6,12 +6,11 @@ const githubUsersRouter = Router();
 
 githubUsersRouter.get('/', async (req, res, next) => {
   const { principalId } = req.session;
-  console.log({session: principalId })
-  let userData
+  // console.log({session: principalId })
+  let userData;
   try {
-    userData = await 
     //@param: principalId
-    getUserProfileDataService(1)
+    userData = await getUserProfileDataService(principalId)
   } catch(err) {
     console.log('err', err)
     next(err);
