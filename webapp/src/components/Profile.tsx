@@ -27,7 +27,6 @@ const user = {
   summary:
     'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia, sit impedit? Cupiditate veniam eaque suscipit eligendi. Sint delectus enim earum non repellendus nihil numquam libero odit temporibus et, natus eaque?',
   linkedIn: 'https://linkedin.com',
-  preferred_language: 'fr',
 };
 
 type GreetingType = {
@@ -89,11 +88,11 @@ evening_greetings.set('fr', {
 /**
  * Returns the greeting string based on the different time of the day in a preferred language.
  *
- * @param kw - "morning", "afternoon" or "evening" depending on the time of the day
+ * @param timeOfDay - "morning", "afternoon" or "evening" depending on the time of the day
  * @returns The user_greeting_string which includes the structure of the greeting string (ex. "Good morning, {username}!")
  *
  */
-const languageGreeting = (kw: string) => {
+const languageGreeting = (timeOfDay: string, preferredLanguage: string) => {
   let user_greeting: GreetingType | any = {
     // beginning_punct: '',
     // greeting: '',
@@ -102,18 +101,16 @@ const languageGreeting = (kw: string) => {
     // ltr: 'ltr',
   };
 
-  if (kw === 'morning') {
+  if (timeOfDay === 'morning') {
     user_greeting =
-      morning_greetings.get(user.preferred_language) ||
-      morning_greetings.get('en')!;
-  } else if (kw === 'afternoon') {
+      morning_greetings.get(preferredLanguage) || morning_greetings.get('en')!;
+  } else if (timeOfDay === 'afternoon') {
     user_greeting =
-      afternoon_greetings.get(user.preferred_language) ||
+      afternoon_greetings.get(preferredLanguage) ||
       afternoon_greetings.get('en')!;
-  } else if (kw === 'evening') {
+  } else if (timeOfDay === 'evening') {
     user_greeting =
-      evening_greetings.get(user.preferred_language) ||
-      evening_greetings.get('en')!;
+      evening_greetings.get(preferredLanguage) || evening_greetings.get('en')!;
   }
 
   const user_greeting_string =
@@ -138,17 +135,20 @@ const Profile = () => {
     const hrs = myDate.getHours();
 
     let greet = '';
+    // Getting first two characters of the browser language.
+    const preferredLanguage = window.navigator.language.slice(0, 2);
 
-    if (hrs >= 2 && hrs < 12) greet = `🌅 ${languageGreeting('morning')}`;
+    if (hrs >= 2 && hrs < 12)
+      greet = `🌅 ${languageGreeting('morning', preferredLanguage)}`;
     else if (hrs >= 12 && hrs <= 17)
-      greet = `🌞 ${languageGreeting('afternoon')}`;
+      greet = `🌞 ${languageGreeting('afternoon', preferredLanguage)}`;
     else if (hrs >= 17 && hrs === 1)
-      greet = `🌇 ${languageGreeting('evening')}`;
+      greet = `🌇 ${languageGreeting('evening', preferredLanguage)}`;
 
     return greet;
   };
   const greeting = getGreeting();
-
+      
   return (
     <Container fixed>
       <Grid
