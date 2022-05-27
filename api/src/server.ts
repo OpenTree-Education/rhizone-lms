@@ -24,6 +24,7 @@ import questionnairesRouter from './middleware/questionnairesRouter';
 import reflectionsRouter from './middleware/reflectionsRouter';
 import settingsRouter from './middleware/settingsRouter';
 import { findConfig } from './services/configService';
+import githubUsersRouter from './middleware/githubUsersRouter';
 
 declare module 'express-session' {
   interface Session {
@@ -129,6 +130,7 @@ const start = async () => {
   app.use('/questionnaires', withCors, loggedIn, questionnairesRouter);
   app.use('/reflections', withCors, loggedIn, reflectionsRouter);
   app.use('/settings', withCors, settingsRouter);
+  app.use('/current-user', withCors, githubUsersRouter);
   app.get('/', (_, res) => {
     res.json({});
   });
