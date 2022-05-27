@@ -1,13 +1,10 @@
-import { render, RenderResult } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import ProgressBar from '../ProgressBar';
-
-let documentBody: RenderResult;
+import React from 'react';
 
 describe('testing if progress bar inside Profile component is rendering', () => {
-  beforeEach(() => {
-    documentBody = render(<ProgressBar />);
-  });
   it('should render progress bar', () => {
-    expect(documentBody.getByText('Learning Progress')).toBeInTheDocument();
+    render(<ProgressBar />);
+    expect(screen.getByText('Learning Progress')).toBeInTheDocument();
   });
 });
