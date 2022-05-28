@@ -20,7 +20,7 @@ import EmailIcon from '@mui/icons-material/Email';
 //
 import { useState } from 'react';
 import useApiData from '../helpers/useApiData';
-import { EntityId, Competency as APICompetency } from '../types/api';
+import { EntityId, Profile as APIProfile } from '../types/api';
 
 const user = {
   name: 'Matthew Morenez',
@@ -36,14 +36,15 @@ const user = {
 
 const Profile = () => {
   const [changedUserDataIds, setChangedUserDataIds] = useState<EntityId[]>([]);
-  const { data: userData, error } = useApiData<APICompetency[]>({
+  const { data: userData, error } = useApiData<APIProfile>({
     deps: [changedUserDataIds],
     path: `/current-user`,
     sendCredentials: true,
   });
-
+console.log({d: userData})
   return (
     <Container fixed>
+      {userData?.id}
       <Grid
         container
         sx={{
@@ -70,7 +71,7 @@ const Profile = () => {
               border: '3px solid #fff',
               outline: '2px solid #1976d2',
             }}
-            src={user.avatar}
+            src={userData?.avatar_url}
           ></Avatar>
         </Grid>
         <Grid
@@ -82,14 +83,14 @@ const Profile = () => {
           flexDirection="column"
         >
           <Typography component="h2" variant="h4">
-            {user.name}&apos;s Profile
+            {userData?.full_name || 'no name found!!'}&apos;s Profile
           </Typography>
           <Typography
             component="p"
             sx={{ display: 'flex', alignItems: 'center', mt: 1 }}
           >
             <EmailIcon sx={{ mr: 1 }} color="primary" />
-            {user.email}
+            {userData?.email}
           </Typography>
           <Grid
             container
@@ -127,7 +128,7 @@ const Profile = () => {
           <Typography component="h3" variant="h4" sx={{ my: 2 }}>
             Summary
           </Typography>
-          <Typography component="p">{user.summary}</Typography>
+          <Typography component="p">{userData?.bio}</Typography>
         </Grid>
         <Stack spacing={2} direction="row" sx={{ mt: 4 }}>
           <Button variant="outlined" component="a" href={'/'}>
