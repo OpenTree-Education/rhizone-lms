@@ -15,6 +15,7 @@ export const createGithubUser = async (githubUserData: IUserData) => {
     email: githubUserData.email,
     bio: githubUserData.bio,
     avatar_url: githubUserData.avatar_url,
+    github_username: githubUserData.github_username,
   };
   await db.transaction(async trx => {
     const insertedPrincipalIds = await trx('principals').insert({

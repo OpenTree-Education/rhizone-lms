@@ -64,7 +64,7 @@ authRouter.get(`/auth/github/callback`, async (req, res, next) => {
     next(err);
     return;
   }
-
+console.log('here', githubApiUser)
   const githubUserData: IUserData = {
     github_id: githubApiUser.id,
     full_name: githubApiUser.name,
