@@ -35,6 +35,13 @@ morning_greetings.set('es', {
   ending_punct: '!',
   ltr: 'ltr'
 });
+morning_greetings.set('fa', {
+  beginning_punct: '',
+  greeting: 'صبح بخیر',
+  delimiter: ' ',
+  ending_punct: '',
+  ltr: 'rtl'
+});
 
 let afternoon_greetings = new Map<string, GreetingType>();
 afternoon_greetings.set('en', {
@@ -65,6 +72,13 @@ afternoon_greetings.set('es', {
   ending_punct: '!',
   ltr: 'ltr'
 });
+afternoon_greetings.set('fa', {
+  beginning_punct: '',
+  greeting: 'عصر بخیر',
+  delimiter: ' ',
+  ending_punct: '',
+  ltr: 'rtl'
+});
 
 let evening_greetings = new Map<string, GreetingType>();
 evening_greetings.set('en', {
@@ -94,6 +108,13 @@ evening_greetings.set('es', {
   delimiter: ', ',
   ending_punct: '!',
   ltr: 'ltr'
+});
+evening_greetings.set('fa', {
+  beginning_punct: '',
+  greeting: 'عصر بخیر',
+  delimiter: ' ',
+  ending_punct: '',
+  ltr: 'rtl'
 });
 
 /**
