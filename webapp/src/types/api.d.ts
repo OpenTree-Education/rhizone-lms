@@ -83,4 +83,5 @@ export interface Profile extends Entity {
   full_name: string;
   avatar_url: string;
   bio: string;
+  base_url: string;
 }
