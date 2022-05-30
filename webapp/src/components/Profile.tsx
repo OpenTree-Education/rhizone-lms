@@ -45,7 +45,7 @@ const Profile = () => {
 
   return (
     <Container fixed>
-      {userData?.base_url}
+      {/* {userData?.base_url} */}
       <Grid
         container
         sx={{
