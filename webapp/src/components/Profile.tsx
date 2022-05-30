@@ -22,17 +22,17 @@ import { useState } from 'react';
 import useApiData from '../helpers/useApiData';
 import { EntityId, Profile as APIProfile } from '../types/api';
 
-const user = {
-  name: 'Matthew Morenez',
-  email: 'profile@example.com',
-  avatar:
-    'https://media.volinspire.com/images/95/e4/99/95e499b759ba57975a61c7bf66a3414dd5a2625e_profile.jpg',
-  github: 'https://github.com',
-  website: 'https://example.com',
-  summary:
-    'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia, sit impedit? Cupiditate veniam eaque suscipit eligendi. Sint delectus enim earum non repellendus nihil numquam libero odit temporibus et, natus eaque?',
-  linkedIn: 'https://linkedin.com',
-};
+// const user = {
+//   name: 'Matthew Morenez',
+//   email: 'profile@example.com',
+//   avatar:
+//     'https://media.volinspire.com/images/95/e4/99/95e499b759ba57975a61c7bf66a3414dd5a2625e_profile.jpg',
+//   github: 'https://github.com',
+//   website: 'https://example.com',
+//   summary:
+//     'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia, sit impedit? Cupiditate veniam eaque suscipit eligendi. Sint delectus enim earum non repellendus nihil numquam libero odit temporibus et, natus eaque?',
+//   linkedIn: 'https://linkedin.com',
+// };
 
 const Profile = () => {
   const [changedUserDataIds, setChangedUserDataIds] = useState<EntityId[]>([]);
@@ -41,10 +41,11 @@ const Profile = () => {
     path: `/current-user`,
     sendCredentials: true,
   });
-console.log({d: userData})
+  console.log({ d: userData });
+
   return (
     <Container fixed>
-      {userData?.id}
+      {userData?.base_url}
       <Grid
         container
         sx={{
@@ -90,6 +91,8 @@ console.log({d: userData})
             sx={{ display: 'flex', alignItems: 'center', mt: 1 }}
           >
             <EmailIcon sx={{ mr: 1 }} color="primary" />
+
+            {/* should we ad "|| null" ? */}
             {userData?.email}
           </Typography>
           <Grid
@@ -98,7 +101,7 @@ console.log({d: userData})
             display="flex"
             sx={{ ml: -1, mt: 3 }}
           >
-            <Grid item xs={1}>
+            {/* <Grid item xs={1}>
               <Tooltip title="GitHub">
                 <IconButton component="a" sx={{ mr: 1 }} href={user.github}>
                   <GitHubIcon color="primary" />
@@ -118,7 +121,7 @@ console.log({d: userData})
                   <LanguageIcon color="primary" />
                 </IconButton>
               </Tooltip>
-            </Grid>
+            </Grid> */}
           </Grid>
         </Grid>
       </Grid>
