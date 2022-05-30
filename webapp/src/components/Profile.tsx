@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { getGreeting } from '../helpers/greeting';
 
 import {
@@ -11,12 +11,15 @@ import {
   Typography,
   Button,
   Stack,
+  TextField,
 } from '@mui/material';
 
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import LanguageIcon from '@mui/icons-material/Language';
 import EmailIcon from '@mui/icons-material/Email';
+import EditIcon from '@mui/icons-material/Edit';
+import CheckIcon from '@mui/icons-material/Check';
 import ProgressBar from './ProgressBar';
 import CompetencyRatings from './CompetencyRatings';
 
@@ -39,6 +42,11 @@ const user = {
 
 const Profile = () => {
   const greeting = getGreeting(user.name);
+  const [isEditable, setIsEditable] = useState(false);
+
+  function handleEditButtonClick() {
+    setIsEditable(prevState => !prevState);
+  }
 
   return (
     <Container fixed>
@@ -86,6 +94,13 @@ const Profile = () => {
             }}
             src={user.avatar}
           ></Avatar>
+          {isEditable && (
+            <Tooltip title="Upload Image">
+              <IconButton component="button">
+                <EditIcon color="primary" />
+              </IconButton>
+            </Tooltip>
+          )}
         </Grid>
         <Grid
           item
@@ -96,25 +111,55 @@ const Profile = () => {
           flexDirection="column"
         >
           <Typography component="h2" variant="h4">
-            {user.name}&apos;s Profile
+            {isEditable ? (
+              <TextField
+                type="text"
+                value={user.name}
+                name="full_name"
+                variant="standard"
+                label="Full name"
+              />
+            ) : (
+              user.name
+            )}
+            &apos;s Profile
           </Typography>
           <Typography
             component="p"
             sx={{ display: 'flex', alignItems: 'center', mt: 1 }}
           >
             <EmailIcon sx={{ mr: 1 }} color="primary" />
-            {user.email}
+            {isEditable ? (
+              <TextField
+                type="email"
+                value={user.email}
+                name="email"
+                variant="standard"
+                label="Email"
+              />
+            ) : (
+              user.email
+            )}
           </Typography>
           <Grid
             container
             justifyContent={{ md: 'flex-start', sm: 'center' }}
             display="flex"
             sx={{ ml: -1, mt: 3 }}
+            flexDirection={isEditable ? 'column' : 'row'}
           >
             <Grid item xs={1}>
               <Tooltip title="GitHub">
                 <IconButton component="a" sx={{ mr: 1 }} href={user.github}>
                   <GitHubIcon color="primary" />
+                  {isEditable && (
+                    <TextField
+                      type="text"
+                      label="GitHub Username"
+                      value={user.github}
+                      variant="standard"
+                    />
+                  )}
                 </IconButton>
               </Tooltip>
             </Grid>
@@ -134,6 +179,17 @@ const Profile = () => {
             </Grid>
           </Grid>
         </Grid>
+        <Grid item>
+          <Tooltip title="Edit">
+            <IconButton component="button">
+              {!isEditable ? (
+                <EditIcon color="primary" onClick={handleEditButtonClick} />
+              ) : (
+                <CheckIcon color="primary" onClick={handleEditButtonClick} />
+              )}
+            </IconButton>
+          </Tooltip>
+        </Grid>
       </Grid>
       <Divider variant="middle" sx={{ maxWidth: '80%', margin: '35px auto' }} />
       <Grid container justifyContent="center" spacing={4}>
@@ -141,7 +197,20 @@ const Profile = () => {
           <Typography component="h3" variant="h4" sx={{ my: 2 }}>
             Summary
           </Typography>
-          <Typography component="p">{user.summary}</Typography>
+          <Typography component="p">
+            {isEditable ? (
+              <TextField
+                value={user.summary}
+                name="email"
+                variant="standard"
+                label="User Summary"
+                multiline
+                fullWidth
+              />
+            ) : (
+              user.summary
+            )}
+          </Typography>
         </Grid>
         <Stack spacing={2} direction="row" sx={{ mt: 4 }}>
           <Button variant="outlined" component="a" href={'/'}>
