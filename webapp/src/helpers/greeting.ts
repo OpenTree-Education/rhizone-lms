@@ -12,21 +12,28 @@ morning_greetings.set('en', {
   greeting: 'Good morning',
   delimiter: ', ',
   ending_punct: '!',
-  ltr: 'ltr',
+  ltr: 'ltr'
 });
 morning_greetings.set('fr', {
   beginning_punct: '',
   greeting: 'Bon matin',
   delimiter: ', ',
   ending_punct: '!',
-  ltr: 'ltr',
+  ltr: 'ltr'
 });
 morning_greetings.set('ja', {
   beginning_punct: '',
   greeting: 'おはようございます',
   delimiter: '、',
   ending_punct: '!',
-  ltr: 'ltr',
+  ltr: 'ltr'
+});
+morning_greetings.set('es', {
+  beginning_punct: '¡',
+  greeting: 'Buenos días',
+  delimiter: ', ',
+  ending_punct: '!',
+  ltr: 'ltr'
 });
 
 let afternoon_greetings = new Map<string, GreetingType>();
@@ -51,6 +58,13 @@ afternoon_greetings.set('ja', {
   ending_punct: '!',
   ltr: 'ltr',
 });
+afternoon_greetings.set('es', {
+  beginning_punct: '¡',
+  greeting: 'Buenas tardes',
+  delimiter: ', ',
+  ending_punct: '!',
+  ltr: 'ltr'
+});
 
 let evening_greetings = new Map<string, GreetingType>();
 evening_greetings.set('en', {
@@ -73,6 +87,13 @@ evening_greetings.set('ja', {
   delimiter: '、',
   ending_punct: '!',
   ltr: 'ltr',
+});
+evening_greetings.set('es', {
+  beginning_punct: '¡',
+  greeting: 'Buenas noches',
+  delimiter: ', ',
+  ending_punct: '!',
+  ltr: 'ltr'
 });
 
 /**
