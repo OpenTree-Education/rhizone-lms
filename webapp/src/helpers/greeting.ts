@@ -42,6 +42,13 @@ morning_greetings.set('fa', {
   ending_punct: '',
   ltr: 'rtl'
 });
+morning_greetings.set('fi', {
+  beginning_punct: '',
+  greeting: 'Hyvää huomenta',
+  delimiter: ', ',
+  ending_punct: '!',
+  ltr: 'ltr'
+});
 
 let afternoon_greetings = new Map<string, GreetingType>();
 afternoon_greetings.set('en', {
@@ -79,6 +86,13 @@ afternoon_greetings.set('fa', {
   ending_punct: '',
   ltr: 'rtl'
 });
+afternoon_greetings.set('fi', {
+  beginning_punct: '',
+  greeting: 'Hyvää iltapäivää',
+  delimiter: ', ',
+  ending_punct: '!',
+  ltr: 'ltr'
+});
 
 let evening_greetings = new Map<string, GreetingType>();
 evening_greetings.set('en', {
@@ -115,6 +129,13 @@ evening_greetings.set('fa', {
   delimiter: ' ',
   ending_punct: '',
   ltr: 'rtl'
+});
+evening_greetings.set('fi', {
+  beginning_punct: '',
+  greeting: 'Hyvää iltaa',
+  delimiter: ', ',
+  ending_punct: '!',
+  ltr: 'ltr'
 });
 
 /**
