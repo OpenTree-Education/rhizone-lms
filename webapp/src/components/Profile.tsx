@@ -22,6 +22,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import ProgressBar from './ProgressBar';
 import CompetencyRatings from './CompetencyRatings';
+import UpdateSocialLinks from './UpdateSocialLinks';
+import AddBoxIcon from '@mui/icons-material/AddBox';
 
 /**
  * @privateRemarks
@@ -33,11 +35,11 @@ const user = {
   email: 'profile@example.com',
   avatar:
     'https://media.volinspire.com/images/95/e4/99/95e499b759ba57975a61c7bf66a3414dd5a2625e_profile.jpg',
-  github: 'https://github.com',
+  github: 'matthew_morenez',
   website: 'https://example.com',
   summary:
     'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia, sit impedit? Cupiditate veniam eaque suscipit eligendi. Sint delectus enim earum non repellendus nihil numquam libero odit temporibus et, natus eaque?',
-  linkedIn: 'https://linkedin.com',
+  linkedIn: 'matthew_morenez',
 };
 
 const Profile = () => {
@@ -155,46 +157,41 @@ const Profile = () => {
                   <GitHubIcon color="primary" />
                 </IconButton>
               </Tooltip>
-              {isEditable && (
-                <TextField
-                  type="text"
-                  label="GitHub Link"
-                  value={user.github}
-                  variant="standard"
-                />
-              )}
             </Grid>
-            <Grid item xs={isEditable ? 6 : 1}>
-              <Tooltip title="LinkedIn">
-                <IconButton component="a" sx={{ mr: 1 }} href={user.linkedIn}>
-                  <LinkedInIcon color="primary" />
-                </IconButton>
-              </Tooltip>
-              {isEditable && (
-                <TextField
-                  type="text"
-                  label="LinkedIn Link"
-                  value={user.linkedIn}
-                  variant="standard"
-                />
-              )}
-            </Grid>
-            <Grid item xs={isEditable ? 6 : 1}>
-              <Tooltip title="Portfolio">
-                <IconButton component="a" sx={{ mr: 1 }} href={user.website}>
-                  <LanguageIcon color="primary" />
-                </IconButton>
-              </Tooltip>
-              {isEditable && (
-                <TextField
-                  type="text"
-                  label="Portfolio Website "
-                  value={user.website}
-                  variant="standard"
-                />
-              )}
-            </Grid>
+            {!isEditable ? (
+              <Grid item xs={isEditable ? 6 : 1}>
+                <Tooltip title="LinkedIn">
+                  <IconButton component="a" sx={{ mr: 1 }} href={user.linkedIn}>
+                    <LinkedInIcon color="primary" />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            ) : (
+              <UpdateSocialLinks
+                socialName={'liknedIn'}
+                networkData={user.linkedIn}
+              />
+            )}
+            {!isEditable ? (
+              <Grid item xs={isEditable ? 6 : 1}>
+                <Tooltip title="Portfolio">
+                  <IconButton component="a" sx={{ mr: 1 }} href={user.website}>
+                    <LanguageIcon color="primary" />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            ) : (
+              <UpdateSocialLinks
+                socialName="website"
+                networkData={user.website}
+              />
+            )}
           </Grid>
+          {isEditable && (
+            <Button component="button" variant="contained">
+              Add
+            </Button>
+          )}
         </Grid>
         <Grid item>
           <Tooltip title="Edit">
