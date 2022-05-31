@@ -1,25 +1,38 @@
 import db from './db';
 import { IGitHubUser } from '../models/user_models';
 
-export const findGithubUserByGithubId = async (githubId: number): Promise<IGitHubUser> => {
-  const principal_id: IGitHubUser = await db('github_users')
-    .select<IGitHubUser>('github_id', 'username', 'full_name', 'email', 'bio', 'avatar_url')
+/**
+ * This function searches the `github_users` table for entries matching a
+ * GitHub user ID. If it finds a row, it returns it, formatted as an
+ * IGitHubUser object. If it doesn't, it returns null.
+ * 
+ * @param githubId (integer) GitHub user ID
+ * @returns IGitHubUser corresponding to row in table or null
+ */
+export const findGithubUserByGithubId = async (githubId: number): Promise<IGitHubUser | null> => {
+  const github_users: IGitHubUser[] = await db('github_users')
+    .select<IGitHubUser[]>('github_id', 'username', 'full_name', 'email', 'bio', 'avatar_url', 'principal_id')
     .where({ github_id: githubId })
     .limit(1);
 
-  return principal_id;
+  return github_users.length == 1 ? github_users[0] : null;
 };
 
-export const createGithubUser = async (githubUser: IGitHubUser) => {
+/**
+ * Creates an entry in the `github_users` table with the information passed.
+ * 
+ * @param githubUser (IGitHubUser) object containing data to insert into table
+ * @returns same object as parameter but with the principal_id instantiated
+ */
+export const createGithubUser = async (githubUser: IGitHubUser): Promise<IGitHubUser> => {
+  console.log("createGithubUser", githubUser);
   await db.transaction(async trx => {
     const insertedPrincipalIds = await trx('principals').insert({
       entity_type: 'user',
     });
     const [principalId] = insertedPrincipalIds;
     githubUser.principal_id = principalId;
-    const insertedGithubUsers = await trx('github_users').insert(githubUser);
-
-    console.log("Inserted GitHub user.", insertedGithubUsers);
+    await trx('github_users').insert(githubUser);
 
     await trx('principal_social').insert({
       principal_id: githubUser.principal_id,
