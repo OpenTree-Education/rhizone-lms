@@ -1,22 +1,16 @@
 import db from './db';
-import { IUserData } from '../middleware/authRouter';
+import { IGitHubUser } from '../models/user_models';
 
-export const findGithubUserByGithubId = async (githubId: number) => {
-  const [githubUser] = await db('github_users')
-    .select('id', 'principal_id')
-    .where({ github_id: githubId });
-  return githubUser || null;
+export const findGithubUserByGithubId = async (githubId: number): Promise<IGitHubUser> => {
+  const principal_id: IGitHubUser = await db('github_users')
+    .select<IGitHubUser>('github_id', 'username', 'full_name', 'email', 'bio', 'avatar_url')
+    .where({ github_id: githubId })
+    .limit(1);
+
+  return principal_id;
 };
 
-export const createGithubUser = async (githubUserData: IUserData) => {
-  const githubUser: IUserData = {
-    github_id: githubUserData.github_id,
-    full_name: githubUserData.full_name,
-    email: githubUserData.email,
-    bio: githubUserData.bio,
-    avatar_url: githubUserData.avatar_url,
-    github_username: githubUserData.github_username,
-  };
+export const createGithubUser = async (githubUser: IGitHubUser) => {
   await db.transaction(async trx => {
     const insertedPrincipalIds = await trx('principals').insert({
       entity_type: 'user',
@@ -24,21 +18,14 @@ export const createGithubUser = async (githubUserData: IUserData) => {
     const [principalId] = insertedPrincipalIds;
     githubUser.principal_id = principalId;
     const insertedGithubUsers = await trx('github_users').insert(githubUser);
-    const [id] = insertedGithubUsers;
-    githubUser.id = id;
 
-    await trx('principal_social').insert([
-      {
-        principal_id: githubUser.principal_id,
-        network_id: 1, // GitHub id in social_networks table
-        data: githubUserData.github_username,
-      },
-      {
-        principal_id: githubUser.principal_id,
-        network_id: 3, // Twitter id in social_networks table
-        data: githubUserData.twitter_username,
-      },
-    ]);
+    console.log("Inserted GitHub user.", insertedGithubUsers);
+
+    await trx('principal_social').insert({
+      principal_id: githubUser.principal_id,
+      network_id: 1, // GitHub id in social_networks table
+      data: githubUser.username
+    });
   });
   return githubUser;
 };

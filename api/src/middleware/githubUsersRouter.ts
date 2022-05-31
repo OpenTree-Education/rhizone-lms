@@ -1,60 +1,27 @@
 import { Router } from 'express';
 import { getUserProfileData, getUserSocials } from '../services/getUserProfileDataService';
-import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
-
-//
-//import { countUserSocialsData, listUserSocialsData } from '../services/getUserProfileDataService';
+import { collectionEnvelope } from './responseEnvelope';
 
 const githubUsersRouter = Router();
 
-// githubUsersRouter.get('/', async (req, res, next) => {
-//   const { principalId } = req.session;
-//   // console.log({session: principalId })
-//   let userData;
-//   let userSocials;
-//   let userSocialsCount;
-//   try {
-//     //@param: principalId
-//     [ userData, userSocialsCount, userSocials] = await Promise.all([ 
-//       getUserProfileData(principalId),
-//       listUserSocialsData(),
-//       countUserSocialsData()
-//     ])
-//   } catch(err) {
-//     console.log('err', err)
-//     next(err);
-//     return;
-//   }
-
-  // console.log({userData: userData})
-  // console.log({userSocialsCount: userSocialsCount})
-  // console.log({userSocials: userSocials})
-
-  // console.log("collectionEnvelop", collectionEnvelope(userData, userSocialsCount))
- 
-//   // res.json(collectionEnvelope(userData, userSocialsCount))
-// });
-
 githubUsersRouter.get('/', async (req, res, next) => {
-  const { principalId } = req.session;
-  // console.log({session: principalId })
-  let userData;
-  let userSocials;
+  let user_data;
+  let user_socials;
+
+  const {principalId} = req.session;
+
   try {
-    //@param: principalId
-    [ userData, userSocials ] = await Promise.all([ getUserProfileData(principalId),
-      getUserSocials(principalId),
-    ])
+    user_data = await getUserProfileData(principalId);
+    user_socials = await getUserSocials(principalId);
+
+    console.log({"user_data": user_data, "user_socials": user_socials})
+
+    res.json(collectionEnvelope(user_data, user_data.length))
   } catch(err) {
     console.log('err', err)
     next(err);
     return;
   }
-
-  // console.log({userData: userData})
-  // console.log({ userSocials: userSocials})
-  // console.log( typeof userSocials)
-  res.json(collectionEnvelope(userData, userSocials))
 
 });
 

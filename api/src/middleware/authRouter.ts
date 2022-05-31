@@ -11,18 +11,7 @@ import {
   getGithubUser,
 } from '../services/githubApiService';
 import { itemEnvelope } from './responseEnvelope';
-
-export interface IUserData {
-  id?: number;
-  github_id: number;
-  full_name?: string;
-  email?: string;
-  bio?: string;
-  avatar_url?: string;
-  twitter_username?: string;
-  github_username?: string;
-  principal_id?: number;
-}
+import { IGitHubUser } from '../models/user_models';
 
 const authRouter = Router();
 
@@ -64,15 +53,14 @@ authRouter.get(`/auth/github/callback`, async (req, res, next) => {
     next(err);
     return;
   }
-// console.log('here', githubApiUser)
-  const githubUserData: IUserData = {
+
+  const githubUserData: IGitHubUser = {
     github_id: githubApiUser.id,
+    username: githubApiUser.login,
     full_name: githubApiUser.name,
     email: githubApiUser.email,
     bio: githubApiUser.bio,
-    avatar_url: githubApiUser.avatar_url,
-    twitter_username: githubApiUser.twitter_username,
-    github_username: githubApiUser.login,
+    avatar_url: githubApiUser.avatar_url
   };
 
   let githubUser;
