@@ -96,8 +96,9 @@ const Profile = () => {
           ></Avatar>
           {isEditable && (
             <Tooltip title="Upload Image">
-              <IconButton component="button">
+              <IconButton component="label">
                 <EditIcon color="primary" />
+                <input type="file" hidden />
               </IconButton>
             </Tooltip>
           )}
@@ -148,34 +149,50 @@ const Profile = () => {
             sx={{ ml: -1, mt: 3 }}
             flexDirection={isEditable ? 'column' : 'row'}
           >
-            <Grid item xs={1}>
+            <Grid item xs={isEditable ? 6 : 1}>
               <Tooltip title="GitHub">
                 <IconButton component="a" sx={{ mr: 1 }} href={user.github}>
                   <GitHubIcon color="primary" />
-                  {isEditable && (
-                    <TextField
-                      type="text"
-                      label="GitHub Username"
-                      value={user.github}
-                      variant="standard"
-                    />
-                  )}
                 </IconButton>
               </Tooltip>
+              {isEditable && (
+                <TextField
+                  type="text"
+                  label="GitHub Link"
+                  value={user.github}
+                  variant="standard"
+                />
+              )}
             </Grid>
-            <Grid item xs={1}>
+            <Grid item xs={isEditable ? 6 : 1}>
               <Tooltip title="LinkedIn">
                 <IconButton component="a" sx={{ mr: 1 }} href={user.linkedIn}>
                   <LinkedInIcon color="primary" />
                 </IconButton>
               </Tooltip>
+              {isEditable && (
+                <TextField
+                  type="text"
+                  label="LinkedIn Link"
+                  value={user.linkedIn}
+                  variant="standard"
+                />
+              )}
             </Grid>
-            <Grid item xs={1}>
+            <Grid item xs={isEditable ? 6 : 1}>
               <Tooltip title="Portfolio">
                 <IconButton component="a" sx={{ mr: 1 }} href={user.website}>
                   <LanguageIcon color="primary" />
                 </IconButton>
               </Tooltip>
+              {isEditable && (
+                <TextField
+                  type="text"
+                  label="Portfolio Website "
+                  value={user.website}
+                  variant="standard"
+                />
+              )}
             </Grid>
           </Grid>
         </Grid>
