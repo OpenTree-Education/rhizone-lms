@@ -19,8 +19,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import ProgressBar from './ProgressBar';
 import CompetencyRatings from './CompetencyRatings';
-import UpdateSocialLinks from './UpdateSocialLinks';
-import AddBoxIcon from '@mui/icons-material/AddBox';
 import SocialLinks from './SocialLinks';
 
 /**
@@ -98,14 +96,6 @@ const Profile = () => {
             }}
             src={user.avatar}
           ></Avatar>
-          {isEditable && (
-            <Tooltip title="Upload Image">
-              <IconButton component="label">
-                <EditIcon color="primary" />
-                <input type="file" hidden />
-              </IconButton>
-            </Tooltip>
-          )}
         </Grid>
         <Grid
           item
