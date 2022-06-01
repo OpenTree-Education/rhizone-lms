@@ -32,10 +32,7 @@ interface DummyUserData {
   name: string;
   email: string;
   avatar: string;
-  github: string;
   summary?: string;
-  linkedIn: string;
-  website: string;
 }
 
 const user: DummyUserData = {
@@ -43,11 +40,8 @@ const user: DummyUserData = {
   email: 'profile@example.com',
   avatar:
     'https://media.volinspire.com/images/95/e4/99/95e499b759ba57975a61c7bf66a3414dd5a2625e_profile.jpg',
-  github: 'matthew_morenez',
-  website: 'https://example.com',
   summary:
     'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia, sit impedit? Cupiditate veniam eaque suscipit eligendi. Sint delectus enim earum non repellendus nihil numquam libero odit temporibus et, natus eaque?',
-  linkedIn: 'matthew_morenez',
 };
 
 const Profile = () => {
@@ -159,12 +153,7 @@ const Profile = () => {
             sx={{ ml: -1, mt: 3 }}
             flexDirection={isEditable ? 'column' : 'row'}
           >
-            <SocialLinks
-              isEditable={isEditable}
-              github={user.github}
-              linkedIn={user.linkedIn}
-              website={user.website}
-            />
+            <SocialLinks isEditable={isEditable} />
           </Grid>
         </Grid>
         <Grid item>
