@@ -6,22 +6,47 @@ import {
   Select,
   SelectChangeEvent,
   TextField,
+  IconButton,
 } from '@mui/material';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import LanguageIcon from '@mui/icons-material/Language';
 import TwitterIcon from '@mui/icons-material/Twitter';
+import ClearIcon from '@mui/icons-material/Clear';
 
 interface SocialLinksProps {
   socialName: string;
   networkData: string;
+  setSocialNetworkList: React.Dispatch<
+    React.SetStateAction<
+      {
+        id: number;
+        network_name: string;
+        protocol: string;
+        base_url: string;
+        data: string;
+      }[]
+    >
+  >;
+  networkId: number;
 }
 
-const UpdateSocialLinks = ({ socialName, networkData }: SocialLinksProps) => {
+const UpdateSocialLinks = ({
+  socialName,
+  networkData,
+  setSocialNetworkList,
+  networkId,
+}: SocialLinksProps) => {
   const [socialNetworks, setSocialNetworks] = useState(socialName);
 
   const handleChange = (event: SelectChangeEvent) => {
     setSocialNetworks(event.target.value);
   };
+
+  function removeItem() {
+    setSocialNetworkList(prevState =>
+      prevState.filter(network => network.id !== networkId)
+    );
+  }
 
   return (
     <Grid
@@ -85,6 +110,9 @@ const UpdateSocialLinks = ({ socialName, networkData }: SocialLinksProps) => {
         value={networkData}
         variant="standard"
       />
+      <IconButton component="button">
+        <ClearIcon color="primary" onClick={removeItem} />
+      </IconButton>
     </Grid>
   );
 };
