@@ -2,6 +2,7 @@ export interface ISocialProfile {
     network_name: string;
     user_name: string;
     profile_url: string;
+    public: boolean;
 };
 
 export interface IGitHubUser {
@@ -12,9 +13,10 @@ export interface IGitHubUser {
     bio: string;
     principal_id?: number;
 };
+
 export interface IUserData {
     principal_id: number;
-    github_accounts?: Array<IGitHubUser> | IGitHubUser;
+    github_accounts?: Array<IGitHubUser>;
     social_profiles?: Array<ISocialProfile>;
     full_name?: string;
     email_address?: string;

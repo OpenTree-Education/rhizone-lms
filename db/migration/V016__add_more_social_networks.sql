@@ -1,6 +1,9 @@
-INSERT INTO `social_networks` (`network_name`, `base_url`, `icon_name`)
+INSERT INTO `social_networks` (`network_name`, `protocol`, `base_url`)
 VALUES
-    ('twitter', 'twitter.com', 'twitter.svg'),
-    ('reddit', 'reddit.com/user', 'reddit.svg'),
-    ('website', '', 'website.svg'),
-    ('dribbble', 'dribbble.com/user', 'dribbble.svg');
+    ('github', '//', 'github.com/'),
+    ('linkedin', '//', 'linkedin.com/in/'),
+    ('twitter', '//', 'twitter.com/'),
+    ('reddit', '//', 'reddit.com/user/'),
+    ('website', '//', ''),
+    ('dribbble', '//', 'dribbble.com/user/'),
+    ('email', 'mailto:', '');

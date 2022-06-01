@@ -26,13 +26,13 @@ export const findGithubUserByGithubId = async (githubId: number): Promise<IGitHu
  * @param principalId (integer) principal ID number
  * @returns IGitHubUser[] corresponding to rows in table or null
  */
- export const findGithubUsersByPrincipalId = async (principalId: number): Promise<IGitHubUser | null> => {
+ export const findGithubUsersByPrincipalId = async (principalId: number): Promise<IGitHubUser[] | null> => {
   const github_users: IGitHubUser[] = await db('github_users')
     .select<IGitHubUser[]>('github_id', 'username', 'full_name', 'bio', 'avatar_url', 'principal_id')
     .where({principal_id: principalId})
     .limit(1);
 
-  return github_users.length > 0 ? github_users[0] : null;
+  return github_users.length > 0 ? github_users : null;
 };
 
 /**
@@ -43,6 +43,8 @@ export const findGithubUserByGithubId = async (githubId: number): Promise<IGitHu
  */
 export const createGithubUser = async (githubUser: IGitHubUser): Promise<IGitHubUser> => {
   await db.transaction(async trx => {
+    // TODO: we need to pre-populate the principal table with the bio and
+    // full_name fields from GitHub but allow the user to override.
     const insertedPrincipalIds = await trx('principals').insert({
       entity_type: 'user',
     });
@@ -53,7 +55,8 @@ export const createGithubUser = async (githubUser: IGitHubUser): Promise<IGitHub
     await trx('principal_social').insert({
       principal_id: githubUser.principal_id,
       network_id: 1, // GitHub id in social_networks table
-      data: githubUser.username
+      data: githubUser.username,
+      public: true
     });
   });
   return githubUser;
