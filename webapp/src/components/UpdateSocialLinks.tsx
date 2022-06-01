@@ -57,7 +57,7 @@ const UpdateSocialLinks = ({ socialName, networkData }: SocialLinksProps) => {
             />
             Twitter
           </MenuItem>
-          <MenuItem value="linkedIn">
+          <MenuItem value="linkedin">
             <LinkedInIcon
               color="primary"
               sx={{
@@ -67,7 +67,7 @@ const UpdateSocialLinks = ({ socialName, networkData }: SocialLinksProps) => {
             />
             LinkedIn
           </MenuItem>
-          <MenuItem value="portfolio">
+          <MenuItem value="website">
             <LanguageIcon
               color="primary"
               sx={{
@@ -75,11 +75,16 @@ const UpdateSocialLinks = ({ socialName, networkData }: SocialLinksProps) => {
                 mr: 1,
               }}
             />
-            Portfolio
+            Website
           </MenuItem>
         </Select>
       </FormControl>
-      <TextField type="text" name={socialNetworks} variant="standard" />
+      <TextField
+        type="text"
+        name={socialNetworks}
+        value={networkData}
+        variant="standard"
+      />
     </Grid>
   );
 };
