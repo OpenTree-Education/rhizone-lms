@@ -14,9 +14,6 @@ import {
   TextField,
 } from '@mui/material';
 
-import GitHubIcon from '@mui/icons-material/GitHub';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import LanguageIcon from '@mui/icons-material/Language';
 import EmailIcon from '@mui/icons-material/Email';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
@@ -24,13 +21,24 @@ import ProgressBar from './ProgressBar';
 import CompetencyRatings from './CompetencyRatings';
 import UpdateSocialLinks from './UpdateSocialLinks';
 import AddBoxIcon from '@mui/icons-material/AddBox';
+import SocialLinks from './SocialLinks';
 
 /**
  * @privateRemarks
  * User data is currently hardcoded but it will be pulling data from the database (github_users)
  */
 
-const user = {
+interface DummyUserData {
+  name: string;
+  email: string;
+  avatar: string;
+  github: string;
+  summary?: string;
+  linkedIn: string;
+  website: string;
+}
+
+const user: DummyUserData = {
   name: 'Matthew Morenez',
   email: 'profile@example.com',
   avatar:
@@ -151,47 +159,13 @@ const Profile = () => {
             sx={{ ml: -1, mt: 3 }}
             flexDirection={isEditable ? 'column' : 'row'}
           >
-            <Grid item xs={isEditable ? 6 : 1}>
-              <Tooltip title="GitHub">
-                <IconButton component="a" sx={{ mr: 1 }} href={user.github}>
-                  <GitHubIcon color="primary" />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-            {!isEditable ? (
-              <Grid item xs={isEditable ? 6 : 1}>
-                <Tooltip title="LinkedIn">
-                  <IconButton component="a" sx={{ mr: 1 }} href={user.linkedIn}>
-                    <LinkedInIcon color="primary" />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-            ) : (
-              <UpdateSocialLinks
-                socialName={'liknedIn'}
-                networkData={user.linkedIn}
-              />
-            )}
-            {!isEditable ? (
-              <Grid item xs={isEditable ? 6 : 1}>
-                <Tooltip title="Portfolio">
-                  <IconButton component="a" sx={{ mr: 1 }} href={user.website}>
-                    <LanguageIcon color="primary" />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-            ) : (
-              <UpdateSocialLinks
-                socialName="website"
-                networkData={user.website}
-              />
-            )}
+            <SocialLinks
+              isEditable={isEditable}
+              github={user.github}
+              linkedIn={user.linkedIn}
+              website={user.website}
+            />
           </Grid>
-          {isEditable && (
-            <Button component="button" variant="contained">
-              Add
-            </Button>
-          )}
         </Grid>
         <Grid item>
           <Tooltip title="Edit">
