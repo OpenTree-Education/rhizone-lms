@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Grid, IconButton, TextField, Tooltip } from '@mui/material';
 import UpdateSocialLinks from './UpdateSocialLinks';
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -7,55 +7,75 @@ import LanguageIcon from '@mui/icons-material/Language';
 
 interface SocialLinksProps {
   isEditable: boolean;
-  github: string;
-  linkedIn: string;
-  website: string;
 }
 
-const SocialLinks = ({
-  isEditable,
-  github,
-  linkedIn,
-  website,
-}: SocialLinksProps) => {
+const networkData = [
+  {
+    network_name: 'github',
+    protocol: '//',
+    base_url: 'github.com/',
+    data: 'matthew_morenez',
+  },
+  {
+    network_name: 'website',
+    protocol: '//',
+    base_url: '',
+    data: 'example.com',
+  },
+  {
+    network_name: 'linkedin',
+    protocol: '//',
+    base_url: 'linkedin.com/in/',
+    data: 'matthew_morenez',
+  },
+];
+
+const SocialLinks = ({ isEditable }: SocialLinksProps) => {
+  const [socialNetworkList, setSocialNetworkList] = useState(networkData);
+
   return (
     <>
-      {!isEditable ? (
-        <Grid item xs={isEditable ? 6 : 1}>
-          <Tooltip title="GitHub">
-            <IconButton component="a" sx={{ mr: 1 }} href={github}>
-              <GitHubIcon color="primary" />
-            </IconButton>
-          </Tooltip>
-        </Grid>
-      ) : (
-        <Grid item xs={isEditable ? 10 : 1} display="flex">
-          <GitHubIcon color="primary" sx={{ m: 1 }} />
-          <TextField disabled variant="standard" value={github} />
-        </Grid>
-      )}
-      {!isEditable ? (
-        <Grid item xs={isEditable ? 10 : 1}>
-          <Tooltip title="LinkedIn">
-            <IconButton component="a" sx={{ mr: 1 }} href={linkedIn}>
-              <LinkedInIcon color="primary" />
-            </IconButton>
-          </Tooltip>
-        </Grid>
-      ) : (
-        <UpdateSocialLinks socialName={'liknedIn'} networkData={linkedIn} />
-      )}
-      {!isEditable ? (
-        <Grid item xs={isEditable ? 10 : 1}>
-          <Tooltip title="Portfolio">
-            <IconButton component="a" sx={{ mr: 1 }} href={website}>
-              <LanguageIcon color="primary" />
-            </IconButton>
-          </Tooltip>
-        </Grid>
-      ) : (
-        <UpdateSocialLinks socialName="website" networkData={website} />
-      )}
+      {socialNetworkList.map((network, i) => {
+        if (network.network_name == 'github') {
+          return !isEditable ? (
+            <Grid item xs={isEditable ? 6 : 1}>
+              <Tooltip title="GitHub">
+                <IconButton
+                  component="a"
+                  sx={{ mr: 1 }}
+                  href={network.protocol + network.base_url + network.data}
+                >
+                  <GitHubIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          ) : (
+            <Grid item xs={isEditable ? 10 : 1} display="flex">
+              <GitHubIcon color="primary" sx={{ m: 1 }} />
+              <TextField disabled variant="standard" value={network.data} />
+            </Grid>
+          );
+        } else {
+          return !isEditable ? (
+            <Grid item xs={isEditable ? 10 : 1}>
+              <Tooltip title={network.network_name}>
+                <IconButton
+                  component="a"
+                  sx={{ mr: 1 }}
+                  href={network.protocol + network.base_url + network.data}
+                >
+                  <LinkedInIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          ) : (
+            <UpdateSocialLinks
+              socialName={network.network_name}
+              networkData={network.data}
+            />
+          );
+        }
+      })}
       <Grid item xs={isEditable ? 10 : 1}>
         {isEditable && (
           <Button component="button" variant="contained">
