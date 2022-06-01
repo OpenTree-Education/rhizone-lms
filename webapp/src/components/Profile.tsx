@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import {
   Container,
@@ -21,6 +21,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import { useState } from 'react';
 import useApiData from '../helpers/useApiData';
 import { EntityId, Profile as APIProfile } from '../types/api';
+import SessionContext from './SessionContext';
 
 // const user = {
 //   name: 'Matthew Morenez',
@@ -35,17 +36,50 @@ import { EntityId, Profile as APIProfile } from '../types/api';
 // };
 
 const Profile = () => {
+  const { principalId} = useContext(SessionContext);
+  console.log({id: principalId})
   const [changedUserDataIds, setChangedUserDataIds] = useState<EntityId[]>([]);
-  const { data: userData, error } = useApiData<APIProfile>({
+  const { data: userData, error } = useApiData<APIProfile[]>({
     deps: [changedUserDataIds],
-    path: `/current-user`,
+    path: `/profile/${principalId}`,
     sendCredentials: true,
   });
-  console.log({ d: userData });
+  console.log( 'id', userData && userData[0].github_accounts[0].avatar_url );
+  {
+   const ref = [
+      {
+        "id": 1,
+        "full_name": null,
+        "email_address": null,
+        "bio": null,
+        "github_accounts": [
+          {
+            "github_id": 26878542,
+            "username": "SiriusLL",
+            "full_name": null,
+            "bio": "Full Stack Junior Web Developer ~ “The Way is not in the sky; the Way is in the heart.” --Buddha",
+            "avatar_url": "https://avatars.githubusercontent.com/u/26878542?v=4",
+            "principal_id": 1
+          }
+        ],
+        "social_profiles": [
+          {
+            "network_name": "github",
+            "user_name": "SiriusLL",
+            "profile_url": "//github.com/SiriusLL",
+            "public": 1
+          }
+        ]
+      }
+    ]
+  }
+
+  // const getUserProfileData = (key: string) => {
+  //   const data = userData && userData[0][key] ? userData[0].full_name : userData && userData[0].github_accounts[0].full_name ?  userData[0].github_accounts[0].full_name : 'no name found!!'
+  // }
 
   return (
     <Container fixed>
-      {/* {userData?.base_url} */}
       <Grid
         container
         sx={{
@@ -72,7 +106,8 @@ const Profile = () => {
               border: '3px solid #fff',
               outline: '2px solid #1976d2',
             }}
-            src={userData?.avatar_url}
+          
+            src={userData && userData[0].github_accounts[0].avatar_url || undefined}
           ></Avatar>
         </Grid>
         <Grid
@@ -84,7 +119,7 @@ const Profile = () => {
           flexDirection="column"
         >
           <Typography component="h2" variant="h4">
-            {userData?.full_name || 'no name found!!'}&apos;s Profile
+            {userData && userData[0].full_name ? userData[0].full_name : userData && userData[0].github_accounts[0].full_name ?  userData[0].github_accounts[0].full_name : 'no name found!!'} &apos;s Profile
           </Typography>
           <Typography
             component="p"
@@ -92,8 +127,8 @@ const Profile = () => {
           >
             <EmailIcon sx={{ mr: 1 }} color="primary" />
 
-            {/* should we ad "|| null" ? */}
-            {userData?.email}
+            {/* should we add "|| null" ? */}
+            {userData && userData[0].email_address || 'no email found!!'}
           </Typography>
           <Grid
             container
@@ -131,7 +166,7 @@ const Profile = () => {
           <Typography component="h3" variant="h4" sx={{ my: 2 }}>
             Summary
           </Typography>
-          <Typography component="p">{userData?.bio}</Typography>
+          <Typography component="p">{userData && userData[0].bio ? userData[0].bio : userData && userData[0].github_accounts[0].bio ?  userData[0].github_accounts[0].bio : 'no bio found!!'}</Typography>
         </Grid>
         <Stack spacing={2} direction="row" sx={{ mt: 4 }}>
           <Button variant="outlined" component="a" href={'/'}>
