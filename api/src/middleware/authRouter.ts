@@ -60,7 +60,6 @@ authRouter.get(`/auth/github/callback`, async (req, res, next) => {
     github_id: githubApiUser.id,
     username: githubApiUser.login,
     full_name: githubApiUser.name,
-    email: githubApiUser.email,
     bio: githubApiUser.bio,
     avatar_url: githubApiUser.avatar_url
   };
@@ -79,7 +78,7 @@ authRouter.get(`/auth/github/callback`, async (req, res, next) => {
   const principalId = await principal_id;
 
   if (principalId !== -1) {
-    req.session.principalId = principalId;
+    req.session.principalId = Number(principalId);
   }
 
   res.redirect(findConfig('WEBAPP_ORIGIN', ''));

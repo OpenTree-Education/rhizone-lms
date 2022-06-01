@@ -1,5 +1,6 @@
 ALTER TABLE `github_users`
-  ADD COLUMN username VARCHAR(255);
+  ADD COLUMN username VARCHAR(255),
+  DROP COLUMN email;
 
 ALTER TABLE `principals`
   ADD COLUMN `full_name` VARCHAR(255),

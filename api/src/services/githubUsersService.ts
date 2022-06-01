@@ -11,11 +11,28 @@ import { IGitHubUser } from '../models/user_models';
  */
 export const findGithubUserByGithubId = async (githubId: number): Promise<IGitHubUser | null> => {
   const github_users: IGitHubUser[] = await db('github_users')
-    .select<IGitHubUser[]>('github_id', 'username', 'full_name', 'email', 'bio', 'avatar_url', 'principal_id')
-    .where({ github_id: githubId })
+    .select<IGitHubUser[]>('github_id', 'username', 'full_name', 'bio', 'avatar_url', 'principal_id')
+    .where({github_id: githubId})
     .limit(1);
 
-  return github_users.length == 1 ? github_users[0] : null;
+  return github_users.length > 0 ? github_users[0] : null;
+};
+
+/**
+ * This function searches the `github_users` table for entries matching a
+ * principal ID. If it finds matches, it returns them, formatted as
+ * IGitHubUser objects. If it doesn't, it returns null.
+ * 
+ * @param principalId (integer) principal ID number
+ * @returns IGitHubUser[] corresponding to rows in table or null
+ */
+ export const findGithubUsersByPrincipalId = async (principalId: number): Promise<IGitHubUser | null> => {
+  const github_users: IGitHubUser[] = await db('github_users')
+    .select<IGitHubUser[]>('github_id', 'username', 'full_name', 'bio', 'avatar_url', 'principal_id')
+    .where({principal_id: principalId})
+    .limit(1);
+
+  return github_users.length > 0 ? github_users[0] : null;
 };
 
 /**
@@ -25,7 +42,6 @@ export const findGithubUserByGithubId = async (githubId: number): Promise<IGitHu
  * @returns same object as parameter but with the principal_id instantiated
  */
 export const createGithubUser = async (githubUser: IGitHubUser): Promise<IGitHubUser> => {
-  console.log("createGithubUser", githubUser);
   await db.transaction(async trx => {
     const insertedPrincipalIds = await trx('principals').insert({
       entity_type: 'user',

@@ -1,17 +1,36 @@
-import { ISocialProfile } from '../models/user_models';
+import { ISocialProfile, IUserData } from '../models/user_models';
 import db from './db';
+import { findGithubUsersByPrincipalId } from './githubUsersService';
 
 /**
- * This method returns everything we know from GitHub for a given principal.
+ * This method returns everything we know about a user, including its info in
+ * the `principals` table, its info in the `github_users` table, and its info
+ * in the `principal_social` table.
  * 
  * @param principalId (integer) ID number of the principal in question
- * @returns GitHub data for that principal
+ * @returns Well-structured IUserData object or null if not found
  */
-export const getUserProfileData = async (principalId: number) => {
-  const [userProfileData] = await db('github_users')
-    .select()
-    .where({ principal_id: principalId });
-  return userProfileData || null;
+export const getUserProfileData = (principalId: number): Promise<IUserData | null> => {
+  return db('principals')
+    .select<IUserData[]>('id', 'full_name', 'email_address', 'bio')
+    .where({ id: principalId })
+    .limit(1).then(async (db_result: IUserData[]) => {
+      const user: IUserData = db_result.length > 0 ? db_result[0] : null;
+
+      if (user) {
+        user.github_accounts = await findGithubUsersByPrincipalId(principalId);
+        user.social_profiles = await getUserSocials(principalId).then((social_profiles: ISocialProfile[]) => {
+          return social_profiles;
+        });
+
+        return user;
+      }
+
+      return user;
+    }).catch((err) => {
+      console.error(err);
+      return null;
+    });
 };
 
 export const getUserSocials = async (principalId: number): Promise<ISocialProfile[]> => {

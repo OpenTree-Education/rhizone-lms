@@ -14,6 +14,7 @@ CREATE TABLE principal_social (
     `principal_id` bigint,
     `network_id` bigint,
     `data` VARCHAR(255),
+    `public` BOOLEAN,
     PRIMARY KEY (`id`),
     CONSTRAINT `principal_social_1` FOREIGN KEY (`principal_id`) REFERENCES `principals` (`id`),
     CONSTRAINT `principal_social_2` FOREIGN KEY (`network_id`) REFERENCES `social_networks` (`id`)
