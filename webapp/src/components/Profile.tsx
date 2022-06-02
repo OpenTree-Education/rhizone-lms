@@ -17,35 +17,21 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import LanguageIcon from '@mui/icons-material/Language';
 import EmailIcon from '@mui/icons-material/Email';
 
-//
-import { useState } from 'react';
-import useApiData from '../helpers/useApiData';
-import { EntityId, Profile as APIProfile } from '../types/api';
-
-// const user = {
-//   name: 'Matthew Morenez',
-//   email: 'profile@example.com',
-//   avatar:
-//     'https://media.volinspire.com/images/95/e4/99/95e499b759ba57975a61c7bf66a3414dd5a2625e_profile.jpg',
-//   github: 'https://github.com',
-//   website: 'https://example.com',
-//   summary:
-//     'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia, sit impedit? Cupiditate veniam eaque suscipit eligendi. Sint delectus enim earum non repellendus nihil numquam libero odit temporibus et, natus eaque?',
-//   linkedIn: 'https://linkedin.com',
-// };
+const user = {
+  name: 'Matthew Morenez',
+  email: 'profile@example.com',
+  avatar:
+    'https://media.volinspire.com/images/95/e4/99/95e499b759ba57975a61c7bf66a3414dd5a2625e_profile.jpg',
+  github: 'https://github.com',
+  website: 'https://example.com',
+  summary:
+    'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia, sit impedit? Cupiditate veniam eaque suscipit eligendi. Sint delectus enim earum non repellendus nihil numquam libero odit temporibus et, natus eaque?',
+  linkedIn: 'https://linkedin.com',
+};
 
 const Profile = () => {
-  const [changedUserDataIds, setChangedUserDataIds] = useState<EntityId[]>([]);
-  const { data: userData, error } = useApiData<APIProfile>({
-    deps: [changedUserDataIds],
-    path: `/current-user`,
-    sendCredentials: true,
-  });
-  console.log({ d: userData });
-
   return (
     <Container fixed>
-      {/* {userData?.base_url} */}
       <Grid
         container
         sx={{
@@ -72,7 +58,7 @@ const Profile = () => {
               border: '3px solid #fff',
               outline: '2px solid #1976d2',
             }}
-            src={userData?.avatar_url}
+            src={user.avatar}
           ></Avatar>
         </Grid>
         <Grid
@@ -84,16 +70,14 @@ const Profile = () => {
           flexDirection="column"
         >
           <Typography component="h2" variant="h4">
-            {userData?.full_name || 'no name found!!'}&apos;s Profile
+            {user.name}&apos;s Profile
           </Typography>
           <Typography
             component="p"
             sx={{ display: 'flex', alignItems: 'center', mt: 1 }}
           >
             <EmailIcon sx={{ mr: 1 }} color="primary" />
-
-            {/* should we ad "|| null" ? */}
-            {userData?.email}
+            {user.email}
           </Typography>
           <Grid
             container
@@ -101,7 +85,7 @@ const Profile = () => {
             display="flex"
             sx={{ ml: -1, mt: 3 }}
           >
-            {/* <Grid item xs={1}>
+            <Grid item xs={1}>
               <Tooltip title="GitHub">
                 <IconButton component="a" sx={{ mr: 1 }} href={user.github}>
                   <GitHubIcon color="primary" />
@@ -121,7 +105,7 @@ const Profile = () => {
                   <LanguageIcon color="primary" />
                 </IconButton>
               </Tooltip>
-            </Grid> */}
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
@@ -131,7 +115,7 @@ const Profile = () => {
           <Typography component="h3" variant="h4" sx={{ my: 2 }}>
             Summary
           </Typography>
-          <Typography component="p">{userData?.bio}</Typography>
+          <Typography component="p">{user.summary}</Typography>
         </Grid>
         <Stack spacing={2} direction="row" sx={{ mt: 4 }}>
           <Button variant="outlined" component="a" href={'/'}>
