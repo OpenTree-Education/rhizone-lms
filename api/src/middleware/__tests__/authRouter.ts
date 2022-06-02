@@ -75,30 +75,14 @@ describe('authRouter', () => {
     it('should redirect to the web app for a principal with a known GitHub user id', done => {
       mockGetGithubAccessToken.mockResolvedValue('MOCK_ACCESS_TOKEN');
       mockGetGithubUser.mockResolvedValue({ id: 1000 });
-      // TODO: fix later
-      // mockFindGithubUserByGithubId.mockResolvedValue({ principal_id: 1 });
-      // appAgent
-      //   .get('/auth/github/callback?code=MOCK_CODE')
-      //   .expect('Location', process.env.WEBAPP_ORIGIN)
-      //   .expect(302, () => {
-      //     expect(getGithubAccessToken).toHaveBeenCalledWith('MOCK_CODE');
-      //     expect(getGithubUser).toHaveBeenCalledWith('MOCK_ACCESS_TOKEN');
-      //     expect(mockFindGithubUserByGithubId).toHaveBeenCalledWith(1000);
-      //     expect(mockCreateGithubUser).not.toHaveBeenCalled();
-      //     done();
-      //   });
-    });
-
-    it('should insert a new principal and GitHub user and then redirect to the web app for a principal with an unknown GitHub user id', done => {
-      mockGetGithubAccessToken.mockResolvedValue('MOCK_ACCESS_TOKEN');
-      mockGetGithubUser.mockResolvedValue({ id: 1000 });
-      mockFindGithubUserByGithubId.mockResolvedValue(null);
-      // TODO: fix later
-      // mockCreateGithubUser.mockResolvedValue({
-      //   id: 10,
-      //   github_id: 1000,
-      //   principal_id: 1,
-      // });
+      mockFindGithubUserByGithubId.mockResolvedValue({
+        github_id: 1000,
+        username: '',
+        full_name: '',
+        avatar_url: '',
+        bio: '',
+        principal_id: 10,
+      });
       appAgent
         .get('/auth/github/callback?code=MOCK_CODE')
         .expect('Location', process.env.WEBAPP_ORIGIN)
@@ -106,7 +90,37 @@ describe('authRouter', () => {
           expect(getGithubAccessToken).toHaveBeenCalledWith('MOCK_CODE');
           expect(getGithubUser).toHaveBeenCalledWith('MOCK_ACCESS_TOKEN');
           expect(mockFindGithubUserByGithubId).toHaveBeenCalledWith(1000);
-          expect(mockCreateGithubUser).toHaveBeenCalledWith(1000);
+          expect(mockCreateGithubUser).not.toHaveBeenCalled();
+          done();
+        });
+    });
+
+    it('should insert a new principal and GitHub user and then redirect to the web app for a principal with an unknown GitHub user id', done => {
+      mockGetGithubAccessToken.mockResolvedValue('MOCK_ACCESS_TOKEN');
+      mockGetGithubUser.mockResolvedValue({ id: 1000 });
+      mockFindGithubUserByGithubId.mockResolvedValue(null);
+      mockCreateGithubUser.mockResolvedValue({
+        github_id: 1000,
+        username: '',
+        full_name: '',
+        avatar_url: '',
+        bio: '',
+        principal_id: 10,
+      });
+      appAgent
+        .get('/auth/github/callback?code=MOCK_CODE')
+        .expect('Location', process.env.WEBAPP_ORIGIN)
+        .expect(302, () => {
+          expect(getGithubAccessToken).toHaveBeenCalledWith('MOCK_CODE');
+          expect(getGithubUser).toHaveBeenCalledWith('MOCK_ACCESS_TOKEN');
+          expect(mockFindGithubUserByGithubId).toHaveBeenCalledWith(1000);
+          expect(mockCreateGithubUser).toHaveBeenCalledWith({
+            github_id: 1000,
+            username: '',
+            full_name: '',
+            avatar_url: '',
+            bio: ''
+          });
           done();
         });
     });
