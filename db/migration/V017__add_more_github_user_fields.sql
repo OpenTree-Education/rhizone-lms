@@ -1,0 +1,4 @@
+ALTER TABLE github_users
+    ADD COLUMN email VARCHAR(255),
+    ADD COLUMN avatar_url VARCHAR(255),
+    ADD COLUMN bio VARCHAR(255);
