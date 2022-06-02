@@ -7,6 +7,7 @@ import {
   SelectChangeEvent,
   TextField,
   IconButton,
+  Tooltip,
 } from '@mui/material';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import LanguageIcon from '@mui/icons-material/Language';
@@ -55,6 +56,8 @@ const UpdateSocialLinks = ({
         alignItems: 'center',
         display: 'flex',
         mb: 4,
+        ml: -1,
+        mt: 2,
       }}
     >
       <FormControl
@@ -78,6 +81,7 @@ const UpdateSocialLinks = ({
                 justifyContent: 'flex-start',
                 alignItems: 'flex-end',
                 mr: 1,
+                mb: '-7px',
               }}
             />
             Twitter
@@ -88,6 +92,7 @@ const UpdateSocialLinks = ({
               sx={{
                 justifyContent: 'flex-start',
                 mr: 1,
+                mb: '-7px',
               }}
             />
             LinkedIn
@@ -98,6 +103,7 @@ const UpdateSocialLinks = ({
               sx={{
                 justifyContent: 'flex-start',
                 mr: 1,
+                mb: '-7px',
               }}
             />
             Website
@@ -110,9 +116,11 @@ const UpdateSocialLinks = ({
         value={networkData}
         variant="standard"
       />
-      <IconButton component="button">
-        <ClearIcon color="primary" onClick={removeItem} />
-      </IconButton>
+      <Tooltip title="Remove">
+        <IconButton component="button">
+          <ClearIcon color="primary" onClick={removeItem} />
+        </IconButton>
+      </Tooltip>
     </Grid>
   );
 };

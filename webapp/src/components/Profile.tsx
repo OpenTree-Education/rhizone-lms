@@ -70,6 +70,9 @@ const Profile = () => {
       </Grid>
       <Grid
         container
+        xs={12}
+        md={12}
+        justifyContent={{ md: 'center', sm: 'flex-start' }}
         sx={{
           justifyContent: 'center',
           alignItems: 'center',
@@ -101,61 +104,79 @@ const Profile = () => {
           item
           xs={12}
           md={6}
-          alignItems={{ md: 'flex-start', sm: 'center' }}
+          alignItems={{
+            lg: 'flex-start',
+            md: 'flex-start',
+            sm: 'center',
+            xs: 'flex-start',
+          }}
           display="flex"
           flexDirection="column"
         >
-          <Typography component="h2" variant="h4">
-            {isEditable ? (
-              <TextField
-                type="text"
-                value={user.name}
-                name="full_name"
-                variant="standard"
-                label="Full name"
-              />
-            ) : (
-              user.name
-            )}
-            &apos;s Profile
-          </Typography>
-          <Typography
-            component="p"
-            sx={{ display: 'flex', alignItems: 'center', mt: 1 }}
+          <Grid item display="flex">
+            <Typography component="h2" variant="h4">
+              {isEditable ? (
+                <TextField
+                  type="text"
+                  value={user.name}
+                  name="full_name"
+                  variant="standard"
+                  label="Full name"
+                />
+              ) : (
+                user.name
+              )}
+              &apos;s Profile
+            </Typography>
+            <Tooltip title={isEditable ? 'Save' : 'Edit'}>
+              <IconButton component="button" sx={{ ml: 2 }}>
+                {!isEditable ? (
+                  <EditIcon color="primary" onClick={handleEditButtonClick} />
+                ) : (
+                  <CheckIcon color="primary" onClick={handleEditButtonClick} />
+                )}
+              </IconButton>
+            </Tooltip>
+          </Grid>
+          <Grid
+            item
+            display="flex"
+            justifyContent="flex-start"
+            alignItems="flex-start"
+            sx={{ mt: 3 }}
+            ml={{ sm: isEditable ? -21 : 0, md: -1, xs: 0 }}
           >
-            <EmailIcon sx={{ mr: 1 }} color="primary" />
-            {isEditable ? (
-              <TextField
-                type="email"
-                value={user.email}
-                name="email"
-                variant="standard"
-                label="Email"
-              />
-            ) : (
-              user.email
-            )}
-          </Typography>
+            <EmailIcon
+              sx={{
+                mr: 1,
+                mt: isEditable ? 3 : 0,
+              }}
+              color="primary"
+            />
+            <Typography component="p">
+              {isEditable ? (
+                <TextField
+                  type="email"
+                  value={user.email}
+                  name="email"
+                  variant="standard"
+                  label="Email"
+                />
+              ) : (
+                user.email
+              )}
+            </Typography>
+          </Grid>
           <Grid
             container
-            justifyContent={{ md: 'flex-start', sm: 'center' }}
             display="flex"
-            sx={{ ml: -1, mt: 3 }}
-            flexDirection={isEditable ? 'column' : 'row'}
+            justifyContent={{ md: 'flex-start', sm: 'center' }}
+            alignItems={{ md: 'center', sm: 'center' }}
+            sx={{ mt: 3 }}
+            ml={{ md: -1, sm: -2 }}
           >
             <SocialLinks isEditable={isEditable} />
           </Grid>
-        </Grid>
-        <Grid item>
-          <Tooltip title="Edit">
-            <IconButton component="button">
-              {!isEditable ? (
-                <EditIcon color="primary" onClick={handleEditButtonClick} />
-              ) : (
-                <CheckIcon color="primary" onClick={handleEditButtonClick} />
-              )}
-            </IconButton>
-          </Tooltip>
         </Grid>
       </Grid>
       <Divider variant="middle" sx={{ maxWidth: '80%', margin: '35px auto' }} />

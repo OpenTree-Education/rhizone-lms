@@ -60,14 +60,13 @@ const SocialLinks = ({ isEditable }: SocialLinksProps) => {
 
   return (
     <>
-      {socialNetworkList.map((network, i) => {
+      {socialNetworkList.map(network => {
         if (network.network_name === 'github') {
           return !isEditable ? (
-            <Grid item xs={isEditable ? 6 : 1} key={network.id}>
+            <Grid item key={network.id}>
               <Tooltip title="GitHub">
                 <IconButton
                   component="a"
-                  sx={{ mr: 1 }}
                   href={network.protocol + network.base_url + network.data}
                 >
                   <GitHubIcon color="primary" />
@@ -75,8 +74,16 @@ const SocialLinks = ({ isEditable }: SocialLinksProps) => {
               </Tooltip>
             </Grid>
           ) : (
-            <Grid item xs={isEditable ? 10 : 1} display="flex" key={network.id}>
-              <GitHubIcon color="primary" sx={{ m: 1 }} />
+            <Grid
+              item
+              xs={isEditable ? 10 : 1}
+              ml={{ md: -3, sm: -1, xs: -3 }}
+              display="flex"
+              justifyContent="flex-start"
+              alignItems="flex-start"
+              key={network.id}
+            >
+              <GitHubIcon color="primary" sx={{ ml: 3, mr: 1 }} />
               <TextField disabled variant="standard" value={network.data} />
             </Grid>
           );
