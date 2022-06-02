@@ -27,14 +27,14 @@ import SocialLinks from './SocialLinks';
  */
 
 interface DummyUserData {
-  name: string;
+  full_name: string;
   email: string;
   avatar: string;
   summary?: string;
 }
 
 const user: DummyUserData = {
-  name: 'Matthew Morenez',
+  full_name: 'Matthew Morenez',
   email: 'profile@example.com',
   avatar:
     'https://media.volinspire.com/images/95/e4/99/95e499b759ba57975a61c7bf66a3414dd5a2625e_profile.jpg',
@@ -43,11 +43,19 @@ const user: DummyUserData = {
 };
 
 const Profile = () => {
-  const greeting = getGreeting(user.name);
   const [isEditable, setIsEditable] = useState(false);
+  const [userData, setUserData] = useState(user);
+  const greeting = getGreeting(userData.full_name);
 
   function handleEditButtonClick() {
     setIsEditable(prevState => !prevState);
+  }
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setUserData(prevData => {
+      const newUserData = { ...prevData, [e.target.name]: e.target.value };
+      return newUserData;
+    });
   }
 
   return (
@@ -97,7 +105,7 @@ const Profile = () => {
               border: '3px solid #fff',
               outline: '2px solid #1976d2',
             }}
-            src={user.avatar}
+            src={userData.avatar}
           ></Avatar>
         </Grid>
         <Grid
@@ -118,13 +126,14 @@ const Profile = () => {
               {isEditable ? (
                 <TextField
                   type="text"
-                  value={user.name}
+                  value={userData.full_name}
+                  onChange={handleChange}
                   name="full_name"
                   variant="standard"
                   label="Full name"
                 />
               ) : (
-                user.name
+                userData.full_name
               )}
               &apos;s Profile
             </Typography>
@@ -157,13 +166,14 @@ const Profile = () => {
               {isEditable ? (
                 <TextField
                   type="email"
-                  value={user.email}
+                  value={userData.email}
+                  onChange={handleChange}
                   name="email"
                   variant="standard"
                   label="Email"
                 />
               ) : (
-                user.email
+                userData.email
               )}
             </Typography>
           </Grid>
@@ -188,15 +198,16 @@ const Profile = () => {
           <Typography component="p">
             {isEditable ? (
               <TextField
-                value={user.summary}
-                name="email"
+                value={userData.summary}
+                onChange={handleChange}
+                name="summary"
                 variant="standard"
                 label="User Summary"
                 multiline
                 fullWidth
               />
             ) : (
-              user.summary
+              userData.summary
             )}
           </Typography>
         </Grid>
