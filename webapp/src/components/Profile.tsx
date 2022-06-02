@@ -78,8 +78,6 @@ const Profile = () => {
       </Grid>
       <Grid
         container
-        xs={12}
-        md={12}
         justifyContent={{ md: 'center', sm: 'flex-start' }}
         sx={{
           justifyContent: 'center',

@@ -5,32 +5,30 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import LanguageIcon from '@mui/icons-material/Language';
 import TwitterIcon from '@mui/icons-material/Twitter';
+import { SocialNetwork } from '../types/api';
 
 interface SocialLinksProps {
   isEditable: boolean;
 }
 
-const networkData = [
+const networkData: SocialNetwork[] = [
   {
-    id: 1,
     network_name: 'github',
-    protocol: '//',
-    base_url: 'github.com/',
-    data: 'matthew_morenez',
+    profile_url: '//github.com/matthew_morenez',
+    user_name: 'matthew_morenez',
+    public: true,
   },
   {
-    id: 2,
     network_name: 'website',
-    protocol: '//',
-    base_url: '',
-    data: 'example.com',
+    profile_url: '//example.com',
+    user_name: 'example.com',
+    public: true,
   },
   {
-    id: 3,
     network_name: 'linkedin',
-    protocol: '//',
-    base_url: 'linkedin.com/in/',
-    data: 'matthew_morenez',
+    profile_url: '//linkedin.com/in/matthew_morenez',
+    user_name: 'matthew_morenez',
+    public: true,
   },
 ];
 
@@ -54,7 +52,7 @@ const SocialLinks = ({ isEditable }: SocialLinksProps) => {
   function handleAddButtonClick() {
     setSocialNetworkList(prevState => [
       ...prevState,
-      { id: 4, network_name: '', protocol: '//', base_url: '', data: '' },
+      { network_name: '', profile_url: '', public: true, user_name: '' },
     ]);
   }
 
@@ -63,12 +61,9 @@ const SocialLinks = ({ isEditable }: SocialLinksProps) => {
       {socialNetworkList.map(network => {
         if (network.network_name === 'github') {
           return !isEditable ? (
-            <Grid item key={network.id}>
+            <Grid item key={network.network_name}>
               <Tooltip title="GitHub">
-                <IconButton
-                  component="a"
-                  href={network.protocol + network.base_url + network.data}
-                >
+                <IconButton component="a" href={network.profile_url}>
                   <GitHubIcon color="primary" />
                 </IconButton>
               </Tooltip>
@@ -81,20 +76,24 @@ const SocialLinks = ({ isEditable }: SocialLinksProps) => {
               display="flex"
               justifyContent="flex-start"
               alignItems="flex-start"
-              key={network.id}
+              key={network.network_name}
             >
               <GitHubIcon color="primary" sx={{ ml: 3, mr: 1 }} />
-              <TextField disabled variant="standard" value={network.data} />
+              <TextField
+                disabled
+                variant="standard"
+                value={network.user_name}
+              />
             </Grid>
           );
         } else {
           return !isEditable ? (
-            <Grid item xs={isEditable ? 10 : 1} key={network.id}>
+            <Grid item xs={isEditable ? 10 : 1} key={network.network_name}>
               <Tooltip title={network.network_name}>
                 <IconButton
                   component="a"
                   sx={{ mr: 1 }}
-                  href={network.protocol + network.base_url + network.data}
+                  href={network.profile_url}
                 >
                   {(socialNetworkIcons as any)[network.network_name]}
                 </IconButton>
@@ -102,10 +101,9 @@ const SocialLinks = ({ isEditable }: SocialLinksProps) => {
             </Grid>
           ) : (
             <UpdateSocialLinks
-              key={network.id}
+              key={network.network_name}
               socialName={network.network_name}
-              networkData={network.data}
-              networkId={network.id}
+              networkData={network.user_name}
               setSocialNetworkList={setSocialNetworkList}
             />
           );
