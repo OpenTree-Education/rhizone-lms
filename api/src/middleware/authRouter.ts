@@ -43,7 +43,7 @@ authRouter.get(`/auth/github/callback`, async (req, res, next) => {
   try {
     accessToken = await getGithubAccessToken(String(code));
   } catch (err) {
-    console.log(err)
+    console.log(err);
     next(err);
     return;
   }
@@ -51,7 +51,7 @@ authRouter.get(`/auth/github/callback`, async (req, res, next) => {
   try {
     githubApiUser = await getGithubUser(accessToken);
   } catch (err) {
-    console.log(err)
+    console.log(err);
     next(err);
     return;
   }
@@ -61,19 +61,21 @@ authRouter.get(`/auth/github/callback`, async (req, res, next) => {
     username: githubApiUser.login,
     full_name: githubApiUser.name,
     bio: githubApiUser.bio,
-    avatar_url: githubApiUser.avatar_url
+    avatar_url: githubApiUser.avatar_url,
   };
 
   // Check to see if user already exists; if it doesn't, create it.
-  const principal_id = findGithubUserByGithubId(githubUserData.github_id).then(async (gitHubUser) => {
-    if (!gitHubUser || Object.keys(gitHubUser).length == 0) {
-      gitHubUser = await createGithubUser(githubUserData);
-    }
-    return gitHubUser.principal_id;
-  }).catch((err) => {
-    console.log(err);
-    return -1;
-  });
+  const principal_id = findGithubUserByGithubId(githubUserData.github_id)
+    .then(async gitHubUser => {
+      if (!gitHubUser || Object.keys(gitHubUser).length == 0) {
+        gitHubUser = await createGithubUser(githubUserData);
+      }
+      return gitHubUser.principal_id;
+    })
+    .catch(err => {
+      console.log(err);
+      return -1;
+    });
 
   const principalId = await principal_id;
 

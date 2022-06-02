@@ -11,8 +11,6 @@ import ReflectionsPage from './ReflectionsPage';
 import RequireAuth from './RequireAuth';
 import SessionContext from './SessionContext';
 import Profile from './Profile';
-//
-import UserDataPage from './UserDataPage';
 
 const App = () => {
   const { isAuthenticated } = useContext(SessionContext);
@@ -26,7 +24,6 @@ const App = () => {
             element={
               <RequireAuth>
                 <Profile />
-                {/* <UserDataPage /> */}
               </RequireAuth>
             }
           />
