@@ -51,6 +51,16 @@ const Profile = () => {
     setIsEditable(prevState => !prevState);
   }
 
+  /**
+   * Editing userData
+   *
+   * @param e - event the function recieved from input element change event
+   *
+   * @privateRemarks
+   *
+   * Update the user data state
+   */
+
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setUserData(prevData => {
       const newUserData = { ...prevData, [e.target.name]: e.target.value };

@@ -10,7 +10,12 @@ import { SocialNetwork } from '../types/api';
 interface SocialLinksProps {
   isEditable: boolean;
 }
-
+/**
+ *
+ * @privateRemarks
+ *
+ * dummydata that we hardcoded
+ */
 const networkData: SocialNetwork[] = [
   {
     network_name: 'github',
@@ -48,6 +53,11 @@ const socialNetworkIcons: SocialNetworkIcon = {
 
 const SocialLinks = ({ isEditable }: SocialLinksProps) => {
   const [socialNetworkList, setSocialNetworkList] = useState(networkData);
+
+  /**
+   * Create new social network field and add to social network list
+   *
+   */
 
   function handleAddButtonClick() {
     setSocialNetworkList(prevState => [
@@ -110,6 +120,7 @@ const SocialLinks = ({ isEditable }: SocialLinksProps) => {
         }
       })}
       <Grid item xs={isEditable ? 10 : 1}>
+        {/* The button will disappear after adding five additional social network fields */}
         {isEditable && socialNetworkList.length <= 5 && (
           <Button
             component="button"

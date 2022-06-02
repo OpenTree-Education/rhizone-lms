@@ -26,6 +26,16 @@ const UpdateSocialLinks = ({
   networkData,
   setSocialNetworkList,
 }: SocialLinksProps) => {
+  /**
+   * Changes network_name based on the value selected by drop down menu
+   *
+   * @param event - the event that we receive from drop down menu
+   *
+   * @privateRemarks
+   * Finds the item in social Network list array through the user_name (which is not ideal way)
+   *
+   */
+
   const handleNetworkNameChange = (event: SelectChangeEvent) => {
     setSocialNetworkList(prevState => {
       const socialNetworkToChange = prevState.find(
@@ -46,11 +56,26 @@ const UpdateSocialLinks = ({
     });
   };
 
+  /**
+   * Remove social network field from social network list
+   *
+   */
+
   function removeItem() {
     setSocialNetworkList(prevState =>
       prevState.filter(network => network.network_name !== socialName)
     );
   }
+
+  /**
+   * Changes user name based on the value that typed into the input field
+   *
+   * @param event - the event that we receive from input field change
+   *
+   * @privateRemarks
+   * Finds the item in social Network list array through the network_name and update (which is not ideal way)
+   *
+   */
 
   function handleNetworkDataChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSocialNetworkList(prevState => {
