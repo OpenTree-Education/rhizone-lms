@@ -43,16 +43,4 @@ profileRouter.get('/:principal_id', async (req, res, next) => {
   }
 });
 
-profileRouter.post('/:principal_id', async (req, res, next) => {
-  const { principal_id } = req.params;
-  const principalId = parseInt(principal_id);
-  const current_principal = req.session.principalId;
-
-  // Check to make sure we're logged into the same principal_id for which we got the request
-
-  // Parse the submitted information into usable information
-
-  // Call each individual function to save the modified data into the database
-});
-
 export default profileRouter;
