@@ -76,12 +76,3 @@ export interface SessionData extends Entity {
 export interface Settings extends Entity {
   default_questionnaire_id: EntityId;
 }
-
-export interface Profile extends Entity {
-  id: number;
-  email: string;
-  full_name: string;
-  avatar_url: string;
-  bio: string;
-  base_url: string;
-}

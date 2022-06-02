@@ -17,6 +17,11 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import LanguageIcon from '@mui/icons-material/Language';
 import EmailIcon from '@mui/icons-material/Email';
 
+//
+import { useState } from 'react';
+import useApiData from '../helpers/useApiData';
+import { EntityId, Competency as APICompetency } from '../types/api';
+
 const user = {
   name: 'Matthew Morenez',
   email: 'profile@example.com',
@@ -30,6 +35,13 @@ const user = {
 };
 
 const Profile = () => {
+  const [changedUserDataIds, setChangedUserDataIds] = useState<EntityId[]>([]);
+  const { data: userData, error } = useApiData<APICompetency[]>({
+    deps: [changedUserDataIds],
+    path: `/current-user`,
+    sendCredentials: true,
+  });
+
   return (
     <Container fixed>
       <Grid
