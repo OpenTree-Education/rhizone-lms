@@ -43,4 +43,26 @@ profileRouter.get('/:principal_id', async (req, res, next) => {
   }
 });
 
+profileRouter.put('/:principal_id', async (req, res, next) => {
+  const { principal_id } = req.params;
+  const principalId = parseInt(principal_id);
+
+  try {
+    // test to make sure the principal ID matches the principal ID of the user being modified
+
+    // parse the object we receive in the request into a well-formed IUserData object
+
+    // send the object to a function that will compare the IUserData object to the existing one
+    // and update the database accordingly.
+
+    // send back the appropriate HTTP status code and appropriate response to the requester
+    
+  } catch (err) {
+    console.error('err', err);
+    next(err);
+    return;
+  }
+
+})
+
 export default profileRouter;
