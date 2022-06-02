@@ -25,6 +25,7 @@ import reflectionsRouter from './middleware/reflectionsRouter';
 import settingsRouter from './middleware/settingsRouter';
 import { findConfig } from './services/configService';
 import profileRouter from './middleware/profileRouter';
+import socialNetworksRouter from './middleware/socialNetworksRouter';
 
 declare module 'express-session' {
   interface Session {
@@ -130,6 +131,7 @@ const start = async () => {
   app.use('/questionnaires', withCors, loggedIn, questionnairesRouter);
   app.use('/reflections', withCors, loggedIn, reflectionsRouter);
   app.use('/settings', withCors, settingsRouter);
+  app.use('/social_networks', withCors, socialNetworksRouter);
   app.use('/profile', withCors, profileRouter);
   app.get('/', (_, res) => {
     res.json({});

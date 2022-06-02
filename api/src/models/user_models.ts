@@ -1,3 +1,9 @@
+export interface ISocialNetwork {
+  id: number;
+  network_name: string;
+  protocol: string;
+  base_url: string;
+}
 export interface ISocialProfile {
   network_name: string;
   user_name: string;
