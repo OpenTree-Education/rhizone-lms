@@ -1,4 +1,5 @@
 import React from 'react';
+import { getGreeting } from '../helpers/greeting';
 
 import {
   Container,
@@ -16,11 +17,13 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import LanguageIcon from '@mui/icons-material/Language';
 import EmailIcon from '@mui/icons-material/Email';
+import ProgressBar from './ProgressBar';
+import CompetencyRatings from './CompetencyRatings';
 
-//
-import { useState } from 'react';
-import useApiData from '../helpers/useApiData';
-import { EntityId, Competency as APICompetency } from '../types/api';
+/**
+ * @privateRemarks
+ * User data is currently hardcoded but it will be pulling data from the database (github_users)
+ */
 
 const user = {
   name: 'Matthew Morenez',
@@ -35,15 +38,26 @@ const user = {
 };
 
 const Profile = () => {
-  const [changedUserDataIds, setChangedUserDataIds] = useState<EntityId[]>([]);
-  const { data: userData, error } = useApiData<APICompetency[]>({
-    deps: [changedUserDataIds],
-    path: `/current-user`,
-    sendCredentials: true,
-  });
+  const greeting = getGreeting(user.name);
 
   return (
     <Container fixed>
+      <Grid
+        container
+        sx={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          display: 'flex',
+          mb: 4,
+        }}
+        spacing={2}
+      >
+        <Grid item>
+          <Typography component="h2" variant="h6" color="primary">
+            {greeting}
+          </Typography>
+        </Grid>
+      </Grid>
       <Grid
         container
         sx={{
@@ -137,6 +151,19 @@ const Profile = () => {
             Competencies
           </Button>
         </Stack>
+        <Grid
+          item
+          xs={12}
+          display="flex"
+          flexDirection={{ md: 'row', xs: 'column' }}
+        >
+          <Grid item xs={12} md={6}>
+            <CompetencyRatings />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <ProgressBar />
+          </Grid>
+        </Grid>
       </Grid>
     </Container>
   );
