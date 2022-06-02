@@ -77,20 +77,11 @@ export interface Settings extends Entity {
   default_questionnaire_id: EntityId;
 }
 
-interface GithubAccounts extends Entitiy {
-  github_id: number;
-  username: string;
-  full_name: string;
-  bio: string;
-  avatar_url: string;
-  principal_id: EntityId;
-}
-
 export interface Profile extends Entity {
   id: number;
+  email: string;
   full_name: string;
-  email_address: string;
+  avatar_url: string;
   bio: string;
-  github_accounts: GithubAccounts[];
-  social_profiles: string[];
+  base_url: string;
 }
