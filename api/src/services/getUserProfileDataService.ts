@@ -51,22 +51,32 @@ export const getUserProfileData = (
 export const getUserSocials = async (
   principalId: number
 ): Promise<ISocialProfile[]> => {
-  const social_profiles: ISocialProfile[] = await db('principal_social')
+  const social_profiles: ISocialProfile[] = await db
     .select(
       db.raw('`social_networks`.`network_name` as network_name'),
       db.raw('`principal_social`.`data` as user_name'),
       db.raw(
         'CONCAT(`social_networks`.`protocol`, `social_networks`.`base_url`, `principal_social`.`data`) AS profile_url'
       ),
-      db.raw('`principal_social`.`public` as public')
+      db.raw('IF(`principal_social`.`public`, "true", "false") as public')
     )
-    .where({ principal_id: principalId })
+    .from<ISocialProfile>('principal_social')
+    .where('principal_id', principalId)
     .whereNotNull('data')
     .leftJoin(
       'social_networks',
       'principal_social.network_id',
       'social_networks.id'
-    );
+    ).then((returned_rows) => {
+      return returned_rows.map((row: any): ISocialProfile => {
+        return {
+          network_name: (row.network_name) ? row.network_name : '',
+          user_name: (row.user_name) ? row.user_name : '',
+          profile_url: (row.profile_url) ? row.profile_url : '',
+          public: (row.public) ? (row.public === 'true') : false
+        }
+      });
+    });
 
   return social_profiles;
 };
