@@ -28,19 +28,33 @@ export const compareAndUpdatePrincipals = (
     );
   }
 
-  //new_user_data.social_profiles.forEach(new_social_profile => {});
-
-  // const existing_avatar_url = existing_user_data.github_accounts.map(item => {
-  //   item.avatar_url;
-  // });
-
-  // const map_new_avatar_url = new_user_data.github_accounts.map(item => {
-  //   item.avatar_url;
-  // });
-
-  // if (existing_avatar_url !== new_avatar_url) {
-  //   modifyAvatarURL(existing_user_data.principal_id, new_avatar_url);
+  // if (existing_user_data.github_accounts[0].avatar_url !== new_user_data.github_accounts[0].avatar_url) {
+  //   modifyAvatarURL(
+  //     existing_user_data.principal_id,
+  //     new_user_data.github_accounts[0].avatar_url
+  //   );
   // }
+
+
+
+  // existing_user_data.social_profiles.forEach((existing_user_data, index) => {
+
+  //   if(existing_user_data !== new_user_data.social_profile)){
+  //     addSocialProfile(existing_user_data.principal_id, new_user_data.social_profile)
+  //   }
+
+  //   if(existing_user_data[index] !== new_social_profile.social_profiles[index].user_name){
+  //     modifySocialProfile(new_user_data.principal_id, new_social_profile)
+  //   }
+
+  // });
+
+ 
+  // new_user_data.social_profiles.forEach(new_social_profile => {
+  //   existing_user_data.social_profiles
+  // });
+
+
 
   // make sure to disregard any changes that are meaningless, like if
   // existing_user_data.bio is "" and new_user_data.bio is 'undefined', don't worry about it
