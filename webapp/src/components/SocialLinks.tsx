@@ -11,7 +11,7 @@ import { SocialProfile, UserData } from '../types/api';
 import RedditIcon from '@mui/icons-material/Reddit';
 import MailIcon from '@mui/icons-material/Mail';
 
-interface SocialLinksProps {
+interface SocialProfileProps {
   isEditable: boolean;
   profileList: SocialProfile[];
 }
@@ -36,9 +36,25 @@ const socialNetworkIcons: SocialNetworkIcon = {
   email: <MailIcon color="primary" />,
 };
 
-const SocialLinks = ({ isEditable, profileList }: SocialLinksProps) => {
-  const [socialNetworkList, setSocialNetworkList] =
-    useState<SocialProfile[]>(profileList);
+const SocialProfileIcons = ({
+  isEditable,
+  profileList,
+}: SocialProfileProps) => {
+  // Here's what antonina had:
+  // const [socialNetworkList, setsocialNetworkList] = useState<SocialProfile[]>(
+  //   []
+  // );
+  console.log(profileList);
+  const [socialProfileList, setSocialProfileList] = useState<SocialProfile[]>([
+    profileList[0],
+  ]);
+  console.log(socialProfileList);
+  socialProfileList.forEach((social_profile: SocialProfile) => {
+    console.log(social_profile);
+  });
+  if (!profileList) {
+    return <p>Error, here is no social profile.</p>;
+  }
 
   // We need to retrieve a list of all possible social networks
 
@@ -63,12 +79,12 @@ const SocialLinks = ({ isEditable, profileList }: SocialLinksProps) => {
 
   return (
     <>
-      {socialNetworkList.map(network => {
-        if (network.network_name === 'github') {
+      {socialProfileList.map(network => {
+        if (network?.network_name === 'github') {
           return !isEditable ? (
-            <Grid item key={network.network_name}>
+            <Grid item key={network?.network_name}>
               <Tooltip title="GitHub">
-                <IconButton component="a" href={network.profile_url}>
+                <IconButton component="a" href={network?.profile_url}>
                   <GitHubIcon color="primary" />
                 </IconButton>
               </Tooltip>
@@ -81,47 +97,47 @@ const SocialLinks = ({ isEditable, profileList }: SocialLinksProps) => {
               display="flex"
               justifyContent="flex-start"
               alignItems="flex-start"
-              key={network.network_name}
+              key={network?.network_name}
             >
               <GitHubIcon color="primary" sx={{ ml: 3, mr: 1 }} />
               <TextField
                 disabled
                 variant="standard"
-                value={network.network_name}
+                value={network?.network_name}
               />
             </Grid>
           );
         } else {
           return !isEditable ? (
-            <Grid item xs={isEditable ? 10 : 1} key={network.network_name}>
-              <Tooltip title={network.network_name}>
+            <Grid item xs={isEditable ? 10 : 1} key={network?.network_name}>
+              <Tooltip title={network?.network_name}>
                 <IconButton
                   component="a"
                   sx={{ mr: 1 }}
-                  href={network.profile_url}
+                  href={network?.profile_url}
                 >
-                  {(socialNetworkIcons as any)[network.network_name]}
+                  {(socialNetworkIcons as any)[network?.network_name]}
                 </IconButton>
               </Tooltip>
             </Grid>
           ) : (
             <UpdateSocialLinks
-              key={network.network_name}
-              socialName={network.network_name}
-              networkData={network.network_name}
-              setSocialNetworkList={setSocialNetworkList}
+              key={network?.network_name}
+              socialName={network?.network_name}
+              networkData={network?.network_name}
+              socialProfileList={socialProfileList}
             />
           );
         }
       })}
       <Grid item xs={isEditable ? 10 : 1}>
         {/* The button will disappear after adding five additional social network fields */}
-        {isEditable && socialNetworkList.length <= 5 && (
+        {isEditable && socialProfileList.length <= 5 && (
           <Button
             component="button"
             variant="contained"
             onClick={() => {
-              setSocialNetworkList(prevState => [
+              setSocialProfileList(prevState => [
                 ...prevState,
                 {
                   network_name: '',

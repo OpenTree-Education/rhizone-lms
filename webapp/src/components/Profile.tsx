@@ -28,34 +28,35 @@ import { GitHubUser, SocialProfile, UserData } from '../types/api.d';
 
 // default data in case we don't get anything back from the db
 let user: UserData;
-let id = null;
+let id = -1;
 let avatar_url = '';
 let full_name = '';
 let bio = '';
 let email_address = '';
 let github_accounts: GitHubUser[] = [];
 let social_profiles: SocialProfile[] = [];
-user = {
-  id: id,
-  full_name: full_name,
-  bio: bio,
-  email_address: email_address,
-  github_accounts: github_accounts,
-  social_profiles: social_profiles,
-};
 
 const Profile = () => {
   const [isEditable, setIsEditable] = useState(false);
-  const [userData, setUserData] = useState<UserData[]>();
   const greeting = getGreeting(full_name);
   const { data: api_user_data } = useApiData<UserData[]>({
     path: `/profile/1`,
     sendCredentials: true,
   });
+  console.log(user);
 
   if (api_user_data && api_user_data.length > 0) {
     const [user_data] = api_user_data;
     user = user_data;
+
+    if (user.id && user.id !== 'null') {
+      if (typeof user.id === 'string') {
+        id = parseInt(user.id);
+      } else if (typeof user.id === 'number') {
+        const { id: userId } = user;
+        id = userId;
+      }
+    }
 
     if (user.full_name && user.full_name !== '') {
       const { full_name: fullName } = user;
@@ -100,9 +101,20 @@ const Profile = () => {
         }
       });
     }
+
+    user = {
+      id: id,
+      full_name: full_name,
+      bio: bio,
+      email_address: email_address,
+      github_accounts: github_accounts,
+      social_profiles: social_profiles,
+    };
   }
 
-  console.log(api_user_data);
+  const [userData, setUserData] = useState<UserData>(user);
+
+  console.log(social_profiles);
   function handleEditButtonClick() {
     setIsEditable(prevState => !prevState);
   }
@@ -254,10 +266,8 @@ const Profile = () => {
             sx={{ mt: 3 }}
             ml={{ md: -1, sm: -2 }}
           >
-            <SocialLinks
-              isEditable={isEditable}
-              profileList={social_profiles}
-            />
+            <SocialProfileIcons profileList={social_profiles} />
+            <SocialProfileEditForm profileList={social_profiles} />
           </Grid>
         </Grid>
       </Grid>

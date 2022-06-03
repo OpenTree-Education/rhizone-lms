@@ -23,7 +23,7 @@ import useApiData from '../helpers/useApiData';
 interface SocialLinksProps {
   socialName: string;
   networkData: string;
-  setSocialNetworkList: React.Dispatch<React.SetStateAction<SocialProfile[]>>;
+  socialProfileList: SocialProfile[];
 }
 
 interface SocialNetworkIcon {
@@ -119,7 +119,7 @@ const socialNetworkIcons: SocialNetworkIcon = {
 const UpdateSocialLinks = ({
   socialName,
   networkData,
-  setSocialNetworkList,
+  socialProfileList,
 }: SocialLinksProps) => {
   const { data: socialNetworkOptions, error } = useApiData<SocialNetwork[]>({
     deps: [socialName],
@@ -146,23 +146,21 @@ const UpdateSocialLinks = ({
    */
 
   const handleNetworkNameChange = (event: SelectChangeEvent) => {
-    setSocialNetworkList(prevState => {
-      const socialNetworkToChange = prevState.find(
-        network => network.network_name === networkData
-      );
-
-      const newSocialNetwork = {
-        ...socialNetworkToChange,
-        network_name: event.target.value,
-      };
-
-      const indexToChange: number = prevState.findIndex(
-        network => network === socialNetworkToChange
-      );
-      const newState = [...prevState];
-      newState.splice(indexToChange, 1, newSocialNetwork as SocialProfile);
-      return newState;
-    });
+    // setSocialProfileList(prevState => {
+    //   const socialNetworkToChange = prevState.find(
+    //     network => network.network_name === networkData
+    //   );
+    //   const newSocialNetwork = {
+    //     ...socialNetworkToChange,
+    //     network_name: event.target.value,
+    //   };
+    //   const indexToChange: number = prevState.findIndex(
+    //     network => network === socialNetworkToChange
+    //   );
+    //   const newState = [...prevState];
+    //   newState.splice(indexToChange, 1, newSocialNetwork as SocialProfile);
+    //   return newState;
+    // });
   };
 
   /**
@@ -171,9 +169,9 @@ const UpdateSocialLinks = ({
    */
 
   function removeItem() {
-    setSocialNetworkList(prevState =>
-      prevState.filter(network => network.network_name !== socialName)
-    );
+    // setSocialProfileList(prevState =>
+    //   prevState.filter(network => network.network_name !== socialName)
+    // );
   }
 
   /**
@@ -187,23 +185,21 @@ const UpdateSocialLinks = ({
    */
 
   function handleNetworkDataChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setSocialNetworkList(prevState => {
-      const socialNetworkToChange = prevState.find(
-        network => network.network_name === socialName
-      );
-
-      const newSocialNetwork = {
-        ...socialNetworkToChange,
-        user_name: event.target.value,
-      };
-
-      const indexToChange: number = prevState.findIndex(
-        network => network === socialNetworkToChange
-      );
-      const newState = [...prevState];
-      newState.splice(indexToChange, 1, newSocialNetwork as SocialProfile);
-      return newState;
-    });
+    // setSocialProfileList(prevState => {
+    //   const socialNetworkToChange = prevState.find(
+    //     network => network.network_name === socialName
+    //   );
+    //   const newSocialNetwork = {
+    //     ...socialNetworkToChange,
+    //     user_name: event.target.value,
+    //   };
+    //   const indexToChange: number = prevState.findIndex(
+    //     network => network === socialNetworkToChange
+    //   );
+    //   const newState = [...prevState];
+    //   newState.splice(indexToChange, 1, newSocialNetwork as SocialProfile);
+    //   return newState;
+    // });
   }
 
   return (
