@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, setState } from 'react';
 import { getGreeting } from '../helpers/greeting';
 import useApiData from '../helpers/useApiData';
 import SessionContext from './SessionContext';
@@ -80,6 +80,14 @@ const Profile = () => {{}
     if (user.social_profiles && user.social_profiles.length > 0) {
       const { social_profiles: social_profile_list } = user;
       social_profiles = social_profile_list;
+
+      social_profile_list.forEach((social_profile: SocialProfile) => {
+        if (social_profile.network_name === "email") {
+          if (email_address === "") {
+            email_address = social_profile.user_name;
+          }
+        }
+      });
     }
   }
 
@@ -91,6 +99,8 @@ const Profile = () => {{}
     github_accounts: github_accounts,
     social_profiles: social_profiles
   };
+
+  setState({user: user});
 
   const [isEditable, setIsEditable] = useState(false);
   const [userData, setUserData] = useState(user);
@@ -183,14 +193,14 @@ const Profile = () => {{}
               {isEditable ? (
                 <TextField
                   type="text"
-                  value={full_name}
+                  value={user.full_name}
                   onChange={handleChange}
                   name="full_name"
                   variant="standard"
                   label="Full name"
                 />
               ) : (
-                full_name
+                user.full_name
               )}
               &apos;s Profile
             </Typography>
@@ -246,7 +256,7 @@ const Profile = () => {{}
             sx={{ mt: 3 }}
             ml={{ md: -1, sm: -2 }}
           >
-            <SocialLinks isEditable={isEditable} />
+            <SocialLinks isEditable={isEditable} profileList={user.social_profiles} />
           </Grid>
         </Grid>
       </Grid>
