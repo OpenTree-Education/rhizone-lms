@@ -5,15 +5,15 @@ import db from './db';
  * Parses a JSON object submitted and transforms it into one that conforms to the IUserData interface, if possible.
  * 
  * @param submitted_user_data (any) An object that needs to be parsed
- * @param path_principal_id (number) The principal defined in the URL path
+ * @param path_id (number) The principal defined in the URL path
  * @returns formatted object, if possible; Error if not
  */
-export const parsePutSubmission = (submitted_user_data: any, path_principal_id: number) => {
+export const parsePutSubmission = (submitted_user_data: any, path_id: number) => {
   let submitted_user: IUserData;
 
-  if (submitted_user_data.principal_id) {
+  if (submitted_user_data.id) {
     submitted_user = {
-      principal_id: submitted_user_data.principal_id,
+      id: submitted_user_data.id,
     };
   } else {
     throw new Error(
@@ -22,7 +22,7 @@ export const parsePutSubmission = (submitted_user_data: any, path_principal_id: 
   }
 
   // test to make sure the path principal ID matches the principal ID in the UserData object that was submitted
-  if (submitted_user.principal_id !== path_principal_id) {
+  if (submitted_user.id !== path_id) {
     throw new Error(
       'Principal ID in IUserData object does not match the principal ID in path.'
     );
@@ -84,23 +84,23 @@ export const compareAndUpdatePrincipals = async (
   // for each element in the IUserData objects, compare to see if it's been updated
   // i.e does existing_user_data.bio == new_user_data.bio and so on
 
-  if (existing_user_data.principal_id !== new_user_data.principal_id) {
+  if (existing_user_data.id !== new_user_data.id) {
     throw new Error("Principal IDs being compared do not match.");
   }
 
   if (existing_user_data.bio !== new_user_data.bio) {
-    modifyBio(existing_user_data.principal_id, new_user_data.bio);
+    modifyBio(existing_user_data.id, new_user_data.bio);
     modified_data = true;
   }
 
   if (existing_user_data.full_name !== new_user_data.full_name) {
-    modifyFullName(existing_user_data.principal_id, new_user_data.full_name);
+    modifyFullName(existing_user_data.id, new_user_data.full_name);
     modified_data = true;
   }
 
   if (existing_user_data.email_address !== new_user_data.email_address) {
     modifyEmailAddress(
-      existing_user_data.principal_id,
+      existing_user_data.id,
       new_user_data.email_address
     );
     modified_data = true;
@@ -147,24 +147,24 @@ export const compareAndUpdatePrincipals = async (
     switch (true) {
       case (existing_user_profile !== null && new_user_profile !== null):
         if (existing_user_profile.user_name != new_user_profile.user_name) {
-          modifySocialProfile(existing_user_data.principal_id, social_network_id, new_user_profile);
+          modifySocialProfile(existing_user_data.id, social_network_id, new_user_profile);
         }
         if (social_network_name == "email") {
-          modifyEmailAddress(existing_user_data.principal_id, new_user_profile.user_name);
+          modifyEmailAddress(existing_user_data.id, new_user_profile.user_name);
         }
         modified_data = true;
         break;
       case (existing_user_profile !== null && new_user_profile === null):
-        deleteSocialProfile(existing_user_data.principal_id, social_network_id);
+        deleteSocialProfile(existing_user_data.id, social_network_id);
         if (social_network_name == "email") {
-          modifyEmailAddress(existing_user_data.principal_id, null);
+          modifyEmailAddress(existing_user_data.id, null);
         }
         modified_data = true;
         break;
       case (existing_user_profile === null && new_user_profile !== null):
-        addSocialProfile(existing_user_data.principal_id, social_network_id, new_user_profile);
+        addSocialProfile(existing_user_data.id, social_network_id, new_user_profile);
         if (social_network_name == "email") {
-          modifyEmailAddress(existing_user_data.principal_id, new_user_profile.user_name);
+          modifyEmailAddress(existing_user_data.id, new_user_profile.user_name);
         }
         modified_data = true;
         break;
@@ -212,55 +212,55 @@ export const modifySocialProfile = async (
  * Removes a record into the `principal_social` table corresponding to the
  * principal ID and social network ID.
  * 
- * @param principal_id ID of the principal whose profile is being removing
+ * @param id ID of the principal whose profile is being removing
  * @param social_network_id ID of the social network whose profile we're removing
  */
 export const deleteSocialProfile = async (
-  principal_id: number,
+  id: number,
   social_network_id: number
 ) => {
-  return await db('principal_social').where({ principal_id: principal_id, network_id: social_network_id }).del();
+  return await db('principal_social').where({ id: id, network_id: social_network_id }).del();
 };
 
 /**
  * Modifies the bio in the `principals` table for a given principal.
  * 
- * @param principal_id ID of the principal who needs a bio modification
+ * @param id ID of the principal who needs a bio modification
  * @param bio The new bio for the user.
  */
-export const modifyBio = async (principal_id: number, bio: string) => {
-  return await db('github_users').where({ principal_id }).update({ bio: bio });
+export const modifyBio = async (id: number, bio: string) => {
+  return await db('principals').where({ id: id }).update({ bio: bio });
 };
 
 /**
  * Modifies the full name in the `principals` table for a given principal.
  * 
- * @param principal_id ID of the principal who needs a bio modification
+ * @param id ID of the principal who needs a bio modification
  * @param full_name The new full name for the user.
  */
-export const modifyFullName = async (principal_id: number, full_name: string) => {
-  await db('github_users').where({ principal_id }).update({ full_name: full_name });
+export const modifyFullName = async (id: number, full_name: string) => {
+  await db('principals').where({ id: id }).update({ full_name: full_name });
 };
 
 /**
  * Modifies the avatar URL in the `principals` table for a given principal.
  * 
- * @param principal_id ID of the principal who needs a bio modification
+ * @param id ID of the principal who needs a bio modification
  * @param avatar_url The new avatar URL for the user.
  */
-export const modifyAvatarURL = async (principal_id: number, avatar_url: string) => {
-  await db('github_users').where({ principal_id }).update({ avatar_url: avatar_url });
+export const modifyAvatarURL = async (id: number, avatar_url: string) => {
+  await db('principals').where({ id: id }).update({ avatar_url: avatar_url });
 };
 
 /**
  * Modifies the email address in the `principals` table for a given principal.
  * 
- * @param principal_id ID of the principal who needs a bio modification
+ * @param id ID of the principal who needs a bio modification
  * @param bio The new bio for the user.
  */
 export const modifyEmailAddress = async (
-  principal_id: number,
+  id: number,
   email_address: string
 ) => {
-  await db('github_users').where({ principal_id }).update({ email_address: email_address });
+  await db('principals').where({ id: id }).update({ email_address: email_address });
 };

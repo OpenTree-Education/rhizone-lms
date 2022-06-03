@@ -22,7 +22,7 @@ export interface IGitHubUser {
 }
 
 export interface IUserData {
-  principal_id: number;
+  id: number;
   github_accounts?: Array<IGitHubUser>;
   social_profiles?: Array<ISocialProfile>;
   full_name?: string;
