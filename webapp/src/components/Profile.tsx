@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { getGreeting } from '../helpers/greeting';
 import useApiData from '../helpers/useApiData';
-import SessionContext from './SessionContext';
 
 import {
   Container,
@@ -12,19 +11,15 @@ import {
   IconButton,
   Typography,
   Button,
-  Stack,
-  TextField,
+  Stack
 } from '@mui/material';
 
-import EmailIcon from '@mui/icons-material/Email';
 import EditIcon from '@mui/icons-material/Edit';
-import CheckIcon from '@mui/icons-material/Check';
 import ProgressBar from './ProgressBar';
 import CompetencyRatings from './CompetencyRatings';
-import SocialLinks from './SocialLinks';
-import SportsBasketballIcon from '@mui/icons-material/SportsBasketball';
 
 import { GitHubUser, SocialProfile, UserData } from '../types/api.d';
+import SocialProfileLinks from './SocialLinks';
 
 // default data in case we don't get anything back from the db
 let user: UserData;
@@ -37,7 +32,6 @@ let github_accounts: GitHubUser[] = [];
 let social_profiles: SocialProfile[] = [];
 
 const Profile = () => {
-  const [isEditable, setIsEditable] = useState(false);
   const greeting = getGreeting(full_name);
   const { data: api_user_data } = useApiData<UserData[]>({
     path: `/profile/1`,
@@ -47,6 +41,7 @@ const Profile = () => {
 
   if (api_user_data && api_user_data.length > 0) {
     const [user_data] = api_user_data;
+    console.log("api_user_data: ", api_user_data);
     user = user_data;
 
     if (user.id && user.id !== 'null') {
@@ -93,7 +88,7 @@ const Profile = () => {
       const { social_profiles: social_profile_list } = user;
       social_profiles = social_profile_list;
 
-      social_profile_list.forEach((social_profile: SocialProfile) => {
+      social_profile_list.forEach((social_profile) => {
         if (social_profile.network_name === 'email') {
           if (email_address === '') {
             email_address = social_profile.user_name;
@@ -110,31 +105,8 @@ const Profile = () => {
       github_accounts: github_accounts,
       social_profiles: social_profiles,
     };
-  }
 
-  const [userData, setUserData] = useState<UserData>(user);
-
-  console.log(social_profiles);
-  function handleEditButtonClick() {
-    setIsEditable(prevState => !prevState);
-  }
-
-  /**
-   * Editing userData
-   *
-   * @param e - event the function recieved from input element change event
-   *
-   * @privateRemarks
-   *
-   * Update the user data state
-   * Update: the function is not working, getting type errors
-   */
-
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    // setUserData(prevData as UserData[] => {
-    //   const newUserData = { ...prevData, [e.target.name]: e.target.value };
-    //   return newUserData;
-    // });
+    console.log(user);
   }
 
   return (
@@ -200,63 +172,16 @@ const Profile = () => {
         >
           <Grid item display="flex">
             <Typography component="h2" variant="h4">
-              {isEditable ? (
-                <TextField
-                  type="text"
-                  value={full_name}
-                  onChange={handleChange}
-                  name="full_name"
-                  variant="standard"
-                  label="Full name"
-                />
-              ) : (
-                full_name
-              )}
-              &apos;s Profile
+              {full_name}
             </Typography>
-            <Tooltip title={isEditable ? 'Save' : 'Edit'}>
+            <Tooltip title='Edit'>
               <IconButton
                 component="button"
                 sx={{ ml: 2 }}
-                onClick={handleEditButtonClick}
               >
-                {!isEditable ? (
                   <EditIcon color="primary" />
-                ) : (
-                  <CheckIcon color="primary" />
-                )}
               </IconButton>
             </Tooltip>
-          </Grid>
-          <Grid
-            item
-            display="flex"
-            justifyContent="flex-start"
-            alignItems="flex-start"
-            sx={{ mt: 3 }}
-            ml={{ sm: isEditable ? -21 : 0, md: -1, xs: 0 }}
-          >
-            <EmailIcon
-              sx={{
-                mr: 1,
-                mt: isEditable ? 3 : 0,
-              }}
-              color="primary"
-            />
-            <Typography component="div">
-              {isEditable ? (
-                <TextField
-                  type="email"
-                  value={email_address}
-                  onChange={handleChange}
-                  name="email"
-                  variant="standard"
-                  label="Email"
-                />
-              ) : (
-                email_address
-              )}
-            </Typography>
           </Grid>
           <Grid
             container
@@ -266,8 +191,7 @@ const Profile = () => {
             sx={{ mt: 3 }}
             ml={{ md: -1, sm: -2 }}
           >
-            <SocialProfileIcons profileList={social_profiles} />
-            <SocialProfileEditForm profileList={social_profiles} />
+            <SocialProfileLinks profileList={social_profiles} />
           </Grid>
         </Grid>
       </Grid>
@@ -278,19 +202,7 @@ const Profile = () => {
             Summary
           </Typography>
           <Typography component="div">
-            {isEditable ? (
-              <TextField
-                value={bio}
-                onChange={handleChange}
-                name="summary"
-                variant="standard"
-                label="User Summary"
-                multiline
-                fullWidth
-              />
-            ) : (
-              bio
-            )}
+            {bio}
           </Typography>
         </Grid>
         <Stack spacing={2} direction="row" sx={{ mt: 4 }}>

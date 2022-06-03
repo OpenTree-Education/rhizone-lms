@@ -102,7 +102,7 @@ export interface SocialProfile {
   network_name: string;
   user_name: string;
   profile_url: string;
-  public: number;
+  public: boolean;
 }
 
 export interface GitHubUser {
