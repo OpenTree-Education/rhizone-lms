@@ -18,26 +18,26 @@ interface SocialLinksProps {
  *
  * dummydata that we hardcoded
  */
-const networkData: SocialProfile[] = [
-  {
-    network_name: 'github',
-    profile_url: '//github.com/matthew_morenez',
-    user_name: 'matthew_morenez',
-    public: true,
-  },
-  {
-    network_name: 'website',
-    profile_url: '//example.com',
-    user_name: 'example.com',
-    public: true,
-  },
-  {
-    network_name: 'linkedin',
-    profile_url: '//linkedin.com/in/matthew_morenez',
-    user_name: 'matthew_morenez',
-    public: true,
-  },
-];
+// const networkData: SocialNetwork[] = [
+//   {
+//     network_name: 'github',
+//     profile_url: '//github.com/matthew_morenez',
+//     user_name: 'matthew_morenez',
+//     public: true,
+//   },
+//   {
+//     network_name: 'website',
+//     profile_url: '//example.com',
+//     user_name: 'example.com',
+//     public: true,
+//   },
+//   {
+//     network_name: 'linkedin',
+//     profile_url: '//linkedin.com/in/matthew_morenez',
+//     user_name: 'matthew_morenez',
+//     public: true,
+//   },
+// ];
 
 interface SocialNetworkIcon {
   github: JSX.Element;
@@ -54,6 +54,9 @@ const socialNetworkIcons: SocialNetworkIcon = {
 };
 
 const SocialLinks = ({ isEditable }: SocialLinksProps) => {
+<<<<<<< HEAD
+  const [socialNetworkList, setSocialNetworkList] = useState(socialNetworkIcons);
+=======
   const [socialNetworkList, setSocialNetworkList] =
     useState<SocialProfile[]>(networkData);
 
@@ -89,6 +92,7 @@ const SocialLinks = ({ isEditable }: SocialLinksProps) => {
   // - a drop-down list of [all possible social networks] with the one selected corresponding to the social network of that socialprofile
   // - the user_name of the socialprofile
   // - a checkbox linked to public visibility of the socialprofile
+>>>>>>> 0258a4223b8cebf2990d759ecf3019c21521d313
 
   // plus we should also see a "add social network" button that adds a new form row that looks like the above
 
