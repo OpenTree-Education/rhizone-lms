@@ -23,7 +23,7 @@ import ProgressBar from './ProgressBar';
 import CompetencyRatings from './CompetencyRatings';
 import SocialLinks from './SocialLinks';
 
-import { UserData } from '../types/api.d';
+import { GitHubUser, SocialProfile, UserData } from '../types/api.d';
 
 const Profile = () => {{}
   const { data: api_user_data } = useApiData<UserData[]>({
@@ -31,17 +31,40 @@ const Profile = () => {{}
     sendCredentials: true,
   });
   let user: UserData;
+
+  // default data in case we don't get anything back from the db
+  let id = null;
   let avatar_url = "";
   let full_name = "";
+  let bio = "";
+  let email_address = "";
+  let github_accounts: GitHubUser[] = [];
+  let social_profiles: SocialProfile[] = [];
+
   if (api_user_data && api_user_data.length > 0) {
+
     const [ user_data ] = api_user_data;
     user = user_data;
+
     if (user.full_name && user.full_name !== "") {
       const { full_name:fullName } = user;
       full_name = fullName;
     }
+
+    if (user.bio && user.bio !== "") {
+      const { bio: userBio } = user;
+      bio = userBio;
+    }
+
+    if (user.email_address && user.email_address !== "") {
+      const { email_address: userEmail } = user;
+      email_address = userEmail;
+    }
+
     if (user.github_accounts && user.github_accounts.length > 0) {
       const [ github_account ] = user.github_accounts;
+      github_accounts.push(github_account);
+
       if (github_account.avatar_url) {
         const { avatar_url: avatar } = github_account;
         avatar_url = avatar;
@@ -53,25 +76,22 @@ const Profile = () => {{}
         }
       }
     }
-  } else {
-    user = {
-      id: null,
-      full_name: "Unknown User",
-      bio: "",
-      email_address: "",
-      github_accounts: [
-        {
-          github_id: -1,
-          username: "",
-          full_name: "",
-          avatar_url: "",
-          bio: "",
-          principal_id: -1
-        }
-      ],
-      social_profiles: []
-    };
+
+    if (user.social_profiles && user.social_profiles.length > 0) {
+      const { social_profiles: social_profile_list } = user;
+      social_profiles = social_profile_list;
+    }
   }
+
+  user = {
+    id: id,
+    full_name: full_name,
+    bio: bio,
+    email_address: email_address,
+    github_accounts: github_accounts,
+    social_profiles: social_profiles
+  };
+
   const [isEditable, setIsEditable] = useState(false);
   const [userData, setUserData] = useState(user);
   const greeting = getGreeting(full_name);
