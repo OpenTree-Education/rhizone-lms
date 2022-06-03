@@ -16,26 +16,26 @@ interface SocialLinksProps {
  *
  * dummydata that we hardcoded
  */
-const networkData: SocialNetwork[] = [
-  {
-    network_name: 'github',
-    profile_url: '//github.com/matthew_morenez',
-    user_name: 'matthew_morenez',
-    public: true,
-  },
-  {
-    network_name: 'website',
-    profile_url: '//example.com',
-    user_name: 'example.com',
-    public: true,
-  },
-  {
-    network_name: 'linkedin',
-    profile_url: '//linkedin.com/in/matthew_morenez',
-    user_name: 'matthew_morenez',
-    public: true,
-  },
-];
+// const networkData: SocialNetwork[] = [
+//   {
+//     network_name: 'github',
+//     profile_url: '//github.com/matthew_morenez',
+//     user_name: 'matthew_morenez',
+//     public: true,
+//   },
+//   {
+//     network_name: 'website',
+//     profile_url: '//example.com',
+//     user_name: 'example.com',
+//     public: true,
+//   },
+//   {
+//     network_name: 'linkedin',
+//     profile_url: '//linkedin.com/in/matthew_morenez',
+//     user_name: 'matthew_morenez',
+//     public: true,
+//   },
+// ];
 
 interface SocialNetworkIcon {
   github: JSX.Element;
@@ -52,7 +52,7 @@ const socialNetworkIcons: SocialNetworkIcon = {
 };
 
 const SocialLinks = ({ isEditable }: SocialLinksProps) => {
-  const [socialNetworkList, setSocialNetworkList] = useState(networkData);
+  const [socialNetworkList, setSocialNetworkList] = useState(socialNetworkIcons);
 
   /**
    * Create new social network field and add to social network list
