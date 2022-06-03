@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { getGreeting } from '../helpers/greeting';
 import useApiData from '../helpers/useApiData';
-import { EntityId, Profile as APIProfile } from '../types/api';
 import SessionContext from './SessionContext';
 
 import {
@@ -149,11 +148,15 @@ const Profile = () => {
               &apos;s Profile
             </Typography>
             <Tooltip title={isEditable ? 'Save' : 'Edit'}>
-              <IconButton component="button" sx={{ ml: 2 }}>
+              <IconButton
+                component="button"
+                sx={{ ml: 2 }}
+                onClick={handleEditButtonClick}
+              >
                 {!isEditable ? (
-                  <EditIcon color="primary" onClick={handleEditButtonClick} />
+                  <EditIcon color="primary" />
                 ) : (
-                  <CheckIcon color="primary" onClick={handleEditButtonClick} />
+                  <CheckIcon color="primary" />
                 )}
               </IconButton>
             </Tooltip>
