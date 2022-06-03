@@ -114,10 +114,9 @@ export interface GitHubUser {
   principal_id?: number;
 }
 
-export interface UserData {
-  principal_id: number;
-  github_accounts?: Array<IGitHubUser>;
-  social_profiles?: Array<ISocialProfile>;
+export interface UserData extends Entity {
+  github_accounts?: Array<GitHubUser>;
+  social_profiles?: Array<SocialProfile>;
   full_name?: string;
   email_address?: string;
   bio?: string;

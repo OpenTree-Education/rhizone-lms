@@ -23,31 +23,58 @@ import ProgressBar from './ProgressBar';
 import CompetencyRatings from './CompetencyRatings';
 import SocialLinks from './SocialLinks';
 
-/**
- * @privateRemarks
- * User data is currently hardcoded but it will be pulling data from the database (github_users)
- */
+import { UserData } from '../types/api.d';
 
-interface DummyUserData {
-  full_name: string;
-  email: string;
-  avatar: string;
-  summary?: string;
-}
-
-const user: DummyUserData = {
-  full_name: 'Matthew Morenez',
-  email: 'profile@example.com',
-  avatar:
-    'https://media.volinspire.com/images/95/e4/99/95e499b759ba57975a61c7bf66a3414dd5a2625e_profile.jpg',
-  summary:
-    'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia, sit impedit? Cupiditate veniam eaque suscipit eligendi. Sint delectus enim earum non repellendus nihil numquam libero odit temporibus et, natus eaque?',
-};
-
-const Profile = () => {
+const Profile = () => {{}
+  const { data: api_user_data } = useApiData<UserData[]>({
+    path: `/profile/1`,
+    sendCredentials: true,
+  });
+  let user: UserData;
+  let avatar_url = "";
+  let full_name = "";
+  if (api_user_data && api_user_data.length > 0) {
+    const [ user_data ] = api_user_data;
+    user = user_data;
+    if (user.full_name && user.full_name !== "") {
+      const { full_name:fullName } = user;
+      full_name = fullName;
+    }
+    if (user.github_accounts && user.github_accounts.length > 0) {
+      const [ github_account ] = user.github_accounts;
+      if (github_account.avatar_url) {
+        const { avatar_url: avatar } = github_account;
+        avatar_url = avatar;
+      }
+      if (github_account.full_name && github_account.full_name !== "") {
+        if (full_name === "") {
+          const { full_name: fullName } = github_account;
+          full_name = fullName;
+        }
+      }
+    }
+  } else {
+    user = {
+      id: null,
+      full_name: "Unknown User",
+      bio: "",
+      email_address: "",
+      github_accounts: [
+        {
+          github_id: -1,
+          username: "",
+          full_name: "",
+          avatar_url: "",
+          bio: "",
+          principal_id: -1
+        }
+      ],
+      social_profiles: []
+    };
+  }
   const [isEditable, setIsEditable] = useState(false);
   const [userData, setUserData] = useState(user);
-  const greeting = getGreeting(userData.full_name);
+  const greeting = getGreeting(full_name);
 
   function handleEditButtonClick() {
     setIsEditable(prevState => !prevState);
@@ -115,7 +142,7 @@ const Profile = () => {
               border: '3px solid #fff',
               outline: '2px solid #1976d2',
             }}
-            src={userData.avatar}
+            src={avatar_url}
           ></Avatar>
         </Grid>
         <Grid
@@ -136,14 +163,14 @@ const Profile = () => {
               {isEditable ? (
                 <TextField
                   type="text"
-                  value={userData.full_name}
+                  value={full_name}
                   onChange={handleChange}
                   name="full_name"
                   variant="standard"
                   label="Full name"
                 />
               ) : (
-                userData.full_name
+                full_name
               )}
               &apos;s Profile
             </Typography>
@@ -180,14 +207,14 @@ const Profile = () => {
               {isEditable ? (
                 <TextField
                   type="email"
-                  value={userData.email}
+                  value={user.email_address}
                   onChange={handleChange}
                   name="email"
                   variant="standard"
                   label="Email"
                 />
               ) : (
-                userData.email
+                user.email_address
               )}
             </Typography>
           </Grid>
@@ -212,7 +239,7 @@ const Profile = () => {
           <Typography component="p">
             {isEditable ? (
               <TextField
-                value={userData.summary}
+                value={user.bio}
                 onChange={handleChange}
                 name="summary"
                 variant="standard"
@@ -221,7 +248,7 @@ const Profile = () => {
                 fullWidth
               />
             ) : (
-              userData.summary
+              user.bio
             )}
           </Typography>
         </Grid>
