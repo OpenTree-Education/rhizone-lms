@@ -4,6 +4,7 @@ export interface ISocialNetwork {
   protocol: string;
   base_url: string;
 }
+
 export interface ISocialProfile {
   network_name: string;
   user_name: string;
