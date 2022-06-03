@@ -1,4 +1,4 @@
-import React, { useState, setState } from 'react';
+import React, { useState } from 'react';
 import { getGreeting } from '../helpers/greeting';
 import useApiData from '../helpers/useApiData';
 import SessionContext from './SessionContext';
@@ -22,55 +22,66 @@ import CheckIcon from '@mui/icons-material/Check';
 import ProgressBar from './ProgressBar';
 import CompetencyRatings from './CompetencyRatings';
 import SocialLinks from './SocialLinks';
+import SportsBasketballIcon from '@mui/icons-material/SportsBasketball';
 
 import { GitHubUser, SocialProfile, UserData } from '../types/api.d';
 
-const Profile = () => {{}
+// default data in case we don't get anything back from the db
+let user: UserData;
+let id = null;
+let avatar_url = '';
+let full_name = '';
+let bio = '';
+let email_address = '';
+let github_accounts: GitHubUser[] = [];
+let social_profiles: SocialProfile[] = [];
+user = {
+  id: id,
+  full_name: full_name,
+  bio: bio,
+  email_address: email_address,
+  github_accounts: github_accounts,
+  social_profiles: social_profiles,
+};
+
+const Profile = () => {
+  const [isEditable, setIsEditable] = useState(false);
+  const [userData, setUserData] = useState<UserData[]>();
+  const greeting = getGreeting(full_name);
   const { data: api_user_data } = useApiData<UserData[]>({
     path: `/profile/1`,
     sendCredentials: true,
   });
-  let user: UserData;
-
-  // default data in case we don't get anything back from the db
-  let id = null;
-  let avatar_url = "";
-  let full_name = "";
-  let bio = "";
-  let email_address = "";
-  let github_accounts: GitHubUser[] = [];
-  let social_profiles: SocialProfile[] = [];
 
   if (api_user_data && api_user_data.length > 0) {
-
-    const [ user_data ] = api_user_data;
+    const [user_data] = api_user_data;
     user = user_data;
 
-    if (user.full_name && user.full_name !== "") {
-      const { full_name:fullName } = user;
+    if (user.full_name && user.full_name !== '') {
+      const { full_name: fullName } = user;
       full_name = fullName;
     }
 
-    if (user.bio && user.bio !== "") {
+    if (user.bio && user.bio !== '') {
       const { bio: userBio } = user;
       bio = userBio;
     }
 
-    if (user.email_address && user.email_address !== "") {
+    if (user.email_address && user.email_address !== '') {
       const { email_address: userEmail } = user;
       email_address = userEmail;
     }
 
     if (user.github_accounts && user.github_accounts.length > 0) {
-      const [ github_account ] = user.github_accounts;
+      const [github_account] = user.github_accounts;
       github_accounts.push(github_account);
 
       if (github_account.avatar_url) {
         const { avatar_url: avatar } = github_account;
         avatar_url = avatar;
       }
-      if (github_account.full_name && github_account.full_name !== "") {
-        if (full_name === "") {
+      if (github_account.full_name && github_account.full_name !== '') {
+        if (full_name === '') {
           const { full_name: fullName } = github_account;
           full_name = fullName;
         }
@@ -82,8 +93,8 @@ const Profile = () => {{}
       social_profiles = social_profile_list;
 
       social_profile_list.forEach((social_profile: SocialProfile) => {
-        if (social_profile.network_name === "email") {
-          if (email_address === "") {
+        if (social_profile.network_name === 'email') {
+          if (email_address === '') {
             email_address = social_profile.user_name;
           }
         }
@@ -91,21 +102,7 @@ const Profile = () => {{}
     }
   }
 
-  user = {
-    id: id,
-    full_name: full_name,
-    bio: bio,
-    email_address: email_address,
-    github_accounts: github_accounts,
-    social_profiles: social_profiles
-  };
-
-  setState({user: user});
-
-  const [isEditable, setIsEditable] = useState(false);
-  const [userData, setUserData] = useState(user);
-  const greeting = getGreeting(full_name);
-
+  console.log(api_user_data);
   function handleEditButtonClick() {
     setIsEditable(prevState => !prevState);
   }
@@ -118,13 +115,14 @@ const Profile = () => {{}
    * @privateRemarks
    *
    * Update the user data state
+   * Update: the function is not working, getting type errors
    */
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setUserData(prevData => {
-      const newUserData = { ...prevData, [e.target.name]: e.target.value };
-      return newUserData;
-    });
+    // setUserData(prevData as UserData[] => {
+    //   const newUserData = { ...prevData, [e.target.name]: e.target.value };
+    //   return newUserData;
+    // });
   }
 
   return (
@@ -193,14 +191,14 @@ const Profile = () => {{}
               {isEditable ? (
                 <TextField
                   type="text"
-                  value={user.full_name}
+                  value={full_name}
                   onChange={handleChange}
                   name="full_name"
                   variant="standard"
                   label="Full name"
                 />
               ) : (
-                user.full_name
+                full_name
               )}
               &apos;s Profile
             </Typography>
@@ -233,18 +231,18 @@ const Profile = () => {{}
               }}
               color="primary"
             />
-            <Typography component="p">
+            <Typography component="div">
               {isEditable ? (
                 <TextField
                   type="email"
-                  value={user.email_address}
+                  value={email_address}
                   onChange={handleChange}
                   name="email"
                   variant="standard"
                   label="Email"
                 />
               ) : (
-                user.email_address
+                email_address
               )}
             </Typography>
           </Grid>
@@ -256,7 +254,10 @@ const Profile = () => {{}
             sx={{ mt: 3 }}
             ml={{ md: -1, sm: -2 }}
           >
-            <SocialLinks isEditable={isEditable} profileList={user.social_profiles} />
+            <SocialLinks
+              isEditable={isEditable}
+              profileList={social_profiles}
+            />
           </Grid>
         </Grid>
       </Grid>
@@ -266,10 +267,10 @@ const Profile = () => {{}
           <Typography component="h3" variant="h4" sx={{ my: 2 }}>
             Summary
           </Typography>
-          <Typography component="p">
+          <Typography component="div">
             {isEditable ? (
               <TextField
-                value={user.bio}
+                value={bio}
                 onChange={handleChange}
                 name="summary"
                 variant="standard"
@@ -278,7 +279,7 @@ const Profile = () => {{}
                 fullWidth
               />
             ) : (
-              user.bio
+              bio
             )}
           </Typography>
         </Grid>

@@ -5,45 +5,25 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import LanguageIcon from '@mui/icons-material/Language';
 import TwitterIcon from '@mui/icons-material/Twitter';
-import { SocialNetwork, SocialProfile, UserData } from '../types/api';
-import useApiData from '../helpers/useApiData';
+import SportsBasketballIcon from '@mui/icons-material/SportsBasketball';
+import { SocialProfile, UserData } from '../types/api';
+
+import RedditIcon from '@mui/icons-material/Reddit';
+import MailIcon from '@mui/icons-material/Mail';
 
 interface SocialLinksProps {
   isEditable: boolean;
+  profileList: SocialProfile[];
 }
-
-/**
- *
- * @privateRemarks
- *
- * dummydata that we hardcoded
- */
-const networkData: SocialProfile[] = [
-  {
-    network_name: 'github',
-    profile_url: '//github.com/matthew_morenez',
-    user_name: 'matthew_morenez',
-    public: true,
-  },
-  {
-    network_name: 'website',
-    profile_url: '//example.com',
-    user_name: 'example.com',
-    public: true,
-  },
-  {
-    network_name: 'linkedin',
-    profile_url: '//linkedin.com/in/matthew_morenez',
-    user_name: 'matthew_morenez',
-    public: true,
-  },
-];
 
 interface SocialNetworkIcon {
   github: JSX.Element;
   linkedin: JSX.Element;
   website: JSX.Element;
   twitter: JSX.Element;
+  reddit: JSX.Element;
+  dribbble: JSX.Element;
+  email: JSX.Element;
 }
 
 const socialNetworkIcons: SocialNetworkIcon = {
@@ -51,27 +31,14 @@ const socialNetworkIcons: SocialNetworkIcon = {
   linkedin: <LinkedInIcon color="primary" />,
   website: <LanguageIcon color="primary" />,
   twitter: <TwitterIcon color="primary" />,
+  reddit: <RedditIcon color="primary" />,
+  dribbble: <SportsBasketballIcon color="primary" />,
+  email: <MailIcon color="primary" />,
 };
 
-const SocialLinks = ({ isEditable }: SocialLinksProps) => {
+const SocialLinks = ({ isEditable, profileList }: SocialLinksProps) => {
   const [socialNetworkList, setSocialNetworkList] =
-    useState<SocialProfile[]>(networkData);
-
-  // const [socialProfile, setSocialProfile] = useState<SocialProfile[]>([]);
-
-  // const { data: socialNetworks, error } = useApiData<UserData[]>({
-  //   deps: [socialNetworkList],
-  //   path: `/profile/1`,
-  //   sendCredentials: true,
-  // });
-  // if (error) {
-  //   return <p>There was an error loading the social network.</p>;
-  // }
-  // if (!socialNetworks) {
-  //   return null;
-  // } else {
-  //   setSocialProfile(socialNetworks[0].social_profiles);
-  // }
+    useState<SocialProfile[]>(profileList);
 
   // We need to retrieve a list of all possible social networks
 
@@ -159,7 +126,7 @@ const SocialLinks = ({ isEditable }: SocialLinksProps) => {
                 {
                   network_name: '',
                   profile_url: '',
-                  public: true,
+                  public: 2,
                   user_name: '',
                 },
               ]);
