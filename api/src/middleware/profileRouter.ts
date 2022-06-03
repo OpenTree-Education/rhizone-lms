@@ -65,11 +65,11 @@ profileRouter.put('/:principal_id', async (req, res, next) => {
     }
 
     // parse the object we receive in the request into a well-formed IUserData object
-    const submitted_user_data = itemEnvelope(req.body);
-
     // submitted_user is a validated IUserData object that we received from the request
+    const submitted_user_data = itemEnvelope(req.body);
     const submitted_user = parsePutSubmission(submitted_user_data, path_principal_id);
 
+    // get the appropriate existing IUserData for that principal for comparison's sake
     const path_user_profile_data = await getUserProfileData(principalId);
 
     // send the object to a function that will compare the IUserData object to the existing one
@@ -79,7 +79,10 @@ profileRouter.put('/:principal_id', async (req, res, next) => {
       res.status(200);
       res.json(collectionEnvelope([await getUserProfileData(principalId)], 1));
     } else {
-      res.status(204);
+      // Leaving this redundancy in place here in case we decide to implement
+      // different behavior in the future.
+      res.status(200);
+      res.json(collectionEnvelope([await getUserProfileData(principalId)], 1));
     }
 
     // send back the appropriate HTTP status code and appropriate response to the requester
