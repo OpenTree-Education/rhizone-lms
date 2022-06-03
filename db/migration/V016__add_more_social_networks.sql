@@ -1,9 +1,9 @@
 INSERT INTO `social_networks` (`network_name`, `protocol`, `base_url`)
 VALUES
-    ('github', '//', 'github.com/'),
-    ('linkedin', '//', 'linkedin.com/in/'),
-    ('twitter', '//', 'twitter.com/'),
-    ('reddit', '//', 'reddit.com/user/'),
+    ('GitHub', '//', 'github.com/'),
+    ('LinkedIn', '//', 'linkedin.com/in/'),
+    ('Twitter', '//', 'twitter.com/'),
+    ('Reddit', '//', 'reddit.com/user/'),
     ('website', '//', ''),
-    ('dribbble', '//', 'dribbble.com/user/'),
+    ('Dribbble', '//', 'dribbble.com/user/'),
     ('email', 'mailto:', '');
