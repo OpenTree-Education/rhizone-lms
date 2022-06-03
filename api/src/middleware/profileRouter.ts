@@ -15,14 +15,14 @@ profileRouter.get('/', async (_req, _res, next) => {
   }
 });
 
-profileRouter.get('/:principal_id', async (req, res, next) => {
-  const { principal_id } = req.params;
-  const principalId = parseInt(principal_id);
+profileRouter.get('/:id', async (req, res, next) => {
+  const { id } = req.params;
+  const principalId = parseInt(id);
 
   try {
-    if (principal_id == null) {
+    if (id == null) {
       throw new Error(
-        'I was not passed a principal_id for which to show profile data.'
+        'I was not passed a id for which to show profile data.'
       );
     }
 
@@ -32,7 +32,7 @@ profileRouter.get('/:principal_id', async (req, res, next) => {
 
     if (user_profile_data == null) {
       throw new Error(
-        `I couldn't find a principal ID matching ${principal_id}`
+        `I couldn't find a principal ID matching ${id}`
       );
     }
 
@@ -44,22 +44,22 @@ profileRouter.get('/:principal_id', async (req, res, next) => {
   }
 });
 
-profileRouter.put('/:principal_id', async (req, res, next) => {
-  const { principal_id } = req.params;
-  const path_principal_id: number = parseInt(principal_id);
+profileRouter.put('/:id', async (req, res, next) => {
+  const { id } = req.params;
+  const path_id: number = parseInt(id);
   const { principalId } = req.session;
-  const session_principal_id: number = principalId;
+  const session_id: number = principalId;
 
   try {
     // test to make sure we have a principal ID defined
-    if (principal_id == null) {
+    if (id == null) {
       throw new Error(
-        'I was not passed a principal_id for which to show profile data.'
+        'I was not passed a id for which to show profile data.'
       );
     }
 
     // test to make sure the session principal ID matches the principal ID in path
-    if (path_principal_id !== session_principal_id) {
+    if (path_id !== session_id) {
       res.status(403);
       throw new Error('Session user does not match owner of profile.');
     }
@@ -67,7 +67,7 @@ profileRouter.put('/:principal_id', async (req, res, next) => {
     // parse the object we receive in the request into a well-formed IUserData object
     // submitted_user is a validated IUserData object that we received from the request
     const submitted_user_data = itemEnvelope(req.body);
-    const submitted_user = parsePutSubmission(submitted_user_data, path_principal_id);
+    const submitted_user = parsePutSubmission(submitted_user_data, path_id);
 
     // get the appropriate existing IUserData for that principal for comparison's sake
     const path_user_profile_data = await getUserProfileData(principalId);
