@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { getGreeting } from '../helpers/greeting';
+import useApiData from '../helpers/useApiData';
+import { EntityId, Profile as APIProfile } from '../types/api';
+import SessionContext from './SessionContext';
 
 import {
   Container,
@@ -38,6 +41,16 @@ const user = {
 };
 
 const Profile = () => {
+  const { principalId} = useContext(SessionContext);
+  console.log({id: principalId})
+  const [changedUserDataIds, setChangedUserDataIds] = useState<EntityId[]>([]);
+  const { data: userData, error } = useApiData<APIProfile[]>({
+    deps: [changedUserDataIds],
+    path: `/profile/${principalId}`,
+    sendCredentials: true,
+  });
+
+  console.log( 'id', userData && userData[0].github_accounts[0].avatar_url );
   const greeting = getGreeting(user.name);
 
   return (
@@ -84,7 +97,7 @@ const Profile = () => {
               border: '3px solid #fff',
               outline: '2px solid #1976d2',
             }}
-            src={user.avatar}
+            src={userData && userData[0].github_accounts[0].avatar_url || undefined}
           ></Avatar>
         </Grid>
         <Grid
@@ -96,14 +109,15 @@ const Profile = () => {
           flexDirection="column"
         >
           <Typography component="h2" variant="h4">
-            {user.name}&apos;s Profile
+          {userData && userData[0].full_name ? userData[0].full_name : userData && userData[0].github_accounts[0].full_name ? userData[0].github_accounts[0].full_name : 'no name found!!'}&apos;s Profile
           </Typography>
           <Typography
             component="p"
             sx={{ display: 'flex', alignItems: 'center', mt: 1 }}
           >
             <EmailIcon sx={{ mr: 1 }} color="primary" />
-            {user.email}
+            {/* should we add "|| null" ? */}
+            {userData && userData[0].email_address || 'no email found!!'}
           </Typography>
           <Grid
             container
@@ -113,21 +127,21 @@ const Profile = () => {
           >
             <Grid item xs={1}>
               <Tooltip title="GitHub">
-                <IconButton component="a" sx={{ mr: 1 }} href={user.github}>
+                <IconButton component="a" sx={{ mr: 1 }} href={userData && userData[0].social_profiles[0] ? userData[0].social_profiles[0].profile_url : ''}>
                   <GitHubIcon color="primary" />
                 </IconButton>
               </Tooltip>
             </Grid>
             <Grid item xs={1}>
               <Tooltip title="LinkedIn">
-                <IconButton component="a" sx={{ mr: 1 }} href={user.linkedIn}>
+                <IconButton component="a" sx={{ mr: 1 }} href={userData && userData[0].social_profiles[1] ? userData[0].social_profiles[1].profile_url : ''}>
                   <LinkedInIcon color="primary" />
                 </IconButton>
               </Tooltip>
             </Grid>
             <Grid item xs={1}>
               <Tooltip title="Portfolio">
-                <IconButton component="a" sx={{ mr: 1 }} href={user.website}>
+                <IconButton component="a" sx={{ mr: 1 }} href={userData && userData[0].social_profiles[4] ? userData[0].social_profiles[4].profile_url : ''}>
                   <LanguageIcon color="primary" />
                 </IconButton>
               </Tooltip>
@@ -141,7 +155,7 @@ const Profile = () => {
           <Typography component="h3" variant="h4" sx={{ my: 2 }}>
             Summary
           </Typography>
-          <Typography component="p">{user.summary}</Typography>
+          <Typography component="p">{userData && userData[0].bio ? userData[0].bio : userData && userData[0].github_accounts[0].bio ? userData[0].github_accounts[0].bio : 'no bio found!!'}</Typography>
         </Grid>
         <Stack spacing={2} direction="row" sx={{ mt: 4 }}>
           <Button variant="outlined" component="a" href={'/'}>
