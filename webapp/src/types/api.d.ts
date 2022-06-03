@@ -89,6 +89,7 @@ network_name: string;
 user_name: string;
 profile_url: string;
 public: boolean;
+}
 
 export interface SocialNetwork {
   id: number;

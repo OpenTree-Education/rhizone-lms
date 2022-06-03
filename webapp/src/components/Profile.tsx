@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { getGreeting } from '../helpers/greeting';
 import useApiData from '../helpers/useApiData';
-import { EntityId, Profile as APIProfile } from '../types/api';
 import SessionContext from './SessionContext';
 
 import {
