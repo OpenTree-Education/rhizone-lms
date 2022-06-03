@@ -5,18 +5,20 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import LanguageIcon from '@mui/icons-material/Language';
 import TwitterIcon from '@mui/icons-material/Twitter';
-import { SocialNetwork } from '../types/api';
+import { SocialNetwork, SocialProfile, UserData } from '../types/api';
+import useApiData from '../helpers/useApiData';
 
 interface SocialLinksProps {
   isEditable: boolean;
 }
+
 /**
  *
  * @privateRemarks
  *
  * dummydata that we hardcoded
  */
-const networkData: SocialNetwork[] = [
+const networkData: SocialProfile[] = [
   {
     network_name: 'github',
     profile_url: '//github.com/matthew_morenez',
@@ -52,19 +54,45 @@ const socialNetworkIcons: SocialNetworkIcon = {
 };
 
 const SocialLinks = ({ isEditable }: SocialLinksProps) => {
-  const [socialNetworkList, setSocialNetworkList] = useState(networkData);
+  const [socialNetworkList, setSocialNetworkList] =
+    useState<SocialProfile[]>(networkData);
 
-  /**
-   * Create new social network field and add to social network list
-   *
-   */
+  // const [socialProfile, setSocialProfile] = useState<SocialProfile[]>([]);
 
-  function handleAddButtonClick() {
-    setSocialNetworkList(prevState => [
-      ...prevState,
-      { network_name: '', profile_url: '', public: true, user_name: '' },
-    ]);
-  }
+  // const { data: socialNetworks, error } = useApiData<UserData[]>({
+  //   deps: [socialNetworkList],
+  //   path: `/profile/1`,
+  //   sendCredentials: true,
+  // });
+  // if (error) {
+  //   return <p>There was an error loading the social network.</p>;
+  // }
+  // if (!socialNetworks) {
+  //   return null;
+  // } else {
+  //   setSocialProfile(socialNetworks[0].social_profiles);
+  // }
+
+  // We need to retrieve a list of all possible social networks
+
+  // We need to retrieve the UserData object from the API
+
+  // We need to select the SocialProfile[] list from the UserData object
+
+  // for each row in the SocialProfile[] list, we need to
+
+  // render the correct icon, linked to the profile_url of the SocialProfile
+
+  // when we hit the edit button, each of these buttons should turn into:
+
+  // form row with three components:
+  // - a drop-down list of [all possible social networks] with the one selected corresponding to the social network of that socialprofile
+  // - the user_name of the socialprofile
+  // - a checkbox linked to public visibility of the socialprofile
+
+  // plus we should also see a "add social network" button that adds a new form row that looks like the above
+
+  // when the user saves from edit, the entire UserData object is sent back to /profile/:principalID with an HTTP PUT
 
   return (
     <>
@@ -92,7 +120,7 @@ const SocialLinks = ({ isEditable }: SocialLinksProps) => {
               <TextField
                 disabled
                 variant="standard"
-                value={network.user_name}
+                value={network.network_name}
               />
             </Grid>
           );
@@ -113,7 +141,7 @@ const SocialLinks = ({ isEditable }: SocialLinksProps) => {
             <UpdateSocialLinks
               key={network.network_name}
               socialName={network.network_name}
-              networkData={network.user_name}
+              networkData={network.network_name}
               setSocialNetworkList={setSocialNetworkList}
             />
           );
@@ -125,7 +153,17 @@ const SocialLinks = ({ isEditable }: SocialLinksProps) => {
           <Button
             component="button"
             variant="contained"
-            onClick={handleAddButtonClick}
+            onClick={() => {
+              setSocialNetworkList(prevState => [
+                ...prevState,
+                {
+                  network_name: '',
+                  profile_url: '',
+                  public: true,
+                  user_name: '',
+                },
+              ]);
+            }}
           >
             Add a Network
           </Button>

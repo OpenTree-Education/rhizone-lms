@@ -11,21 +11,130 @@ import {
 } from '@mui/material';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import LanguageIcon from '@mui/icons-material/Language';
+import RedditIcon from '@mui/icons-material/Reddit';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import MailIcon from '@mui/icons-material/Mail';
+import SportsBasketballIcon from '@mui/icons-material/SportsBasketball';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import ClearIcon from '@mui/icons-material/Clear';
-import { SocialNetwork } from '../types/api';
+import { SocialNetwork, SocialProfile } from '../types/api';
+import useApiData from '../helpers/useApiData';
 
 interface SocialLinksProps {
   socialName: string;
   networkData: string;
-  setSocialNetworkList: React.Dispatch<React.SetStateAction<SocialNetwork[]>>;
+  setSocialNetworkList: React.Dispatch<React.SetStateAction<SocialProfile[]>>;
 }
+
+interface SocialNetworkIcon {
+  github: JSX.Element;
+  linkedin: JSX.Element;
+  website: JSX.Element;
+  twitter: JSX.Element;
+  reddit: JSX.Element;
+  dribbble: JSX.Element;
+  email: JSX.Element;
+}
+
+const socialNetworkIcons: SocialNetworkIcon = {
+  github: (
+    <GitHubIcon
+      color="primary"
+      sx={{
+        justifyContent: 'flex-start',
+        alignItems: 'flex-end',
+        mr: 1,
+        mb: '-7px',
+      }}
+    />
+  ),
+  linkedin: (
+    <LinkedInIcon
+      color="primary"
+      sx={{
+        justifyContent: 'flex-start',
+        alignItems: 'flex-end',
+        mr: 1,
+        mb: '-7px',
+      }}
+    />
+  ),
+  website: (
+    <LanguageIcon
+      color="primary"
+      sx={{
+        justifyContent: 'flex-start',
+        alignItems: 'flex-end',
+        mr: 1,
+        mb: '-7px',
+      }}
+    />
+  ),
+  twitter: (
+    <TwitterIcon
+      color="primary"
+      sx={{
+        justifyContent: 'flex-start',
+        alignItems: 'flex-end',
+        mr: 1,
+        mb: '-7px',
+      }}
+    />
+  ),
+  reddit: (
+    <RedditIcon
+      color="primary"
+      sx={{
+        justifyContent: 'flex-start',
+        alignItems: 'flex-end',
+        mr: 1,
+        mb: '-7px',
+      }}
+    />
+  ),
+  dribbble: (
+    <SportsBasketballIcon
+      color="primary"
+      sx={{
+        justifyContent: 'flex-start',
+        alignItems: 'flex-end',
+        mr: 1,
+        mb: '-7px',
+      }}
+    />
+  ),
+  email: (
+    <MailIcon
+      color="primary"
+      sx={{
+        justifyContent: 'flex-start',
+        alignItems: 'flex-end',
+        mr: 1,
+        mb: '-7px',
+      }}
+    />
+  ),
+};
 
 const UpdateSocialLinks = ({
   socialName,
   networkData,
   setSocialNetworkList,
 }: SocialLinksProps) => {
+  const { data: socialNetworkOptions, error } = useApiData<SocialNetwork[]>({
+    deps: [socialName],
+    path: `/social_networks`,
+    sendCredentials: true,
+  });
+
+  if (error) {
+    return <p>There was an error loading the social network options.</p>;
+  }
+
+  if (!socialNetworkOptions) {
+    return null;
+  }
+
   /**
    * Changes network_name based on the value selected by drop down menu
    *
@@ -39,7 +148,7 @@ const UpdateSocialLinks = ({
   const handleNetworkNameChange = (event: SelectChangeEvent) => {
     setSocialNetworkList(prevState => {
       const socialNetworkToChange = prevState.find(
-        network => network.user_name === networkData
+        network => network.network_name === networkData
       );
 
       const newSocialNetwork = {
@@ -51,7 +160,7 @@ const UpdateSocialLinks = ({
         network => network === socialNetworkToChange
       );
       const newState = [...prevState];
-      newState.splice(indexToChange, 1, newSocialNetwork as SocialNetwork);
+      newState.splice(indexToChange, 1, newSocialNetwork as SocialProfile);
       return newState;
     });
   };
@@ -92,7 +201,7 @@ const UpdateSocialLinks = ({
         network => network === socialNetworkToChange
       );
       const newState = [...prevState];
-      newState.splice(indexToChange, 1, newSocialNetwork as SocialNetwork);
+      newState.splice(indexToChange, 1, newSocialNetwork as SocialProfile);
       return newState;
     });
   }
@@ -122,40 +231,16 @@ const UpdateSocialLinks = ({
           onChange={handleNetworkNameChange}
           label="Social Networks"
         >
-          <MenuItem value="twitter">
-            <TwitterIcon
-              color="primary"
-              sx={{
-                justifyContent: 'flex-start',
-                alignItems: 'flex-end',
-                mr: 1,
-                mb: '-7px',
-              }}
-            />
-            Twitter
-          </MenuItem>
-          <MenuItem value="linkedin">
-            <LinkedInIcon
-              color="primary"
-              sx={{
-                justifyContent: 'flex-start',
-                mr: 1,
-                mb: '-7px',
-              }}
-            />
-            LinkedIn
-          </MenuItem>
-          <MenuItem value="website">
-            <LanguageIcon
-              color="primary"
-              sx={{
-                justifyContent: 'flex-start',
-                mr: 1,
-                mb: '-7px',
-              }}
-            />
-            Website
-          </MenuItem>
+          {socialNetworkOptions.map(network => {
+            if (network.network_name !== 'github') {
+              return (
+                <MenuItem value={network.network_name} key={network.id}>
+                  {(socialNetworkIcons as any)[network.network_name]}
+                  {network.network_name}
+                </MenuItem>
+              );
+            }
+          })}
         </Select>
       </FormControl>
       <TextField
@@ -166,8 +251,8 @@ const UpdateSocialLinks = ({
         onChange={handleNetworkDataChange}
       />
       <Tooltip title="Remove">
-        <IconButton component="button">
-          <ClearIcon color="primary" onClick={removeItem} />
+        <IconButton component="button" onClick={removeItem}>
+          <ClearIcon color="primary" />
         </IconButton>
       </Tooltip>
     </Grid>
