@@ -1,4 +1,4 @@
-import { IUserData, ISocialProfile } from '../models/user_models';
+import { IUserData, ISocialProfile, ISocialNetwork } from '../models/user_models';
 import db from './db';
 
 /**
@@ -67,11 +67,15 @@ export const parsePutSubmission = (submitted_user_data: any, path_principal_id: 
 }
 
 /**
+ * Compares two objects conforming to the IUserData interface to see if they
+ * contain the same data. If they do, no action is performed, and the function
+ * returns false. If there is a difference in data, the appropriate function(s)
+ * to update the data in the database are called.
  *
- * @param existing_user_data
- * @param new_user_data
+ * @param existing_user_data The data for the user as it exists in the database now.
+ * @param new_user_data The data we received in an HTTP PUT request from the user.
  */
-export const compareAndUpdatePrincipals = (
+export const compareAndUpdatePrincipals = async (
   existing_user_data: IUserData,
   new_user_data: IUserData
 ) => {
@@ -79,6 +83,10 @@ export const compareAndUpdatePrincipals = (
 
   // for each element in the IUserData objects, compare to see if it's been updated
   // i.e does existing_user_data.bio == new_user_data.bio and so on
+
+  if (existing_user_data.principal_id !== new_user_data.principal_id) {
+    throw new Error("Principal IDs being compared do not match.");
+  }
 
   if (existing_user_data.bio !== new_user_data.bio) {
     modifyBio(existing_user_data.principal_id, new_user_data.bio);
@@ -98,112 +106,157 @@ export const compareAndUpdatePrincipals = (
     modified_data = true;
   }
 
-  // if (existing_user_data.github_accounts[0].avatar_url !== new_user_data.github_accounts[0].avatar_url) {
-  //   modifyAvatarURL(
-  //     existing_user_data.principal_id,
-  //     new_user_data.github_accounts[0].avatar_url
-  //   );
-  // }
+  /* Here's the logic for the next section:
+   * 1. Get a list of all possible social networks from the database.
+   * 2. For each social network, check the list of social profiles for each
+   *    object to see if they have a profile for that network. If they do, save
+   *    that ISocialProfile object for comparison later.
+   * 3. Once we've run through both lists of social profiles, let's do a check
+   *    to see if they match up:
+   *    - If a social profile is defined for existing and for new, check to see
+   *      if the user name changed.
+   *    - If a social profile is defined for new but not for existing, that
+   *      means we're adding a social profile.
+   *    - If a social profile is defined for existing but not for new, that
+   *      means we're deleting a social profile.
+   *    - If a social profile is not defined for existing or new, we don't have
+   *      to do anything.
+   */
 
+  const all_social_networks = await db('social_networks').select<ISocialNetwork[]>('*');
 
+  all_social_networks.forEach((social_network: ISocialNetwork) => {
+    const social_network_id = social_network.id;
+    const social_network_name = social_network.network_name;
 
-  // existing_user_data.social_profiles.forEach((existing_user_data, index) => {
+    let existing_user_profile: ISocialProfile | null = null;
+    let new_user_profile: ISocialProfile | null = null;
 
-  //   if(existing_user_data !== new_user_data.social_profile)){
-  //     addSocialProfile(existing_user_data.principal_id, new_user_data.social_profile)
-  //   }
+    existing_user_data.social_profiles.forEach((eusp: ISocialProfile) => {
+      if (eusp.network_name == social_network_name) {
+        existing_user_profile = eusp;
+      }
+    });
 
-  //   if(existing_user_data[index] !== new_social_profile.social_profiles[index].user_name){
-  //     modifySocialProfile(new_user_data.principal_id, new_social_profile)
-  //   }
+    new_user_data.social_profiles.forEach((nusp: ISocialProfile) => {
+      if (nusp.network_name == social_network_name) {
+        new_user_profile = nusp;
+      }
+    });
 
-  // });
+    switch (true) {
+      case (existing_user_profile !== null && new_user_profile !== null):
+        if (existing_user_profile.user_name != new_user_profile.user_name) {
+          modifySocialProfile(existing_user_data.principal_id, social_network_id, new_user_profile);
+        }
+        if (social_network_name == "email") {
+          modifyEmailAddress(existing_user_data.principal_id, new_user_profile.user_name);
+        }
+        modified_data = true;
+        break;
+      case (existing_user_profile !== null && new_user_profile === null):
+        deleteSocialProfile(existing_user_data.principal_id, social_network_id);
+        if (social_network_name == "email") {
+          modifyEmailAddress(existing_user_data.principal_id, null);
+        }
+        modified_data = true;
+        break;
+      case (existing_user_profile === null && new_user_profile !== null):
+        addSocialProfile(existing_user_data.principal_id, social_network_id, new_user_profile);
+        if (social_network_name == "email") {
+          modifyEmailAddress(existing_user_data.principal_id, new_user_profile.user_name);
+        }
+        modified_data = true;
+        break;
+    }
+  });
 
- 
-  // new_user_data.social_profiles.forEach(new_social_profile => {
-  //   existing_user_data.social_profiles
-  // });
-
-
-
-  // make sure to disregard any changes that are meaningless, like if
-  // existing_user_data.bio is "" and new_user_data.bio is 'undefined', don't worry about it
-
-  // for each change, call the appropriate function that updates the database information
   return modified_data;
 };
 
 /**
- *
- * @param principal_id
- * @param social_profile
+ * Inserts a new record into the `principal_social` table corresponding to the
+ * principal ID, social network ID, and user name from the ISocialProfile
+ * object.
+ * 
+ * @param principal_id ID of the principal whose profile is being modified
+ * @param social_network_id ID of the social network whose profile we're defining
+ * @param social_profile Details of the social profile
  */
 export const addSocialProfile = async (
   principal_id: number,
+  social_network_id: number,
   social_profile: ISocialProfile
 ) => {
-  // TODO: figure out id of social profile
-  await db('principal_social').insert({ principal_id: principal_id });
+  return await db('principal_social').insert({ principal_id: principal_id, network_id: social_network_id, data: social_profile.user_name, public: social_profile.public});
 };
 
 /**
- *
- * @param principal_id
- * @param social_profile
+ * Modifies a record into the `principal_social` table corresponding to the
+ * principal ID, social network ID, and user name from the ISocialProfile
+ * object.
+ * 
+ * @param principal_id ID of the principal whose profile is being modified
+ * @param social_network_id ID of the social network whose profile we're modifying
+ * @param social_profile Details of the social profile
  */
 export const modifySocialProfile = async (
   principal_id: number,
+  social_network_id: number,
   social_profile: ISocialProfile
 ) => {
-  // TODO: figure out id of social profile
-  await db('principal_social').update({ principal_id: principal_id });
+  return await db('principal_social').where({principal_id: principal_id, network_id: social_network_id}).update({data: social_profile.user_name});
 };
 
 /**
- *
- * @param principal_id
- * @param social_profile
+ * Removes a record into the `principal_social` table corresponding to the
+ * principal ID and social network ID.
+ * 
+ * @param principal_id ID of the principal whose profile is being removing
+ * @param social_network_id ID of the social network whose profile we're removing
  */
 export const deleteSocialProfile = async (
   principal_id: number,
-  social_profile: ISocialProfile
+  social_network_id: number
 ) => {
-  // TODO: figure out id of social profile
-  await db('principal_social').where({ principal_id: principal_id }).del();
+  return await db('principal_social').where({ principal_id: principal_id, network_id: social_network_id }).del();
 };
 
 /**
- *
- * @param principal_id
- * @param bio
+ * Modifies the bio in the `principals` table for a given principal.
+ * 
+ * @param principal_id ID of the principal who needs a bio modification
+ * @param bio The new bio for the user.
  */
-
 export const modifyBio = async (principal_id: number, bio: string) => {
-  await db('github_users').where({ principal_id }).update({ bio: bio });
+  return await db('github_users').where({ principal_id }).update({ bio: bio });
 };
 
 /**
- *
- * @param principal_id
- * @param full_name
+ * Modifies the full name in the `principals` table for a given principal.
+ * 
+ * @param principal_id ID of the principal who needs a bio modification
+ * @param full_name The new full name for the user.
  */
 export const modifyFullName = async (principal_id: number, full_name: string) => {
   await db('github_users').where({ principal_id }).update({ full_name: full_name });
 };
 
 /**
- *
- * @param principal_id
- * @param avatar_url
+ * Modifies the avatar URL in the `principals` table for a given principal.
+ * 
+ * @param principal_id ID of the principal who needs a bio modification
+ * @param avatar_url The new avatar URL for the user.
  */
 export const modifyAvatarURL = async (principal_id: number, avatar_url: string) => {
   await db('github_users').where({ principal_id }).update({ avatar_url: avatar_url });
 };
 
 /**
- *
- * @param principal_id
- * @param email_address
+ * Modifies the email address in the `principals` table for a given principal.
+ * 
+ * @param principal_id ID of the principal who needs a bio modification
+ * @param bio The new bio for the user.
  */
 export const modifyEmailAddress = async (
   principal_id: number,
