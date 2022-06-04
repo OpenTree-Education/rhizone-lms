@@ -40,14 +40,16 @@ export const parsePutSubmission = (submitted_user_data: any, path_id: number) =>
     submitted_user.bio = submitted_user_data.bio;
   }
 
+  submitted_user.social_profiles = [];
+
   if (submitted_user_data.social_profiles) {
     submitted_user_data.social_profiles.forEach((social_profile: any) => {
       let parsed_profile: ISocialProfile;
 
       if (
-        social_profile.network_name &&
-        social_profile.user_name &&
-        social_profile.public
+        social_profile.network_name !== null &&
+        social_profile.user_name !== null &&
+        social_profile.public !== null
       ) {
         parsed_profile = {
           network_name: social_profile.network_name,

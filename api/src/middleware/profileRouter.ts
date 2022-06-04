@@ -66,8 +66,14 @@ profileRouter.put('/:id', async (req, res, next) => {
 
     // parse the object we receive in the request into a well-formed IUserData object
     // submitted_user is a validated IUserData object that we received from the request
-    const submitted_user_data = itemEnvelope(req.body);
-    const submitted_user = parsePutSubmission(submitted_user_data, path_id);
+    const submitted_user_data_request = req.body;
+    let submitted_user;
+
+    if (submitted_user_data_request.data && submitted_user_data_request.data.length > 0) {
+      submitted_user = parsePutSubmission(submitted_user_data_request.data[0], path_id);
+    } else {
+      throw new Error("Request did not come in entity format.");
+    }
 
     // get the appropriate existing IUserData for that principal for comparison's sake
     const path_user_profile_data = await getUserProfileData(principalId);
