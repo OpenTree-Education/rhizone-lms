@@ -76,3 +76,49 @@ export interface SessionData extends Entity {
 export interface Settings extends Entity {
   default_questionnaire_id: EntityId;
 }
+interface GithubAccounts extends Entity {
+  github_id: number;
+  username: string;
+  full_name: string;
+  bio: string;
+  avatar_url: string;
+  principal_id: EntityId;
+}
+interface SocialProfiles extends Entity {
+network_name: string;
+user_name: string;
+profile_url: string;
+public: boolean;
+}
+
+export interface SocialNetwork {
+  id: number;
+  network_name: string;
+  protocol: string;
+  base_url: string;
+}
+
+export interface SocialProfile {
+  network_name: string;
+  user_name: string;
+  profile_url: string;
+  public: boolean;
+}
+
+export interface GitHubUser {
+  github_id: number;
+  username: string;
+  full_name: string;
+  avatar_url: string;
+  bio: string;
+  principal_id?: number;
+}
+
+export interface UserData extends Entity {
+  github_accounts?: Array<GitHubUser>;
+  social_profiles?: Array<SocialProfile>;
+  avatar_url?: string;
+  full_name?: string;
+  email_address?: string;
+  bio?: string;
+}

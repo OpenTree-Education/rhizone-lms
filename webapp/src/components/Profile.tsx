@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { getGreeting } from '../helpers/greeting';
+import useApiData from '../helpers/useApiData';
 
 import {
   Container,
@@ -10,35 +11,95 @@ import {
   IconButton,
   Typography,
   Button,
-  Stack,
+  Stack
 } from '@mui/material';
 
-import GitHubIcon from '@mui/icons-material/GitHub';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import LanguageIcon from '@mui/icons-material/Language';
-import EmailIcon from '@mui/icons-material/Email';
+import CheckIcon from '@mui/icons-material/Check';
+import EditIcon from '@mui/icons-material/Edit';
 import ProgressBar from './ProgressBar';
 import CompetencyRatings from './CompetencyRatings';
 
-/**
- * @privateRemarks
- * User data is currently hardcoded but it will be pulling data from the database (github_users)
- */
+import { SocialNetwork, UserData } from '../types/api.d';
+import { parseServerProfileResponse } from '../helpers/profileHelper';
+import SocialProfileLinks from './SocialLinks';
+import ProfileEditingForm from './ProfileEditingForm';
+import SessionContext from './SessionContext';
 
-const user = {
-  name: 'Matthew Morenez',
-  email: 'profile@example.com',
-  avatar:
-    'https://media.volinspire.com/images/95/e4/99/95e499b759ba57975a61c7bf66a3414dd5a2625e_profile.jpg',
-  github: 'https://github.com',
-  website: 'https://example.com',
-  summary:
-    'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia, sit impedit? Cupiditate veniam eaque suscipit eligendi. Sint delectus enim earum non repellendus nihil numquam libero odit temporibus et, natus eaque?',
-  linkedIn: 'https://linkedin.com',
+let user_data: UserData = {
+  id: -1,
+  full_name: "",
+  bio: "",
+  avatar_url: "",
+  email_address: "",
+  github_accounts: [],
+  social_profiles: [],
 };
 
 const Profile = () => {
-  const greeting = getGreeting(user.name);
+  const [ editingMode, setEditingMode ] = React.useState(false);
+  const { principalId: sessionPrincipalId } = React.useContext(SessionContext);
+
+  const { data: api_user_data } = useApiData<UserData[]>({
+    deps: [sessionPrincipalId],
+    path: `/profile/${sessionPrincipalId}`,
+    sendCredentials: true,
+  });
+
+  const [ userData, setUserData ] = React.useState<UserData>(user_data);
+
+  useEffect(() => {
+    user_data = parseServerProfileResponse(api_user_data);
+    setUserData(user_data);
+  }, [api_user_data]);
+
+  const { data: social_networks_list } = useApiData<SocialNetwork[]>({
+    path: `/social_networks`,
+    sendCredentials: false
+  });
+
+  const updateUser = (event: React.MouseEvent) => {
+    event.preventDefault();
+    let submittedUserData = userData;
+
+    submittedUserData.full_name = "OpenTree Education";
+
+    // some sort of progress or spinny wheel?
+
+    fetch(`${process.env.REACT_APP_API_ORIGIN}/profile/${sessionPrincipalId}`, {
+      method: 'PUT',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        "data": [submittedUserData],
+        "summary": {
+          "total_count": 1
+        }
+      }),
+    })
+      .then(res => res.json())
+      .then(({ data, error }) => {
+        
+        // end of progress
+
+        if (error) {
+          // handle error other than console.error
+          console.error("error from server comms: ", error);
+        }
+        if (data) {
+          // handle success
+          console.log("response from server: ", data);
+
+          setUserData(prev => {
+            return { ...prev, userData: submittedUserData}});
+
+        }
+      })
+      .catch(error => {
+        // top-level error catch
+        console.error("uncaught error", error)
+      });
+
+  };
 
   return (
     <Container fixed>
@@ -54,12 +115,13 @@ const Profile = () => {
       >
         <Grid item>
           <Typography component="h2" variant="h6" color="primary">
-            {greeting}
+            {getGreeting(userData.full_name)}
           </Typography>
         </Grid>
       </Grid>
       <Grid
         container
+        justifyContent={{ md: 'center', sm: 'flex-start' }}
         sx={{
           justifyContent: 'center',
           alignItems: 'center',
@@ -84,54 +146,61 @@ const Profile = () => {
               border: '3px solid #fff',
               outline: '2px solid #1976d2',
             }}
-            src={user.avatar}
+            src={userData.avatar_url}
           ></Avatar>
         </Grid>
         <Grid
           item
           xs={12}
           md={6}
-          alignItems={{ md: 'flex-start', sm: 'center' }}
+          alignItems={{
+            lg: 'flex-start',
+            md: 'flex-start',
+            sm: 'center',
+            xs: 'flex-start',
+          }}
           display="flex"
           flexDirection="column"
         >
-          <Typography component="h2" variant="h4">
-            {user.name}&apos;s Profile
-          </Typography>
-          <Typography
-            component="p"
-            sx={{ display: 'flex', alignItems: 'center', mt: 1 }}
-          >
-            <EmailIcon sx={{ mr: 1 }} color="primary" />
-            {user.email}
-          </Typography>
+          <Grid item display="flex">
+            <Typography component="h2" variant="h4">
+              {userData.full_name}
+            </Typography>
+            { editingMode ? (
+              <Tooltip title="Save">
+                <IconButton
+                  component="button"
+                  sx={{ ml: 2 }}
+                  onClick={() => {setEditingMode(!editingMode)}}
+                >
+                    <CheckIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <Tooltip title="Edit">
+                <IconButton
+                  component="button"
+                  sx={{ ml: 2 }}
+                  onClick={() => {setEditingMode(!editingMode)}}
+                >
+                    <EditIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Grid>
           <Grid
             container
-            justifyContent={{ md: 'flex-start', sm: 'center' }}
             display="flex"
-            sx={{ ml: -1, mt: 3 }}
+            justifyContent={{ md: 'flex-start', sm: 'center' }}
+            alignItems={{ md: 'center', sm: 'center' }}
+            sx={{ mt: 3 }}
+            ml={{ md: -1, sm: -2 }}
           >
-            <Grid item xs={1}>
-              <Tooltip title="GitHub">
-                <IconButton component="a" sx={{ mr: 1 }} href={user.github}>
-                  <GitHubIcon color="primary" />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-            <Grid item xs={1}>
-              <Tooltip title="LinkedIn">
-                <IconButton component="a" sx={{ mr: 1 }} href={user.linkedIn}>
-                  <LinkedInIcon color="primary" />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-            <Grid item xs={1}>
-              <Tooltip title="Portfolio">
-                <IconButton component="a" sx={{ mr: 1 }} href={user.website}>
-                  <LanguageIcon color="primary" />
-                </IconButton>
-              </Tooltip>
-            </Grid>
+            { (editingMode) ?
+                <ProfileEditingForm networksList={social_networks_list} profileList={userData.social_profiles} updateUserFunction={updateUser} /> :
+                <SocialProfileLinks profileList={userData.social_profiles} />
+            }
+            
           </Grid>
         </Grid>
       </Grid>
@@ -141,7 +210,9 @@ const Profile = () => {
           <Typography component="h3" variant="h4" sx={{ my: 2 }}>
             Summary
           </Typography>
-          <Typography component="p">{user.summary}</Typography>
+          <Typography component="div">
+            {userData.bio}
+          </Typography>
         </Grid>
         <Stack spacing={2} direction="row" sx={{ mt: 4 }}>
           <Button variant="outlined" component="a" href={'/'}>
