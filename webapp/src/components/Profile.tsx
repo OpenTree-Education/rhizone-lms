@@ -14,15 +14,16 @@ import {
   Stack
 } from '@mui/material';
 
+import CheckIcon from '@mui/icons-material/Check';
 import EditIcon from '@mui/icons-material/Edit';
 import ProgressBar from './ProgressBar';
 import CompetencyRatings from './CompetencyRatings';
 
 import { GitHubUser, SocialProfile, UserData } from '../types/api.d';
 import SocialProfileLinks from './SocialLinks';
+import ProfileEditingForm from './ProfileEditingForm';
 
 // default data in case we don't get anything back from the db
-let user: UserData;
 let id = -1;
 let avatar_url = '';
 let full_name = '';
@@ -30,18 +31,34 @@ let bio = '';
 let email_address = '';
 let github_accounts: GitHubUser[] = [];
 let social_profiles: SocialProfile[] = [];
+let user: UserData = {
+  id: id,
+  full_name: full_name,
+  bio: bio,
+  email_address: email_address,
+  github_accounts: github_accounts,
+  social_profiles: social_profiles,
+};
 
 const Profile = () => {
-  const greeting = getGreeting(full_name);
+  const [ editingMode, setEditingMode ] = React.useState(false);
+  const [ userData, setUserData ] = React.useState<UserData>(user);
   const { data: api_user_data } = useApiData<UserData[]>({
     path: `/profile/1`,
     sendCredentials: true,
   });
-  console.log(user);
 
+  const updateUser = () => {
+    let new_user_obj = userData;
+    new_user_obj.full_name = "OpenTree Education";
+    setUserData(prev => {
+      return { ...prev, userData: new_user_obj}});
+  };
+
+  if (userData.id === -1) {
   if (api_user_data && api_user_data.length > 0) {
     const [user_data] = api_user_data;
-    console.log("api_user_data: ", api_user_data);
+    // console.log("api_user_data: ", api_user_data);
     user = user_data;
 
     if (user.id && user.id !== 'null') {
@@ -106,8 +123,10 @@ const Profile = () => {
       social_profiles: social_profiles,
     };
 
-    console.log(user);
-  }
+    setUserData(prev => user);
+
+    // console.log("I have updated the user object. It now looks like this:", user);
+  }}
 
   return (
     <Container fixed>
@@ -123,7 +142,7 @@ const Profile = () => {
       >
         <Grid item>
           <Typography component="h2" variant="h6" color="primary">
-            {greeting}
+            {getGreeting(userData.full_name)}
           </Typography>
         </Grid>
       </Grid>
@@ -172,16 +191,29 @@ const Profile = () => {
         >
           <Grid item display="flex">
             <Typography component="h2" variant="h4">
-              {full_name}
+              {userData.full_name}
             </Typography>
-            <Tooltip title='Edit'>
-              <IconButton
-                component="button"
-                sx={{ ml: 2 }}
-              >
-                  <EditIcon color="primary" />
-              </IconButton>
-            </Tooltip>
+            { editingMode ? (
+              <Tooltip title="Save">
+                <IconButton
+                  component="button"
+                  sx={{ ml: 2 }}
+                  onClick={() => {setEditingMode(!editingMode)}}
+                >
+                    <CheckIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <Tooltip title="Edit">
+                <IconButton
+                  component="button"
+                  sx={{ ml: 2 }}
+                  onClick={() => {setEditingMode(!editingMode)}}
+                >
+                    <EditIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+            )}
           </Grid>
           <Grid
             container
@@ -191,7 +223,11 @@ const Profile = () => {
             sx={{ mt: 3 }}
             ml={{ md: -1, sm: -2 }}
           >
-            <SocialProfileLinks profileList={social_profiles} />
+            { (editingMode) ?
+                <ProfileEditingForm /> :
+                <SocialProfileLinks profileList={userData.social_profiles} updateUserFunction={updateUser} />
+            }
+            
           </Grid>
         </Grid>
       </Grid>
@@ -202,7 +238,7 @@ const Profile = () => {
             Summary
           </Typography>
           <Typography component="div">
-            {bio}
+            {userData.bio}
           </Typography>
         </Grid>
         <Stack spacing={2} direction="row" sx={{ mt: 4 }}>

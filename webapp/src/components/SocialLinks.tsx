@@ -12,10 +12,11 @@ import MailIcon from '@mui/icons-material/Mail';
 
 interface SocialProfileLinksProps {
   profileList: SocialProfile[] | undefined;
+  updateUserFunction: () => void;
 }
 
 const renderGitHubProfileLink = (social_profile: SocialProfile): JSX.Element => {
-  return <Grid item key={social_profile.network_name}>
+  return <Grid item key={social_profile.profile_url}>
     <Tooltip title="GitHub">
       <IconButton component="a" href={social_profile.profile_url}>
         <GitHubIcon color="primary" />
@@ -24,11 +25,11 @@ const renderGitHubProfileLink = (social_profile: SocialProfile): JSX.Element => 
   </Grid>
 }
 
-const renderLinkedInProfileLink = (social_profile: SocialProfile): JSX.Element => {
+const renderLinkedInProfileLink = (social_profile: SocialProfile): JSX.Element | void => {
   if (social_profile.public === false) {
-    return <></>;
+    return;
   }
-  return <Grid item key={social_profile.network_name}>
+  return <Grid item key={social_profile.profile_url}>
     <Tooltip title="LinkedIn">
       <IconButton component="a" href={social_profile.profile_url}>
         <LinkedInIcon color="primary" />
@@ -37,11 +38,11 @@ const renderLinkedInProfileLink = (social_profile: SocialProfile): JSX.Element =
   </Grid>
 }
 
-const renderTwitterProfileLink = (social_profile: SocialProfile): JSX.Element => {
+const renderTwitterProfileLink = (social_profile: SocialProfile): JSX.Element | void => {
   if (social_profile.public === false) {
-    return <></>;
+    return;
   }
-  return <Grid item key={social_profile.network_name}>
+  return <Grid item key={social_profile.profile_url}>
     <Tooltip title="Twitter">
       <IconButton component="a" href={social_profile.profile_url}>
         <TwitterIcon color="primary" />
@@ -50,11 +51,11 @@ const renderTwitterProfileLink = (social_profile: SocialProfile): JSX.Element =>
   </Grid>
 }
 
-const renderRedditProfileLink = (social_profile: SocialProfile): JSX.Element => {
+const renderRedditProfileLink = (social_profile: SocialProfile): JSX.Element | void => {
   if (social_profile.public === false) {
-    return <></>;
+    return;
   }
-  return <Grid item key={social_profile.network_name}>
+  return <Grid item key={social_profile.profile_url}>
     <Tooltip title="Reddit">
       <IconButton component="a" href={social_profile.profile_url}>
         <RedditIcon color="primary" />
@@ -63,11 +64,11 @@ const renderRedditProfileLink = (social_profile: SocialProfile): JSX.Element => 
   </Grid>
 }
 
-const renderWebsiteLink = (social_profile: SocialProfile): JSX.Element => {
+const renderWebsiteLink = (social_profile: SocialProfile): JSX.Element | void => {
   if (social_profile.public === false) {
-    return <></>;
+    return;
   }
-  return <Grid item key={social_profile.network_name}>
+  return <Grid item key={social_profile.profile_url}>
     <Tooltip title="Website">
       <IconButton component="a" href={social_profile.profile_url}>
         <LanguageIcon color="primary" />
@@ -76,11 +77,11 @@ const renderWebsiteLink = (social_profile: SocialProfile): JSX.Element => {
   </Grid>
 }
 
-const renderDribbbleProfileLink = (social_profile: SocialProfile): JSX.Element => {
+const renderDribbbleProfileLink = (social_profile: SocialProfile): JSX.Element | void => {
   if (social_profile.public === false) {
-    return <></>;
+    return;
   }
-  return <Grid item key={social_profile.network_name}>
+  return <Grid item key={social_profile.profile_url}>
     <Tooltip title="Dribbble">
       <IconButton component="a" href={social_profile.profile_url}>
         <SportsBasketballIcon color="primary" />
@@ -89,11 +90,11 @@ const renderDribbbleProfileLink = (social_profile: SocialProfile): JSX.Element =
   </Grid>
 }
 
-const renderEmailLink = (social_profile: SocialProfile): JSX.Element => {
+const renderEmailLink = (social_profile: SocialProfile): JSX.Element | void => {
   if (social_profile.public === false) {
-    return <></>;
+    return;
   }
-  return <Grid item key={social_profile.network_name}>
+  return <Grid item key={social_profile.profile_url}>
     <Tooltip title="email">
       <IconButton component="a" href={social_profile.profile_url}>
         <MailIcon color="primary" />
@@ -103,9 +104,9 @@ const renderEmailLink = (social_profile: SocialProfile): JSX.Element => {
 }
 
 const SocialProfileLinks = ({
-  profileList
+  profileList,
+  updateUserFunction
 }: SocialProfileLinksProps): JSX.Element => {
-  console.log(profileList);
   if (!profileList) {
     return <></>;
   }
@@ -127,9 +128,9 @@ const SocialProfileLinks = ({
         case "email":
           return renderEmailLink(social_profile);
         default:
-          return <a href={social_profile.profile_url}>{social_profile.network_name}</a>
+          return <a key={social_profile.profile_url} href={social_profile.profile_url}>{social_profile.network_name}</a>
       }
-    })}
+    })}<button onClick={updateUserFunction}>Change the name</button>
   </>);
 }
 
