@@ -150,7 +150,7 @@ evening_greetings.set('fi', {
 const getPreferredLanguageGreeting = (
   timeOfDay: string,
   preferredLanguage: string,
-  username: string
+  username?: string
 ): string => {
   let user_greeting: GreetingType | any = {};
 
@@ -166,12 +166,19 @@ const getPreferredLanguageGreeting = (
       evening_greetings.get(preferredLanguage) || evening_greetings.get('en')!;
   }
 
-  const user_greeting_string =
-    user_greeting.beginning_punct +
-    user_greeting.greeting +
-    user_greeting.delimiter +
-    username +
-    user_greeting.ending_punct;
+  let user_greeting_string = "";
+
+  if (username) {
+    user_greeting_string += user_greeting.beginning_punct;
+    user_greeting_string += user_greeting.greeting;
+    user_greeting_string += user_greeting.delimiter;
+    user_greeting_string += username;
+    user_greeting_string += user_greeting.ending_punct;
+  } else {
+    user_greeting_string += user_greeting.beginning_punct;
+    user_greeting_string += user_greeting.greeting;
+    user_greeting_string += user_greeting.ending_punct;
+  }
 
   return user_greeting_string;
 };
@@ -183,7 +190,7 @@ const getPreferredLanguageGreeting = (
  * @returns The string which includes the icon and the greeting string depending on the time of the day (ex. "🌅 Good morning, {username}!")
  *
  */
-export const getGreeting = (username: string): string => {
+export const getGreeting = (username?: string): string => {
   const myDate = new Date();
   const hrs = myDate.getHours();
 
