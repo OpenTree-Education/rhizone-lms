@@ -19,7 +19,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import ProgressBar from './ProgressBar';
 import CompetencyRatings from './CompetencyRatings';
 
-import { GitHubUser, SocialProfile, UserData } from '../types/api.d';
+import { GitHubUser, SocialNetwork, SocialProfile, UserData } from '../types/api.d';
 import SocialProfileLinks from './SocialLinks';
 import ProfileEditingForm from './ProfileEditingForm';
 
@@ -46,6 +46,11 @@ const Profile = () => {
   const { data: api_user_data } = useApiData<UserData[]>({
     path: `/profile/1`,
     sendCredentials: true,
+  });
+
+  const { data: social_networks_list } = useApiData<SocialNetwork[]>({
+    path: `/social_networks`,
+    sendCredentials: false
   });
 
   const updateUser = () => {
@@ -224,8 +229,8 @@ const Profile = () => {
             ml={{ md: -1, sm: -2 }}
           >
             { (editingMode) ?
-                <ProfileEditingForm /> :
-                <SocialProfileLinks profileList={userData.social_profiles} updateUserFunction={updateUser} />
+                <ProfileEditingForm networksList={social_networks_list} profileList={userData.social_profiles} updateUserFunction={updateUser} /> :
+                <SocialProfileLinks profileList={userData.social_profiles} />
             }
             
           </Grid>

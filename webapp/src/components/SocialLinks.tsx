@@ -12,13 +12,12 @@ import MailIcon from '@mui/icons-material/Mail';
 
 interface SocialProfileLinksProps {
   profileList: SocialProfile[] | undefined;
-  updateUserFunction: () => void;
 }
 
 const renderGitHubProfileLink = (social_profile: SocialProfile): JSX.Element => {
   return <Grid item key={social_profile.profile_url}>
     <Tooltip title="GitHub">
-      <IconButton component="a" href={social_profile.profile_url}>
+      <IconButton component="a" href={social_profile.profile_url} target="_blank">
         <GitHubIcon color="primary" />
       </IconButton>
      </Tooltip>
@@ -31,7 +30,7 @@ const renderLinkedInProfileLink = (social_profile: SocialProfile): JSX.Element |
   }
   return <Grid item key={social_profile.profile_url}>
     <Tooltip title="LinkedIn">
-      <IconButton component="a" href={social_profile.profile_url}>
+      <IconButton component="a" href={social_profile.profile_url} target="_blank">
         <LinkedInIcon color="primary" />
       </IconButton>
      </Tooltip>
@@ -44,7 +43,7 @@ const renderTwitterProfileLink = (social_profile: SocialProfile): JSX.Element | 
   }
   return <Grid item key={social_profile.profile_url}>
     <Tooltip title="Twitter">
-      <IconButton component="a" href={social_profile.profile_url}>
+      <IconButton component="a" href={social_profile.profile_url} target="_blank">
         <TwitterIcon color="primary" />
       </IconButton>
      </Tooltip>
@@ -57,7 +56,7 @@ const renderRedditProfileLink = (social_profile: SocialProfile): JSX.Element | v
   }
   return <Grid item key={social_profile.profile_url}>
     <Tooltip title="Reddit">
-      <IconButton component="a" href={social_profile.profile_url}>
+      <IconButton component="a" href={social_profile.profile_url} target="_blank">
         <RedditIcon color="primary" />
       </IconButton>
      </Tooltip>
@@ -70,7 +69,7 @@ const renderWebsiteLink = (social_profile: SocialProfile): JSX.Element | void =>
   }
   return <Grid item key={social_profile.profile_url}>
     <Tooltip title="Website">
-      <IconButton component="a" href={social_profile.profile_url}>
+      <IconButton component="a" href={social_profile.profile_url} target="_blank">
         <LanguageIcon color="primary" />
       </IconButton>
      </Tooltip>
@@ -83,7 +82,7 @@ const renderDribbbleProfileLink = (social_profile: SocialProfile): JSX.Element |
   }
   return <Grid item key={social_profile.profile_url}>
     <Tooltip title="Dribbble">
-      <IconButton component="a" href={social_profile.profile_url}>
+      <IconButton component="a" href={social_profile.profile_url} target="_blank">
         <SportsBasketballIcon color="primary" />
       </IconButton>
      </Tooltip>
@@ -104,8 +103,7 @@ const renderEmailLink = (social_profile: SocialProfile): JSX.Element | void => {
 }
 
 const SocialProfileLinks = ({
-  profileList,
-  updateUserFunction
+  profileList
 }: SocialProfileLinksProps): JSX.Element => {
   if (!profileList) {
     return <></>;
@@ -130,7 +128,7 @@ const SocialProfileLinks = ({
         default:
           return <a key={social_profile.profile_url} href={social_profile.profile_url}>{social_profile.network_name}</a>
       }
-    })}<button onClick={updateUserFunction}>Change the name</button>
+    })}
   </>);
 }
 
