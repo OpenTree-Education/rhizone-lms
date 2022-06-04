@@ -117,6 +117,7 @@ export interface GitHubUser {
 export interface UserData extends Entity {
   github_accounts?: Array<GitHubUser>;
   social_profiles?: Array<SocialProfile>;
+  avatar_url?: string;
   full_name?: string;
   email_address?: string;
   bio?: string;

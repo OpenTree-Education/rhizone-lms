@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { getGreeting } from '../helpers/greeting';
 import useApiData from '../helpers/useApiData';
 
@@ -19,119 +19,87 @@ import EditIcon from '@mui/icons-material/Edit';
 import ProgressBar from './ProgressBar';
 import CompetencyRatings from './CompetencyRatings';
 
-import { GitHubUser, SocialNetwork, SocialProfile, UserData } from '../types/api.d';
+import { SocialNetwork, UserData } from '../types/api.d';
+import { parseServerProfileResponse } from '../helpers/profileHelper';
 import SocialProfileLinks from './SocialLinks';
 import ProfileEditingForm from './ProfileEditingForm';
+import SessionContext from './SessionContext';
 
-// default data in case we don't get anything back from the db
-let id = -1;
-let avatar_url = '';
-let full_name = '';
-let bio = '';
-let email_address = '';
-let github_accounts: GitHubUser[] = [];
-let social_profiles: SocialProfile[] = [];
-let user: UserData = {
-  id: id,
-  full_name: full_name,
-  bio: bio,
-  email_address: email_address,
-  github_accounts: github_accounts,
-  social_profiles: social_profiles,
+let user_data: UserData = {
+  id: -1,
+  full_name: "",
+  bio: "",
+  avatar_url: "",
+  email_address: "",
+  github_accounts: [],
+  social_profiles: [],
 };
 
 const Profile = () => {
   const [ editingMode, setEditingMode ] = React.useState(false);
-  const [ userData, setUserData ] = React.useState<UserData>(user);
+  const { principalId: sessionPrincipalId } = React.useContext(SessionContext);
+
   const { data: api_user_data } = useApiData<UserData[]>({
-    path: `/profile/1`,
+    deps: [sessionPrincipalId],
+    path: `/profile/${sessionPrincipalId}`,
     sendCredentials: true,
   });
+
+  const [ userData, setUserData ] = React.useState<UserData>(user_data);
+
+  useEffect(() => {
+    user_data = parseServerProfileResponse(api_user_data);
+    setUserData(user_data);
+  }, [api_user_data]);
 
   const { data: social_networks_list } = useApiData<SocialNetwork[]>({
     path: `/social_networks`,
     sendCredentials: false
   });
 
-  const updateUser = () => {
-    let new_user_obj = userData;
-    new_user_obj.full_name = "OpenTree Education";
-    setUserData(prev => {
-      return { ...prev, userData: new_user_obj}});
-  };
+  const updateUser = (event: React.MouseEvent) => {
+    event.preventDefault();
+    let submittedUserData = userData;
 
-  if (userData.id === -1) {
-  if (api_user_data && api_user_data.length > 0) {
-    const [user_data] = api_user_data;
-    // console.log("api_user_data: ", api_user_data);
-    user = user_data;
+    submittedUserData.full_name = "OpenTree Education";
 
-    if (user.id && user.id !== 'null') {
-      if (typeof user.id === 'string') {
-        id = parseInt(user.id);
-      } else if (typeof user.id === 'number') {
-        const { id: userId } = user;
-        id = userId;
-      }
-    }
+    // some sort of progress or spinny wheel?
 
-    if (user.full_name && user.full_name !== '') {
-      const { full_name: fullName } = user;
-      full_name = fullName;
-    }
-
-    if (user.bio && user.bio !== '') {
-      const { bio: userBio } = user;
-      bio = userBio;
-    }
-
-    if (user.email_address && user.email_address !== '') {
-      const { email_address: userEmail } = user;
-      email_address = userEmail;
-    }
-
-    if (user.github_accounts && user.github_accounts.length > 0) {
-      const [github_account] = user.github_accounts;
-      github_accounts.push(github_account);
-
-      if (github_account.avatar_url) {
-        const { avatar_url: avatar } = github_account;
-        avatar_url = avatar;
-      }
-      if (github_account.full_name && github_account.full_name !== '') {
-        if (full_name === '') {
-          const { full_name: fullName } = github_account;
-          full_name = fullName;
+    fetch(`${process.env.REACT_APP_API_ORIGIN}/profile/${sessionPrincipalId}`, {
+      method: 'PUT',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        "data": [submittedUserData],
+        "summary": {
+          "total_count": 1
         }
-      }
-    }
+      }),
+    })
+      .then(res => res.json())
+      .then(({ data, error }) => {
+        
+        // end of progress
 
-    if (user.social_profiles && user.social_profiles.length > 0) {
-      const { social_profiles: social_profile_list } = user;
-      social_profiles = social_profile_list;
-
-      social_profile_list.forEach((social_profile) => {
-        if (social_profile.network_name === 'email') {
-          if (email_address === '') {
-            email_address = social_profile.user_name;
-          }
+        if (error) {
+          // handle error other than console.error
+          console.error("error from server comms: ", error);
         }
+        if (data) {
+          // handle success
+          console.log("response from server: ", data);
+
+          setUserData(prev => {
+            return { ...prev, userData: submittedUserData}});
+
+        }
+      })
+      .catch(error => {
+        // top-level error catch
+        console.error("uncaught error", error)
       });
-    }
 
-    user = {
-      id: id,
-      full_name: full_name,
-      bio: bio,
-      email_address: email_address,
-      github_accounts: github_accounts,
-      social_profiles: social_profiles,
-    };
-
-    setUserData(prev => user);
-
-    // console.log("I have updated the user object. It now looks like this:", user);
-  }}
+  };
 
   return (
     <Container fixed>
@@ -178,7 +146,7 @@ const Profile = () => {
               border: '3px solid #fff',
               outline: '2px solid #1976d2',
             }}
-            src={avatar_url}
+            src={userData.avatar_url}
           ></Avatar>
         </Grid>
         <Grid

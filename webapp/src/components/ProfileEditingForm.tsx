@@ -4,7 +4,7 @@ import { SocialNetwork, SocialProfile } from '../types/api';
 interface ProfileEditingFormProps {
   networksList: SocialNetwork[] | null;
   profileList: SocialProfile[] | undefined;
-  updateUserFunction: () => void;
+  updateUserFunction: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const generateNetworkDropdown = (networksList: SocialNetwork[] | null, row_number: number, social_profile: SocialProfile) => {
@@ -26,6 +26,8 @@ const ProfileEditingForm = ({networksList, profileList, updateUserFunction}: Pro
     </div>;
   });
   return <form>
+    <button onClick={updateUserFunction}>Change My Name to Something Else</button>
+    <hr />
     {formRows}
   </form>;
 }
