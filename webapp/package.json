@@ -68,5 +68,9 @@
   "prettier": {
     "arrowParens": "avoid",
     "singleQuote": true
+  },
+  "devDependencies": {
+    "sass": "^1.52.2",
+    "sass-loader": "^13.0.0"
   }
 }
