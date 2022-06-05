@@ -19,10 +19,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import ProgressBar from './ProgressBar';
 import CompetencyRatings from './CompetencyRatings';
 
-import { SocialNetwork, UserData } from '../types/api.d';
+import { SocialNetwork, UserData } from '../types/api';
 import { parseServerProfileResponse } from '../helpers/profileHelper';
-import SocialProfileLinks from './SocialLinks';
-import ProfileEditingForm from './ProfileEditingForm';
+import UserProfileSocialLinks from './UserProfileSocialLinks';
+import UserProfileEditingForm from './UserProfileEditingForm';
 import SessionContext from './SessionContext';
 
 /**
@@ -64,7 +64,7 @@ const SAVE_STATUS_DELAY = 3500;
  * 
  * @returns Profile component for the user
  */
-const Profile = () => {
+const UserProfile = () => {
   // Store the state of editing: true if we're editing, false if we're not.
   const [ editingMode, setEditingMode ] = React.useState(false);
 
@@ -273,8 +273,8 @@ const Profile = () => {
             ml={{ md: -1, sm: -2 }}
           >
             { (editingMode) ?
-                <ProfileEditingForm networksList={social_networks_list} profileList={userData.social_profiles} updateUserFunction={updateUser} /> :
-                <SocialProfileLinks profileList={userData.social_profiles} />
+                <UserProfileEditingForm networksList={social_networks_list} profileList={userData.social_profiles} updateUserFunction={updateUser} /> :
+                <UserProfileSocialLinks profileList={userData.social_profiles} />
             }
             
           </Grid>
@@ -316,4 +316,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default UserProfile;

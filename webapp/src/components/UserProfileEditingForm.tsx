@@ -1,7 +1,7 @@
 import React from 'react';
 import { SocialNetwork, SocialProfile } from '../types/api';
 
-interface ProfileEditingFormProps {
+interface UserProfileEditingFormProps {
   networksList: SocialNetwork[] | null;
   profileList: SocialProfile[] | undefined;
   updateUserFunction: React.MouseEventHandler<HTMLButtonElement>;
@@ -15,7 +15,7 @@ const generateNetworkDropdown = (networksList: SocialNetwork[] | null, row_numbe
   return <select value={social_profile.network_name} key={`row_${row_number}_select`}>{network_options}</select>
 }
 
-const ProfileEditingForm = ({networksList, profileList, updateUserFunction}: ProfileEditingFormProps): JSX.Element => {
+const UserProfileEditingForm = ({networksList, profileList, updateUserFunction}: UserProfileEditingFormProps): JSX.Element => {
   const formRows = profileList?.map((social_profile: SocialProfile, row_number: number) => {
     return <div key={`row_${row_number}`}>
       <>
@@ -32,4 +32,4 @@ const ProfileEditingForm = ({networksList, profileList, updateUserFunction}: Pro
   </form>;
 }
 
-export default ProfileEditingForm;
+export default UserProfileEditingForm;
