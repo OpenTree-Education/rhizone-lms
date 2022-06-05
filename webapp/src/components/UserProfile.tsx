@@ -135,8 +135,6 @@ const UserProfile = () => {
     event.preventDefault();
     let submittedUserData = userData;
 
-    submittedUserData.full_name = "OpenTree Education";
-
     setSaveStatus(SaveStatus.SAVING);
 
     fetch(`${process.env.REACT_APP_API_ORIGIN}/profile/${sessionPrincipalId}`, {
@@ -273,7 +271,7 @@ const UserProfile = () => {
             ml={{ md: -1, sm: -2 }}
           >
             { (editingMode) ?
-                <UserProfileEditingForm networksList={social_networks_list} profileList={userData.social_profiles} updateUserFunction={updateUser} /> :
+                <UserProfileEditingForm networksList={social_networks_list} userData={userData} setUserData={setUserData} updateUserFunction={updateUser} /> :
                 <UserProfileSocialLinks profileList={userData.social_profiles} />
             }
             
