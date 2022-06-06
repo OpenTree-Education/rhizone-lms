@@ -67,14 +67,15 @@ export const getUserSocials = async (
       'social_networks',
       'principal_social.network_id',
       'social_networks.id'
-    ).then((returned_rows) => {
+    )
+    .then(returned_rows => {
       return returned_rows.map((row: any): ISocialProfile => {
         return {
-          network_name: (row.network_name) ? row.network_name : '',
-          user_name: (row.user_name) ? row.user_name : '',
-          profile_url: (row.profile_url) ? row.profile_url : '',
-          public: (row.public) ? (row.public === 'true') : false
-        }
+          network_name: row.network_name ? row.network_name : '',
+          user_name: row.user_name ? row.user_name : '',
+          profile_url: row.profile_url ? row.profile_url : '',
+          public: row.public ? row.public === 'true' : false,
+        };
       });
     });
 

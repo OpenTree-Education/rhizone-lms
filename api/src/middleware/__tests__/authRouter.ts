@@ -119,7 +119,7 @@ describe('authRouter', () => {
             username: '',
             full_name: '',
             avatar_url: '',
-            bio: ''
+            bio: '',
           });
           done();
         });

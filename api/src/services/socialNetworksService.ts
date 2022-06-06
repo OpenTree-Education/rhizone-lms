@@ -6,5 +6,8 @@ export const listSocialNetworks = async (): Promise<ISocialNetwork[]> => {
 };
 
 export const getSocialNetworkID = (network_name: string): Promise<number> => {
-  return db('social_networks').select<number>('id').where({network_name: network_name}).limit(1);
-}
+  return db('social_networks')
+    .select<number>('id')
+    .where({ network_name: network_name })
+    .limit(1);
+};

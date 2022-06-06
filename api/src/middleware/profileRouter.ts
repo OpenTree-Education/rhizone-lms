@@ -1,7 +1,10 @@
 import { Router } from 'express';
 import { getUserProfileData } from '../services/getUserProfileDataService';
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
-import { compareAndUpdatePrincipals, parsePutSubmission } from '../services/principalsService';
+import {
+  compareAndUpdatePrincipals,
+  parsePutSubmission,
+} from '../services/principalsService';
 
 const profileRouter = Router();
 
@@ -21,9 +24,7 @@ profileRouter.get('/:id', async (req, res, next) => {
 
   try {
     if (id == null) {
-      throw new Error(
-        'I was not passed a id for which to show profile data.'
-      );
+      throw new Error('I was not passed a id for which to show profile data.');
     }
 
     // TODO: need to check here if we're getting our own profile or someone else's!
@@ -31,9 +32,7 @@ profileRouter.get('/:id', async (req, res, next) => {
     const user_profile_data = await getUserProfileData(principalId);
 
     if (user_profile_data == null) {
-      throw new Error(
-        `I couldn't find a principal ID matching ${id}`
-      );
+      throw new Error(`I couldn't find a principal ID matching ${id}`);
     }
 
     res.json(collectionEnvelope(Array(user_profile_data), 1));
@@ -53,9 +52,7 @@ profileRouter.put('/:id', async (req, res, next) => {
   try {
     // test to make sure we have a principal ID defined
     if (id == null) {
-      throw new Error(
-        'I was not passed a id for which to show profile data.'
-      );
+      throw new Error('I was not passed a id for which to show profile data.');
     }
 
     // test to make sure the session principal ID matches the principal ID in path
@@ -69,10 +66,16 @@ profileRouter.put('/:id', async (req, res, next) => {
     const submitted_user_data_request = req.body;
     let submitted_user;
 
-    if (submitted_user_data_request.data && submitted_user_data_request.data.length > 0) {
-      submitted_user = parsePutSubmission(submitted_user_data_request.data[0], path_id);
+    if (
+      submitted_user_data_request.data &&
+      submitted_user_data_request.data.length > 0
+    ) {
+      submitted_user = parsePutSubmission(
+        submitted_user_data_request.data[0],
+        path_id
+      );
     } else {
-      throw new Error("Request did not come in entity format.");
+      throw new Error('Request did not come in entity format.');
     }
 
     // get the appropriate existing IUserData for that principal for comparison's sake
@@ -80,7 +83,10 @@ profileRouter.put('/:id', async (req, res, next) => {
 
     // send the object to a function that will compare the IUserData object to the existing one
     // and update the database accordingly.
-    const modified_data = compareAndUpdatePrincipals(path_user_profile_data, submitted_user);
+    const modified_data = compareAndUpdatePrincipals(
+      path_user_profile_data,
+      submitted_user
+    );
     if (modified_data) {
       res.status(200);
       res.json(collectionEnvelope([await getUserProfileData(principalId)], 1));

@@ -1,14 +1,21 @@
-import { IUserData, ISocialProfile, ISocialNetwork } from '../models/user_models';
+import {
+  IUserData,
+  ISocialProfile,
+  ISocialNetwork,
+} from '../models/user_models';
 import db from './db';
 
 /**
  * Parses a JSON object submitted and transforms it into one that conforms to the IUserData interface, if possible.
- * 
+ *
  * @param submitted_user_data (any) An object that needs to be parsed
  * @param path_id (number) The principal defined in the URL path
  * @returns formatted object, if possible; Error if not
  */
-export const parsePutSubmission = (submitted_user_data: any, path_id: number) => {
+export const parsePutSubmission = (
+  submitted_user_data: any,
+  path_id: number
+) => {
   let submitted_user: IUserData;
 
   if (submitted_user_data.id) {
@@ -66,7 +73,7 @@ export const parsePutSubmission = (submitted_user_data: any, path_id: number) =>
   }
 
   return submitted_user;
-}
+};
 
 /**
  * Compares two objects conforming to the IUserData interface to see if they
@@ -87,7 +94,7 @@ export const compareAndUpdatePrincipals = async (
   // i.e does existing_user_data.bio == new_user_data.bio and so on
 
   if (existing_user_data.id !== new_user_data.id) {
-    throw new Error("Principal IDs being compared do not match.");
+    throw new Error('Principal IDs being compared do not match.');
   }
 
   if (existing_user_data.bio !== new_user_data.bio) {
@@ -101,10 +108,7 @@ export const compareAndUpdatePrincipals = async (
   }
 
   if (existing_user_data.email_address !== new_user_data.email_address) {
-    modifyEmailAddress(
-      existing_user_data.id,
-      new_user_data.email_address
-    );
+    modifyEmailAddress(existing_user_data.id, new_user_data.email_address);
     modified_data = true;
   }
 
@@ -125,7 +129,9 @@ export const compareAndUpdatePrincipals = async (
    *      to do anything.
    */
 
-  const all_social_networks = await db('social_networks').select<ISocialNetwork[]>('*');
+  const all_social_networks = await db('social_networks').select<
+    ISocialNetwork[]
+  >('*');
 
   all_social_networks.forEach((social_network: ISocialNetwork) => {
     const social_network_id = social_network.id;
@@ -147,25 +153,33 @@ export const compareAndUpdatePrincipals = async (
     });
 
     switch (true) {
-      case (existing_user_profile !== null && new_user_profile !== null):
+      case existing_user_profile !== null && new_user_profile !== null:
         if (existing_user_profile.user_name != new_user_profile.user_name) {
-          modifySocialProfile(existing_user_data.id, social_network_id, new_user_profile);
+          modifySocialProfile(
+            existing_user_data.id,
+            social_network_id,
+            new_user_profile
+          );
         }
-        if (social_network_name == "email") {
+        if (social_network_name == 'email') {
           modifyEmailAddress(existing_user_data.id, new_user_profile.user_name);
         }
         modified_data = true;
         break;
-      case (existing_user_profile !== null && new_user_profile === null):
+      case existing_user_profile !== null && new_user_profile === null:
         deleteSocialProfile(existing_user_data.id, social_network_id);
-        if (social_network_name == "email") {
+        if (social_network_name == 'email') {
           modifyEmailAddress(existing_user_data.id, null);
         }
         modified_data = true;
         break;
-      case (existing_user_profile === null && new_user_profile !== null):
-        addSocialProfile(existing_user_data.id, social_network_id, new_user_profile);
-        if (social_network_name == "email") {
+      case existing_user_profile === null && new_user_profile !== null:
+        addSocialProfile(
+          existing_user_data.id,
+          social_network_id,
+          new_user_profile
+        );
+        if (social_network_name == 'email') {
           modifyEmailAddress(existing_user_data.id, new_user_profile.user_name);
         }
         modified_data = true;
@@ -180,7 +194,7 @@ export const compareAndUpdatePrincipals = async (
  * Inserts a new record into the `principal_social` table corresponding to the
  * principal ID, social network ID, and user name from the ISocialProfile
  * object.
- * 
+ *
  * @param principal_id ID of the principal whose profile is being modified
  * @param social_network_id ID of the social network whose profile we're defining
  * @param social_profile Details of the social profile
@@ -190,14 +204,19 @@ export const addSocialProfile = async (
   social_network_id: number,
   social_profile: ISocialProfile
 ) => {
-  return await db('principal_social').insert({ principal_id: principal_id, network_id: social_network_id, data: social_profile.user_name, public: social_profile.public});
+  return await db('principal_social').insert({
+    principal_id: principal_id,
+    network_id: social_network_id,
+    data: social_profile.user_name,
+    public: social_profile.public,
+  });
 };
 
 /**
  * Modifies a record into the `principal_social` table corresponding to the
  * principal ID, social network ID, and user name from the ISocialProfile
  * object.
- * 
+ *
  * @param principal_id ID of the principal whose profile is being modified
  * @param social_network_id ID of the social network whose profile we're modifying
  * @param social_profile Details of the social profile
@@ -207,13 +226,15 @@ export const modifySocialProfile = async (
   social_network_id: number,
   social_profile: ISocialProfile
 ) => {
-  return await db('principal_social').where({principal_id: principal_id, network_id: social_network_id}).update({data: social_profile.user_name});
+  return await db('principal_social')
+    .where({ principal_id: principal_id, network_id: social_network_id })
+    .update({ data: social_profile.user_name });
 };
 
 /**
  * Removes a record into the `principal_social` table corresponding to the
  * principal ID and social network ID.
- * 
+ *
  * @param id ID of the principal whose profile is being removing
  * @param social_network_id ID of the social network whose profile we're removing
  */
@@ -221,12 +242,14 @@ export const deleteSocialProfile = async (
   id: number,
   social_network_id: number
 ) => {
-  return await db('principal_social').where({ id: id, network_id: social_network_id }).del();
+  return await db('principal_social')
+    .where({ id: id, network_id: social_network_id })
+    .del();
 };
 
 /**
  * Modifies the bio in the `principals` table for a given principal.
- * 
+ *
  * @param id ID of the principal who needs a bio modification
  * @param bio The new bio for the user.
  */
@@ -236,7 +259,7 @@ export const modifyBio = async (id: number, bio: string) => {
 
 /**
  * Modifies the full name in the `principals` table for a given principal.
- * 
+ *
  * @param id ID of the principal who needs a bio modification
  * @param full_name The new full name for the user.
  */
@@ -246,7 +269,7 @@ export const modifyFullName = async (id: number, full_name: string) => {
 
 /**
  * Modifies the avatar URL in the `principals` table for a given principal.
- * 
+ *
  * @param id ID of the principal who needs a bio modification
  * @param avatar_url The new avatar URL for the user.
  */
@@ -256,13 +279,12 @@ export const modifyAvatarURL = async (id: number, avatar_url: string) => {
 
 /**
  * Modifies the email address in the `principals` table for a given principal.
- * 
+ *
  * @param id ID of the principal who needs a bio modification
  * @param bio The new bio for the user.
  */
-export const modifyEmailAddress = async (
-  id: number,
-  email_address: string
-) => {
-  await db('principals').where({ id: id }).update({ email_address: email_address });
+export const modifyEmailAddress = async (id: number, email_address: string) => {
+  await db('principals')
+    .where({ id: id })
+    .update({ email_address: email_address });
 };
