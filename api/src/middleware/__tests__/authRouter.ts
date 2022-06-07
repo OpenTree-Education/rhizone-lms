@@ -74,7 +74,13 @@ describe('authRouter', () => {
 
     it('should redirect to the web app for a principal with a known GitHub user id', done => {
       mockGetGithubAccessToken.mockResolvedValue('MOCK_ACCESS_TOKEN');
-      mockGetGithubUser.mockResolvedValue({ id: 1000 });
+      mockGetGithubUser.mockResolvedValue({
+        id: 1000,
+        login: '',
+        name: '',
+        bio: '',
+        avatar_url: '',
+      });
       mockFindGithubUserByGithubId.mockResolvedValue({
         github_id: 1000,
         username: '',
@@ -97,15 +103,21 @@ describe('authRouter', () => {
 
     it('should insert a new principal and GitHub user and then redirect to the web app for a principal with an unknown GitHub user id', done => {
       mockGetGithubAccessToken.mockResolvedValue('MOCK_ACCESS_TOKEN');
-      mockGetGithubUser.mockResolvedValue({ id: 1000 });
+      mockGetGithubUser.mockResolvedValue({
+        id: 1001,
+        login: '',
+        name: '',
+        bio: '',
+        avatar_url: '',
+      });
       mockFindGithubUserByGithubId.mockResolvedValue(null);
       mockCreateGithubUser.mockResolvedValue({
-        github_id: 1000,
+        github_id: 1001,
         username: '',
         full_name: '',
         avatar_url: '',
         bio: '',
-        principal_id: 10,
+        principal_id: 1,
       });
       appAgent
         .get('/auth/github/callback?code=MOCK_CODE')
@@ -113,9 +125,9 @@ describe('authRouter', () => {
         .expect(302, () => {
           expect(getGithubAccessToken).toHaveBeenCalledWith('MOCK_CODE');
           expect(getGithubUser).toHaveBeenCalledWith('MOCK_ACCESS_TOKEN');
-          expect(mockFindGithubUserByGithubId).toHaveBeenCalledWith(1000);
+          expect(mockFindGithubUserByGithubId).toHaveBeenCalledWith(1001);
           expect(mockCreateGithubUser).toHaveBeenCalledWith({
-            github_id: 1000,
+            github_id: 1001,
             username: '',
             full_name: '',
             avatar_url: '',

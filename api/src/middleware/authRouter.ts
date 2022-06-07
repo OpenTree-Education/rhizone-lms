@@ -39,19 +39,27 @@ authRouter.get(`/auth/github/callback`, async (req, res, next) => {
     next(new BadRequestError('A "code" query string parameter is required.'));
     return;
   }
+
   let accessToken;
   try {
     accessToken = await getGithubAccessToken(String(code));
+
+    if (!accessToken) {
+      throw new Error('could not get an access token for GitHub.');
+    }
   } catch (err) {
-    console.log(err);
     next(err);
     return;
   }
+
   let githubApiUser;
   try {
     githubApiUser = await getGithubUser(accessToken);
+
+    if (!accessToken) {
+      throw new Error('could not get GitHub user with access token.');
+    }
   } catch (err) {
-    console.log(err);
     next(err);
     return;
   }
@@ -64,23 +72,32 @@ authRouter.get(`/auth/github/callback`, async (req, res, next) => {
     avatar_url: githubApiUser.avatar_url,
   };
 
-  // Check to see if user already exists; if it doesn't, create it.
-  const principal_id = findGithubUserByGithubId(githubUserData.github_id)
-    .then(async gitHubUser => {
+  let principal_id = null;
+
+  try {
+    // Check to see if user already exists; if it doesn't, create it.
+    principal_id = await findGithubUserByGithubId(
+      githubUserData.github_id
+    ).then(async gitHubUser => {
       if (!gitHubUser || Object.keys(gitHubUser).length == 0) {
         gitHubUser = await createGithubUser(githubUserData);
       }
       return gitHubUser.principal_id;
-    })
-    .catch(err => {
-      console.log(err);
-      return -1;
     });
 
-  const principalId = await principal_id;
+    if (!principal_id) {
+      throw new Error('was not able to insert user into database.');
+    }
+  } catch (err) {
+    next(err);
+    return;
+  }
 
-  if (principalId !== -1) {
-    req.session.principalId = Number(principalId);
+  if (principal_id !== null) {
+    req.session.principalId = Number(principal_id);
+  } else {
+    next(new Error('was not able to retrieve user from database.'));
+    return;
   }
 
   res.redirect(findConfig('WEBAPP_ORIGIN', ''));

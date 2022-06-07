@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getUserProfileData } from '../services/getUserProfileDataService';
-import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
+import { collectionEnvelope } from './responseEnvelope';
 import {
   compareAndUpdatePrincipals,
   parsePutSubmission,
@@ -12,7 +12,6 @@ profileRouter.get('/', async (_req, _res, next) => {
   try {
     throw new Error('I need to be passed a principal ID.');
   } catch (err) {
-    console.error('err', err);
     next(err);
     return;
   }
@@ -37,7 +36,6 @@ profileRouter.get('/:id', async (req, res, next) => {
 
     res.json(collectionEnvelope(Array(user_profile_data), 1));
   } catch (err) {
-    console.error('err', err);
     next(err);
     return;
   }
@@ -99,7 +97,6 @@ profileRouter.put('/:id', async (req, res, next) => {
 
     // send back the appropriate HTTP status code and appropriate response to the requester
   } catch (err) {
-    console.error('err', err);
     next(err);
     return;
   }
