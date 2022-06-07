@@ -80,7 +80,7 @@ authRouter.get(`/auth/github/callback`, async (req, res, next) => {
       githubUserData.github_id
     ).then(async gitHubUser => {
       if (!gitHubUser || Object.keys(gitHubUser).length == 0) {
-        gitHubUser = await createGithubUser(githubUserData);
+        gitHubUser = (await createGithubUser(githubUserData)) || gitHubUser;
       }
       return gitHubUser.principal_id;
     });

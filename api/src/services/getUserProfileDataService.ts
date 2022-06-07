@@ -10,29 +10,26 @@ import { findGithubUsersByPrincipalId } from './githubUsersService';
  * @param principalId (integer) ID number of the principal in question
  * @returns Well-structured IUserData object or null if not found
  */
-export const getUserProfileData = (
+export const getUserProfileData = async (
   principalId: number
 ): Promise<IUserData | null> => {
-  return db('principals')
+  return await db('principals')
     .select<IUserData[]>('id', 'full_name', 'email_address', 'bio')
     .where({ id: principalId })
     .limit(1)
-    .then(async (db_result: IUserData[]) => {
+    .then(async db_result => {
       const user: IUserData | null = db_result.length > 0 ? db_result[0] : null;
 
       if (user) {
-        user.github_accounts = await findGithubUsersByPrincipalId(principalId);
-        user.social_profiles = await getUserSocials(principalId).then(
-          (social_profiles: ISocialProfile[]) => {
-            return social_profiles;
-          }
-        );
+        return await Promise.all([
+          findGithubUsersByPrincipalId(principalId),
+          getUserSocials(principalId),
+        ]).then(values => {
+          [user.github_accounts, user.social_profiles] = values;
+          return user;
+        });
       }
 
-      return user;
-    })
-    .catch(err => {
-      console.error(err);
       return null;
     });
 };
@@ -50,9 +47,16 @@ export const getUserProfileData = (
  */
 export const getUserSocials = async (
   principalId: number
-): Promise<ISocialProfile[]> => {
-  const social_profiles: ISocialProfile[] = await db
-    .select(
+): Promise<ISocialProfile[] | null> => {
+  const db_query = await db
+    .select<
+      {
+        network_name: string;
+        user_name: string;
+        profile_url: string;
+        public: string;
+      }[]
+    >(
       db.raw('`social_networks`.`network_name` as network_name'),
       db.raw('`principal_social`.`data` as user_name'),
       db.raw(
@@ -60,7 +64,7 @@ export const getUserSocials = async (
       ),
       db.raw('IF(`principal_social`.`public`, "true", "false") as public')
     )
-    .from<ISocialProfile>('principal_social')
+    .from('principal_social')
     .where('principal_id', principalId)
     .whereNotNull('data')
     .leftJoin(
@@ -69,15 +73,20 @@ export const getUserSocials = async (
       'social_networks.id'
     )
     .then(returned_rows => {
-      return returned_rows.map((row: any): ISocialProfile => {
-        return {
-          network_name: row.network_name ? row.network_name : '',
-          user_name: row.user_name ? row.user_name : '',
-          profile_url: row.profile_url ? row.profile_url : '',
-          public: row.public ? row.public === 'true' : false,
-        };
+      if (returned_rows.length == 0) {
+        return null;
+      }
+      const social_profiles: ISocialProfile[] = [];
+      returned_rows.forEach(row => {
+        social_profiles.push({
+          network_name: row.network_name,
+          user_name: row.user_name,
+          profile_url: row.profile_url,
+          public: row.public === 'true',
+        });
       });
-    });
 
-  return social_profiles;
+      return social_profiles;
+    });
+  return db_query;
 };

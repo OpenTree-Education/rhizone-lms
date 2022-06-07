@@ -60,7 +60,7 @@ export const findGithubUsersByPrincipalId = async (
  */
 export const createGithubUser = async (
   githubUser: IGitHubUser
-): Promise<IGitHubUser> => {
+): Promise<IGitHubUser | void> => {
   return db
     .transaction(async trx => {
       // TODO: we need to pre-populate the principal table with the bio and
@@ -85,22 +85,10 @@ export const createGithubUser = async (
             })
             .then(() => {
               return gh_user;
-            })
-            .catch(err => {
-              console.error(err);
-              return githubUser;
             });
-        })
-        .catch(err => {
-          console.error(err);
-          return githubUser;
         });
     })
     .then(gh_user => {
       return gh_user;
-    })
-    .catch(err => {
-      console.error(err);
-      return githubUser;
     });
 };
