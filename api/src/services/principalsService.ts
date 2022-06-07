@@ -13,6 +13,7 @@ import db from './db';
  * @returns formatted object, if possible; Error if not
  */
 export const parsePutSubmission = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   submitted_user_data: any,
   path_id: number
 ) => {
@@ -50,6 +51,7 @@ export const parsePutSubmission = (
   submitted_user.social_profiles = [];
 
   if (submitted_user_data.social_profiles) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     submitted_user_data.social_profiles.forEach((social_profile: any) => {
       let parsed_profile: ISocialProfile;
 
