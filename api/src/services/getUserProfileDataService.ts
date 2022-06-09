@@ -15,10 +15,9 @@ export const getUserProfileData = async (
   principalId: number,
   userPrincipalId: number
 ): Promise<IUserData> => {
+  let include_private = false;
   if (principalId === userPrincipalId) {
-    // TODO: return public and private info
-  } else {
-    // TODO: return public info only
+    include_private = true;
   }
   return await db('principals')
     .select<IUserData[]>('id', 'full_name', 'email_address', 'bio')
@@ -33,7 +32,7 @@ export const getUserProfileData = async (
 
       return await Promise.all([
         findGithubUsersByPrincipalId(principalId),
-        getUserSocials(principalId),
+        getUserSocials(principalId, include_private),
       ]).then(values => {
         [user.github_accounts, user.social_profiles] = values;
         return user;
@@ -53,8 +52,16 @@ export const getUserProfileData = async (
  * @returns (ISocialProfile[]) all matching social profiles for the user
  */
 export const getUserSocials = async (
-  principalId: number
+  principalId: number,
+  include_private: boolean
 ): Promise<ISocialProfile[] | null> => {
+  let public_filter: string;
+
+  if (include_private) {
+    public_filter = "*";
+  } else {
+    public_filter = "true";
+  }
   const db_query = await db
     .select<
       {
@@ -72,7 +79,8 @@ export const getUserSocials = async (
       db.raw('IF(`principal_social`.`public`, "true", "false") as public')
     )
     .from('principal_social')
-    .where('principal_id', principalId)
+    .where({principal_id: principalId,
+    public: public_filter})
     .whereNotNull('data')
     .leftJoin(
       'social_networks',
