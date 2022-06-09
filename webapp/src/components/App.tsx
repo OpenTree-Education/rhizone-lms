@@ -11,6 +11,7 @@ import ReflectionsPage from './ReflectionsPage';
 import RequireAuth from './RequireAuth';
 import SessionContext from './SessionContext';
 import Profile from './Profile';
+import CompetenciesVisualization from './CompetenciesVisualization';
 
 const App = () => {
   const { isAuthenticated } = useContext(SessionContext);
@@ -48,6 +49,14 @@ const App = () => {
             element={
               <RequireAuth>
                 <CompetenciesPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/competencies-view"
+            element={
+              <RequireAuth>
+                <CompetenciesVisualization />
               </RequireAuth>
             }
           />
