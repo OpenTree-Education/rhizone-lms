@@ -35,6 +35,15 @@ export const getUserProfileData = async (
         getUserSocials(principalId, include_private),
       ]).then(values => {
         [user.github_accounts, user.social_profiles] = values;
+        let email_ok = false;
+        user.social_profiles.forEach((social_profile) => {
+          if (social_profile.network_name === "email") {
+            email_ok = true;
+          }
+        });
+        if (!email_ok) {
+          user.email_address = "";
+        }
         return user;
       });
     });
@@ -55,13 +64,6 @@ export const getUserSocials = async (
   principalId: number,
   include_private: boolean
 ): Promise<ISocialProfile[] | null> => {
-  let public_filter: string;
-
-  if (include_private) {
-    public_filter = "*";
-  } else {
-    public_filter = "true";
-  }
   const db_query = await db
     .select<
       {
@@ -79,8 +81,7 @@ export const getUserSocials = async (
       db.raw('IF(`principal_social`.`public`, "true", "false") as public')
     )
     .from('principal_social')
-    .where({principal_id: principalId,
-    public: public_filter})
+    .where('principal_id', principalId)
     .whereNotNull('data')
     .leftJoin(
       'social_networks',
@@ -93,12 +94,14 @@ export const getUserSocials = async (
       }
       const social_profiles: ISocialProfile[] = [];
       returned_rows.forEach(row => {
-        social_profiles.push({
-          network_name: row.network_name,
-          user_name: row.user_name,
-          profile_url: row.profile_url,
-          public: row.public === 'true',
-        });
+        if (include_private || (!include_private && row.public === 'true')) {
+          social_profiles.push({
+            network_name: row.network_name,
+            user_name: row.user_name,
+            profile_url: row.profile_url,
+            public: row.public === 'true',
+          });
+        }
       });
 
       return social_profiles;
