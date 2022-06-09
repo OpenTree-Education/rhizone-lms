@@ -131,5 +131,27 @@ describe('githubUsersService', () => {
         principal_id: principalId,
       });
     });
+
+    it('should throw an error if it cannot insert principal into table', async () => {
+      const githubId = 1001;
+      const principalId = 2;
+      mockQuery('BEGIN;');
+      mockQuery(
+        'insert into `principals` (`entity_type`) values (?)',
+        ['user'],
+        new Error("An error occurred.")
+      );
+      
+      await createGithubUser({
+          github_id: githubId,
+          username: '',
+          full_name: '',
+          avatar_url: '',
+          bio: '',
+          principal_id: principalId,
+        }).catch((err) => {
+          expect(err.message).toMatch("ROLLBACK");
+        });
+    });
   });
 });

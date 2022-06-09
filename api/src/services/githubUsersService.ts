@@ -85,8 +85,6 @@ export const createGithubUser = async (
           [gh_user.principal_id] = principal_ids;
           await trx('github_users').insert(gh_user);
           return gh_user;
-        }, (err) => {
-          throw new Error(`Could not insert user into principals: ${err.message}`);
         })
         .then(async gh_user => {
           return await trx('principal_social')
@@ -98,16 +96,12 @@ export const createGithubUser = async (
             })
             .then(() => {
               return gh_user;
-            }, (err) => {
-              throw new Error(`Could not insert user into principal_social: ${err.message}`);
             });
-        }, (err) => {
-          throw new Error(`Could not insert user into github_users: ${err.message}`);
+        }).catch((err) => {
+          throw err;
         });
     })
     .then(gh_user => {
       return gh_user;
-    }).catch((err) => {
-      throw err;
     });
 };
