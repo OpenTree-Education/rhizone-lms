@@ -1,5 +1,6 @@
 import db from './db';
 import { IGitHubUser } from '../models/user_models';
+import { NotFoundError } from '../middleware/httpErrors';
 
 /**
  * This function searches the `github_users` table for entries matching a
@@ -11,8 +12,8 @@ import { IGitHubUser } from '../models/user_models';
  */
 export const findGithubUserByGithubId = async (
   githubId: number
-): Promise<IGitHubUser | null> => {
-  const github_users: IGitHubUser[] = await db('github_users')
+): Promise<IGitHubUser> => {
+  const github_user: IGitHubUser = await db('github_users')
     .select<IGitHubUser[]>(
       'github_id',
       'username',
@@ -22,9 +23,14 @@ export const findGithubUserByGithubId = async (
       'principal_id'
     )
     .where({ github_id: githubId })
-    .limit(1);
+    .limit(1).then((query_data: IGitHubUser[]) => {
+      if (query_data.length == 0) {
+        throw new NotFoundError(`Can't find any data for GitHub ID ${githubId}`);
+      }
+      return query_data[0];
+    });
 
-  return github_users.length > 0 ? github_users[0] : null;
+  return github_user;
 };
 
 /**
@@ -37,7 +43,7 @@ export const findGithubUserByGithubId = async (
  */
 export const findGithubUsersByPrincipalId = async (
   principalId: number
-): Promise<IGitHubUser[] | null> => {
+): Promise<IGitHubUser[]> => {
   const github_users: IGitHubUser[] = await db('github_users')
     .select<IGitHubUser[]>(
       'github_id',
@@ -47,9 +53,14 @@ export const findGithubUsersByPrincipalId = async (
       'avatar_url',
       'principal_id'
     )
-    .where({ principal_id: principalId });
+    .where({ principal_id: principalId }).then((query_data: IGitHubUser[]) => {
+      if (query_data.length == 0) {
+        throw new NotFoundError(`Can't find any data for principal ID ${principalId}`);
+      }
+      return query_data;
+    });
 
-  return github_users.length > 0 ? github_users : null;
+  return github_users;
 };
 
 /**
@@ -60,7 +71,7 @@ export const findGithubUsersByPrincipalId = async (
  */
 export const createGithubUser = async (
   githubUser: IGitHubUser
-): Promise<IGitHubUser | void> => {
+): Promise<IGitHubUser> => {
   return db
     .transaction(async trx => {
       // TODO: we need to pre-populate the principal table with the bio and
@@ -74,6 +85,8 @@ export const createGithubUser = async (
           [gh_user.principal_id] = principal_ids;
           await trx('github_users').insert(gh_user);
           return gh_user;
+        }, (err) => {
+          throw new Error(`Could not insert user into principals: ${err.message}`);
         })
         .then(async gh_user => {
           return await trx('principal_social')
@@ -85,10 +98,16 @@ export const createGithubUser = async (
             })
             .then(() => {
               return gh_user;
+            }, (err) => {
+              throw new Error(`Could not insert user into principal_social: ${err.message}`);
             });
+        }, (err) => {
+          throw new Error(`Could not insert user into github_users: ${err.message}`);
         });
     })
     .then(gh_user => {
       return gh_user;
+    }).catch((err) => {
+      throw err;
     });
 };

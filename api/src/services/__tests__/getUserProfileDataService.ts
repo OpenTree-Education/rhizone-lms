@@ -63,7 +63,7 @@ describe('getUserProfileDataService', () => {
       );
       mockFindGithubUsersByPrincipalId.mockResolvedValue(githubUserData);
 
-      expect(await getUserProfileData(principalId)).toEqual({
+      expect(await getUserProfileData(principalId, principalId)).toEqual({
         id: principalId,
         github_accounts: [
           {
@@ -89,7 +89,7 @@ describe('getUserProfileDataService', () => {
       });
     });
 
-    it('should return null if no user exists for a given principal ID', async () => {
+    it('should throw an error if no user exists for a given principal ID', async () => {
       const principalId = 2;
       mockQuery(
         'select `id`, `full_name`, `email_address`, `bio` from `principals` where `id` = ? limit ?',
@@ -97,7 +97,9 @@ describe('getUserProfileDataService', () => {
         []
       );
 
-      expect(await getUserProfileData(principalId)).toEqual(null);
+      await getUserProfileData(principalId, principalId).catch((err) => {
+        expect(err.message).toMatch("Cannot find principal ID 2");
+      })
     });
   });
 
@@ -112,7 +114,7 @@ describe('getUserProfileDataService', () => {
       expect(await getUserSocials(principalId)).toEqual(socialProfileData);
     });
 
-    it('should return null for a user not in the database', async () => {
+    it('should return null for a user without socials in the database', async () => {
       const principalId = 2;
       mockQuery(
         'select `social_networks`.`network_name` as network_name, `principal_social`.`data` as user_name, CONCAT(`social_networks`.`protocol`, `social_networks`.`base_url`, `principal_social`.`data`) AS profile_url, IF(`principal_social`.`public`, "true", "false") as public from `principal_social` left join `social_networks` on `principal_social`.`network_id` = `social_networks`.`id` where `principal_id` = ? and `data` is not null',

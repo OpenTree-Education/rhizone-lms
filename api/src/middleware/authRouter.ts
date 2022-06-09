@@ -56,7 +56,7 @@ authRouter.get(`/auth/github/callback`, async (req, res, next) => {
   try {
     githubApiUser = await getGithubUser(accessToken);
 
-    if (!accessToken) {
+    if (!githubApiUser) {
       throw new Error('could not get GitHub user with access token.');
     }
   } catch (err) {
@@ -79,28 +79,22 @@ authRouter.get(`/auth/github/callback`, async (req, res, next) => {
     principal_id = await findGithubUserByGithubId(
       githubUserData.github_id
     ).then(async gitHubUser => {
-      if (!gitHubUser || Object.keys(gitHubUser).length == 0) {
-        gitHubUser = (await createGithubUser(githubUserData)) || gitHubUser;
-      }
+      return gitHubUser.principal_id;
+    }, async () => {
+      const gitHubUser = await createGithubUser(githubUserData);
       return gitHubUser.principal_id;
     });
 
-    if (!principal_id) {
-      throw new Error('was not able to insert user into database.');
+    if (typeof principal_id === "number" && !isNaN(principal_id)) {
+      req.session.principalId = Number(principal_id);
     }
+
+    res.redirect(findConfig('WEBAPP_ORIGIN', ''));
+
   } catch (err) {
     next(err);
     return;
   }
-
-  if (principal_id !== null) {
-    req.session.principalId = Number(principal_id);
-  } else {
-    next(new Error('was not able to retrieve user from database.'));
-    return;
-  }
-
-  res.redirect(findConfig('WEBAPP_ORIGIN', ''));
 });
 
 export default authRouter;

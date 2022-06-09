@@ -72,6 +72,17 @@ describe('authRouter', () => {
       appAgent.get('/auth/github/callback').expect(400, done);
     });
 
+    it('should respond with a server error for requests that do not get a GitHub access token', done => {
+      mockGetGithubAccessToken.mockResolvedValue(null);
+      appAgent.get('/auth/github/callback?code=MOCK_CODE').expect(500, done);
+    });
+
+    it('should respond with a server error if no user data is returned from authorized GitHub request', done => {
+      mockGetGithubAccessToken.mockResolvedValue('MOCK_ACCESS_TOKEN');
+      mockGetGithubUser.mockResolvedValue(null);
+      appAgent.get('/auth/github/callback?code=MOCK_CODE').expect(500, done);
+    });
+
     it('should redirect to the web app for a principal with a known GitHub user id', done => {
       mockGetGithubAccessToken.mockResolvedValue('MOCK_ACCESS_TOKEN');
       mockGetGithubUser.mockResolvedValue({
@@ -110,7 +121,7 @@ describe('authRouter', () => {
         bio: '',
         avatar_url: '',
       });
-      mockFindGithubUserByGithubId.mockResolvedValue(null);
+      mockFindGithubUserByGithubId.mockRejectedValue(null);
       mockCreateGithubUser.mockResolvedValue({
         github_id: 1001,
         username: '',

@@ -1,3 +1,5 @@
+import { ForbiddenError } from '../middleware/httpErrors';
+import { BadRequestError } from '../middleware/httpErrors';
 import {
   IUserData,
   ISocialProfile,
@@ -16,7 +18,7 @@ export const parsePutSubmission = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   submitted_user_data: any,
   path_id: number
-) => {
+): IUserData => {
   let submitted_user: IUserData;
 
   if (submitted_user_data.id) {
@@ -24,14 +26,14 @@ export const parsePutSubmission = (
       id: submitted_user_data.id,
     };
   } else {
-    throw new Error(
+    throw new BadRequestError(
       'Malformed user object. Must conform to IUserData interface.'
     );
   }
 
   // test to make sure the path principal ID matches the principal ID in the UserData object that was submitted
   if (submitted_user.id !== path_id) {
-    throw new Error(
+    throw new ForbiddenError(
       'Principal ID in IUserData object does not match the principal ID in path.'
     );
   }
@@ -69,7 +71,7 @@ export const parsePutSubmission = (
 
         submitted_user.social_profiles.push(parsed_profile);
       } else {
-        throw new Error('Malformed social profile received');
+        throw new BadRequestError('Malformed social profile received');
       }
     });
   }
@@ -96,7 +98,7 @@ export const compareAndUpdatePrincipals = async (
   // i.e does existing_user_data.bio == new_user_data.bio and so on
 
   if (existing_user_data.id !== new_user_data.id) {
-    throw new Error('Principal IDs being compared do not match.');
+    throw new BadRequestError('Principal IDs being compared do not match.');
   }
 
   if (existing_user_data.bio !== new_user_data.bio) {
@@ -211,6 +213,9 @@ export const addSocialProfile = async (
     network_id: social_network_id,
     data: social_profile.user_name,
     public: social_profile.public,
+  })
+  .then((returned_rows) => {
+    return returned_rows;
   });
 };
 
@@ -230,7 +235,10 @@ export const modifySocialProfile = async (
 ) => {
   return await db('principal_social')
     .where({ principal_id: principal_id, network_id: social_network_id })
-    .update({ data: social_profile.user_name });
+    .update({ data: social_profile.user_name })
+    .then((returned_rows) => {
+      return returned_rows;
+    });
 };
 
 /**
@@ -246,7 +254,10 @@ export const deleteSocialProfile = async (
 ) => {
   return await db('principal_social')
     .where({ id: id, network_id: social_network_id })
-    .del();
+    .del()
+    .then((returned_rows) => {
+      return returned_rows;
+    });
 };
 
 /**
@@ -256,7 +267,10 @@ export const deleteSocialProfile = async (
  * @param bio The new bio for the user.
  */
 export const modifyBio = async (id: number, bio: string) => {
-  return await db('principals').where({ id: id }).update({ bio: bio });
+  return await db('principals').where({ id: id }).update({ bio: bio })
+  .then((returned_rows) => {
+    return returned_rows;
+  });
 };
 
 /**
@@ -266,7 +280,10 @@ export const modifyBio = async (id: number, bio: string) => {
  * @param full_name The new full name for the user.
  */
 export const modifyFullName = async (id: number, full_name: string) => {
-  await db('principals').where({ id: id }).update({ full_name: full_name });
+  return await db('principals').where({ id: id }).update({ full_name: full_name })
+  .then((returned_rows) => {
+    return returned_rows;
+  });
 };
 
 /**
@@ -276,7 +293,10 @@ export const modifyFullName = async (id: number, full_name: string) => {
  * @param avatar_url The new avatar URL for the user.
  */
 export const modifyAvatarURL = async (id: number, avatar_url: string) => {
-  await db('principals').where({ id: id }).update({ avatar_url: avatar_url });
+  return await db('principals').where({ id: id }).update({ avatar_url: avatar_url })
+  .then((returned_rows) => {
+    return returned_rows;
+  });
 };
 
 /**
@@ -286,7 +306,11 @@ export const modifyAvatarURL = async (id: number, avatar_url: string) => {
  * @param bio The new bio for the user.
  */
 export const modifyEmailAddress = async (id: number, email_address: string) => {
-  await db('principals')
+  // TODO: Check social network
+  return await db('principals')
     .where({ id: id })
-    .update({ email_address: email_address });
+    .update({ email_address: email_address })
+    .then((returned_rows) => {
+      return returned_rows;
+    });
 };

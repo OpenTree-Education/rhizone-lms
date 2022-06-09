@@ -1,3 +1,4 @@
+import { NotFoundError } from '../middleware/httpErrors';
 import { ISocialProfile, IUserData } from '../models/user_models';
 import db from './db';
 import { findGithubUsersByPrincipalId } from './githubUsersService';
@@ -11,26 +12,32 @@ import { findGithubUsersByPrincipalId } from './githubUsersService';
  * @returns Well-structured IUserData object or null if not found
  */
 export const getUserProfileData = async (
-  principalId: number
-): Promise<IUserData | null> => {
+  principalId: number,
+  userPrincipalId: number
+): Promise<IUserData> => {
+  if (principalId === userPrincipalId) {
+    // TODO: return public and private info
+  } else {
+    // TODO: return public info only
+  }
   return await db('principals')
     .select<IUserData[]>('id', 'full_name', 'email_address', 'bio')
     .where({ id: principalId })
     .limit(1)
     .then(async db_result => {
-      const user: IUserData | null = db_result.length > 0 ? db_result[0] : null;
-
-      if (user) {
-        return await Promise.all([
-          findGithubUsersByPrincipalId(principalId),
-          getUserSocials(principalId),
-        ]).then(values => {
-          [user.github_accounts, user.social_profiles] = values;
-          return user;
-        });
+      if (db_result.length === 0) {
+        throw new NotFoundError(`Cannot find principal ID ${principalId}`);
       }
 
-      return null;
+      const [user] = db_result;
+
+      return await Promise.all([
+        findGithubUsersByPrincipalId(principalId),
+        getUserSocials(principalId),
+      ]).then(values => {
+        [user.github_accounts, user.social_profiles] = values;
+        return user;
+      });
     });
 };
 
