@@ -17,13 +17,14 @@ import {
 import CircleIcon from '@mui/icons-material/Circle';
 import { styled } from '@mui/material/styles';
 import { Box } from '@mui/system';
+import { tableCellClasses } from '@mui/material';
 
-// This makes more sense I think than the Assessments structure.
-// Need to figure out how the date columns will be correct...
+// Assume this is ordered by the category
 const COMPETENCIES = [
   {
     label: 'Creativity',
     definition: "Using one's imagination to solve problems in unique ways.",
+    category: 'Strategic',
     ratings: [
       {
         created_at: '2022-05-11',
@@ -40,7 +41,27 @@ const COMPETENCIES = [
     ],
   },
   {
+    label: 'Anticipation',
+    definition: 'Recognizing what may happen in the future.',
+    category: 'Strategic',
+    ratings: [
+      {
+        created_at: '2022-05-11',
+        value: 4,
+      },
+      {
+        created_at: '2022-06-08',
+        value: 4,
+      },
+      {
+        created_at: '2022-06-29',
+        value: 4,
+      },
+    ],
+  },
+  {
     label: 'Problem solving',
+    category: 'Operational',
     definition: 'The ability to solve problems.',
     ratings: [
       {
@@ -61,6 +82,7 @@ const COMPETENCIES = [
     label: 'Influence',
     definition:
       'Having others listen to your thoughts and ideas and creating action based on your communication.',
+    category: 'Organizational',
     ratings: [
       {
         created_at: '2022-05-11',
@@ -106,7 +128,19 @@ const StyledRating = styled(Rating)({
   },
 });
 
+const StyledTableCell = styled(TableCell)({
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+    backgroundColor: '#1976d2',
+    color: 'white',
+    textAlign: 'center',
+  },
+});
+
 const CompetenciesVisualization = () => {
+  let currentCategory: string;
+  let shouldAddCategoryRow: boolean;
+
   return (
     <Container fixed>
       <h1>Competencies</h1>
@@ -120,35 +154,55 @@ const CompetenciesVisualization = () => {
                   <TableCell>Definition</TableCell>
                   {ASSESSMENTS.map(assessment => (
                     <TableCell key={assessment.id}>
-                      {`${assessment.completed_at.getMonth()}/${assessment.completed_at.getDate()}/${assessment.completed_at.getFullYear()}`}
+                      {`${assessment.completed_at.getMonth() + 1}/${
+                        assessment.completed_at.getDate() + 1
+                      }/${assessment.completed_at.getFullYear()}`}
                     </TableCell>
                   ))}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {COMPETENCIES.map(competency => (
-                  <TableRow key={competency.label}>
-                    <TableCell>{competency.label}</TableCell>
-                    <TableCell>{competency.definition}</TableCell>
-                    {competency.ratings.map(rating => (
-                      <Tooltip
-                        key={rating.created_at}
-                        title={ratingsKeywords.get(rating.value)}
-                        placement="top"
-                        arrow
-                      >
-                        <TableCell>
-                          <StyledRating
-                            value={rating.value}
-                            readOnly
-                            icon={<CircleIcon />}
-                            emptyIcon={<CircleIcon />}
-                          />
-                        </TableCell>
-                      </Tooltip>
-                    ))}
-                  </TableRow>
-                ))}
+                {COMPETENCIES.map(competency => {
+                  if (currentCategory !== competency.category) {
+                    currentCategory = competency.category;
+                    shouldAddCategoryRow = true;
+                  } else {
+                    shouldAddCategoryRow = false;
+                  }
+
+                  return (
+                    <React.Fragment key={competency.label}>
+                      {shouldAddCategoryRow && (
+                        <TableRow>
+                          <StyledTableCell colSpan={2 + ASSESSMENTS.length}>
+                            {currentCategory}
+                          </StyledTableCell>
+                        </TableRow>
+                      )}
+                      <TableRow key={competency.label}>
+                        <TableCell>{competency.label}</TableCell>
+                        <TableCell>{competency.definition}</TableCell>
+                        {competency.ratings.map(rating => (
+                          <Tooltip
+                            key={rating.created_at}
+                            title={ratingsKeywords.get(rating.value)}
+                            placement="top"
+                            arrow
+                          >
+                            <TableCell>
+                              <StyledRating
+                                value={rating.value}
+                                readOnly
+                                icon={<CircleIcon />}
+                                emptyIcon={<CircleIcon />}
+                              />
+                            </TableCell>
+                          </Tooltip>
+                        ))}
+                      </TableRow>
+                    </React.Fragment>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>
