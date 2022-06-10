@@ -98,8 +98,8 @@ describe('githubUsersService', () => {
       const principalId = 2;
       mockQuery('BEGIN;');
       mockQuery(
-        'insert into `principals` (`entity_type`) values (?)',
-        ['user'],
+        'insert into `principals` (`avatar_url`, `bio`, `entity_type`, `full_name`) values (?, ?, ?, ?)',
+        ['', '', 'user', ''],
         [principalId]
       );
       mockQuery(
@@ -137,8 +137,8 @@ describe('githubUsersService', () => {
       const principalId = 2;
       mockQuery('BEGIN;');
       mockQuery(
-        'insert into `principals` (`entity_type`) values (?)',
-        ['user'],
+        'insert into `principals` (`avatar_url`, `bio`, `entity_type`, `full_name`) values (?, ?, ?, ?)',
+        ['', '', 'user', ''],
         new Error('An error occurred.')
       );
 
