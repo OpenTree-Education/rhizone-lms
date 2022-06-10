@@ -105,7 +105,7 @@ export const parsePutSubmission = (
         // field with what we find in social profiles so as to keep email in
         // perfect sync between the two.
         if (social_profile.network_name === 'email') {
-          social_profile.email_address = social_profile.user_name;
+          submitted_user.email_address = social_profile.user_name;
         }
 
         submitted_user.social_profiles.push(parsed_profile);
@@ -152,11 +152,8 @@ export const compareAndUpdatePrincipals = async (
     modified_data = true;
   }
 
-  if (existing_user_data.email_address !== new_user_data.email_address) {
-    await modifyEmailAddress(
-      existing_user_data.id,
-      new_user_data.email_address
-    );
+  if (existing_user_data.avatar_url !== new_user_data.avatar_url) {
+    await modifyAvatarURL(existing_user_data.id, new_user_data.avatar_url);
     modified_data = true;
   }
 
@@ -224,13 +221,13 @@ export const compareAndUpdatePrincipals = async (
             new_user_profile
           );
           modified_data = true;
-        }
-        if (social_network_name === 'email') {
-          await modifyEmailAddress(
-            existing_user_data.id,
-            new_user_profile.user_name
-          );
-          modified_data = true;
+          if (social_network_name === 'email') {
+            await modifyEmailAddress(
+              existing_user_data.id,
+              new_user_profile.user_name
+            );
+            modified_data = true;
+          }
         }
         break;
       case existing_user_profile !== null && new_user_profile === null:
