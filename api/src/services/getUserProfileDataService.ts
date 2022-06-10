@@ -36,13 +36,13 @@ export const getUserProfileData = async (
       ]).then(values => {
         [user.github_accounts, user.social_profiles] = values;
         let email_ok = false;
-        user.social_profiles.forEach((social_profile) => {
-          if (social_profile.network_name === "email") {
+        user.social_profiles.forEach(social_profile => {
+          if (social_profile.network_name === 'email') {
             email_ok = true;
           }
         });
         if (!email_ok) {
-          user.email_address = "";
+          user.email_address = '';
         }
         return user;
       });

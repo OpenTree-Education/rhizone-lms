@@ -43,7 +43,7 @@ describe('githubUsersService', () => {
         []
       );
       await findGithubUserByGithubId(githubId).catch(err => {
-        expect(err.message).toMatch("Can't find any data for GitHub ID 1001")
+        expect(err.message).toMatch("Can't find any data for GitHub ID 1001");
       });
     });
   });
@@ -87,7 +87,7 @@ describe('githubUsersService', () => {
         []
       );
       await findGithubUsersByPrincipalId(principalId).catch(err => {
-        expect(err.message).toMatch("Can't find any data for principal ID 11")
+        expect(err.message).toMatch("Can't find any data for principal ID 11");
       });
     });
   });
@@ -139,19 +139,19 @@ describe('githubUsersService', () => {
       mockQuery(
         'insert into `principals` (`entity_type`) values (?)',
         ['user'],
-        new Error("An error occurred.")
+        new Error('An error occurred.')
       );
-      
+
       await createGithubUser({
-          github_id: githubId,
-          username: '',
-          full_name: '',
-          avatar_url: '',
-          bio: '',
-          principal_id: principalId,
-        }).catch((err) => {
-          expect(err.message).toMatch("ROLLBACK");
-        });
+        github_id: githubId,
+        username: '',
+        full_name: '',
+        avatar_url: '',
+        bio: '',
+        principal_id: principalId,
+      }).catch(err => {
+        expect(err.message).toMatch('ROLLBACK');
+      });
     });
   });
 });

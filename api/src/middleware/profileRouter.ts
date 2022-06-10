@@ -6,12 +6,20 @@ import {
   parsePutSubmission,
 } from '../services/principalsService';
 import { IUserData } from '../models/user_models';
-import { BadRequestError, ForbiddenError, UnauthorizedError } from './httpErrors';
+import {
+  BadRequestError,
+  ForbiddenError,
+  UnauthorizedError,
+} from './httpErrors';
 
 const profileRouter = Router();
 
 profileRouter.get('/', async (_req, _res, next) => {
-  next(new BadRequestError('I need to be passed a numerical principal ID in the path.'));
+  next(
+    new BadRequestError(
+      'I need to be passed a numerical principal ID in the path.'
+    )
+  );
   return;
 });
 
@@ -24,7 +32,9 @@ profileRouter.get('/:id', async (req, res, next) => {
   try {
     path_id = parseInt(id);
     if (isNaN(path_id)) {
-      throw new BadRequestError('I was not passed an integer id for which to edit profile data.');
+      throw new BadRequestError(
+        'I was not passed an integer id for which to edit profile data.'
+      );
     }
   } catch (err) {
     next(err);
@@ -33,16 +43,20 @@ profileRouter.get('/:id', async (req, res, next) => {
 
   try {
     const { principalId } = req.session;
-    if (typeof principalId !== "number" || principalId === null || isNaN(principalId)) {
-      throw new BadRequestError("Non-numerical principal ID given.");
+    if (
+      typeof principalId !== 'number' ||
+      principalId === null ||
+      isNaN(principalId)
+    ) {
+      throw new BadRequestError('Non-numerical principal ID given.');
     }
     session_id = principalId;
   } catch (err) {
-    session_id = -1
+    session_id = -1;
   }
 
   try {
-    await getUserProfileData(path_id, session_id).then((user_profile_data) => {
+    await getUserProfileData(path_id, session_id).then(user_profile_data => {
       res.json(collectionEnvelope(Array(user_profile_data), 1));
     });
   } catch (err) {
@@ -61,7 +75,9 @@ profileRouter.put('/:id', async (req, res, next) => {
   try {
     path_id = parseInt(id);
     if (isNaN(path_id)) {
-      throw new BadRequestError('I was not passed an integer id for which to edit profile data.');
+      throw new BadRequestError(
+        'I was not passed an integer id for which to edit profile data.'
+      );
     }
   } catch (err) {
     next(err);
@@ -70,7 +86,11 @@ profileRouter.put('/:id', async (req, res, next) => {
 
   try {
     const { principalId } = req.session;
-    if (typeof principalId !== "number" || principalId === null || isNaN(principalId)) {
+    if (
+      typeof principalId !== 'number' ||
+      principalId === null ||
+      isNaN(principalId)
+    ) {
       throw new UnauthorizedError();
     }
     session_id = principalId;
@@ -109,12 +129,16 @@ profileRouter.put('/:id', async (req, res, next) => {
     );
     if (modified_data) {
       res.status(200);
-      res.json(collectionEnvelope([await getUserProfileData(path_id, session_id)], 1));
+      res.json(
+        collectionEnvelope([await getUserProfileData(path_id, session_id)], 1)
+      );
     } else {
       // Leaving this redundancy in place here in case we decide to implement
       // different behavior in the future.
       res.status(200);
-      res.json(collectionEnvelope([await getUserProfileData(path_id, session_id)], 1));
+      res.json(
+        collectionEnvelope([await getUserProfileData(path_id, session_id)], 1)
+      );
     }
 
     // send back the appropriate HTTP status code and appropriate response to the requester

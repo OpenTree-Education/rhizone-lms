@@ -78,19 +78,21 @@ authRouter.get(`/auth/github/callback`, async (req, res, next) => {
     // Check to see if user already exists; if it doesn't, create it.
     principal_id = await findGithubUserByGithubId(
       githubUserData.github_id
-    ).then(async gitHubUser => {
-      return gitHubUser.principal_id;
-    }, async () => {
-      const gitHubUser = await createGithubUser(githubUserData);
-      return gitHubUser.principal_id;
-    });
+    ).then(
+      async gitHubUser => {
+        return gitHubUser.principal_id;
+      },
+      async () => {
+        const gitHubUser = await createGithubUser(githubUserData);
+        return gitHubUser.principal_id;
+      }
+    );
 
-    if (typeof principal_id === "number" && !isNaN(principal_id)) {
+    if (typeof principal_id === 'number' && !isNaN(principal_id)) {
       req.session.principalId = Number(principal_id);
     }
 
     res.redirect(findConfig('WEBAPP_ORIGIN', ''));
-
   } catch (err) {
     next(err);
     return;

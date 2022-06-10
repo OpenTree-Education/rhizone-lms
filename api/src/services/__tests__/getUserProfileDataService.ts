@@ -14,7 +14,7 @@ describe('getUserProfileDataService', () => {
   const githubId = 2000;
   const principalId = 2;
   const ghUsername = 'OpenTree-Education';
-  const email_address = "no-reply@example.org";
+  const email_address = 'no-reply@example.org';
   const otherFields = '';
   const githubUserData = [
     {
@@ -106,7 +106,7 @@ describe('getUserProfileDataService', () => {
       );
       mockQuery(
         'select `social_networks`.`network_name` as network_name, `principal_social`.`data` as user_name, CONCAT(`social_networks`.`protocol`, `social_networks`.`base_url`, `principal_social`.`data`) AS profile_url, IF(`principal_social`.`public`, "true", "false") as public from `principal_social` left join `social_networks` on `principal_social`.`network_id` = `social_networks`.`id` where `principal_id` = ? and `data` is not null',
-        [principalId+1],
+        [principalId + 1],
         [socialProfileDataDB, socialProfilePrivateDataDB]
       );
       mockFindGithubUsersByPrincipalId.mockResolvedValue(githubUserData);
@@ -136,13 +136,13 @@ describe('getUserProfileDataService', () => {
         user_name: email_address,
         profile_url: `mailto:${email_address}`,
         public: true,
-      }
+      };
       const public_email_ok_db = {
         network_name: 'email',
         user_name: email_address,
         profile_url: `mailto:${email_address}`,
-        public: "true",
-      }
+        public: 'true',
+      };
       mockQuery(
         'select `id`, `full_name`, `email_address`, `bio` from `principals` where `id` = ? limit ?',
         [principalId + 1, 1],
@@ -157,7 +157,7 @@ describe('getUserProfileDataService', () => {
       );
       mockQuery(
         'select `social_networks`.`network_name` as network_name, `principal_social`.`data` as user_name, CONCAT(`social_networks`.`protocol`, `social_networks`.`base_url`, `principal_social`.`data`) AS profile_url, IF(`principal_social`.`public`, "true", "false") as public from `principal_social` left join `social_networks` on `principal_social`.`network_id` = `social_networks`.`id` where `principal_id` = ? and `data` is not null',
-        [principalId+1],
+        [principalId + 1],
         [socialProfileDataDB, public_email_ok_db]
       );
       mockFindGithubUsersByPrincipalId.mockResolvedValue(githubUserData);
@@ -189,9 +189,9 @@ describe('getUserProfileDataService', () => {
         []
       );
 
-      await getUserProfileData(principalId, 1).catch((err) => {
-        expect(err.message).toMatch("Cannot find principal ID 2");
-      })
+      await getUserProfileData(principalId, 1).catch(err => {
+        expect(err.message).toMatch('Cannot find principal ID 2');
+      });
     });
   });
 
@@ -203,7 +203,9 @@ describe('getUserProfileDataService', () => {
         [principalId],
         [socialProfileDataDB]
       );
-      expect(await getUserSocials(principalId, false)).toEqual([socialProfileData]);
+      expect(await getUserSocials(principalId, false)).toEqual([
+        socialProfileData,
+      ]);
     });
 
     it('should return public and private social profiles for own profile of authenticated user', async () => {
@@ -213,7 +215,10 @@ describe('getUserProfileDataService', () => {
         [principalId],
         [socialProfileDataDB, socialProfilePrivateDataDB]
       );
-      expect(await getUserSocials(principalId, true)).toEqual([socialProfileData, socialProfilePrivateData]);
+      expect(await getUserSocials(principalId, true)).toEqual([
+        socialProfileData,
+        socialProfilePrivateData,
+      ]);
     });
 
     it('should return null for a user without socials in the database', async () => {

@@ -23,9 +23,12 @@ export const findGithubUserByGithubId = async (
       'principal_id'
     )
     .where({ github_id: githubId })
-    .limit(1).then((query_data: IGitHubUser[]) => {
+    .limit(1)
+    .then((query_data: IGitHubUser[]) => {
       if (query_data.length == 0) {
-        throw new NotFoundError(`Can't find any data for GitHub ID ${githubId}`);
+        throw new NotFoundError(
+          `Can't find any data for GitHub ID ${githubId}`
+        );
       }
       return query_data[0];
     });
@@ -53,9 +56,12 @@ export const findGithubUsersByPrincipalId = async (
       'avatar_url',
       'principal_id'
     )
-    .where({ principal_id: principalId }).then((query_data: IGitHubUser[]) => {
+    .where({ principal_id: principalId })
+    .then((query_data: IGitHubUser[]) => {
       if (query_data.length == 0) {
-        throw new NotFoundError(`Can't find any data for principal ID ${principalId}`);
+        throw new NotFoundError(
+          `Can't find any data for principal ID ${principalId}`
+        );
       }
       return query_data;
     });
@@ -97,7 +103,8 @@ export const createGithubUser = async (
             .then(() => {
               return gh_user;
             });
-        }).catch((err) => {
+        })
+        .catch(err => {
           throw err;
         });
     })

@@ -21,7 +21,7 @@ UnauthorizedError.prototype.message =
 UnauthorizedError.prototype.status = 401;
 
 export class ForbiddenError extends HttpError {}
-ForbiddenError.prototype.message = 
+ForbiddenError.prototype.message =
   'The requester does not have access rights to this resource.';
 ForbiddenError.prototype.status = 403;
 
