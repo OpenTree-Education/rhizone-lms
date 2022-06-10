@@ -15,7 +15,6 @@ socialNetworksRouter.get('/', async (_req, res, next) => {
       }
     );
   } catch (err) {
-    console.error('err', err);
     next(err);
     return;
   }

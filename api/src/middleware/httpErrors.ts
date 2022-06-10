@@ -17,8 +17,13 @@ NotFoundError.prototype.status = 404;
 
 export class UnauthorizedError extends HttpError {}
 UnauthorizedError.prototype.message =
-  'The requester does not have access to the resource.';
+  'You must authenticate to have access to the resource.';
 UnauthorizedError.prototype.status = 401;
+
+export class ForbiddenError extends HttpError {}
+ForbiddenError.prototype.message =
+  'The requester does not have access rights to this resource.';
+ForbiddenError.prototype.status = 403;
 
 export class ValidationError extends HttpError {}
 ValidationError.prototype.message =

@@ -1,3 +1,4 @@
+import { NotFoundError } from '../middleware/httpErrors';
 import { ISocialProfile, IUserData } from '../models/user_models';
 import db from './db';
 import { findGithubUsersByPrincipalId } from './githubUsersService';
@@ -10,30 +11,41 @@ import { findGithubUsersByPrincipalId } from './githubUsersService';
  * @param principalId (integer) ID number of the principal in question
  * @returns Well-structured IUserData object or null if not found
  */
-export const getUserProfileData = (
-  principalId: number
-): Promise<IUserData | null> => {
-  return db('principals')
+export const getUserProfileData = async (
+  principalId: number,
+  userPrincipalId: number
+): Promise<IUserData> => {
+  let include_private = false;
+  if (principalId === userPrincipalId) {
+    include_private = true;
+  }
+  return await db('principals')
     .select<IUserData[]>('id', 'full_name', 'email_address', 'bio')
     .where({ id: principalId })
     .limit(1)
-    .then(async (db_result: IUserData[]) => {
-      const user: IUserData | null = db_result.length > 0 ? db_result[0] : null;
-
-      if (user) {
-        user.github_accounts = await findGithubUsersByPrincipalId(principalId);
-        user.social_profiles = await getUserSocials(principalId).then(
-          (social_profiles: ISocialProfile[]) => {
-            return social_profiles;
-          }
-        );
+    .then(async db_result => {
+      if (db_result.length === 0) {
+        throw new NotFoundError(`Cannot find principal ID ${principalId}`);
       }
 
-      return user;
-    })
-    .catch(err => {
-      console.error(err);
-      return null;
+      const [user] = db_result;
+
+      return await Promise.all([
+        findGithubUsersByPrincipalId(principalId),
+        getUserSocials(principalId, include_private),
+      ]).then(values => {
+        [user.github_accounts, user.social_profiles] = values;
+        let email_ok = false;
+        user.social_profiles.forEach(social_profile => {
+          if (social_profile.network_name === 'email') {
+            email_ok = true;
+          }
+        });
+        if (!email_ok) {
+          user.email_address = '';
+        }
+        return user;
+      });
     });
 };
 
@@ -49,10 +61,18 @@ export const getUserProfileData = (
  * @returns (ISocialProfile[]) all matching social profiles for the user
  */
 export const getUserSocials = async (
-  principalId: number
-): Promise<ISocialProfile[]> => {
-  const social_profiles: ISocialProfile[] = await db
-    .select(
+  principalId: number,
+  include_private: boolean
+): Promise<ISocialProfile[] | null> => {
+  const db_query = await db
+    .select<
+      {
+        network_name: string;
+        user_name: string;
+        profile_url: string;
+        public: string;
+      }[]
+    >(
       db.raw('`social_networks`.`network_name` as network_name'),
       db.raw('`principal_social`.`data` as user_name'),
       db.raw(
@@ -60,23 +80,31 @@ export const getUserSocials = async (
       ),
       db.raw('IF(`principal_social`.`public`, "true", "false") as public')
     )
-    .from<ISocialProfile>('principal_social')
+    .from('principal_social')
     .where('principal_id', principalId)
     .whereNotNull('data')
     .leftJoin(
       'social_networks',
       'principal_social.network_id',
       'social_networks.id'
-    ).then((returned_rows) => {
-      return returned_rows.map((row: any): ISocialProfile => {
-        return {
-          network_name: (row.network_name) ? row.network_name : '',
-          user_name: (row.user_name) ? row.user_name : '',
-          profile_url: (row.profile_url) ? row.profile_url : '',
-          public: (row.public) ? (row.public === 'true') : false
+    )
+    .then(returned_rows => {
+      if (returned_rows.length == 0) {
+        return null;
+      }
+      const social_profiles: ISocialProfile[] = [];
+      returned_rows.forEach(row => {
+        if (include_private || (!include_private && row.public === 'true')) {
+          social_profiles.push({
+            network_name: row.network_name,
+            user_name: row.user_name,
+            profile_url: row.profile_url,
+            public: row.public === 'true',
+          });
         }
       });
-    });
 
-  return social_profiles;
+      return social_profiles;
+    });
+  return db_query;
 };

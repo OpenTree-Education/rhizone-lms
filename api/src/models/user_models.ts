@@ -25,6 +25,7 @@ export interface IUserData {
   id: number;
   github_accounts?: Array<IGitHubUser>;
   social_profiles?: Array<ISocialProfile>;
+  avatar_url?: string;
   full_name?: string;
   email_address?: string;
   bio?: string;

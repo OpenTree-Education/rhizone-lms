@@ -10,7 +10,7 @@ import Navbar from './Navbar';
 import ReflectionsPage from './ReflectionsPage';
 import RequireAuth from './RequireAuth';
 import SessionContext from './SessionContext';
-import Profile from './Profile';
+import UserProfile from './UserProfile';
 
 const App = () => {
   const { isAuthenticated } = useContext(SessionContext);
@@ -23,7 +23,7 @@ const App = () => {
             path="/profile"
             element={
               <RequireAuth>
-                <Profile />
+                <UserProfile />
               </RequireAuth>
             }
           />
