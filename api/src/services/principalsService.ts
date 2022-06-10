@@ -1,3 +1,5 @@
+import { ForbiddenError } from '../middleware/httpErrors';
+import { BadRequestError } from '../middleware/httpErrors';
 import {
   IUserData,
   ISocialProfile,
@@ -16,7 +18,7 @@ export const parsePutSubmission = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   submitted_user_data: any,
   path_id: number
-) => {
+): IUserData => {
   let submitted_user: IUserData;
 
   if (submitted_user_data.id) {
@@ -24,29 +26,61 @@ export const parsePutSubmission = (
       id: submitted_user_data.id,
     };
   } else {
-    throw new Error(
+    throw new BadRequestError(
       'Malformed user object. Must conform to IUserData interface.'
     );
   }
 
-  // test to make sure the path principal ID matches the principal ID in the UserData object that was submitted
+  // test to make sure the path principal ID matches the principal ID in the
+  // UserData object that was submitted
   if (submitted_user.id !== path_id) {
-    throw new Error(
+    throw new ForbiddenError(
       'Principal ID in IUserData object does not match the principal ID in path.'
     );
   }
 
-  if (submitted_user_data.full_name) {
+  if (
+    typeof submitted_user_data.full_name === 'string' &&
+    submitted_user_data.full_name !== null &&
+    submitted_user_data.full_name.length > 0
+  ) {
     submitted_user.full_name = submitted_user_data.full_name;
+  } else {
+    submitted_user.full_name = '';
   }
 
-  if (submitted_user_data.email_address) {
+  if (
+    typeof submitted_user_data.email_address === 'string' &&
+    submitted_user_data.email_address !== null &&
+    submitted_user_data.email_address.length > 0
+  ) {
     submitted_user.email_address = submitted_user_data.email_address;
+  } else {
+    submitted_user.email_address = '';
   }
 
-  if (submitted_user_data.bio) {
+  if (
+    typeof submitted_user_data.bio === 'string' &&
+    submitted_user_data.bio !== null &&
+    submitted_user_data.bio.length > 0
+  ) {
     submitted_user.bio = submitted_user_data.bio;
+  } else {
+    submitted_user.bio = '';
   }
+
+  if (
+    typeof submitted_user_data.avatar_url === 'string' &&
+    submitted_user_data.avatar_url !== null &&
+    submitted_user_data.avatar_url.length > 0
+  ) {
+    submitted_user.avatar_url = submitted_user_data.avatar_url;
+  } else {
+    submitted_user.avatar_url = '';
+  }
+
+  // We don't care about GitHub accounts since we get that information directly
+  // from GitHub and not from a PUT request from the user.
 
   submitted_user.social_profiles = [];
 
@@ -67,9 +101,16 @@ export const parsePutSubmission = (
           public: social_profile.public,
         };
 
+        // WARNING: We will always overwrite whatever is in the email_address
+        // field with what we find in social profiles so as to keep email in
+        // perfect sync between the two.
+        if (social_profile.network_name === 'email') {
+          submitted_user.email_address = social_profile.user_name;
+        }
+
         submitted_user.social_profiles.push(parsed_profile);
       } else {
-        throw new Error('Malformed social profile received');
+        throw new BadRequestError('Malformed social profile received');
       }
     });
   }
@@ -90,27 +131,29 @@ export const compareAndUpdatePrincipals = async (
   existing_user_data: IUserData,
   new_user_data: IUserData
 ) => {
+  // sanity check to see if we ended up modifying the database at all, in case
+  // we wanted to return a different HTTP status for that.
   let modified_data = false;
 
   // for each element in the IUserData objects, compare to see if it's been updated
   // i.e does existing_user_data.bio == new_user_data.bio and so on
 
   if (existing_user_data.id !== new_user_data.id) {
-    throw new Error('Principal IDs being compared do not match.');
+    throw new BadRequestError('Principal IDs being compared do not match.');
   }
 
   if (existing_user_data.bio !== new_user_data.bio) {
-    modifyBio(existing_user_data.id, new_user_data.bio);
+    await modifyBio(existing_user_data.id, new_user_data.bio);
     modified_data = true;
   }
 
   if (existing_user_data.full_name !== new_user_data.full_name) {
-    modifyFullName(existing_user_data.id, new_user_data.full_name);
+    await modifyFullName(existing_user_data.id, new_user_data.full_name);
     modified_data = true;
   }
 
-  if (existing_user_data.email_address !== new_user_data.email_address) {
-    modifyEmailAddress(existing_user_data.id, new_user_data.email_address);
+  if (existing_user_data.avatar_url !== new_user_data.avatar_url) {
+    await modifyAvatarURL(existing_user_data.id, new_user_data.avatar_url);
     modified_data = true;
   }
 
@@ -135,7 +178,9 @@ export const compareAndUpdatePrincipals = async (
     ISocialNetwork[]
   >('*');
 
-  all_social_networks.forEach((social_network: ISocialNetwork) => {
+  // Normally this would be a forEach but that doesn't work well with
+  // async/await
+  for (const social_network of all_social_networks) {
     const social_network_id = social_network.id;
     const social_network_name = social_network.network_name;
 
@@ -143,51 +188,71 @@ export const compareAndUpdatePrincipals = async (
     let new_user_profile: ISocialProfile | null = null;
 
     existing_user_data.social_profiles.forEach((eusp: ISocialProfile) => {
-      if (eusp.network_name == social_network_name) {
+      if (eusp.network_name === social_network_name) {
         existing_user_profile = eusp;
       }
     });
 
+    // If it's not any of the existing social networks, the submitted info
+    // *will* be discarded.
     new_user_data.social_profiles.forEach((nusp: ISocialProfile) => {
-      if (nusp.network_name == social_network_name) {
+      if (nusp.network_name === social_network_name) {
         new_user_profile = nusp;
       }
     });
 
+    // Ignore any updates to the GitHub user name since that comes from GitHub
+    // and not from a submitted PUT request.
+    if (social_network_name === 'GitHub') {
+      if (existing_user_profile !== null && new_user_profile !== null) {
+        new_user_profile.user_name = existing_user_profile.user_name;
+      }
+    }
+
     switch (true) {
       case existing_user_profile !== null && new_user_profile !== null:
-        if (existing_user_profile.user_name != new_user_profile.user_name) {
-          modifySocialProfile(
+        if (
+          existing_user_profile.user_name !== new_user_profile.user_name ||
+          existing_user_profile.public !== new_user_profile.public
+        ) {
+          await modifySocialProfile(
             existing_user_data.id,
             social_network_id,
             new_user_profile
           );
+          modified_data = true;
+          if (social_network_name === 'email') {
+            await modifyEmailAddress(
+              existing_user_data.id,
+              new_user_profile.user_name
+            );
+            modified_data = true;
+          }
         }
-        if (social_network_name == 'email') {
-          modifyEmailAddress(existing_user_data.id, new_user_profile.user_name);
-        }
-        modified_data = true;
         break;
       case existing_user_profile !== null && new_user_profile === null:
-        deleteSocialProfile(existing_user_data.id, social_network_id);
-        if (social_network_name == 'email') {
-          modifyEmailAddress(existing_user_data.id, null);
+        await deleteSocialProfile(existing_user_data.id, social_network_id);
+        if (social_network_name === 'email') {
+          await modifyEmailAddress(existing_user_data.id, null);
         }
         modified_data = true;
         break;
       case existing_user_profile === null && new_user_profile !== null:
-        addSocialProfile(
+        await addSocialProfile(
           existing_user_data.id,
           social_network_id,
           new_user_profile
         );
-        if (social_network_name == 'email') {
-          modifyEmailAddress(existing_user_data.id, new_user_profile.user_name);
+        if (social_network_name === 'email') {
+          await modifyEmailAddress(
+            existing_user_data.id,
+            new_user_profile.user_name
+          );
         }
         modified_data = true;
         break;
     }
-  });
+  }
 
   return modified_data;
 };
@@ -206,12 +271,24 @@ export const addSocialProfile = async (
   social_network_id: number,
   social_profile: ISocialProfile
 ) => {
-  return await db('principal_social').insert({
-    principal_id: principal_id,
-    network_id: social_network_id,
-    data: social_profile.user_name,
-    public: social_profile.public,
-  });
+  let new_user_name = social_profile.user_name;
+  if (
+    typeof new_user_name !== 'string' ||
+    new_user_name === null ||
+    new_user_name.length < 1
+  ) {
+    new_user_name = '';
+  }
+  return await db('principal_social')
+    .insert({
+      principal_id: principal_id,
+      network_id: social_network_id,
+      data: new_user_name,
+      public: social_profile.public,
+    })
+    .then(returned_rows => {
+      return returned_rows;
+    });
 };
 
 /**
@@ -228,9 +305,20 @@ export const modifySocialProfile = async (
   social_network_id: number,
   social_profile: ISocialProfile
 ) => {
+  let new_user_name = social_profile.user_name;
+  if (
+    typeof new_user_name !== 'string' ||
+    new_user_name === null ||
+    new_user_name.length < 1
+  ) {
+    new_user_name = '';
+  }
   return await db('principal_social')
     .where({ principal_id: principal_id, network_id: social_network_id })
-    .update({ data: social_profile.user_name });
+    .update({ data: new_user_name, public: social_profile.public })
+    .then(returned_rows => {
+      return returned_rows;
+    });
 };
 
 /**
@@ -246,7 +334,10 @@ export const deleteSocialProfile = async (
 ) => {
   return await db('principal_social')
     .where({ id: id, network_id: social_network_id })
-    .del();
+    .del()
+    .then(returned_rows => {
+      return returned_rows;
+    });
 };
 
 /**
@@ -256,7 +347,16 @@ export const deleteSocialProfile = async (
  * @param bio The new bio for the user.
  */
 export const modifyBio = async (id: number, bio: string) => {
-  return await db('principals').where({ id: id }).update({ bio: bio });
+  let new_bio = bio;
+  if (typeof new_bio !== 'string' || new_bio === null || new_bio.length < 1) {
+    new_bio = '';
+  }
+  return await db('principals')
+    .where({ id: id })
+    .update({ bio: new_bio })
+    .then(returned_rows => {
+      return returned_rows;
+    });
 };
 
 /**
@@ -266,7 +366,20 @@ export const modifyBio = async (id: number, bio: string) => {
  * @param full_name The new full name for the user.
  */
 export const modifyFullName = async (id: number, full_name: string) => {
-  await db('principals').where({ id: id }).update({ full_name: full_name });
+  let new_full_name = full_name;
+  if (
+    typeof new_full_name !== 'string' ||
+    new_full_name === null ||
+    new_full_name.length < 1
+  ) {
+    new_full_name = '';
+  }
+  return await db('principals')
+    .where({ id: id })
+    .update({ full_name: new_full_name })
+    .then(returned_rows => {
+      return returned_rows;
+    });
 };
 
 /**
@@ -276,17 +389,43 @@ export const modifyFullName = async (id: number, full_name: string) => {
  * @param avatar_url The new avatar URL for the user.
  */
 export const modifyAvatarURL = async (id: number, avatar_url: string) => {
-  await db('principals').where({ id: id }).update({ avatar_url: avatar_url });
+  let new_avatar_url = avatar_url;
+  if (
+    typeof new_avatar_url !== 'string' ||
+    new_avatar_url === null ||
+    new_avatar_url.length < 1
+  ) {
+    new_avatar_url = '';
+  }
+  return await db('principals')
+    .where({ id: id })
+    .update({ avatar_url: new_avatar_url })
+    .then(returned_rows => {
+      return returned_rows;
+    });
 };
 
 /**
  * Modifies the email address in the `principals` table for a given principal.
+ * It only needs to update `principals` because `principal_social` should
+ * already have been updated.
  *
  * @param id ID of the principal who needs a bio modification
  * @param bio The new bio for the user.
  */
 export const modifyEmailAddress = async (id: number, email_address: string) => {
-  await db('principals')
+  let new_email_address = email_address;
+  if (
+    typeof new_email_address !== 'string' ||
+    new_email_address === null ||
+    new_email_address.length < 1
+  ) {
+    new_email_address = '';
+  }
+  return await db('principals')
     .where({ id: id })
-    .update({ email_address: email_address });
+    .update({ email_address: new_email_address })
+    .then(returned_rows => {
+      return returned_rows;
+    });
 };

@@ -1,3 +1,4 @@
+import { NotFoundError } from '../middleware/httpErrors';
 import { ISocialProfile, IUserData } from '../models/user_models';
 import db from './db';
 import { findGithubUsersByPrincipalId } from './githubUsersService';
@@ -11,26 +12,40 @@ import { findGithubUsersByPrincipalId } from './githubUsersService';
  * @returns Well-structured IUserData object or null if not found
  */
 export const getUserProfileData = async (
-  principalId: number
-): Promise<IUserData | null> => {
+  principalId: number,
+  userPrincipalId: number
+): Promise<IUserData> => {
+  let include_private = false;
+  if (principalId === userPrincipalId) {
+    include_private = true;
+  }
   return await db('principals')
     .select<IUserData[]>('id', 'full_name', 'email_address', 'bio')
     .where({ id: principalId })
     .limit(1)
     .then(async db_result => {
-      const user: IUserData | null = db_result.length > 0 ? db_result[0] : null;
-
-      if (user) {
-        return await Promise.all([
-          findGithubUsersByPrincipalId(principalId),
-          getUserSocials(principalId),
-        ]).then(values => {
-          [user.github_accounts, user.social_profiles] = values;
-          return user;
-        });
+      if (db_result.length === 0) {
+        throw new NotFoundError(`Cannot find principal ID ${principalId}`);
       }
 
-      return null;
+      const [user] = db_result;
+
+      return await Promise.all([
+        findGithubUsersByPrincipalId(principalId),
+        getUserSocials(principalId, include_private),
+      ]).then(values => {
+        [user.github_accounts, user.social_profiles] = values;
+        let email_ok = false;
+        user.social_profiles.forEach(social_profile => {
+          if (social_profile.network_name === 'email') {
+            email_ok = true;
+          }
+        });
+        if (!email_ok) {
+          user.email_address = '';
+        }
+        return user;
+      });
     });
 };
 
@@ -46,7 +61,8 @@ export const getUserProfileData = async (
  * @returns (ISocialProfile[]) all matching social profiles for the user
  */
 export const getUserSocials = async (
-  principalId: number
+  principalId: number,
+  include_private: boolean
 ): Promise<ISocialProfile[] | null> => {
   const db_query = await db
     .select<
@@ -78,12 +94,14 @@ export const getUserSocials = async (
       }
       const social_profiles: ISocialProfile[] = [];
       returned_rows.forEach(row => {
-        social_profiles.push({
-          network_name: row.network_name,
-          user_name: row.user_name,
-          profile_url: row.profile_url,
-          public: row.public === 'true',
-        });
+        if (include_private || (!include_private && row.public === 'true')) {
+          social_profiles.push({
+            network_name: row.network_name,
+            user_name: row.user_name,
+            profile_url: row.profile_url,
+            public: row.public === 'true',
+          });
+        }
       });
 
       return social_profiles;

@@ -35,14 +35,16 @@ describe('githubUsersService', () => {
       });
     });
 
-    it('should return null if no github user exists with the given github id', async () => {
+    it('should return an error if no github user exists with the given github id', async () => {
       const githubId = 1001;
       mockQuery(
         'select `github_id`, `username`, `full_name`, `bio`, `avatar_url`, `principal_id` from `github_users` where `github_id` = ? limit ?',
         [githubId, 1],
         []
       );
-      expect(await findGithubUserByGithubId(githubId)).toEqual(null);
+      await findGithubUserByGithubId(githubId).catch(err => {
+        expect(err.message).toMatch("Can't find any data for GitHub ID 1001");
+      });
     });
   });
 
@@ -77,14 +79,16 @@ describe('githubUsersService', () => {
       ]);
     });
 
-    it('should return null if no github user exists with the given principal ID', async () => {
+    it('should return an error if no github user exists with the given principal ID', async () => {
       const principalId = 11;
       mockQuery(
         'select `github_id`, `username`, `full_name`, `bio`, `avatar_url`, `principal_id` from `github_users` where `principal_id` = ?',
         [principalId],
         []
       );
-      expect(await findGithubUsersByPrincipalId(principalId)).toEqual(null);
+      await findGithubUsersByPrincipalId(principalId).catch(err => {
+        expect(err.message).toMatch("Can't find any data for principal ID 11");
+      });
     });
   });
 
@@ -94,8 +98,8 @@ describe('githubUsersService', () => {
       const principalId = 2;
       mockQuery('BEGIN;');
       mockQuery(
-        'insert into `principals` (`entity_type`) values (?)',
-        ['user'],
+        'insert into `principals` (`avatar_url`, `bio`, `entity_type`, `full_name`) values (?, ?, ?, ?)',
+        ['', '', 'user', ''],
         [principalId]
       );
       mockQuery(
@@ -125,6 +129,28 @@ describe('githubUsersService', () => {
         avatar_url: '',
         bio: '',
         principal_id: principalId,
+      });
+    });
+
+    it('should throw an error if it cannot insert principal into table', async () => {
+      const githubId = 1001;
+      const principalId = 2;
+      mockQuery('BEGIN;');
+      mockQuery(
+        'insert into `principals` (`avatar_url`, `bio`, `entity_type`, `full_name`) values (?, ?, ?, ?)',
+        ['', '', 'user', ''],
+        new Error('An error occurred.')
+      );
+
+      await createGithubUser({
+        github_id: githubId,
+        username: '',
+        full_name: '',
+        avatar_url: '',
+        bio: '',
+        principal_id: principalId,
+      }).catch(err => {
+        expect(err.message).toMatch('ROLLBACK');
       });
     });
   });
