@@ -80,11 +80,12 @@ export const createGithubUser = async (
 ): Promise<IGitHubUser> => {
   return db
     .transaction(async trx => {
-      // TODO: we need to pre-populate the principal table with the bio and
-      // full_name fields from GitHub but allow the user to override.
       return trx('principals')
         .insert({
           entity_type: 'user',
+          full_name: githubUser.full_name,
+          avatar_url: githubUser.avatar_url,
+          bio: githubUser.bio,
         })
         .then(async principal_ids => {
           const gh_user: IGitHubUser = githubUser;
