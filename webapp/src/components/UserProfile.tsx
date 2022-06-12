@@ -18,11 +18,10 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import ProgressBar from './ProgressBar';
 import CompetencyRatings from './CompetencyRatings';
+import { SocialProfileList } from './SocialProfileList';
 
-import { SocialNetwork, UserData } from '../types/api';
+import { SocialNetwork, UserData, SocialProfile } from '../types/api';
 import { parseServerProfileResponse } from '../helpers/profileHelper';
-import UserProfileSocialLinks from './UserProfileSocialLinks';
-import UserProfileEditingForm from './UserProfileEditingForm';
 import SessionContext from './SessionContext';
 
 /**
@@ -124,6 +123,70 @@ const UserProfile = () => {
       default:
         return '';
     }
+  };
+
+  const updateFullName = (fullName: string) => {
+    const user_data: UserData = {
+      id: userData.id,
+      bio: userData.bio,
+      full_name: fullName,
+      avatar_url: userData.avatar_url,
+      github_accounts: userData.github_accounts,
+      social_profiles: userData.social_profiles,
+    };
+    setUserData(user_data);
+  };
+
+  const updateBio = (bio: string) => {
+    const user_data: UserData = {
+      id: userData.id,
+      bio: bio,
+      full_name: userData.full_name,
+      avatar_url: userData.avatar_url,
+      github_accounts: userData.github_accounts,
+      social_profiles: userData.social_profiles,
+    };
+    setUserData(user_data);
+  };
+
+  const updateSocialProfile = (socialProfile: SocialProfile) => {
+    const user_data: UserData = {
+      id: userData.id,
+      bio: userData.bio,
+      full_name: userData.full_name,
+      avatar_url: userData.avatar_url,
+      github_accounts: userData.github_accounts,
+      social_profiles: userData.social_profiles,
+    };
+
+    if (user_data.social_profiles) {
+      let matched = false;
+      const new_profiles: SocialProfile[] = user_data.social_profiles
+        .filter(value => {
+          if (value.network_name === socialProfile.network_name) {
+            if (socialProfile.user_name === '') {
+              matched = true;
+              return false;
+            }
+          }
+          return true;
+        })
+        .map(social_profile => {
+          if (social_profile.network_name === socialProfile.network_name) {
+            matched = true;
+            return socialProfile;
+          }
+          return social_profile;
+        });
+      if (matched === false && socialProfile.user_name !== '') {
+        new_profiles.push(socialProfile);
+      }
+      user_data.social_profiles = new_profiles;
+    } else {
+      user_data.social_profiles = [socialProfile];
+    }
+
+    setUserData(user_data);
   };
 
   /**
@@ -232,6 +295,9 @@ const UserProfile = () => {
                 fullWidth
                 variant="filled"
                 value={userData?.full_name}
+                onChange={event => {
+                  updateFullName(event.target.value);
+                }}
                 margin="normal"
               />
             ) : (
@@ -253,24 +319,12 @@ const UserProfile = () => {
               </>
             )}
           </Grid>
-          <Grid
-            container
-            display="flex"
-            justifyContent={{ md: 'flex-start', sm: 'center' }}
-            alignItems={{ md: 'center', sm: 'center' }}
-            sx={{ mt: 3 }}
-            ml={{ md: -1, sm: -2 }}
-          >
-            {editingMode ? (
-              <UserProfileEditingForm
-                networksList={social_networks_list}
-                userData={userData}
-                setUserData={setUserData}
-              />
-            ) : (
-              <UserProfileSocialLinks profileList={userData.social_profiles} />
-            )}
-          </Grid>
+          <SocialProfileList
+            editingMode={editingMode}
+            socialNetworksList={social_networks_list}
+            socialProfilesList={userData.social_profiles}
+            updateProfileFunction={updateSocialProfile}
+          />
         </Grid>
       </Grid>
       <Divider variant="middle" sx={{ maxWidth: '80%', margin: '35px auto' }} />
@@ -289,6 +343,9 @@ const UserProfile = () => {
                 rows={4}
                 variant="filled"
                 value={userData.bio}
+                onChange={event => {
+                  updateBio(event.target.value);
+                }}
                 margin="normal"
               />
               <Stack direction="row" spacing={2}>
