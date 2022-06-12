@@ -85,10 +85,10 @@ interface GithubAccounts extends Entity {
   principal_id: EntityId;
 }
 interface SocialProfiles extends Entity {
-network_name: string;
-user_name: string;
-profile_url: string;
-public: boolean;
+  network_name: string;
+  user_name: string;
+  profile_url: string;
+  public: boolean;
 }
 
 export interface SocialNetwork {

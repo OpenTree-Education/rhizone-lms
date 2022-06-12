@@ -1,6 +1,6 @@
 import { GitHubUser, SocialProfile, UserData } from '../types/api.d';
 
-export const parseServerProfileResponse = (api_user_data: any) : UserData => {
+export const parseServerProfileResponse = (api_user_data: any): UserData => {
   // default data in case we don't get anything back from the db
   let id = -1;
   let avatar_url = '';
@@ -19,20 +19,20 @@ export const parseServerProfileResponse = (api_user_data: any) : UserData => {
       const { id: userId } = user_data;
       id = userId;
     } else {
-      throw new Error("Could not parse principal ID in server response.");
+      throw new Error('Could not parse principal ID in server response.');
     }
 
-    if (typeof user_data.full_name === "string") {
+    if (typeof user_data.full_name === 'string') {
       const { full_name: fullName } = user_data;
       full_name = fullName;
     }
 
-    if (typeof user_data.bio === "string") {
+    if (typeof user_data.bio === 'string') {
       const { bio: userBio } = user_data;
       bio = userBio;
     }
 
-    if (typeof user_data.email_address === "string") {
+    if (typeof user_data.email_address === 'string') {
       const { email_address: userEmail } = user_data;
       email_address = userEmail;
     }
@@ -41,27 +41,30 @@ export const parseServerProfileResponse = (api_user_data: any) : UserData => {
       const [github_account] = user_data.github_accounts;
       github_accounts.push(github_account);
 
-      if (typeof github_account.avatar_url === "string") {
+      if (typeof github_account.avatar_url === 'string') {
         const { avatar_url: avatar } = github_account;
         avatar_url = avatar;
       }
 
-      if (typeof github_account.full_name === "string") {
-        if (full_name === "") {
+      if (typeof github_account.full_name === 'string') {
+        if (full_name === '') {
           const { full_name: fullName } = github_account;
           full_name = fullName;
         }
       }
 
-      if (typeof github_account.bio === "string") {
-        if (bio === "") {
+      if (typeof github_account.bio === 'string') {
+        if (bio === '') {
           const { bio: userBio } = github_account;
           bio = userBio;
         }
       }
     }
 
-    if (Array.isArray(user_data.social_profiles) && user_data.social_profiles.length > 0) {
+    if (
+      Array.isArray(user_data.social_profiles) &&
+      user_data.social_profiles.length > 0
+    ) {
       const { social_profiles: social_profile_list } = user_data;
       social_profiles = social_profile_list;
 
@@ -84,4 +87,4 @@ export const parseServerProfileResponse = (api_user_data: any) : UserData => {
     github_accounts: github_accounts,
     social_profiles: social_profiles,
   };
-}
+};

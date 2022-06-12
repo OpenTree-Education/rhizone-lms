@@ -12,42 +12,42 @@ morning_greetings.set('en', {
   greeting: 'Good morning',
   delimiter: ', ',
   ending_punct: '!',
-  ltr: 'ltr'
+  ltr: 'ltr',
 });
 morning_greetings.set('fr', {
   beginning_punct: '',
   greeting: 'Bon matin',
   delimiter: ', ',
   ending_punct: '!',
-  ltr: 'ltr'
+  ltr: 'ltr',
 });
 morning_greetings.set('ja', {
   beginning_punct: '',
   greeting: 'おはようございます',
   delimiter: '、',
   ending_punct: '!',
-  ltr: 'ltr'
+  ltr: 'ltr',
 });
 morning_greetings.set('es', {
   beginning_punct: '¡',
   greeting: 'Buenos días',
   delimiter: ', ',
   ending_punct: '!',
-  ltr: 'ltr'
+  ltr: 'ltr',
 });
 morning_greetings.set('fa', {
   beginning_punct: '',
   greeting: 'صبح بخیر',
   delimiter: ' ',
   ending_punct: '',
-  ltr: 'rtl'
+  ltr: 'rtl',
 });
 morning_greetings.set('fi', {
   beginning_punct: '',
   greeting: 'Hyvää huomenta',
   delimiter: ', ',
   ending_punct: '!',
-  ltr: 'ltr'
+  ltr: 'ltr',
 });
 
 let afternoon_greetings = new Map<string, GreetingType>();
@@ -77,21 +77,21 @@ afternoon_greetings.set('es', {
   greeting: 'Buenas tardes',
   delimiter: ', ',
   ending_punct: '!',
-  ltr: 'ltr'
+  ltr: 'ltr',
 });
 afternoon_greetings.set('fa', {
   beginning_punct: '',
   greeting: 'عصر بخیر',
   delimiter: ' ',
   ending_punct: '',
-  ltr: 'rtl'
+  ltr: 'rtl',
 });
 afternoon_greetings.set('fi', {
   beginning_punct: '',
   greeting: 'Hyvää iltapäivää',
   delimiter: ', ',
   ending_punct: '!',
-  ltr: 'ltr'
+  ltr: 'ltr',
 });
 
 let evening_greetings = new Map<string, GreetingType>();
@@ -121,21 +121,21 @@ evening_greetings.set('es', {
   greeting: 'Buenas noches',
   delimiter: ', ',
   ending_punct: '!',
-  ltr: 'ltr'
+  ltr: 'ltr',
 });
 evening_greetings.set('fa', {
   beginning_punct: '',
   greeting: 'عصر بخیر',
   delimiter: ' ',
   ending_punct: '',
-  ltr: 'rtl'
+  ltr: 'rtl',
 });
 evening_greetings.set('fi', {
   beginning_punct: '',
   greeting: 'Hyvää iltaa',
   delimiter: ', ',
   ending_punct: '!',
-  ltr: 'ltr'
+  ltr: 'ltr',
 });
 
 /**
@@ -166,7 +166,7 @@ const getPreferredLanguageGreeting = (
       evening_greetings.get(preferredLanguage) || evening_greetings.get('en')!;
   }
 
-  let user_greeting_string = "";
+  let user_greeting_string = '';
 
   if (username) {
     user_greeting_string += user_greeting.beginning_punct;
