@@ -147,7 +147,7 @@ const CompetenciesVisualization = () => {
       <Grid container justifyContent="center">
         <Grid item xs={12} md={8}>
           <TableContainer component={Paper}>
-            <Table>
+            <Table stickyHeader>
               <TableHead>
                 <TableRow>
                   <TableCell>Competency</TableCell>
@@ -179,7 +179,7 @@ const CompetenciesVisualization = () => {
                           </StyledTableCell>
                         </TableRow>
                       )}
-                      <TableRow key={competency.label}>
+                      <TableRow>
                         <TableCell>{competency.label}</TableCell>
                         <TableCell>{competency.definition}</TableCell>
                         {competency.ratings.map(rating => (
