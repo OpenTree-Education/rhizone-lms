@@ -25,15 +25,15 @@ INSERT INTO competencies (label, description, principal_id, category_id, subcate
     ('Frameworks', 'Lorem ipsum', 1, 1, 7),
     ('Database', 'Lorem ipsum', 1, 1, 7),
     ('Debugging', 'Lorem ipsum', 1, 1, 8),
-    ('Understanding Code', 'Lorem ipsum', 1, 1, 8)
-    ('Estimation', 'Reliably predicting how long something will take', 1, 2, 9)
+    ('Understanding Code', 'Lorem ipsum', 1, 1, 8),
+    ('Estimation', 'Reliably predicting how long something will take', 1, 2, 9),
     ('Anticipation', 'Lorem ipsum', 1, 2, 9),
-    ('Handling Change', 'Lorem ipsum', 1, 2, 10)
-    ('Autonomy', 'Lorem ipsum', 1, 2, 10)
-    ('Intuition', 'Lorem ipsum', 1, 2, 10)
-    ('Quality Control', 'Lorem ipsum', 1, 3, 11)
-    ('Probelm Solving', 'Lorem ipsum', 1, 3, 11)
-    ('Documentation', 'Lorem ipsum', 1, 3, 11)
+    ('Handling Change', 'Lorem ipsum', 1, 2, 10),
+    ('Autonomy', 'Lorem ipsum', 1, 2, 10),
+    ('Intuition', 'Lorem ipsum', 1, 2, 10),
+    ('Quality Control', 'Lorem ipsum', 1, 3, 11),
+    ('Probelm Solving', 'Lorem ipsum', 1, 3, 11),
+    ('Documentation', 'Lorem ipsum', 1, 3, 11),
     ('Developing Others', 'Lorem ipsum', 1, 3, 12),
     ('Pair Programming', 'Lorem ipsum', 1, 3, 12),
     ('Self-Awareness', 'Lorem ipsum', 1, 4, 13),
