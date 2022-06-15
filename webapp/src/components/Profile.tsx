@@ -147,7 +147,7 @@ const Profile = () => {
           <Button variant="outlined" component="a" href={'/'}>
             Journal
           </Button>
-          <Button variant="outlined" component="a" href={'/competencies'}>
+          <Button variant="outlined" component="a" href={'/competencies-view'}>
             Competencies
           </Button>
         </Stack>

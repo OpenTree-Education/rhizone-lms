@@ -6,6 +6,8 @@ import {
   authorizeCompetencyUpdate,
   countCompetencies,
   createCompetency,
+  getAllCompetenciesByCategory,
+  getAllCompetencyCategoriesByAuthor,
   listCompetencies,
   updateCompetency,
 } from '../services/competenciesService';
@@ -91,6 +93,27 @@ competenciesRouter.put('/:id', async (req, res, next) => {
     return;
   }
   res.json(itemEnvelope({ id: competencyId }));
+});
+
+competenciesRouter.get('/opentree', async (req, res, next) => {
+  const OPENTREE_ID = 1;
+  const categories = await getAllCompetencyCategoriesByAuthor(OPENTREE_ID);
+
+  const categoriesWithCompetencies = await Promise.all(
+    categories.map(async category => {
+      const theseCompetencies = await getAllCompetenciesByCategory(category.id);
+      return { ...category, competencies: theseCompetencies };
+    })
+  );
+
+  console.log(categoriesWithCompetencies);
+
+  res.json(
+    collectionEnvelope(
+      categoriesWithCompetencies,
+      categoriesWithCompetencies.length
+    )
+  );
 });
 
 export default competenciesRouter;

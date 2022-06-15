@@ -17,6 +17,13 @@ export interface Doc {
   title: string;
   content: string;
 }
+
+export interface CategoryWithCompetencies extends Entity {
+  label: string;
+  description: string;
+  competencies: Competency[];
+}
+
 export interface Competency extends Entity {
   label: string;
   description: string;

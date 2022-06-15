@@ -13,11 +13,16 @@ import {
   Typography,
   Stack,
   Paper,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from '@mui/material';
 import CircleIcon from '@mui/icons-material/Circle';
 import { styled } from '@mui/material/styles';
 import { Box } from '@mui/system';
 import { tableCellClasses } from '@mui/material';
+import useApiData from '../helpers/useApiData';
+import { CategoryWithCompetencies } from '../types/api';
 
 // Assume this is ordered by the category
 const COMPETENCIES = [
@@ -141,12 +146,35 @@ const CompetenciesVisualization = () => {
   let currentCategory: string;
   let shouldAddCategoryRow: boolean;
 
+  const { data: categories } = useApiData<CategoryWithCompetencies[]>({
+    path: '/competencies/opentree',
+    sendCredentials: true,
+  });
+  console.log(categories);
+
+  if (!categories) {
+    return null;
+  }
+
   return (
     <Container fixed>
       <h1>Competencies</h1>
       <Grid container justifyContent="center">
         <Grid item xs={12} md={8}>
-          <TableContainer component={Paper}>
+          {categories.map(category => (
+            <Accordion key={category.id}>
+              <AccordionSummary>{category.label}</AccordionSummary>
+              <AccordionDetails>
+                {category.competencies.map(competency => (
+                  <Typography key={competency.id}>
+                    {competency.label}
+                  </Typography>
+                ))}
+              </AccordionDetails>
+            </Accordion>
+          ))}
+
+          {/* <TableContainer component={Paper}>
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
@@ -234,7 +262,7 @@ const CompetenciesVisualization = () => {
                 value={5}
               />
             </Stack>
-          </Box>
+          </Box> */}
         </Grid>
       </Grid>
     </Container>
