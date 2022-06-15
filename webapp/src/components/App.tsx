@@ -12,6 +12,8 @@ import RequireAuth from './RequireAuth';
 import SessionContext from './SessionContext';
 import Profile from './Profile';
 import CompetenciesVisualization from './CompetenciesVisualization';
+import CompetenciesAssessment from './CompetenciesAssessment';
+import CompetenciesAssessmentCategories from './CompetenciesAssessmentCategories';
 
 const App = () => {
   const { isAuthenticated } = useContext(SessionContext);
@@ -57,6 +59,22 @@ const App = () => {
             element={
               <RequireAuth>
                 <CompetenciesVisualization />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/competencies-assessment"
+            element={
+              <RequireAuth>
+                <CompetenciesAssessmentCategories />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/competencies-assessment/:categoryId"
+            element={
+              <RequireAuth>
+                <CompetenciesAssessment />
               </RequireAuth>
             }
           />

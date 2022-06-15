@@ -76,4 +76,6 @@ export const createCompetencyCategoryQuestionnaire = async (
       { label: 'Expert', numeric_value: 5, sort_order: 5, prompt_id: promptId },
     ]);
   });
+
+  return questionnaireId;
 };

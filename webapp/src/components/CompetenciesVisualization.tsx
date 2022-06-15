@@ -16,6 +16,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Button,
 } from '@mui/material';
 import CircleIcon from '@mui/icons-material/Circle';
 import { styled } from '@mui/material/styles';
@@ -150,7 +151,6 @@ const CompetenciesVisualization = () => {
     path: '/competencies/opentree',
     sendCredentials: true,
   });
-  console.log(categories);
 
   if (!categories) {
     return null;
@@ -160,6 +160,15 @@ const CompetenciesVisualization = () => {
     <Container fixed>
       <h1>Competencies</h1>
       <Grid container justifyContent="center">
+        <Grid item xs={12} md={8}>
+          <Button
+            variant="outlined"
+            component="a"
+            href={'/competencies-assessment'}
+          >
+            Take Assessment
+          </Button>
+        </Grid>
         <Grid item xs={12} md={8}>
           {categories.map(category => (
             <Accordion key={category.id}>

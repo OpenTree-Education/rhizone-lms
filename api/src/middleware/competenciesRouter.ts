@@ -106,8 +106,6 @@ competenciesRouter.get('/opentree', async (req, res, next) => {
     })
   );
 
-  console.log(categoriesWithCompetencies);
-
   res.json(
     collectionEnvelope(
       categoriesWithCompetencies,
