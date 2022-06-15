@@ -10,7 +10,4 @@ CREATE TABLE categories (
 ALTER TABLE competencies 
     ADD COLUMN category_id BIGINT,
     ADD INDEX competencies_category_id (category_id),
-    ADD FOREIGN KEY (category_id) REFERENCES categories(id),
-    ADD COLUMN subcategory_id BIGINT,
-    ADD INDEX competencies_subcategory_id (subcategory_id),
-    ADD FOREIGN KEY (subcategory_id) REFERENCES categories(id);
+    ADD FOREIGN KEY (category_id) REFERENCES categories(id);
