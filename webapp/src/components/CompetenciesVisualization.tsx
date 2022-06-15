@@ -17,13 +17,15 @@ import {
   AccordionSummary,
   AccordionDetails,
   Button,
+  Chip,
+  Card,
 } from '@mui/material';
 import CircleIcon from '@mui/icons-material/Circle';
 import { styled } from '@mui/material/styles';
 import { Box } from '@mui/system';
 import { tableCellClasses } from '@mui/material';
 import useApiData from '../helpers/useApiData';
-import { CategoryWithCompetencies } from '../types/api';
+import { CategoryWithCompetencies, Reflection } from '../types/api';
 
 // Assume this is ordered by the category
 const COMPETENCIES = [
@@ -152,7 +154,18 @@ const CompetenciesVisualization = () => {
     sendCredentials: true,
   });
 
-  if (!categories) {
+  const {
+    data: reflections,
+    error,
+    isLoading,
+  } = useApiData<Reflection[]>({
+    path: '/reflections',
+    sendCredentials: true,
+  });
+
+  console.log(reflections);
+
+  if (!categories || !reflections) {
     return null;
   }
 
@@ -175,9 +188,23 @@ const CompetenciesVisualization = () => {
               <AccordionSummary>{category.label}</AccordionSummary>
               <AccordionDetails>
                 {category.competencies.map(competency => (
-                  <Typography key={competency.id}>
+                  <Card key={competency.id}>
                     {competency.label}
-                  </Typography>
+                    {reflections.map(reflection => {
+                      const response = reflection.responses.find(
+                        response =>
+                          response.option.prompt.label === competency.label
+                      );
+                      if (response) {
+                        return (
+                          <Chip
+                            key={response.id}
+                            label={response.option.label}
+                          />
+                        );
+                      }
+                    })}
+                  </Card>
                 ))}
               </AccordionDetails>
             </Accordion>
