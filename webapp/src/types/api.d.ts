@@ -38,6 +38,7 @@ export interface Prompt extends Entity {
 export interface Option extends Entity {
   label: string;
   prompt: Prompt;
+  numeric_value: number;
 }
 
 export interface Questionnaire extends Entity {

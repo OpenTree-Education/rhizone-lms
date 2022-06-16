@@ -34,6 +34,7 @@ export const listReflections = async (
         reflection_id: 'reflection_id',
         option_id: 'option_id',
         option_label: 'options.label',
+        option_numeric_value: 'options.numeric_value',
         prompt_id: 'prompt_id',
         prompt_label: 'prompts.label',
       })
@@ -61,6 +62,7 @@ export const listReflections = async (
       option: {
         id: response.option_id,
         label: response.option_label,
+        numeric_value: response.option_numeric_value,
         prompt: {
           id: response.prompt_id,
           label: response.prompt_label,

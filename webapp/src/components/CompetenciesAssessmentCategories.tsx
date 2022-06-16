@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Grid, Button } from '@mui/material';
 import useApiData from '../helpers/useApiData';
-import { CategoryWithCompetencies, EntityId } from '../types/api';
+import { CategoryWithCompetencies } from '../types/api';
 
 const CompetenciesAssessmentCategories = () => {
   const { data: categories } = useApiData<CategoryWithCompetencies[]>({

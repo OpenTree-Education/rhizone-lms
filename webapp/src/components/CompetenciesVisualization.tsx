@@ -23,105 +23,8 @@ import {
 import CircleIcon from '@mui/icons-material/Circle';
 import { styled } from '@mui/material/styles';
 import { Box } from '@mui/system';
-import { tableCellClasses } from '@mui/material';
 import useApiData from '../helpers/useApiData';
 import { CategoryWithCompetencies, Reflection } from '../types/api';
-
-// Assume this is ordered by the category
-const COMPETENCIES = [
-  {
-    label: 'Creativity',
-    definition: "Using one's imagination to solve problems in unique ways.",
-    category: 'Strategic',
-    ratings: [
-      {
-        created_at: '2022-05-11',
-        value: 2,
-      },
-      {
-        created_at: '2022-06-08',
-        value: 2,
-      },
-      {
-        created_at: '2022-06-29',
-        value: 3,
-      },
-    ],
-  },
-  {
-    label: 'Anticipation',
-    definition: 'Recognizing what may happen in the future.',
-    category: 'Strategic',
-    ratings: [
-      {
-        created_at: '2022-05-11',
-        value: 4,
-      },
-      {
-        created_at: '2022-06-08',
-        value: 4,
-      },
-      {
-        created_at: '2022-06-29',
-        value: 4,
-      },
-    ],
-  },
-  {
-    label: 'Problem solving',
-    category: 'Operational',
-    definition: 'The ability to solve problems.',
-    ratings: [
-      {
-        created_at: '2022-05-11',
-        value: 1,
-      },
-      {
-        created_at: '2022-06-08',
-        value: 2,
-      },
-      {
-        created_at: '2022-06-29',
-        value: 3,
-      },
-    ],
-  },
-  {
-    label: 'Influence',
-    definition:
-      'Having others listen to your thoughts and ideas and creating action based on your communication.',
-    category: 'Organizational',
-    ratings: [
-      {
-        created_at: '2022-05-11',
-        value: 3,
-      },
-      {
-        created_at: '2022-06-08',
-        value: 3,
-      },
-      {
-        created_at: '2022-06-29',
-        value: 4,
-      },
-    ],
-  },
-];
-
-const ASSESSMENTS = [
-  {
-    id: 1,
-    completed_at: new Date('2022-05-11'),
-  },
-  {
-    id: 2,
-    completed_at: new Date('2022-06-08'),
-  },
-  {
-    id: 3,
-    completed_at: new Date('2022-06-29'),
-  },
-];
 
 const ratingsKeywords = new Map();
 ratingsKeywords.set(1, 'Aware');
@@ -136,19 +39,7 @@ const StyledRating = styled(Rating)({
   },
 });
 
-const StyledTableCell = styled(TableCell)({
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-    backgroundColor: '#1976d2',
-    color: 'white',
-    textAlign: 'center',
-  },
-});
-
 const CompetenciesVisualization = () => {
-  let currentCategory: string;
-  let shouldAddCategoryRow: boolean;
-
   const { data: categories } = useApiData<CategoryWithCompetencies[]>({
     path: '/competencies/opentree',
     sendCredentials: true,
@@ -163,11 +54,13 @@ const CompetenciesVisualization = () => {
     sendCredentials: true,
   });
 
-  console.log(reflections);
-
   if (!categories || !reflections) {
     return null;
+  } else {
+    reflections.sort((a, b) => (a.created_at > b.created_at ? 1 : -1));
   }
+
+  console.log(reflections);
 
   return (
     <Container fixed>
@@ -182,95 +75,105 @@ const CompetenciesVisualization = () => {
             Take Assessment
           </Button>
         </Grid>
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12}>
           {categories.map(category => (
             <Accordion key={category.id}>
               <AccordionSummary>{category.label}</AccordionSummary>
               <AccordionDetails>
-                {category.competencies.map(competency => (
-                  <Card key={competency.id}>
-                    {competency.label}
-                    {reflections.map(reflection => {
-                      const response = reflection.responses.find(
-                        response =>
-                          response.option.prompt.label === competency.label
-                      );
-                      if (response) {
-                        return (
-                          <Chip
-                            key={response.id}
-                            label={response.option.label}
-                          />
-                        );
-                      }
-                    })}
-                  </Card>
-                ))}
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Competency</TableCell>
+                      <TableCell>Definition</TableCell>
+                      {reflections
+                        .filter(reflection =>
+                          reflection.responses.find(response =>
+                            category.competencies.find(
+                              competency =>
+                                competency.label ===
+                                response.option.prompt.label
+                            )
+                          )
+                        )
+                        .map((reflection, i) => {
+                          const reflectionCreatedAtDate = new Date(
+                            reflection.created_at
+                          );
+
+                          return (
+                            <Tooltip
+                              key={reflection.id}
+                              title={`${
+                                reflectionCreatedAtDate.getMonth() + 1
+                              }/${
+                                reflectionCreatedAtDate.getDate() + 1
+                              }/${reflectionCreatedAtDate.getFullYear()} at ${reflectionCreatedAtDate.getHours()}:${reflectionCreatedAtDate.getMinutes()}`}
+                              placement="top"
+                              arrow
+                            >
+                              <TableCell key={reflection.id} align="center">
+                                Rating {i + 1}
+                              </TableCell>
+                            </Tooltip>
+                          );
+                        })}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {category.competencies.map(competency => (
+                      <TableRow key={competency.id}>
+                        <TableCell>{competency.label}</TableCell>
+                        <TableCell>{competency.description}</TableCell>
+                        {reflections
+                          .filter(reflection =>
+                            reflection.responses.find(response =>
+                              category.competencies.find(
+                                competency =>
+                                  competency.label ===
+                                  response.option.prompt.label
+                              )
+                            )
+                          )
+                          .map(reflection => {
+                            const response = reflection.responses.find(
+                              response =>
+                                response.option.prompt.label ===
+                                competency.label
+                            );
+                            if (response) {
+                              return (
+                                <Tooltip
+                                  key={response.id}
+                                  title={response.option.label}
+                                  placement="top"
+                                  arrow
+                                >
+                                  <TableCell align="center">
+                                    <StyledRating
+                                      value={response.option.numeric_value}
+                                      readOnly
+                                      icon={<CircleIcon />}
+                                      emptyIcon={<CircleIcon />}
+                                    />
+                                  </TableCell>
+                                </Tooltip>
+                              );
+                            } else {
+                              return (
+                                <TableCell key={reflection.id}></TableCell>
+                              );
+                            }
+                          })}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </AccordionDetails>
             </Accordion>
           ))}
 
-          {/* <TableContainer component={Paper}>
-            <Table stickyHeader>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Competency</TableCell>
-                  <TableCell>Definition</TableCell>
-                  {ASSESSMENTS.map(assessment => (
-                    <TableCell key={assessment.id}>
-                      {`${assessment.completed_at.getMonth() + 1}/${
-                        assessment.completed_at.getDate() + 1
-                      }/${assessment.completed_at.getFullYear()}`}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {COMPETENCIES.map(competency => {
-                  if (currentCategory !== competency.category) {
-                    currentCategory = competency.category;
-                    shouldAddCategoryRow = true;
-                  } else {
-                    shouldAddCategoryRow = false;
-                  }
+          {/*
 
-                  return (
-                    <React.Fragment key={competency.label}>
-                      {shouldAddCategoryRow && (
-                        <TableRow>
-                          <StyledTableCell colSpan={2 + ASSESSMENTS.length}>
-                            {currentCategory}
-                          </StyledTableCell>
-                        </TableRow>
-                      )}
-                      <TableRow>
-                        <TableCell>{competency.label}</TableCell>
-                        <TableCell>{competency.definition}</TableCell>
-                        {competency.ratings.map(rating => (
-                          <Tooltip
-                            key={rating.created_at}
-                            title={ratingsKeywords.get(rating.value)}
-                            placement="top"
-                            arrow
-                          >
-                            <TableCell>
-                              <StyledRating
-                                value={rating.value}
-                                readOnly
-                                icon={<CircleIcon />}
-                                emptyIcon={<CircleIcon />}
-                              />
-                            </TableCell>
-                          </Tooltip>
-                        ))}
-                      </TableRow>
-                    </React.Fragment>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Grid>
         <Grid item xs={12} md={8} sx={{ mt: 2 }}>
           <Box>
             <Typography variant="h6" component="h3">

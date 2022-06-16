@@ -40,6 +40,7 @@ const Questionnaire = ({
   if (!questionnaire) {
     return null;
   }
+  console.log(questionnaire);
   return (
     <>
       {questionnaire.prompts.map(

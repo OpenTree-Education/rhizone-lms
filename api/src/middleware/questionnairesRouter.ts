@@ -42,7 +42,6 @@ questionnairesRouter.post(
     const questionnaireId = await createCompetencyCategoryQuestionnaire(
       categoryIdNumber
     );
-    console.log(questionnaireId);
     res.json(itemEnvelope({ questionnaireId }));
   }
 );
