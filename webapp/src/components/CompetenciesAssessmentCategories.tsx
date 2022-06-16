@@ -17,13 +17,14 @@ const CompetenciesAssessmentCategories = () => {
     <Container fixed>
       <h1>Competencies Assessments</h1>
       <Grid container justifyContent="center">
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={8} textAlign="center">
           {categories.map(category => (
             <Button
               key={category.id}
               variant="outlined"
               component="a"
               href={`/competencies-assessment/${category.id}`}
+              sx={{ m: 1 }}
             >
               {category.label}
             </Button>

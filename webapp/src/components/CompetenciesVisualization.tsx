@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Container,
   Grid,
-  TableContainer,
   Table,
   TableHead,
   TableRow,
@@ -17,21 +16,14 @@ import {
   AccordionSummary,
   AccordionDetails,
   Button,
-  Chip,
   Card,
+  CardContent,
 } from '@mui/material';
 import CircleIcon from '@mui/icons-material/Circle';
 import { styled } from '@mui/material/styles';
 import { Box } from '@mui/system';
 import useApiData from '../helpers/useApiData';
 import { CategoryWithCompetencies, Reflection } from '../types/api';
-
-const ratingsKeywords = new Map();
-ratingsKeywords.set(1, 'Aware');
-ratingsKeywords.set(2, 'Novice');
-ratingsKeywords.set(3, 'Intermediate');
-ratingsKeywords.set(4, 'Advanced');
-ratingsKeywords.set(5, 'Expert');
 
 const StyledRating = styled(Rating)({
   '& .MuiRating-iconFilled': {
@@ -54,19 +46,27 @@ const CompetenciesVisualization = () => {
     sendCredentials: true,
   });
 
+  if (error) {
+    return <div>There was an error loading the competencies.</div>;
+  }
+  if (isLoading) {
+    return (
+      <Container fixed>
+        <div>Loading...</div>
+      </Container>
+    );
+  }
   if (!categories || !reflections) {
     return null;
   } else {
     reflections.sort((a, b) => (a.created_at > b.created_at ? 1 : -1));
   }
 
-  console.log(reflections);
-
   return (
     <Container fixed>
       <h1>Competencies</h1>
       <Grid container justifyContent="center">
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={8} textAlign="center">
           <Button
             variant="outlined"
             component="a"
@@ -75,10 +75,51 @@ const CompetenciesVisualization = () => {
             Take Assessment
           </Button>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} sx={{ mt: 2 }}>
+          <Accordion>
+            <AccordionSummary
+              sx={{ backgroundColor: '#1976d2', color: 'white' }}
+            >
+              <Typography variant="h6" component="h3">
+                Key
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <RatingKey
+                keyText="Awareness — You are aware of the competency but are unable to perform tasks."
+                value={1}
+              />
+              <RatingKey
+                keyText="Novice (limited proficiency) — You understand and can discuss terminology, concepts, and issues."
+                value={2}
+              />
+              <RatingKey
+                keyText="Intermediate proficiency — You have applied this skill to situations occasionally without needing guidance."
+                value={3}
+              />
+              <RatingKey
+                keyText="Advanced proficiency — You can coach others in the application by explaining related nuances."
+                value={4}
+              />
+              <RatingKey
+                keyText="Expert — You have demonstrated consistent excellence across multiple projects."
+                value={5}
+              />
+            </AccordionDetails>
+          </Accordion>
+        </Grid>
+
+        <Grid item xs={12} sx={{ mt: 2 }}>
+          <Typography variant="h6" component="h3" sx={{ mb: 2 }}>
+            Categories
+          </Typography>
           {categories.map(category => (
             <Accordion key={category.id}>
-              <AccordionSummary>{category.label}</AccordionSummary>
+              <AccordionSummary
+                sx={{ backgroundColor: '#1976d2', color: 'white' }}
+              >
+                {category.label}
+              </AccordionSummary>
               <AccordionDetails>
                 <Table>
                   <TableHead>
@@ -171,37 +212,6 @@ const CompetenciesVisualization = () => {
               </AccordionDetails>
             </Accordion>
           ))}
-
-          {/*
-
-        <Grid item xs={12} md={8} sx={{ mt: 2 }}>
-          <Box>
-            <Typography variant="h6" component="h3">
-              Key
-            </Typography>
-            <Stack direction="row" spacing={2}>
-              <RatingKey
-                keyText="Awareness — You are aware of the competency but are unable to perform tasks."
-                value={1}
-              />
-              <RatingKey
-                keyText="Novice (limited proficiency) — You understand and can discuss terminology, concepts, and issues."
-                value={2}
-              />
-              <RatingKey
-                keyText="Intermediate proficiency — You have applied this skill to situations occasionally without needing guidance."
-                value={3}
-              />
-              <RatingKey
-                keyText="Advanced proficiency — You can coach others in the application by explaining related nuances."
-                value={4}
-              />
-              <RatingKey
-                keyText="Expert — You have demonstrated consistent excellence across multiple projects."
-                value={5}
-              />
-            </Stack>
-          </Box> */}
         </Grid>
       </Grid>
     </Container>
@@ -215,15 +225,15 @@ interface RatingKeyProps {
 
 const RatingKey = ({ keyText, value }: RatingKeyProps) => {
   return (
-    <Paper sx={{ padding: 2 }}>
+    <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
       <StyledRating
         value={value}
         readOnly
         icon={<CircleIcon />}
         emptyIcon={<CircleIcon />}
       />
-      <Typography>{keyText}</Typography>
-    </Paper>
+      <Typography sx={{ mt: 1 }}>{keyText}</Typography>
+    </CardContent>
   );
 };
 

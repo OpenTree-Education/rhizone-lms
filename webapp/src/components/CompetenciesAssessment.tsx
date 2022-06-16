@@ -1,5 +1,5 @@
 import React, { useState, FormEventHandler } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   Button,
   Container,
@@ -7,6 +7,7 @@ import {
   CardContent,
   Alert,
   Snackbar,
+  Grid,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import useApiData from '../helpers/useApiData';
@@ -22,6 +23,7 @@ const CompetenciesAssessment = () => {
   const [isSavingReflection, setIsSavingReflection] = useState(false);
   const [saveReflectionError, setSaveReflectionError] = useState(null);
   const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
+  let navigate = useNavigate();
 
   async function onClickBeginAssessment() {
     const response = await fetch(
@@ -56,9 +58,7 @@ const CompetenciesAssessment = () => {
         if (data) {
           setIsSuccessMessageVisible(true);
           setSelectedOptionIds(new Map());
-          //   if (onReflectionCreated) {
-          //     onReflectionCreated(data.id);
-          //   }
+          navigate('/competencies-view');
         }
       })
       .catch(error => {
@@ -70,62 +70,72 @@ const CompetenciesAssessment = () => {
   if (questionnaireId === null) {
     return (
       <Container fixed>
-        <Button
-          variant="outlined"
-          component="button"
-          onClick={onClickBeginAssessment}
-        >
-          Begin Assessment
-        </Button>
+        <Grid container justifyContent="center">
+          <Grid item textAlign="center">
+            <Button
+              variant="outlined"
+              component="button"
+              onClick={onClickBeginAssessment}
+            >
+              Begin Assessment
+            </Button>
+          </Grid>
+        </Grid>
       </Container>
     );
   } else {
     return (
-      <form onSubmit={onSubmit}>
-        <Card>
-          <CardContent>
-            <Questionnaire
-              onChange={setSelectedOptionIds}
-              questionnaireId={questionnaireId}
-              selectedOptionIds={selectedOptionIds}
-            />
-          </CardContent>
-          {saveReflectionError && (
-            <CardContent>
-              <Alert
-                onClose={() => setSaveReflectionError(null)}
-                severity="error"
-              >
-                The reflection was not saved.
-              </Alert>
-            </CardContent>
-          )}
-          <CardContent>
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              loading={isSavingReflection}
-            >
-              Save reflection
-            </LoadingButton>
-          </CardContent>
-        </Card>
-        {isSuccessMessageVisible && (
-          <Snackbar
-            open={true}
-            autoHideDuration={6000}
-            onClose={() => setIsSuccessMessageVisible(false)}
-          >
-            <Alert
-              onClose={() => setIsSuccessMessageVisible(false)}
-              severity="success"
-              sx={{ width: '100%' }}
-            >
-              The reflection was saved.
-            </Alert>
-          </Snackbar>
-        )}
-      </form>
+      <Container fixed>
+        <Grid container justifyContent="center">
+          <Grid item>
+            <form onSubmit={onSubmit}>
+              <Card>
+                <CardContent>
+                  <Questionnaire
+                    onChange={setSelectedOptionIds}
+                    questionnaireId={questionnaireId}
+                    selectedOptionIds={selectedOptionIds}
+                  />
+                </CardContent>
+                {saveReflectionError && (
+                  <CardContent>
+                    <Alert
+                      onClose={() => setSaveReflectionError(null)}
+                      severity="error"
+                    >
+                      The reflection was not saved.
+                    </Alert>
+                  </CardContent>
+                )}
+                <CardContent>
+                  <LoadingButton
+                    type="submit"
+                    variant="contained"
+                    loading={isSavingReflection}
+                  >
+                    Save reflection
+                  </LoadingButton>
+                </CardContent>
+              </Card>
+              {isSuccessMessageVisible && (
+                <Snackbar
+                  open={true}
+                  autoHideDuration={6000}
+                  onClose={() => setIsSuccessMessageVisible(false)}
+                >
+                  <Alert
+                    onClose={() => setIsSuccessMessageVisible(false)}
+                    severity="success"
+                    sx={{ width: '100%' }}
+                  >
+                    The reflection was saved.
+                  </Alert>
+                </Snackbar>
+              )}
+            </form>
+          </Grid>
+        </Grid>
+      </Container>
     );
   }
 };
