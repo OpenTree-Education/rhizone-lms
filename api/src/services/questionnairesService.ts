@@ -19,7 +19,7 @@ export const findQuestionnaire = async (questionnaireId: number) => {
   let options;
   if (promptIds.length) {
     options = await db('options')
-      .select('id', 'label', 'prompt_id')
+      .select('id', 'label', 'prompt_id', 'sort_order')
       .whereIn('prompt_id', promptIds)
       .orderBy('prompt_id', 'sort_order');
   }
@@ -77,5 +77,20 @@ export const createCompetencyCategoryQuestionnaire = async (
     ]);
   });
 
+  return questionnaireId;
+};
+
+export const getQuestionnaireFromCategoryId = async (categoryId: number) => {
+  const competencies = await getAllCompetenciesByCategory(categoryId);
+  const competenciesLabels = competencies.map(competency => competency.label);
+  const prompts = await db('prompts').whereIn('label', competenciesLabels);
+
+  let questionnaireId;
+  if (prompts.length === 0) {
+    // If no prompts had those competencies, create a new questionnaire for this category.
+    questionnaireId = await createCompetencyCategoryQuestionnaire(categoryId);
+  } else {
+    questionnaireId = prompts[0].questionnaire_id;
+  }
   return questionnaireId;
 };

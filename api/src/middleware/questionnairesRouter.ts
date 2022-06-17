@@ -2,8 +2,8 @@ import { Router } from 'express';
 
 import { BadRequestError, NotFoundError } from './httpErrors';
 import {
-  createCompetencyCategoryQuestionnaire,
   findQuestionnaire,
+  getQuestionnaireFromCategoryId,
 } from '../services/questionnairesService';
 import { itemEnvelope } from './responseEnvelope';
 
@@ -34,16 +34,13 @@ questionnairesRouter.get('/:id', async (req, res, next) => {
   res.json(itemEnvelope(questionnaire));
 });
 
-questionnairesRouter.post(
-  '/competencies/:categoryId',
-  async (req, res, next) => {
-    const { categoryId } = req.params;
-    const categoryIdNumber = parseInt(categoryId);
-    const questionnaireId = await createCompetencyCategoryQuestionnaire(
-      categoryIdNumber
-    );
-    res.json(itemEnvelope({ questionnaireId }));
-  }
-);
+questionnairesRouter.get('/categories/:categoryId', async (req, res, next) => {
+  const { categoryId } = req.params;
+  const categoryIdNumber = parseInt(categoryId);
+  const questionnaireId = await getQuestionnaireFromCategoryId(
+    categoryIdNumber
+  );
+  res.json(itemEnvelope({ questionnaireId }));
+});
 
 export default questionnairesRouter;

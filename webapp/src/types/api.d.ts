@@ -39,6 +39,7 @@ export interface Option extends Entity {
   label: string;
   prompt: Prompt;
   numeric_value: number;
+  sort_order: number;
 }
 
 export interface Questionnaire extends Entity {

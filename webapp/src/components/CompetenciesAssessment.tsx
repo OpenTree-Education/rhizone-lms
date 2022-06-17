@@ -10,8 +10,7 @@ import {
   Grid,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import useApiData from '../helpers/useApiData';
-import { EntityId, Questionnaire as APIQuestionnaire } from '../types/api';
+import { EntityId } from '../types/api';
 import Questionnaire from './Questionnaire';
 
 const CompetenciesAssessment = () => {
@@ -27,9 +26,9 @@ const CompetenciesAssessment = () => {
 
   async function onClickBeginAssessment() {
     const response = await fetch(
-      `${process.env.REACT_APP_API_ORIGIN}/questionnaires/competencies/${categoryId}`,
+      `${process.env.REACT_APP_API_ORIGIN}/questionnaires/categories/${categoryId}`,
       {
-        method: 'POST',
+        method: 'GET',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
       }

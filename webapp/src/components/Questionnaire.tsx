@@ -40,7 +40,7 @@ const Questionnaire = ({
   if (!questionnaire) {
     return null;
   }
-  console.log(questionnaire);
+
   return (
     <>
       {questionnaire.prompts.map(
@@ -73,15 +73,17 @@ const Questionnaire = ({
                     : null
                 }
               >
-                {options.map(({ id: optionId, label: optionLabel }) => (
-                  <FormControlLabel
-                    key={optionId}
-                    control={<Radio />}
-                    label={optionLabel}
-                    labelPlacement="bottom"
-                    value={optionId}
-                  />
-                ))}
+                {options
+                  .sort((a, b) => (a.sort_order > b.sort_order ? 1 : -1))
+                  .map(({ id: optionId, label: optionLabel }) => (
+                    <FormControlLabel
+                      key={optionId}
+                      control={<Radio />}
+                      label={optionLabel}
+                      labelPlacement="bottom"
+                      value={optionId}
+                    />
+                  ))}
               </RadioGroup>
             </FormControl>
           </Fragment>
