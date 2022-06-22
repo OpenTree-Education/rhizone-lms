@@ -16,13 +16,6 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import LanguageIcon from '@mui/icons-material/Language';
 import EmailIcon from '@mui/icons-material/Email';
-import ProgressBar from './ProgressBar';
-import CompetencyRatings from './CompetencyRatings';
-
-/**
- * @privateRemarks
- * User data is currently hardcoded but it will be pulling data from the database (github_users)
- */
 
 const user = {
   name: 'Matthew Morenez',
@@ -132,19 +125,6 @@ const Profile = () => {
             Competencies
           </Button>
         </Stack>
-        <Grid
-          item
-          xs={12}
-          display="flex"
-          flexDirection={{ md: 'row', xs: 'column' }}
-        >
-          <Grid item xs={12} md={6}>
-            <CompetencyRatings />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <ProgressBar />
-          </Grid>
-        </Grid>
       </Grid>
     </Container>
   );
