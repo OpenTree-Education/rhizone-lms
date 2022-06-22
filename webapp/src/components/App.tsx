@@ -10,7 +10,6 @@ import Navbar from './Navbar';
 import ReflectionsPage from './ReflectionsPage';
 import RequireAuth from './RequireAuth';
 import SessionContext from './SessionContext';
-import Profile from './Profile';
 
 const App = () => {
   const { isAuthenticated } = useContext(SessionContext);
@@ -19,14 +18,6 @@ const App = () => {
       <MeetingsDrawerProvider>
         {isAuthenticated && <Navbar />}
         <Routes>
-          <Route
-            path="/profile"
-            element={
-              <RequireAuth>
-                <Profile />
-              </RequireAuth>
-            }
-          />
           <Route
             path="/terms-of-use"
             element={<DocPage docId="terms-of-use" />}
