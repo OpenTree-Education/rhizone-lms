@@ -1,5 +1,4 @@
 import React from 'react';
-import { getGreeting } from '../helpers/greeting';
 
 import {
   Container,
@@ -38,26 +37,8 @@ const user = {
 };
 
 const Profile = () => {
-  const greeting = getGreeting(user.name);
-
   return (
     <Container fixed>
-      <Grid
-        container
-        sx={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          display: 'flex',
-          mb: 4,
-        }}
-        spacing={2}
-      >
-        <Grid item>
-          <Typography component="h2" variant="h6" color="primary">
-            {greeting}
-          </Typography>
-        </Grid>
-      </Grid>
       <Grid
         container
         sx={{
