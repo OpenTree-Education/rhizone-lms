@@ -75,7 +75,17 @@
       "@typescript-eslint"
     ],
     "rules": {
-      "prefer-destructuring": "error"
+      "prefer-destructuring": "error",
+      "camelcase": [
+        2,
+        {
+          "ignoreDestructuring": true,
+          "properties": "never",
+          "ignoreGlobals": false,
+          "allow": ["model_competency_id"]
+        }
+      ],
+      "linebreak-style": 2
     }
   },
   "jest": {

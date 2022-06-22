@@ -49,7 +49,17 @@
       "plugin:react-hooks/recommended"
     ],
     "rules": {
-      "prefer-destructuring": "error"
+      "prefer-destructuring": "error",
+      "camelcase": [
+        2,
+        {
+          "ignoreDestructuring": true,
+          "properties": "never",
+          "ignoreGlobals": false,
+          "allow": ["principal_id"]
+        }
+      ],
+      "linebreak-style": 2
     }
   },
   "browserslist": {
