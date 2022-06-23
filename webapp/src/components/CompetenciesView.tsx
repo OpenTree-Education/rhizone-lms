@@ -8,7 +8,7 @@ const CompetenciesView = () => {
     <Container fixed>
       <h1>Competencies</h1>
       <Grid container justifyContent="center">
-        <Grid item xs={12} md={10}>
+        <Grid item xs={12}>
           <Box textAlign="center">
             <Button variant="contained">Competency Reflections</Button>
           </Box>
