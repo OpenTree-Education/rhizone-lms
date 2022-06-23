@@ -44,7 +44,7 @@ const MeetingQuickView = ({ meeting }: MeetingQuickViewProps) => {
       shouldFetch: () => isAccordionExpanded,
     });
   const currentParticipantId = meeting.participants.find(
-    ({ principal_id }) => principal_id === principalId
+    ({ principal_id: id }) => id === principalId
   )?.id;
   let nextMeetingNoteSortOrder = 1;
   const meetingNotes = meetingWithNotes?.meeting_notes || [];
@@ -128,16 +128,16 @@ const MeetingQuickView = ({ meeting }: MeetingQuickViewProps) => {
               <React.Fragment key={meetingNote.id}>
                 {(index === 0 ||
                   meetingNote.agenda_owning_participant_id !==
-                    meetingNotes[index - 1].agenda_owning_participant_id) && (
-                  <Typography sx={{ fontWeight: 'bold' }}>
-                    {meetingNote.agenda_owning_participant_id === null
-                      ? 'Action items'
-                      : meetingNote.agenda_owning_participant_id ===
-                        currentParticipantId
-                      ? 'My agenda items'
-                      : 'Their agenda items'}
-                  </Typography>
-                )}
+                  meetingNotes[index - 1].agenda_owning_participant_id) && (
+                    <Typography sx={{ fontWeight: 'bold' }}>
+                      {meetingNote.agenda_owning_participant_id === null
+                        ? 'Action items'
+                        : meetingNote.agenda_owning_participant_id ===
+                          currentParticipantId
+                          ? 'My agenda items'
+                          : 'Their agenda items'}
+                    </Typography>
+                  )}
                 <Typography variant="body2" pl={1}>
                   {meetingNote.note_text}
                 </Typography>
