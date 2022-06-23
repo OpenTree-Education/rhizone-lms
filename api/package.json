@@ -80,8 +80,7 @@
         "error",
         {
           "ignoreDestructuring": true,
-          "properties": "never",
-          "ignoreGlobals": false
+          "properties": "never"
         }
       ],
       "linebreak-style": "error"
