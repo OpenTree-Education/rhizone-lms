@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import React, { useContext } from 'react';
 
-import CompetenciesPage from './CompetenciesPage';
+import CompetenciesView from './CompetenciesView';
 import DocPage from './DocPage';
 import Footer from './Footer';
 import MeetingPage from './MeetingPage';
@@ -38,10 +38,19 @@ const App = () => {
             path="/competencies"
             element={
               <RequireAuth>
-                <CompetenciesPage />
+                <CompetenciesView />
               </RequireAuth>
             }
           />
+          {/* Placeholder for Categories route */}
+          {/* <Route
+            path="/competencies/questionnaires/categories"
+            element={
+              <RequireAuth>
+                <CategoriesPage />
+              </RequireAuth>
+            }
+          /> */}
           <Route
             path="/meetings/:id"
             element={
