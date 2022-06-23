@@ -44,7 +44,7 @@ const MeetingQuickView = ({ meeting }: MeetingQuickViewProps) => {
       shouldFetch: () => isAccordionExpanded,
     });
   const currentParticipantId = meeting.participants.find(
-    ({ principal_id }) => principal_id === principalId
+    ({ principal_id: id }) => id === principalId
   )?.id;
   let nextMeetingNoteSortOrder = 1;
   const meetingNotes = meetingWithNotes?.meeting_notes || [];
