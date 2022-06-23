@@ -44,7 +44,7 @@ const Meeting = ({ meetingId }: MeetingProps) => {
     return null;
   }
   const currentParticipantId = meeting.participants.find(
-    ({ principal_id }) => principal_id === principalId
+    ({ principal_id: id }) => id === principalId
   )?.id;
   return (
     <Stack spacing={1}>
