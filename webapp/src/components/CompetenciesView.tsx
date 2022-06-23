@@ -1,6 +1,8 @@
 import React from 'react';
 import { Box, Container, Grid, Button } from '@mui/material';
 
+import CompetenciesCategoriesTable from './CompetenciesCategoriesTable';
+
 const CompetenciesView = () => {
   return (
     <Container fixed>
@@ -9,6 +11,12 @@ const CompetenciesView = () => {
         <Grid item xs={12} md={10}>
           <Box textAlign="center">
             <Button variant="contained">Competency Reflections</Button>
+          </Box>
+          <Box>
+            {/* The placeholder for the card with the raiting instruction */}
+          </Box>
+          <Box>
+            <CompetenciesCategoriesTable />
           </Box>
         </Grid>
       </Grid>
