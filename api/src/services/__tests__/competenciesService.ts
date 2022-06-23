@@ -47,7 +47,7 @@ describe('competenciesService', () => {
       const label = 'label';
       const description = 'description';
       const competencyId = 3;
-      const model_competency_id = 4;
+      const modelCompetencyId = 4;
       mockQuery('BEGIN;');
       mockQuery(
         'insert into `competencies` (`description`, `label`, `principal_id`) values (?, ?, ?)',
@@ -57,7 +57,7 @@ describe('competenciesService', () => {
       mockQuery(
         'insert into `model_competencies` (`competency_id`, `principal_id`) values (?, ?)',
         [competencyId, principalId],
-        [model_competency_id]
+        [modelCompetencyId]
       );
       mockQuery('COMMIT;');
       expect(await createCompetency(principalId, label, description)).toEqual({
