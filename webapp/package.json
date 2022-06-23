@@ -51,15 +51,14 @@
     "rules": {
       "prefer-destructuring": "error",
       "camelcase": [
-        2,
+        "error",
         {
           "ignoreDestructuring": true,
           "properties": "never",
-          "ignoreGlobals": false,
-          "allow": ["principal_id"]
+          "ignoreGlobals": false
         }
       ],
-      "linebreak-style": 2
+      "linebreak-style": "error"
     }
   },
   "browserslist": {
