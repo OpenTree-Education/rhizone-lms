@@ -13,6 +13,18 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { createData } from './CompetenciesCategoriesTable';
 
+interface IBackgroundColor {
+  [key: string]: string;
+}
+
+const categoryBackgroundColor: IBackgroundColor = {
+  Functional: '#F7B8D7',
+  Strategic: '#b4a7d5',
+  Operational: '#b6d7a8',
+  Behavioural: '#ffe59a',
+  Organizational: '#CAE2FA',
+};
+
 const CompetenciesDetailTable = (props: {
   row: ReturnType<typeof createData>;
 }) => {
@@ -21,7 +33,12 @@ const CompetenciesDetailTable = (props: {
 
   return (
     <React.Fragment>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+      <TableRow
+        sx={{
+          '& > *': { borderBottom: 'unset' },
+          backgroundColor: categoryBackgroundColor[row.category],
+        }}
+      >
         <TableCell>
           <IconButton
             aria-label="expand row"

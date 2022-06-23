@@ -18,11 +18,11 @@ export function createData(category: string, summary: string) {
 }
 
 const rows = [
-  createData('Category A', 'Summary A'),
-  createData('Category B', 'Summary B'),
-  createData('Category C', 'Summary C'),
-  createData('Category D', 'Summary D'),
-  createData('Category E', 'Summary E'),
+  createData('Functional', 'Summary A'),
+  createData('Strategic', 'Summary B'),
+  createData('Operational', 'Summary C'),
+  createData('Behavioural', 'Summary D'),
+  createData('Organizational', 'Summary E'),
 ];
 
 const CompetenciesCategoriesTable = () => {
