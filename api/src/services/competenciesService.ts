@@ -55,3 +55,43 @@ export const authorizeCompetencyUpdate = async (
 
   return !!competency;
 };
+
+// export const getAllCompetencyCategoriesByPrincipal= async (principalId:number) => {
+
+//   const dbCategoryIds= await db('competencies').select('category_id').where({ principal_id: principalId });
+
+//  console.log(dbCategoryIds);
+
+//   const categoryIds: number[] = [];
+
+//     dbCategoryIds.forEach(categoryId =>{
+//     if(!categoryIds.includes(categoryId.category_id)){
+//      categoryIds.push(categoryId.category_id)
+//     }
+
+//    });
+
+//    const categories= await db('categories'). whereIn('id', categoryIds);
+
+//   return categories;
+
+// };
+
+export const getAllcompetenciesByCategory = async (categoryId: number) => {
+  const competencies = await db('competencies').where({
+    category_id: categoryId,
+  });
+
+  return competencies;
+};
+
+export const listCategories = async (limit: number, offset: number) => {
+  const categories = await db('categories')
+    .select('id', 'label', 'description')
+    .orderBy('label', 'asc')
+    .orderBy('id', 'asc')
+    .limit(limit)
+    .offset(offset);
+
+  return categories;
+};
