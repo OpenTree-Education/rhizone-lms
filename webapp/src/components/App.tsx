@@ -10,6 +10,7 @@ import Navbar from './Navbar';
 import ReflectionsPage from './ReflectionsPage';
 import RequireAuth from './RequireAuth';
 import SessionContext from './SessionContext';
+import CompetenciesPage from './CompetenciesPage';
 
 const App = () => {
   const { isAuthenticated } = useContext(SessionContext);
@@ -38,13 +39,21 @@ const App = () => {
             path="/competencies"
             element={
               <RequireAuth>
+                <CompetenciesPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/reflections/competencies"
+            element={
+              <RequireAuth>
                 <CompetenciesView />
               </RequireAuth>
             }
           />
           {/* Placeholder for Categories route */}
           {/* <Route
-            path="/competencies/questionnaires/categories"
+            path="/questionnaires/categories"
             element={
               <RequireAuth>
                 <CategoriesPage />

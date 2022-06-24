@@ -22,11 +22,11 @@ interface IBackgroundColor {
 }
 
 const categoryBackgroundColor: IBackgroundColor = {
-  Functional: '#F7B8D7',
-  Strategic: '#b4a7d5',
+  Functional: '#CAE2FA',
+  Strategic: '#ffe59a',
   Operational: '#b6d7a8',
-  Behavioural: '#ffe59a',
-  Organizational: '#CAE2FA',
+  Behavioural: '#b4a7d5',
+  Organizational: '#F7B8D7',
 };
 
 const StyledRating = styled(Rating)({
@@ -160,8 +160,7 @@ const CompetenciesDetailTable = (props: {
                 </TableHead>
               </Table>
               <Table size="small">
-                {/* 5 table cells
-                      # (number) - data.responses.prompt.id? (Is this competencies id?)
+                {/* 4 table cells
                       Name - data.responses. prompt.label?
                       Definition
                       Date1 - 
@@ -185,18 +184,11 @@ const CompetenciesDetailTable = (props: {
                 <TableBody>
                   {dummyData.map(data => (
                     <TableRow key={data.id}>
-                      <TableCell
-                        component="th"
-                        scope="row"
-                        sx={{ width: '5%' }}
-                      >
-                        {data.id}
-                      </TableCell>
-                      <TableCell sx={{ width: '20%' }}>{data.label}</TableCell>
-                      <TableCell sx={{ width: '30%' }}>
+                      <TableCell sx={{ width: '21%' }}>{data.label}</TableCell>
+                      <TableCell sx={{ width: '31%' }}>
                         {data.definition}
                       </TableCell>
-                      <TableCell sx={{ width: '15%' }}>
+                      <TableCell sx={{ width: '16%' }}>
                         {data.responses[0] ? (
                           <StyledRating
                             name="customized-color"
@@ -211,12 +203,12 @@ const CompetenciesDetailTable = (props: {
                           'No data yet'
                         )}
                       </TableCell>
-                      <TableCell sx={{ width: '15%' }}>
+                      <TableCell sx={{ width: '16%' }}>
                         {data.responses[1]
                           ? data.responses[1].id
                           : 'No data yet'}
                       </TableCell>
-                      <TableCell sx={{ width: '15%' }}>
+                      <TableCell sx={{ width: '16%' }}>
                         {data.responses[2]
                           ? data.responses[2].id
                           : 'No data yet'}
