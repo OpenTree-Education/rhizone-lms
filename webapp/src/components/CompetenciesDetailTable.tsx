@@ -8,9 +8,13 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Rating,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import CircleOutlinedIcon from '@mui/icons-material/CircleOutlined';
+import CircleIcon from '@mui/icons-material/Circle';
 import { createData } from './CompetenciesCategoriesTable';
 
 interface IBackgroundColor {
@@ -24,6 +28,94 @@ const categoryBackgroundColor: IBackgroundColor = {
   Behavioural: '#ffe59a',
   Organizational: '#CAE2FA',
 };
+
+const StyledRating = styled(Rating)({
+  '& .MuiRating-iconFilled': {
+    color: '#42a5f5',
+  },
+});
+
+// const dummyApiData = {
+// "data": [
+//   {
+//     "id": 1,
+//     "created_at": "2022-06-23T22:17:41.000Z",
+//     "journal_entries": [
+//       {
+//         "id": 1,
+//         "raw_text": "test",
+//         "reflection_id": 1
+//       }
+//     ],
+//     "responses": [
+//       {
+//         "id": 1,
+//         "option": {
+//           "id": 2,
+//           "label": "A little discouraged",
+//           "prompt": {
+//             "id": 1,
+//             "label": "Outlook"
+//           }
+//         }
+//       }
+//     ]
+//   }
+// ],
+// }
+
+const dummyData = [
+  {
+    id: 1,
+    label: 'Data Structures',
+    definition:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vitae volutpat urna. Donec sed sodales nibh.',
+    responses: [
+      { id: 2, created_at: '2022-06-23T22:17:41.000Z' },
+      { id: 3, created_at: '2022-06-23T22:17:41.000Z' },
+      { id: 4, created_at: '2022-06-23T22:17:41.000Z' },
+    ],
+  },
+  {
+    id: 2,
+    label: 'Testing',
+    definition:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vitae volutpat urna. Donec sed sodales nibh.',
+    responses: [
+      { id: 2, created_at: '2022-06-23T22:17:41.000Z' },
+      { id: 3, created_at: '2022-06-23T22:17:41.000Z' },
+      { id: 4, created_at: '2022-06-23T22:17:41.000Z' },
+    ],
+  },
+  {
+    id: 3,
+    label: 'Awareness of new tech',
+    definition:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vitae volutpat urna. Donec sed sodales nibh.',
+    responses: [
+      { id: 2, created_at: '2022-06-23T22:17:41.000Z' },
+      { id: 3, created_at: '2022-06-23T22:17:41.000Z' },
+      { id: 4, created_at: '2022-06-23T22:17:41.000Z' },
+    ],
+  },
+  {
+    id: 4,
+    label: 'Code orfanization',
+    definition:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vitae volutpat urna. Donec sed sodales nibh.',
+    responses: [
+      { id: 2, created_at: '2022-06-23T22:17:41.000Z' },
+      { id: 3, created_at: '2022-06-23T22:17:41.000Z' },
+    ],
+  },
+  {
+    id: 5,
+    label: 'Estimation',
+    definition:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vitae volutpat urna. Donec sed sodales nibh.',
+    responses: [{ id: 2, created_at: '2022-06-23T22:17:41.000Z' }],
+  },
+];
 
 const CompetenciesDetailTable = (props: {
   row: ReturnType<typeof createData>;
@@ -57,7 +149,7 @@ const CompetenciesDetailTable = (props: {
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              <Table size="small" aria-label="purchases">
+              <Table size="small">
                 <TableHead>
                   <TableRow>
                     <TableCell sx={{ textAlign: 'center' }}>
@@ -66,27 +158,71 @@ const CompetenciesDetailTable = (props: {
                     <TableCell sx={{ textAlign: 'center' }}>Ratings</TableCell>
                   </TableRow>
                 </TableHead>
-                <TableBody>
-                  {/* 5 table cells
-                      # (number)
-                      Name
+              </Table>
+              <Table size="small">
+                {/* 5 table cells
+                      # (number) - data.responses.prompt.id? (Is this competencies id?)
+                      Name - data.responses. prompt.label?
                       Definition
-                      Date1
+                      Date1 - 
+                        rating - data.responses.option.id
                       Date2
                       Date3
                   */}
-                  {/* {row.history.map(historyRow => (
-                    <TableRow key={historyRow.date}>
-                      <TableCell component="th" scope="row">
-                        {historyRow.date}
+                <TableHead>
+                  <TableRow>
+                    <TableCell component="th" scope="row">
+                      #
+                    </TableCell>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Definition</TableCell>
+                    <TableCell sx={{ color: 'red' }}>Date 1</TableCell>
+                    <TableCell sx={{ color: 'red' }}>Date 2</TableCell>
+                    <TableCell sx={{ color: 'red' }}>Date 3</TableCell>
+                  </TableRow>
+                </TableHead>
+
+                <TableBody>
+                  {dummyData.map(data => (
+                    <TableRow key={data.id}>
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        sx={{ width: '5%' }}
+                      >
+                        {data.id}
                       </TableCell>
-                      <TableCell>{historyRow.customerId}</TableCell>
-                      <TableCell align="right">{historyRow.amount}</TableCell>
-                      <TableCell align="right">
-                        {Math.round(historyRow.amount * row.price * 100) / 100}
+                      <TableCell sx={{ width: '20%' }}>{data.label}</TableCell>
+                      <TableCell sx={{ width: '30%' }}>
+                        {data.definition}
+                      </TableCell>
+                      <TableCell sx={{ width: '15%' }}>
+                        {data.responses[0] ? (
+                          <StyledRating
+                            name="customized-color"
+                            readOnly
+                            defaultValue={data.responses[0].id}
+                            icon={<CircleIcon fontSize="inherit" />}
+                            emptyIcon={
+                              <CircleOutlinedIcon fontSize="inherit" />
+                            }
+                          />
+                        ) : (
+                          'No data yet'
+                        )}
+                      </TableCell>
+                      <TableCell sx={{ width: '15%' }}>
+                        {data.responses[1]
+                          ? data.responses[1].id
+                          : 'No data yet'}
+                      </TableCell>
+                      <TableCell sx={{ width: '15%' }}>
+                        {data.responses[2]
+                          ? data.responses[2].id
+                          : 'No data yet'}
                       </TableCell>
                     </TableRow>
-                  ))} */}
+                  ))}
                 </TableBody>
               </Table>
             </Box>
