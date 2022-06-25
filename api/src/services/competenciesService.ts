@@ -89,7 +89,7 @@ export const listCategories = async () => {
   const categories = await db('categories')
     .select('id', 'label', 'description', 'image_url')
     .orderBy('label', 'asc')
-    .orderBy('id', 'asc')
+    .orderBy('id', 'asc');
 
   return categories;
 };
