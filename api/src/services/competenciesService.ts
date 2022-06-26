@@ -90,6 +90,6 @@ export const listCategories = async () => {
     .select('id', 'label', 'description', 'image_url')
     .orderBy('label', 'asc')
     .orderBy('id', 'asc');
-
+  console.log(categories);
   return categories;
 };
