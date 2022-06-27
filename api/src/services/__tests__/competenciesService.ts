@@ -4,6 +4,7 @@ import {
   listCompetencies,
   createCompetency,
   updateCompetency,
+  getAllcompetenciesByCategory,
 } from '../competenciesService';
 import { mockQuery } from '../mockDb';
 
@@ -105,6 +106,30 @@ describe('competenciesService', () => {
       expect(
         await authorizeCompetencyUpdate(principalId, competencyId)
       ).toEqual(false);
+    });
+  });
+
+  describe('getAllcompetenciesByCategory', () => {
+    it('should return competencies base on the categori_id', async () => {
+
+      const competencies = [
+        {
+          id: 2,
+          label: 'label',
+          description: 'description',
+          principal_id: 1,
+        },
+      ];
+        const categoryId = 4;
+      mockQuery(
+        'select * from `competencies` where `category_id` = ?',
+
+        [categoryId],
+        competencies
+      );
+      expect(await getAllcompetenciesByCategory(categoryId)).toEqual(
+        competencies
+      );
     });
   });
 });
