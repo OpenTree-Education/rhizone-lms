@@ -56,14 +56,12 @@ export const authorizeCompetencyUpdate = async (
   return !!competency;
 };
 
-
 export const getAllcompetenciesByCategory = async (categoryId: number) => {
   const competencies = await db('competencies').where({
     category_id: categoryId,
   });
   return competencies;
 };
-
 
 export const listCategories = async () => {
   const categories = await db('categories')
@@ -72,4 +70,3 @@ export const listCategories = async () => {
     .orderBy('id', 'asc');
   return categories;
 };
-
