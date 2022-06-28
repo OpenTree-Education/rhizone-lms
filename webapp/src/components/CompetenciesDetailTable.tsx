@@ -161,19 +161,18 @@ const CompetenciesDetailTable = (props: {
               </Table>
               <Table size="small">
                 {/* 4 table cells
-                      Name - data.responses. prompt.label?
-                      Definition
-                      Date1 - 
-                        rating - data.responses.option.id
+                      Name - data.responses.option.prompt.label / data.competencies.label
+                      Definition - data.competencies.description
+                      Date1 - data.created_at
+                        rating - data.responses.option.numeric_value
                       Date2
                       Date3
                   */}
                 <TableHead>
                   <TableRow>
                     <TableCell component="th" scope="row">
-                      #
+                      Name
                     </TableCell>
-                    <TableCell>Name</TableCell>
                     <TableCell>Definition</TableCell>
                     <TableCell sx={{ color: 'red' }}>Date 1</TableCell>
                     <TableCell sx={{ color: 'red' }}>Date 2</TableCell>
@@ -188,6 +187,7 @@ const CompetenciesDetailTable = (props: {
                       <TableCell sx={{ width: '31%' }}>
                         {data.definition}
                       </TableCell>
+
                       <TableCell sx={{ width: '16%' }}>
                         {data.responses[0] ? (
                           <StyledRating
