@@ -1,4 +1,5 @@
 import db from './db';
+import { getAllCompetenciesByCategory } from './competenciesService';
 
 export const findQuestionnaire = async (questionnaireId: number) => {
   const [questionnaire] = await db('questionnaires')
@@ -13,6 +14,7 @@ export const findQuestionnaire = async (questionnaireId: number) => {
       questionnaire_id: questionnaireId,
     })
     .orderBy('sort_order');
+
   const promptIds = prompts.map(({ id }) => id);
   const promptsById = new Map();
   let options;
@@ -34,4 +36,63 @@ export const findQuestionnaire = async (questionnaireId: number) => {
     ...questionnaire,
     prompts: Array.from(promptsById.values()),
   };
+};
+
+export const createCompetencyCategoryQuestionnaire = async (
+  categoryId: number
+) => {
+  const competencies = await getAllCompetenciesByCategory(categoryId);
+
+  const [questionnaireId] = await db('questionnaires').insert({});
+
+  let sortOrder = 0;
+  competencies.forEach(async (competency: { label: any }) => {
+    sortOrder++;
+    const [promptId] = await db('prompts').insert({
+      label: competency.label,
+      query_text: 'What rating would you give yourself in this competency?',
+      sort_order: sortOrder,
+      questionnaire_id: questionnaireId,
+    });
+    await db('options').insert([
+      {
+        label: 'Aware',
+        numeric_value: 1,
+        sort_order: 1,
+        prompt_id: promptId,
+      },
+      { label: 'Novice', numeric_value: 2, sort_order: 2, prompt_id: promptId },
+      {
+        label: 'Intermediate',
+        numeric_value: 3,
+        sort_order: 3,
+        prompt_id: promptId,
+      },
+      {
+        label: 'Advanced',
+        numeric_value: 4,
+        sort_order: 4,
+        prompt_id: promptId,
+      },
+      { label: 'Expert', numeric_value: 5, sort_order: 5, prompt_id: promptId },
+    ]);
+  });
+
+  return questionnaireId;
+};
+
+export const getQuestionnaireFromCategoryId = async (categoryId: number) => {
+  const competencies = await getAllCompetenciesByCategory(categoryId); // This function needs Naz's issue to be finished
+  const competenciesLabels = competencies.map(
+    (competency: { label: any }) => competency.label
+  );
+  const prompts = await db('prompts').whereIn('label', competenciesLabels);
+
+  let questionnaireId;
+  if (prompts.length === 0) {
+    questionnaireId = await createCompetencyCategoryQuestionnaire(categoryId);
+  } else {
+    questionnaireId = prompts[0].questionnaire_id;
+  }
+  return questionnaireId;
 };
