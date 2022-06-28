@@ -8,6 +8,8 @@ import {
   createCompetency,
   listCompetencies,
   updateCompetency,
+  getAllCompetenciesByCategory,
+  listCategories,
 } from '../services/competenciesService';
 import { parsePaginationParams } from './paginationParamsMiddleware';
 
@@ -91,6 +93,29 @@ competenciesRouter.put('/:id', async (req, res, next) => {
     return;
   }
   res.json(itemEnvelope({ id: competencyId }));
+});
+
+competenciesRouter.get('/categories', async (req, res, next) => {
+  let categoriesWithCompetencies;
+  try {
+    const categories = await listCategories();
+
+    categoriesWithCompetencies = await Promise.all(
+      categories.map(async category => {
+        const competencies = await getAllCompetenciesByCategory(category.id);
+        return { ...category, competencies };
+      })
+    );
+  } catch (error) {
+    next(error);
+    return;
+  }
+  res.json(
+    collectionEnvelope(
+      categoriesWithCompetencies,
+      categoriesWithCompetencies.length
+    )
+  );
 });
 
 export default competenciesRouter;
