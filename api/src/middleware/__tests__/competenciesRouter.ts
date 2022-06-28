@@ -5,6 +5,8 @@ import {
   listCompetencies,
   createCompetency,
   updateCompetency,
+  getAllCompetenciesByCategory,
+  listCategories,
 } from '../../services/competenciesService';
 import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
 import competenciesRouter from '../competenciesRouter';
@@ -233,13 +235,20 @@ describe('competenciesRouter', () => {
     it('should respond with an internal server error if an error was thrown while listing categories', done => {
       mockListCategories.mockRejectedValue(new Error());
       mockGetAllCompetenciesByCategory.mockResolvedValue([]);
-      appAgent.get('/').expect(500, done);
+      appAgent.get('/categories').expect(500, done);
     });
 
     it('should respond with an internal server error if an error was thrown while getting all competencies by category', done => {
-      mockListCategories.mockRejectedValue([]);
-      mockGetAllCompetenciesByCategory.mockResolvedValue(new Error());
-      appAgent.get('/').expect(500, done);
+      const categories = [
+        {
+          id: 2,
+          label: 'categoryLabel',
+          description: 'categoryDescription',
+        },
+      ];
+      mockListCategories.mockResolvedValue(categories);
+      mockGetAllCompetenciesByCategory.mockRejectedValue(new Error());
+      appAgent.get('/categories').expect(500, done);
     });
   });
 });

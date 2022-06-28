@@ -8,6 +8,8 @@ import {
   createCompetency,
   listCompetencies,
   updateCompetency,
+  getAllCompetenciesByCategory,
+  listCategories,
 } from '../services/competenciesService';
 import { parsePaginationParams } from './paginationParamsMiddleware';
 
@@ -96,11 +98,10 @@ competenciesRouter.put('/:id', async (req, res, next) => {
 competenciesRouter.get('/categories', async (req, res, next) => {
   let categoriesWithCompetencies;
   try {
-    const categories = await listCategories(); // TODO
+    const categories = await listCategories();
 
     categoriesWithCompetencies = await Promise.all(
       categories.map(async category => {
-        // TODO
         const competencies = await getAllCompetenciesByCategory(category.id);
         return { ...category, competencies };
       })
