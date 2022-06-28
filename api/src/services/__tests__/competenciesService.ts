@@ -4,7 +4,7 @@ import {
   listCompetencies,
   createCompetency,
   updateCompetency,
-  getAllcompetenciesByCategory,
+  getAllCompetenciesByCategory,
   listCategories,
 } from '../competenciesService';
 import { mockQuery } from '../mockDb';
@@ -110,8 +110,8 @@ describe('competenciesService', () => {
     });
   });
 
-  describe('getAllcompetenciesByCategory', () => {
-    it('should return competencies base on the categori_id', async () => {
+  describe('getAllCompetenciesByCategory', () => {
+    it('should return competencies based on the category_id', async () => {
       const competencies = [
         {
           id: 2,
@@ -127,7 +127,7 @@ describe('competenciesService', () => {
         [categoryId],
         competencies
       );
-      expect(await getAllcompetenciesByCategory(categoryId)).toEqual(
+      expect(await getAllCompetenciesByCategory(categoryId)).toEqual(
         competencies
       );
     });
