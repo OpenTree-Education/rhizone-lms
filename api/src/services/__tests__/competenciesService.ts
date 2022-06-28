@@ -142,14 +142,13 @@ describe('competenciesService', () => {
           image_url: 'image_url',
         },
       ];
-      const limit = 4;
-      const offset = 5;
+
       mockQuery(
-        'select `id`, `label`, `description`, `image_url` from `categories` order by `label` asc, `id` asc limit ? offset ?',
-        [limit, offset],
+        'select `id`, `label`, `description`, `image_url` from `categories` order by `label` asc, `id` asc',
+        [],
         categories
       );
-      expect(await listCategories(limit, offset)).toEqual(categories);
+      expect(await listCategories()).toEqual(categories);
     });
   });
 });
