@@ -63,10 +63,12 @@ export const getAllcompetenciesByCategory = async (categoryId: number) => {
   return competencies;
 };
 
-export const listCategories = async () => {
+export const listCategories = async (limit: number, offset: number) => {
   const categories = await db('categories')
     .select('id', 'label', 'description', 'image_url')
     .orderBy('label', 'asc')
-    .orderBy('id', 'asc');
+    .orderBy('id', 'asc')
+    .limit(limit)
+    .offset(offset);
   return categories;
 };
