@@ -9,23 +9,22 @@ import {
   Paper,
 } from '@mui/material';
 import CompetenciesDetailTable from './CompetenciesDetailTable';
-
-export function createData(category: string, summary: string) {
-  return {
-    category,
-    summary,
-  };
-}
-
-const rows = [
-  createData('Functional', 'Summary A'),
-  createData('Strategic', 'Summary B'),
-  createData('Operational', 'Summary C'),
-  createData('Behavioural', 'Summary D'),
-  createData('Organizational', 'Summary E'),
-];
+import useApiData from '../helpers/useApiData';
+import { CompetenciesByCategory } from '../types/api';
 
 const CompetenciesCategoriesTable = () => {
+  const { data, isLoading, error } = useApiData<CompetenciesByCategory[]>({
+    deps: [],
+    path: `/competencies/categories`,
+    sendCredentials: true,
+  });
+  if (error) {
+    return <p>There was an error loading the competencies.</p>;
+  }
+  if (!data) {
+    return null;
+  }
+
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
@@ -37,9 +36,15 @@ const CompetenciesCategoriesTable = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map(row => (
-            <CompetenciesDetailTable key={row.category} row={row} />
-          ))}
+          {!isLoading &&
+            data.map(d => (
+              <CompetenciesDetailTable
+                key={d.id}
+                catgoryLabel={d.label}
+                categoryDescription={d.description}
+                competencies={d.competencies}
+              />
+            ))}
         </TableBody>
       </Table>
     </TableContainer>

@@ -28,6 +28,13 @@ export interface Prompt extends Entity {
   query_text: string;
 }
 
+export interface CompetenciesByCategory extends Entity {
+  label: string;
+  description: string;
+  image_url: string;
+  competencies: Competency[];
+}
+
 export interface Option extends Entity {
   label: string;
   prompt: Prompt;

@@ -15,7 +15,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import CircleOutlinedIcon from '@mui/icons-material/CircleOutlined';
 import CircleIcon from '@mui/icons-material/Circle';
-import { createData } from './CompetenciesCategoriesTable';
+import { Competency } from '../types/api';
 
 interface IBackgroundColor {
   [key: string]: string;
@@ -35,92 +35,17 @@ const StyledRating = styled(Rating)({
   },
 });
 
-// const dummyApiData = {
-// "data": [
-//   {
-//     "id": 1,
-//     "created_at": "2022-06-23T22:17:41.000Z",
-//     "journal_entries": [
-//       {
-//         "id": 1,
-//         "raw_text": "test",
-//         "reflection_id": 1
-//       }
-//     ],
-//     "responses": [
-//       {
-//         "id": 1,
-//         "option": {
-//           "id": 2,
-//           "label": "A little discouraged",
-//           "prompt": {
-//             "id": 1,
-//             "label": "Outlook"
-//           }
-//         }
-//       }
-//     ]
-//   }
-// ],
-// }
+interface DetailTableProps {
+  catgoryLabel: string;
+  categoryDescription: string;
+  competencies: Competency[];
+}
 
-const dummyData = [
-  {
-    id: 1,
-    label: 'Data Structures',
-    definition:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vitae volutpat urna. Donec sed sodales nibh.',
-    responses: [
-      { id: 2, created_at: '2022-06-23T22:17:41.000Z' },
-      { id: 3, created_at: '2022-06-23T22:17:41.000Z' },
-      { id: 4, created_at: '2022-06-23T22:17:41.000Z' },
-    ],
-  },
-  {
-    id: 2,
-    label: 'Testing',
-    definition:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vitae volutpat urna. Donec sed sodales nibh.',
-    responses: [
-      { id: 2, created_at: '2022-06-23T22:17:41.000Z' },
-      { id: 3, created_at: '2022-06-23T22:17:41.000Z' },
-      { id: 4, created_at: '2022-06-23T22:17:41.000Z' },
-    ],
-  },
-  {
-    id: 3,
-    label: 'Awareness of new tech',
-    definition:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vitae volutpat urna. Donec sed sodales nibh.',
-    responses: [
-      { id: 2, created_at: '2022-06-23T22:17:41.000Z' },
-      { id: 3, created_at: '2022-06-23T22:17:41.000Z' },
-      { id: 4, created_at: '2022-06-23T22:17:41.000Z' },
-    ],
-  },
-  {
-    id: 4,
-    label: 'Code orfanization',
-    definition:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vitae volutpat urna. Donec sed sodales nibh.',
-    responses: [
-      { id: 2, created_at: '2022-06-23T22:17:41.000Z' },
-      { id: 3, created_at: '2022-06-23T22:17:41.000Z' },
-    ],
-  },
-  {
-    id: 5,
-    label: 'Estimation',
-    definition:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vitae volutpat urna. Donec sed sodales nibh.',
-    responses: [{ id: 2, created_at: '2022-06-23T22:17:41.000Z' }],
-  },
-];
-
-const CompetenciesDetailTable = (props: {
-  row: ReturnType<typeof createData>;
-}) => {
-  const { row } = props;
+const CompetenciesDetailTable = ({
+  catgoryLabel,
+  categoryDescription,
+  competencies,
+}: DetailTableProps) => {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -128,7 +53,7 @@ const CompetenciesDetailTable = (props: {
       <TableRow
         sx={{
           '& > *': { borderBottom: 'unset' },
-          backgroundColor: categoryBackgroundColor[row.category],
+          backgroundColor: categoryBackgroundColor[catgoryLabel],
         }}
       >
         <TableCell>
@@ -141,9 +66,9 @@ const CompetenciesDetailTable = (props: {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {row.category}
+          {catgoryLabel}
         </TableCell>
-        <TableCell>{row.summary}</TableCell>
+        <TableCell>{categoryDescription}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -152,10 +77,12 @@ const CompetenciesDetailTable = (props: {
               <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ textAlign: 'center' }}>
+                    <TableCell sx={{ textAlign: 'center', width: '50%' }}>
                       Competency
                     </TableCell>
-                    <TableCell sx={{ textAlign: 'center' }}>Ratings</TableCell>
+                    <TableCell sx={{ textAlign: 'center', width: '50%' }}>
+                      Ratings
+                    </TableCell>
                   </TableRow>
                 </TableHead>
               </Table>
@@ -181,14 +108,12 @@ const CompetenciesDetailTable = (props: {
                 </TableHead>
 
                 <TableBody>
-                  {dummyData.map(data => (
-                    <TableRow key={data.id}>
-                      <TableCell sx={{ width: '21%' }}>{data.label}</TableCell>
-                      <TableCell sx={{ width: '31%' }}>
-                        {data.definition}
-                      </TableCell>
+                  {competencies.map(({ id, label, description }) => (
+                    <TableRow key={id}>
+                      <TableCell sx={{ width: '21%' }}>{label}</TableCell>
+                      <TableCell sx={{ width: '31%' }}>{description}</TableCell>
 
-                      <TableCell sx={{ width: '16%' }}>
+                      {/* <TableCell sx={{ width: '16%' }}>
                         {data.responses[0] ? (
                           <StyledRating
                             name="customized-color"
@@ -212,7 +137,7 @@ const CompetenciesDetailTable = (props: {
                         {data.responses[2]
                           ? data.responses[2].id
                           : 'No data yet'}
-                      </TableCell>
+                      </TableCell> */}
                     </TableRow>
                   ))}
                 </TableBody>
