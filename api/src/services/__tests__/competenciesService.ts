@@ -5,6 +5,7 @@ import {
   createCompetency,
   updateCompetency,
   getAllcompetenciesByCategory,
+  listCategories,
 } from '../competenciesService';
 import { mockQuery } from '../mockDb';
 
@@ -111,7 +112,6 @@ describe('competenciesService', () => {
 
   describe('getAllcompetenciesByCategory', () => {
     it('should return competencies base on the categori_id', async () => {
-
       const competencies = [
         {
           id: 2,
@@ -120,7 +120,7 @@ describe('competenciesService', () => {
           principal_id: 1,
         },
       ];
-        const categoryId = 4;
+      const categoryId = 4;
       mockQuery(
         'select * from `competencies` where `category_id` = ?',
 
@@ -130,6 +130,27 @@ describe('competenciesService', () => {
       expect(await getAllcompetenciesByCategory(categoryId)).toEqual(
         competencies
       );
+    });
+  });
+
+  describe('listCategories', () => {
+    it('should query the lists of the categories in the database with their labels and descriptions', async () => {
+      const categories = [
+        {
+          id: 2,
+          label: 'label',
+          description: 'description',
+          image_url: 'image_url',
+        },
+      ];
+      const limit = 4;
+      const offset = 5;
+      mockQuery(
+        'select `id`, `label`, `description`, `image_url` from `categories` order by `label` asc, `id` asc limit ? offset ?',
+        [limit, offset],
+        categories
+      );
+      expect(await listCategories(limit, offset)).toEqual(categories);
     });
   });
 });
