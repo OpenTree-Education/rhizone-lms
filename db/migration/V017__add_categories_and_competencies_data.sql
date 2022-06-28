@@ -1,14 +1,11 @@
 INSERT INTO principals () VALUES();
-
 SET @principalId = LAST_INSERT_ID();
-
 INSERT INTO categories (label, description, image_url) VALUES
     ('Functional', 'Competencies to perform the activities within an occupation or function to the standard expected in employment; knowledge, skill, method and theory needed to carry out work assignments.', 'https://opentree-education.imgix.net/competency/CompetencyGraphic_Functional.png'),
     ('Strategic', 'Competencies used to accomplish focused, longer-term goals which include theory and concepts, as well as informal tacit knowledge; ability to learn to perform analytical thinking, planning, and problem-solving', 'https://opentree-education.imgix.net/competency/CompetencyGraphic_Strategic.png'),
     ('Operational', 'Competencies used for daily management of tasks and relationships; the application of knowledge, skills, experience, and behaviours to make competencies operational in work situations', 'https://opentree-education.imgix.net/competency/CompetencyGraphic_Operational.png'),
     ('Behavioural', 'Competencies to achieve results through self-awareness and, accordingly, by working effectively with others in various circumstances; the ability to develop oneself, initiate action, self-discipline, self-esteem, individuality, and self-determination', 'https://opentree-education.imgix.net/competency/CompetencyGraphic_Behavioural.png'),
     ('Organizational', 'Competencies to communicate by various means within different organizational settings; applied knowledge of language and its use in an effective way', 'https://opentree-education.imgix.net/competency/CompetencyGraphic_Organizational.png');
-
 INSERT INTO competencies (label, description, principal_id, category_id) VALUES
     ('Data Structures', 'Demonstrates knowledge of data structures, or formats for organizing, processing, retrieving and storing data; can effectively use and explain arrays, linkedlists, dictionaries, etc., in practical programming tasks.', @principalId, 1),
     ('System Design', 'Demonstrates understanding of the process of designing the elements of a system, including architecture, modules and components, interfaces and data.', @principalId, 1),
@@ -20,8 +17,6 @@ INSERT INTO competencies (label, description, principal_id, category_id) VALUES
     ('Requirements', 'Documents and describes that specific software will do and how it is expected to perform; includes defining a product purpose, describing the build, detailing the requirements, and delivering for approval.', @principalId, 1),
     ('Debugging', "Addresses and removes errors in a program's coding language; uses debugging software and exercises fundamental strategies for removing errors and developing an effective debugging process.", @principalId, 1),
     ('Secure Programming Mindset', 'Executes secure coding practices with attention to confidentiality, integrity, and availability (CIA triangle); optimizes security.', @principalId, 1),
-
-
     ('Seeing potential problems', 'Uses historical data as inputs to make informed estimates and identify developments that could cause problems in the future.', @principalId, 2),
     ('Estimation', "Produces informed and useful estimates in terms of effort, cost, and schedule; aligns skills, methods, tools, and structures with the realities of an organization's culture and talent to deliver consistent, reliable, verifiable, and useful estimates.", @principalId, 2),
     ('Strategic long range planning', 'Identifies long-range goals and designs realistic plans to attain them; able to see the big picture, and then determine what direction to take and how to use resources to attain future goals.', @principalId, 2),
@@ -32,8 +27,6 @@ INSERT INTO competencies (label, description, principal_id, category_id) VALUES
     ('Economic thinking', 'Examines the attributes of software and software processes in a systematic way; understands the mechanics of valuing software and estimating product costs with being economical; makes decisions related to software engineering in a business context.', @principalId, 2),
     ('Learning on the fly', 'Adapts quickly to learn in less-than-ideal situations and timelines.', @principalId, 2),
     ('Proactive/ Initiator', 'Directs and controls situations without waiting for something (or someone) to happen; favour "doing" even in the face of uncertainty.', @principalId, 2),
-
-
     ('Quality control', 'Demonstrates solid understanding of programming languages by implementing and/or maintaining code standards. Ensures that these standards are maintained through code reviews, documentation, and knowledge sharing.', @principalId, 3),
     ('Problem solving', 'Asks questions and looks for data that helps to identify and differentiate the symptoms and root causes of a problem. Suggests remedies that meet the needs of the situation and those directly affected. Resolves problems and escalates issues appropriately.', @principalId, 3),
     ('Documentation', 'Creates, reads, and processes detailed written documents and materials dealing with a software product development and use; uses documentation effectively to explain product functionality, provide project-related information, and facilitate collaboration and mutual understanding amongst parties.', @principalId, 3),
@@ -44,8 +37,6 @@ INSERT INTO competencies (label, description, principal_id, category_id) VALUES
     ('Product thinking', 'Practices a product-thinking mindset to solve real problems by building meaningful solutions; verifies software product with target market.', @principalId, 3),
     ('Consistency and reliability', 'Builds systems and operations in a consistent manner, so as to produce more maintainable and reliable systems.', @principalId, 3),
     ('Role awareness', "Understands work culture and how one's individual role relates to the wider team and company in order to execute, communicate and collaborate on tasks effectively.", @principalId, 3),
-
-
     ('Self-awareness', 'Keenly understands oneself, with the ability to demonstrate self-control, identify strengths and weaknesses, acknowledge needs and seek out the appropriate help.', @principalId, 4),
     ('Self-directed learning and development', "Takes charge of planning, continuing and evaluating one's learning experiences.", @principalId, 4),
     ('Personal drive', 'Motivates oneself through a sense of purpose and ambition to meet certain education and career goals.', @principalId, 4),
@@ -56,8 +47,6 @@ INSERT INTO competencies (label, description, principal_id, category_id) VALUES
     ('Perseverance', 'Persists despite difficulty and/or discouragement; displays a commitment to problem-solve and be results-oriented under potentially challenging circumstances.', @principalId, 4),
     ('Cultural awareness', 'Understands, and acts according to, the similarities and differences between oneself and people from other geographical locations or backgrounds, with specific openness to attitudes and values.', @principalId, 4),
     ('Professional ethics', "Adheres to established principles of conduct specific to one's field or study or work.", @principalId, 4),
-
-
     ('Written communication', 'Demonstrates strong writing skills to communicate with others, whether directly or indirectly.', @principalId, 5),
     ('Presentation and public speaking', 'Communicates ideas to others in a concise and effective manner, in both private and public settings; speaks and conveys ideas with confidence and self-assurance; contextualizes thoughts and relates ideas to target audiences.', @principalId, 5),
     ('Following directions', 'Effectively listens to, understands, and follows directions or instructions; the willingness to postpone making personal decisions, or taking action, until one has openly listened to what is being asked.', @principalId, 5),
