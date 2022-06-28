@@ -1,7 +1,10 @@
 import { Router } from 'express';
 
 import { BadRequestError, NotFoundError } from './httpErrors';
-import { findQuestionnaire } from '../services/questionnairesService';
+import {
+  findQuestionnaire,
+  getQuestionnaireFromCategoryId,
+} from '../services/questionnairesService';
 import { itemEnvelope } from './responseEnvelope';
 
 const questionnairesRouter = Router();
@@ -29,6 +32,15 @@ questionnairesRouter.get('/:id', async (req, res, next) => {
     return;
   }
   res.json(itemEnvelope(questionnaire));
+});
+
+questionnairesRouter.get('/categories/:categoryId', async (req, res, next) => {
+  const { categoryId } = req.params;
+  const categoryIdNumber = parseInt(categoryId);
+  const questionnaireId = await getQuestionnaireFromCategoryId(
+    categoryIdNumber
+  );
+  res.json(itemEnvelope({ questionnaireId }));
 });
 
 export default questionnairesRouter;
