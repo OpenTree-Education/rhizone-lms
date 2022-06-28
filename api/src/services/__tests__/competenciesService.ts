@@ -4,6 +4,8 @@ import {
   listCompetencies,
   createCompetency,
   updateCompetency,
+  getAllCompetenciesByCategory,
+  listCategories,
 } from '../competenciesService';
 import { mockQuery } from '../mockDb';
 
@@ -47,7 +49,7 @@ describe('competenciesService', () => {
       const label = 'label';
       const description = 'description';
       const competencyId = 3;
-      const model_competency_id = 4;
+      const modelCompetencyId = 4;
       mockQuery('BEGIN;');
       mockQuery(
         'insert into `competencies` (`description`, `label`, `principal_id`) values (?, ?, ?)',
@@ -57,7 +59,7 @@ describe('competenciesService', () => {
       mockQuery(
         'insert into `model_competencies` (`competency_id`, `principal_id`) values (?, ?)',
         [competencyId, principalId],
-        [model_competency_id]
+        [modelCompetencyId]
       );
       mockQuery('COMMIT;');
       expect(await createCompetency(principalId, label, description)).toEqual({
@@ -105,6 +107,47 @@ describe('competenciesService', () => {
       expect(
         await authorizeCompetencyUpdate(principalId, competencyId)
       ).toEqual(false);
+    });
+  });
+
+  describe('getAllCompetenciesByCategory', () => {
+    it('should return competencies based on the category_id', async () => {
+      const competencies = [
+        {
+          id: 2,
+          label: 'label',
+          description: 'description',
+          principal_id: 1,
+        },
+      ];
+      const categoryId = 4;
+      mockQuery(
+        'select * from `competencies` where `category_id` = ?',
+        [categoryId],
+        competencies
+      );
+      expect(await getAllCompetenciesByCategory(categoryId)).toEqual(
+        competencies
+      );
+    });
+  });
+
+  describe('listCategories', () => {
+    it('should query the lists of the categories in the database with their labels and descriptions', async () => {
+      const categories = [
+        {
+          id: 2,
+          label: 'label',
+          description: 'description',
+          image_url: 'image_url',
+        },
+      ];
+      mockQuery(
+        'select `id`, `label`, `description`, `image_url` from `categories` order by `label` asc, `id` asc',
+        [],
+        categories
+      );
+      expect(await listCategories()).toEqual(categories);
     });
   });
 });

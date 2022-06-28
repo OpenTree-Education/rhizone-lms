@@ -75,7 +75,15 @@
       "@typescript-eslint"
     ],
     "rules": {
-      "prefer-destructuring": "error"
+      "prefer-destructuring": "error",
+      "camelcase": [
+        "error",
+        {
+          "ignoreDestructuring": true,
+          "properties": "never"
+        }
+      ],
+      "linebreak-style": "error"
     }
   },
   "jest": {
