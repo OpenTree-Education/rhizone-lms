@@ -142,7 +142,6 @@ describe('competenciesService', () => {
           image_url: 'image_url',
         },
       ];
-
       mockQuery(
         'select `id`, `label`, `description`, `image_url` from `categories` order by `label` asc, `id` asc',
         [],
