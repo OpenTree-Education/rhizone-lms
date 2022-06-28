@@ -2,14 +2,12 @@ INSERT INTO principals () VALUES();
 
 SET @principalId = LAST_INSERT_ID();
 
-
 INSERT INTO categories (label, description, image_url) VALUES
     ('Functional', 'Competencies to perform the activities within an occupation or function to the standard expected in employment; knowledge, skill, method and theory needed to carry out work assignments.', 'https://opentree-education.imgix.net/competency/CompetencyGraphic_Functional.png'),
     ('Strategic', 'Competencies used to accomplish focused, longer-term goals which include theory and concepts, as well as informal tacit knowledge; ability to learn to perform analytical thinking, planning, and problem-solving', 'https://opentree-education.imgix.net/competency/CompetencyGraphic_Strategic.png'),
     ('Operational', 'Competencies used for daily management of tasks and relationships; the application of knowledge, skills, experience, and behaviours to make competencies operational in work situations', 'https://opentree-education.imgix.net/competency/CompetencyGraphic_Operational.png'),
     ('Behavioural', 'Competencies to achieve results through self-awareness and, accordingly, by working effectively with others in various circumstances; the ability to develop oneself, initiate action, self-discipline, self-esteem, individuality, and self-determination', 'https://opentree-education.imgix.net/competency/CompetencyGraphic_Behavioural.png'),
     ('Organizational', 'Competencies to communicate by various means within different organizational settings; applied knowledge of language and its use in an effective way', 'https://opentree-education.imgix.net/competency/CompetencyGraphic_Organizational.png');
-
 
 INSERT INTO competencies (label, description, principal_id, category_id) VALUES
     ('Data Structures', 'Demonstrates knowledge of data structures, or formats for organizing, processing, retrieving and storing data; can effectively use and explain arrays, linkedlists, dictionaries, etc., in practical programming tasks.', @principalId, 1),
