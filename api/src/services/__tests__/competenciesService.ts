@@ -123,7 +123,6 @@ describe('competenciesService', () => {
       const categoryId = 4;
       mockQuery(
         'select * from `competencies` where `category_id` = ?',
-
         [categoryId],
         competencies
       );
