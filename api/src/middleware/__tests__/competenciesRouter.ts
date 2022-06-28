@@ -15,6 +15,10 @@ const mockCountCompetencies = jest.mocked(countCompetencies);
 const mockCreateCompetency = jest.mocked(createCompetency);
 const mockListCompetencies = jest.mocked(listCompetencies);
 const mockUpdateCompetency = jest.mocked(updateCompetency);
+const mockListCategories = jest.mocked(listCategories);
+const mockGetAllCompetenciesByCategory = jest.mocked(
+  getAllCompetenciesByCategory
+);
 
 describe('competenciesRouter', () => {
   const appAgent = createAppAgentForRouter(competenciesRouter);
@@ -179,6 +183,63 @@ describe('competenciesRouter', () => {
           description: 'test',
         })
         .expect(500, done);
+    });
+  });
+
+  describe('GET /categories', () => {
+    it('should respond with all categories and their competencies in an array inside the category object', done => {
+      const categories = [
+        {
+          id: 2,
+          label: 'categoryLabel',
+          description: 'categoryDescription',
+        },
+      ];
+      const competencies = [
+        {
+          id: 3,
+          label: 'label',
+          description: 'description',
+          category_id: 2,
+        },
+        {
+          id: 4,
+          label: 'another label',
+          description: 'another description',
+          category_id: 2,
+        },
+      ];
+      const categoriesCount = categories.length;
+      const categoriesWithCompetencies = categories.map(category => {
+        return { ...category, competencies };
+      });
+
+      mockListCategories.mockResolvedValue(categories);
+      mockGetAllCompetenciesByCategory.mockResolvedValue(competencies);
+
+      appAgent
+        .get('/categories')
+        .expect(
+          200,
+          collectionEnvelope(categoriesWithCompetencies, categoriesCount),
+          err => {
+            expect(mockListCategories).toHaveBeenCalled();
+            expect(mockGetAllCompetenciesByCategory).toHaveBeenCalledWith(2);
+            done(err);
+          }
+        );
+    });
+
+    it('should respond with an internal server error if an error was thrown while listing categories', done => {
+      mockListCategories.mockRejectedValue(new Error());
+      mockGetAllCompetenciesByCategory.mockResolvedValue([]);
+      appAgent.get('/').expect(500, done);
+    });
+
+    it('should respond with an internal server error if an error was thrown while getting all competencies by category', done => {
+      mockListCategories.mockRejectedValue([]);
+      mockGetAllCompetenciesByCategory.mockResolvedValue(new Error());
+      appAgent.get('/').expect(500, done);
     });
   });
 });
