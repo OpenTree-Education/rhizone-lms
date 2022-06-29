@@ -15,7 +15,9 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import CircleOutlinedIcon from '@mui/icons-material/CircleOutlined';
 import CircleIcon from '@mui/icons-material/Circle';
-import { Competency } from '../types/api';
+import { Competency, Reflection } from '../types/api';
+import useApiData from '../helpers/useApiData';
+import { formatDate } from '../helpers/dateTime';
 
 interface IBackgroundColor {
   [key: string]: string;
@@ -47,6 +49,12 @@ const CompetenciesDetailTable = ({
   competencies,
 }: DetailTableProps) => {
   const [open, setOpen] = React.useState(false);
+
+  const { data } = useApiData<Reflection[]>({
+    deps: [],
+    path: '/reflections',
+    sendCredentials: true,
+  });
 
   return (
     <React.Fragment>
@@ -87,33 +95,41 @@ const CompetenciesDetailTable = ({
                 </TableHead>
               </Table>
               <Table size="small">
-                {/* 4 table cells
-                      Name - data.responses.option.prompt.label / data.competencies.label
-                      Definition - data.competencies.description
-                      Date1 - data.created_at
-                        rating - data.responses.option.numeric_value
-                      Date2
-                      Date3
-                  */}
                 <TableHead>
                   <TableRow>
-                    <TableCell component="th" scope="row">
+                    <TableCell component="th" scope="row" sx={{ width: '21%' }}>
                       Name
                     </TableCell>
-                    <TableCell>Definition</TableCell>
-                    <TableCell sx={{ color: 'red' }}>Date 1</TableCell>
-                    <TableCell sx={{ color: 'red' }}>Date 2</TableCell>
-                    <TableCell sx={{ color: 'red' }}>Date 3</TableCell>
+                    <TableCell sx={{ width: '31%' }}>Definition</TableCell>
+                    {data &&
+                      (() => {
+                        const tableCells = [];
+                        for (let i = 0; i < 3; i++) {
+                          data[i]
+                            ? tableCells.push(
+                                <TableCell sx={{ width: '16%' }}>
+                                  {formatDate(data[i].created_at)}
+                                </TableCell>
+                              )
+                            : tableCells.push(
+                                <TableCell sx={{ width: '16%' }}>
+                                  Date {`${i + 1}`}
+                                </TableCell>
+                              );
+                        }
+                        return <>{tableCells}</>;
+                      })()}
                   </TableRow>
                 </TableHead>
 
                 <TableBody>
-                  {competencies.map(({ id, label, description }) => (
-                    <TableRow key={id}>
-                      <TableCell sx={{ width: '21%' }}>{label}</TableCell>
-                      <TableCell sx={{ width: '31%' }}>{description}</TableCell>
+                  {data &&
+                    competencies.map(({ id, label, description }, i) => (
+                      <TableRow key={id}>
+                        <TableCell>{label}</TableCell>
+                        <TableCell>{description}</TableCell>
 
-                      {/* <TableCell sx={{ width: '16%' }}>
+                        {/* <TableCell>
                         {data.responses[0] ? (
                           <StyledRating
                             name="customized-color"
@@ -138,8 +154,8 @@ const CompetenciesDetailTable = ({
                           ? data.responses[2].id
                           : 'No data yet'}
                       </TableCell> */}
-                    </TableRow>
-                  ))}
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </Box>
