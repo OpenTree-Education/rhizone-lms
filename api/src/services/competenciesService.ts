@@ -55,3 +55,18 @@ export const authorizeCompetencyUpdate = async (
 
   return !!competency;
 };
+
+export const getAllCompetenciesByCategory = async (categoryId: number) => {
+  const competencies = await db('competencies').select('*').where({
+    category_id: categoryId,
+  });
+  return competencies;
+};
+
+export const listCategories = async () => {
+  const categories = await db('categories')
+    .select('id', 'label', 'description', 'image_url')
+    .orderBy('label', 'asc')
+    .orderBy('id', 'asc');
+  return categories;
+};
