@@ -13,7 +13,6 @@ interface CompetencyData {
 }
 
 const CategoriesCompetenciesPage = () => {
-
   const {
     data: competencies,
     error,
@@ -22,6 +21,7 @@ const CategoriesCompetenciesPage = () => {
     path: '/competencies/categories/',
     sendCredentials: true,
   });
+
   if (error) {
     return <div>There was an error loading the categories.</div>;
   }
@@ -31,7 +31,12 @@ const CategoriesCompetenciesPage = () => {
   if (!competencies) {
     return null;
   }
-  console.log(competencies)
+
+  const competenciesData = (competencies as unknown as any[]).map(
+    (competency: any, i: number) => {
+      return <CompetencyCard {...competency} key={i} />;
+    }
+  );
 
   return (
     <Box
@@ -44,7 +49,7 @@ const CategoriesCompetenciesPage = () => {
       }}
     >
       <Typography component="h2" variant="h4" m={3}>
-        Your Competencies Assessments
+        Competency Assessments
       </Typography>
       <Grid
         sx={{
@@ -54,7 +59,7 @@ const CategoriesCompetenciesPage = () => {
           alignItems: 'center',
         }}
       >
-        Competency Card Here
+        {competenciesData}
       </Grid>
     </Box>
   );
