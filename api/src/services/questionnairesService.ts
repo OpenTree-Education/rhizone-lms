@@ -82,7 +82,7 @@ export const createCompetencyCategoryQuestionnaire = async (
 };
 
 export const getQuestionnaireFromCategoryId = async (categoryId: number) => {
-  const competencies = await getAllCompetenciesByCategory(categoryId); // This function needs Naz's issue to be finished
+  const competencies = await getAllCompetenciesByCategory(categoryId);
   const competenciesLabels = competencies.map(
     (competency: { label: any }) => competency.label
   );
