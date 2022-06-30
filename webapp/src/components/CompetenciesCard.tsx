@@ -26,16 +26,45 @@ const customMarks = [
   },
 ];
 
+interface Competencies {
+  id: number;
+  label: string;
+  description: string;
+  created_at: string;
+  updated_at: string;
+  principal_id: number;
+}
+
 interface CompetenciesCardProps {
   description?: string | undefined;
   image_url?: string | undefined;
   id?: string | number | undefined;
   label?: string | undefined;
-  competencies?: any[] | undefined;
+  competencies?: Competencies[] | undefined;
 }
 
 const CompetenciesCard = ({ id, label, description, competencies }: CompetenciesCardProps) => {
   const [submit, setSubmit] = useState<boolean>(false);
+  const [competencyIndex, setCompetencyIndex] = useState<number>(0);
+
+
+  const competenciesLength = competencies?.length;
+
+  const incrementIndex = () => {
+    if (competencyIndex === competenciesLength - 1) {
+      setSubmit(true);
+    } else {
+      setCompetencyIndex(competencyIndex + 1);
+    }
+  };
+
+  const decrementIndex = () => {
+    if (competencyIndex === 0) {
+      setSubmit(false);
+    } else {
+      setCompetencyIndex(competencyIndex - 1);
+    }
+  };
 
   return (
     <Paper
@@ -61,7 +90,7 @@ const CompetenciesCard = ({ id, label, description, competencies }: Competencies
       >
         <Grid
           item
-          xs={6}
+          xs={10}
           sx={{
             display: 'flex',
             justifyContent: 'center',
@@ -70,12 +99,12 @@ const CompetenciesCard = ({ id, label, description, competencies }: Competencies
             flexDirection: 'column',
           }}
         >
-          <Typography variant="h5" component="h3" m={2}>
-            {label}
+          <Typography variant="h5" component="h3" my={2}>
+            {label}:
           </Typography>
         </Grid>
       </Grid>
-      <Divider variant="middle" sx={{ my: 5, width: '100%' }} />
+      <Divider variant="middle" sx={{ my: 2, width: '100%' }} />
       <Grid
         container
         item
@@ -86,7 +115,14 @@ const CompetenciesCard = ({ id, label, description, competencies }: Competencies
           margin: '2rem',
           flexDirection: 'column',
         }}
-      ></Grid>
+      >
+        <Typography variant="h5" component="h3" m={2}>
+          {competencies[competencyIndex]?.label}
+        </Typography>
+        <Typography component="p" m={2}>
+          {competencies[competencyIndex]?.description}
+        </Typography>
+      </Grid>
       <Slider
         aria-label="Competency"
         step={1}
@@ -120,16 +156,16 @@ const CompetenciesCard = ({ id, label, description, competencies }: Competencies
             margin: '2rem auto',
           }}
         >
-          {false ? (
-            <Button variant="text" disabled>
+          {competencyIndex === 0 ? (
+            <Button onClick={decrementIndex} variant="text" disabled>
               <ChevronLeftIcon /> Back
             </Button>
           ) : (
-            <Button variant="text">
+            <Button onClick={decrementIndex} variant="text">
               <ChevronLeftIcon /> Back
             </Button>
           )}
-          <Button variant="text">
+          <Button onClick={incrementIndex} variant="text">
             Next <ChevronRightIcon />
           </Button>
         </Grid>
