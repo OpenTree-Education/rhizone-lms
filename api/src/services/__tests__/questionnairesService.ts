@@ -5,6 +5,7 @@ import {
 } from '../questionnairesService';
 import { mockQuery } from '../mockDb';
 import { getAllCompetenciesByCategory } from '../competenciesService';
+import { mock } from 'mock-knex';
 
 describe('questionnairesService', () => {
   describe('findQuestionnaire', () => {
@@ -51,7 +52,7 @@ describe('questionnairesService', () => {
   });
   //Writing a test for createCompetencyCategoryQuestionnaire function
   describe('createCompetencyCategoryQuestionnaire', () => {
-    it('should create new competency based on category', async () => {
+    it('should create new competency questionnaire based on category', async () => {
       const categoryId = 1;
       const promptId = 1;
       const optionId = 2;
@@ -60,6 +61,7 @@ describe('questionnairesService', () => {
       const numericValue = 1;
       const sortOrder = 1;
       const questionnaireId = 1;
+      const categoryQuestionnaireId = 1;
       const queryText =
         'What rating would you give yourself in this competency?';
 
@@ -95,14 +97,16 @@ describe('questionnairesService', () => {
         [categoryId],
         competencies
       );
-      expect(await getAllCompetenciesByCategory(categoryId)).toEqual(
-        competencies
-      );
       // mockQuery('BEGIN;');
       mockQuery(
         'insert into `questionnaires` () values ()',
         [],
         [questionnaireId]
+      );
+      mockQuery(
+        'insert into `categories_questionnaires` (`category_id`, `questionnaire_id`) values (?,?)',
+        [categoryId, questionnaireId],
+        [categoryQuestionnaireId]
       );
       mockQuery(
         'insert into `prompts` (`label`, `query_text`, `sort_order`, `questionnaire_id`) values (?,?,?,?)',
@@ -115,6 +119,9 @@ describe('questionnairesService', () => {
         [optionId]
       );
       // mockQuery('COMMIT;');
+      expect(await getAllCompetenciesByCategory(categoryId)).toEqual(
+        competencies
+      );
       expect(await createCompetencyCategoryQuestionnaire(categoryId)).toEqual(
         questionnaireId
       );
