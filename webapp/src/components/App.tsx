@@ -44,7 +44,7 @@ const App = () => {
             }
           />
           <Route
-            path="/competencies/questionnaire/:categoryId"
+            path="/questionnaires/categories/:categoryId"
             element={
               <RequireAuth>
                 <CompetenciesQuestionnairePage />
