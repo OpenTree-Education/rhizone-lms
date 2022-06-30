@@ -1,5 +1,12 @@
-import React, { useState } from 'react'
-import { Button, Divider, Grid, Paper, Slider, Typography } from '@mui/material'
+import React, { useState } from 'react';
+import {
+  Button,
+  Divider,
+  Grid,
+  Paper,
+  Slider,
+  Typography,
+} from '@mui/material';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
@@ -43,12 +50,16 @@ interface CompetenciesCardProps {
   competencies?: Competencies[] | undefined;
 }
 
-const CompetenciesCard = ({ id, label, description, competencies }: CompetenciesCardProps) => {
+const CompetenciesCard = ({
+  id,
+  label,
+  description,
+  competencies,
+}: CompetenciesCardProps) => {
   const [submit, setSubmit] = useState<boolean>(false);
   const [competencyIndex, setCompetencyIndex] = useState<number>(0);
   const [currentRating, setCurrentRating] = useState<any>(1);
   const [currentRatings, setCurrentRatings] = useState<any[]>([]);
-
 
   const competenciesLength: number | undefined = competencies?.length;
 
@@ -57,7 +68,13 @@ const CompetenciesCard = ({ id, label, description, competencies }: Competencies
       setSubmit(true);
     } else {
       setCompetencyIndex(competencyIndex + 1);
-      setCurrentRatings(prevState => [...prevState, { competency: `${competencies[competencyIndex]?.label}`, rating: currentRating }]);
+      setCurrentRatings(prevState => [
+        ...prevState,
+        {
+          competency: `${competencies[competencyIndex]?.label}`,
+          rating: currentRating,
+        },
+      ]);
       setCurrentRating(1);
     }
   };
@@ -76,7 +93,7 @@ const CompetenciesCard = ({ id, label, description, competencies }: Competencies
     setCurrentRating(value);
   };
 
-  console.log(currentRatings)
+  console.log(currentRatings);
 
   return (
     <Paper
@@ -182,7 +199,7 @@ const CompetenciesCard = ({ id, label, description, competencies }: Competencies
         </Grid>
       )}
     </Paper>
-  )
-}
+  );
+};
 
-export default CompetenciesCard
+export default CompetenciesCard;

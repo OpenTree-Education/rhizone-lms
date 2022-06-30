@@ -1,19 +1,5 @@
-import {
-  Backdrop,
-  Button,
-  Divider,
-  Fade,
-  Grid,
-  List,
-  ListItem,
-  ListItemText,
-  Modal,
-  Paper,
-  Slider,
-  Typography,
-} from '@mui/material';
 import { Box } from '@mui/system';
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import useApiData from '../helpers/useApiData';
 import CompetenciesCard from './CompetenciesCard';
@@ -25,18 +11,6 @@ interface Competencies {
   label: string;
   competencies: any[];
 }
-
-const style = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  backgroundColor: 'white',
-  borderRadius: '10px',
-  boxShadow: 24,
-  p: 4,
-};
 
 const CompetencyModel = () => {
   const { categoryId } = useParams();
@@ -51,7 +25,9 @@ const CompetencyModel = () => {
   });
 
   if (error) {
-    return <div>There was an error loading the competencies questionnaire.</div>;
+    return (
+      <div>There was an error loading the competencies questionnaire.</div>
+    );
   }
   if (isLoading) {
     return <div>Loading...</div>;
@@ -64,9 +40,7 @@ const CompetencyModel = () => {
     competency => competency.id == categoryId
   );
 
-  console.log(currentCompetency)
-
-
+  console.log(currentCompetency);
 
   return (
     <Box
