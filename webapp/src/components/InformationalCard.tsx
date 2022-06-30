@@ -1,5 +1,15 @@
-import { Backdrop, Box, Button, Fade, List, ListItem, ListItemText, Modal, Typography } from '@mui/material'
-import React from 'react'
+import {
+  Backdrop,
+  Box,
+  Button,
+  Fade,
+  List,
+  ListItem,
+  ListItemText,
+  Modal,
+  Typography,
+} from '@mui/material';
+import React from 'react';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -20,11 +30,11 @@ const InformationalCard = () => {
 
   return (
     <>
-      {!open ?
+      {!open ? (
         <Button onClick={handleOpen} sx={{ textTransform: 'none' }}>
           Need help with rating?
         </Button>
-        :
+      ) : (
         <Modal
           aria-labelledby="transition-modal-title"
           aria-describedby="transition-modal-description"
@@ -85,9 +95,9 @@ const InformationalCard = () => {
             </Box>
           </Fade>
         </Modal>
-      }
+      )}
     </>
-  )
-}
+  );
+};
 
-export default InformationalCard
+export default InformationalCard;
