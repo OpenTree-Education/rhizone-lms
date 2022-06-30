@@ -87,7 +87,6 @@ const CompetenciesDetailTable = ({
                 <TableHead>
                   <TableRow
                     sx={{
-                      fontWeight: 'bold',
                       '& > *': {
                         fontWeight: 'bold',
                         textTransform: 'uppercase',
@@ -110,7 +109,7 @@ const CompetenciesDetailTable = ({
                             )
                           )
                         )
-                        .map((reflection, i) => {
+                        .map(reflection => {
                           const reflectionCreatedAtDate = formatDate(
                             reflection.created_at
                           );
@@ -155,7 +154,7 @@ const CompetenciesDetailTable = ({
                                   placement="top"
                                   arrow
                                 >
-                                  <TableCell sx={{ width: '13%' }}>
+                                  <TableCell align="center">
                                     <StyledRating
                                       // value={response.option.numeric_value}
                                       readOnly
