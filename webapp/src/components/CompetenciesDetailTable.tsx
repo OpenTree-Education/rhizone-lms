@@ -9,6 +9,7 @@ import {
   TableHead,
   TableRow,
   Rating,
+  Tooltip,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -50,7 +51,7 @@ const CompetenciesDetailTable = ({
 }: DetailTableProps) => {
   const [open, setOpen] = React.useState(false);
 
-  const { data } = useApiData<Reflection[]>({
+  const { data: reflections } = useApiData<Reflection[]>({
     deps: [],
     path: '/reflections',
     sendCredentials: true,
@@ -84,78 +85,102 @@ const CompetenciesDetailTable = ({
             <Box sx={{ margin: 1 }}>
               <Table size="small">
                 <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ textAlign: 'center', width: '50%' }}>
-                      Competency
-                    </TableCell>
-                    <TableCell sx={{ textAlign: 'center', width: '50%' }}>
-                      Ratings
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-              </Table>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell component="th" scope="row" sx={{ width: '21%' }}>
+                  <TableRow
+                    sx={{
+                      fontWeight: 'bold',
+                      '& > *': {
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase',
+                      },
+                    }}
+                  >
+                    <TableCell component="th" scope="row">
                       Name
                     </TableCell>
-                    <TableCell sx={{ width: '31%' }}>Definition</TableCell>
-                    {data &&
-                      (() => {
-                        const tableCells = [];
-                        for (let i = 0; i < 3; i++) {
-                          data[i]
-                            ? tableCells.push(
-                                <TableCell sx={{ width: '16%' }}>
-                                  {formatDate(data[i].created_at)}
-                                </TableCell>
-                              )
-                            : tableCells.push(
-                                <TableCell sx={{ width: '16%' }}>
-                                  Date {`${i + 1}`}
-                                </TableCell>
-                              );
-                        }
-                        return <>{tableCells}</>;
-                      })()}
+                    <TableCell>Definition</TableCell>
+
+                    {reflections &&
+                      reflections
+                        .filter(reflection =>
+                          reflection.responses.find(response =>
+                            competencies.find(
+                              competency =>
+                                competency.label ===
+                                response.option.prompt.label
+                            )
+                          )
+                        )
+                        .map((reflection, i) => {
+                          const reflectionCreatedAtDate = formatDate(
+                            reflection.created_at
+                          );
+
+                          return (
+                            <TableCell key={reflection.id} align="center">
+                              {reflectionCreatedAtDate}
+                            </TableCell>
+                          );
+                        })}
                   </TableRow>
                 </TableHead>
 
                 <TableBody>
-                  {data &&
-                    competencies.map(({ id, label, description }, i) => (
-                      <TableRow key={id}>
-                        <TableCell>{label}</TableCell>
-                        <TableCell>{description}</TableCell>
+                  {reflections ? (
+                    competencies.map(competency => (
+                      <TableRow key={competency.id}>
+                        <TableCell>{competency.label}</TableCell>
+                        <TableCell>{competency.description}</TableCell>
 
-                        {/* <TableCell>
-                        {data.responses[0] ? (
-                          <StyledRating
-                            name="customized-color"
-                            readOnly
-                            defaultValue={data.responses[0].id}
-                            icon={<CircleIcon fontSize="inherit" />}
-                            emptyIcon={
-                              <CircleOutlinedIcon fontSize="inherit" />
+                        {reflections
+                          .filter(reflection =>
+                            reflection.responses.find(response =>
+                              competencies.find(
+                                competency =>
+                                  competency.label ===
+                                  response.option.prompt.label
+                              )
+                            )
+                          )
+                          .map(reflection => {
+                            const response = reflection.responses.find(
+                              response =>
+                                response.option.prompt.label ===
+                                competency.label
+                            );
+                            if (response) {
+                              return (
+                                <Tooltip
+                                  key={response.id}
+                                  title={response.option.label}
+                                  placement="top"
+                                  arrow
+                                >
+                                  <TableCell sx={{ width: '13%' }}>
+                                    <StyledRating
+                                      // value={response.option.numeric_value}
+                                      readOnly
+                                      icon={<CircleIcon />}
+                                      emptyIcon={<CircleOutlinedIcon />}
+                                    />
+                                  </TableCell>
+                                </Tooltip>
+                              );
+                            } else {
+                              return (
+                                <TableCell key={reflection.id}></TableCell>
+                              );
                             }
-                          />
-                        ) : (
-                          'No data yet'
-                        )}
-                      </TableCell>
-                      <TableCell sx={{ width: '16%' }}>
-                        {data.responses[1]
-                          ? data.responses[1].id
-                          : 'No data yet'}
-                      </TableCell>
-                      <TableCell sx={{ width: '16%' }}>
-                        {data.responses[2]
-                          ? data.responses[2].id
-                          : 'No data yet'}
-                      </TableCell> */}
+                          })}
+                        <TableCell></TableCell>
                       </TableRow>
-                    ))}
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell></TableCell>
+                      <TableCell></TableCell>
+                      <TableCell></TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </Box>

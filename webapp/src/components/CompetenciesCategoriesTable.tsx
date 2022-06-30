@@ -29,7 +29,15 @@ const CompetenciesCategoriesTable = () => {
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
         <TableHead>
-          <TableRow>
+          <TableRow
+            sx={{
+              fontWeight: 'bold',
+              '& > *': {
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+              },
+            }}
+          >
             <TableCell sx={{ width: '5%' }} />
             <TableCell sx={{ width: '25%' }}>Category</TableCell>
             <TableCell align="left">Summary</TableCell>
@@ -37,12 +45,12 @@ const CompetenciesCategoriesTable = () => {
         </TableHead>
         <TableBody>
           {!isLoading &&
-            data.map(d => (
+            data.map(({ id, label, description, competencies }) => (
               <CompetenciesDetailTable
-                key={d.id}
-                catgoryLabel={d.label}
-                categoryDescription={d.description}
-                competencies={d.competencies}
+                key={id}
+                catgoryLabel={label}
+                categoryDescription={description}
+                competencies={competencies}
               />
             ))}
         </TableBody>

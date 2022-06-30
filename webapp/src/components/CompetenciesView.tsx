@@ -10,10 +10,12 @@ const CompetenciesView = () => {
       <Grid container justifyContent="center">
         <Grid item xs={12}>
           <Box textAlign="center">
-            <Button variant="contained">Competency Reflections</Button>
+            <Button variant="contained" sx={{ my: 5 }}>
+              Competency Reflections
+            </Button>
           </Box>
           <Box>
-            {/* The placeholder for the card with the raiting instruction */}
+            {/* The placeholder for the card with the rating instruction */}
           </Box>
           <Box>
             <CompetenciesCategoriesTable />
