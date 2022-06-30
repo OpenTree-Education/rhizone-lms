@@ -46,15 +46,19 @@ interface CompetenciesCardProps {
 const CompetenciesCard = ({ id, label, description, competencies }: CompetenciesCardProps) => {
   const [submit, setSubmit] = useState<boolean>(false);
   const [competencyIndex, setCompetencyIndex] = useState<number>(0);
+  const [currentRating, setCurrentRating] = useState<any>(1);
+  const [currentRatings, setCurrentRatings] = useState<any[]>([]);
 
 
-  const competenciesLength = competencies?.length;
+  const competenciesLength: number | undefined = competencies?.length;
 
   const incrementIndex = () => {
     if (competencyIndex === competenciesLength - 1) {
       setSubmit(true);
     } else {
       setCompetencyIndex(competencyIndex + 1);
+      setCurrentRatings(prevState => [...prevState, { competency: `${competencies[competencyIndex]?.label}`, rating: currentRating }]);
+      setCurrentRating(1);
     }
   };
 
@@ -63,8 +67,16 @@ const CompetenciesCard = ({ id, label, description, competencies }: Competencies
       setSubmit(false);
     } else {
       setCompetencyIndex(competencyIndex - 1);
+      setCurrentRating(currentRatings[competencyIndex - 1].rating);
     }
   };
+
+  const handleChange = (e: Event) => {
+    const { value } = e.target as HTMLSelectElement;
+    setCurrentRating(value);
+  };
+
+  console.log(currentRatings)
 
   return (
     <Paper
@@ -100,7 +112,7 @@ const CompetenciesCard = ({ id, label, description, competencies }: Competencies
           }}
         >
           <Typography variant="h5" component="h3" my={2}>
-            {label}:
+            {competencies[competencyIndex]?.label}:
           </Typography>
         </Grid>
       </Grid>
@@ -116,14 +128,12 @@ const CompetenciesCard = ({ id, label, description, competencies }: Competencies
           flexDirection: 'column',
         }}
       >
-        <Typography variant="h5" component="h3" m={2}>
-          {competencies[competencyIndex]?.label}
-        </Typography>
         <Typography component="p" m={2}>
           {competencies[competencyIndex]?.description}
         </Typography>
       </Grid>
       <Slider
+        value={currentRating}
         aria-label="Competency"
         step={1}
         marks={customMarks}
@@ -133,6 +143,7 @@ const CompetenciesCard = ({ id, label, description, competencies }: Competencies
         sx={{
           width: '80%',
         }}
+        onChange={e => handleChange(e)}
       />
       {submit ? (
         <Grid item m={4}>
