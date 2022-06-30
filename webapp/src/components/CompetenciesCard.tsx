@@ -61,7 +61,7 @@ const CompetenciesCard = ({
   const [currentRating, setCurrentRating] = useState<any>(1);
   const [currentRatings, setCurrentRatings] = useState<any[]>([]);
 
-  const competenciesLength: number | undefined = competencies?.length;
+  const competenciesLength: number = competencies!.length;
 
   const incrementIndex = () => {
     if (competencyIndex === competenciesLength - 1) {
@@ -71,7 +71,7 @@ const CompetenciesCard = ({
       setCurrentRatings(prevState => [
         ...prevState,
         {
-          competency: `${competencies[competencyIndex]?.label}`,
+          competency: `${competencies![competencyIndex]?.label}`,
           rating: currentRating,
         },
       ]);
@@ -129,7 +129,7 @@ const CompetenciesCard = ({
           }}
         >
           <Typography variant="h5" component="h3" my={2}>
-            {competencies[competencyIndex]?.label}:
+            {competencies![competencyIndex]?.label}:
           </Typography>
         </Grid>
       </Grid>
@@ -146,7 +146,7 @@ const CompetenciesCard = ({
         }}
       >
         <Typography component="p" m={2}>
-          {competencies[competencyIndex]?.description}
+          {competencies![competencyIndex]?.description}
         </Typography>
       </Grid>
       <Slider
@@ -158,7 +158,7 @@ const CompetenciesCard = ({
         max={5}
         color="primary"
         sx={{
-          width: '80%',
+          width: '80%'
         }}
         onChange={e => handleChange(e)}
       />
