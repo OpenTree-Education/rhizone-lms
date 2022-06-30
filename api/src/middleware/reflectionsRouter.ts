@@ -28,6 +28,23 @@ reflectionsRouter.get('/', parsePaginationParams(), async (req, res, next) => {
   res.json(collectionEnvelope(reflections, reflectionsCount));
 });
 
+reflectionsRouter.get('/competencies', parsePaginationParams(), async (req, res, next) => {
+  const { principalId } = req.session;
+  const { limit, offset } = req.pagination;
+  let reflections;
+  let reflectionsCount;
+  try {
+    [reflections, reflectionsCount] = await Promise.all([
+      listReflections(principalId, limit, offset),
+      countReflections(principalId),
+    ]);
+  } catch (err) {
+    next(err);
+    return;
+  }
+  res.json(collectionEnvelope(reflections, reflectionsCount));
+});
+
 reflectionsRouter.post('/', async (req, res, next) => {
   const { principalId } = req.session;
   const { raw_text: rawText, selected_option_ids: selectedOptionIds } =
