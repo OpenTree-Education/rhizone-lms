@@ -43,43 +43,63 @@ export const createCompetencyCategoryQuestionnaire = async (
 ) => {
   const competencies = await getAllCompetenciesByCategory(categoryId);
 
-  const [questionnaireId] = await db('questionnaires').insert({});
-
+  let questionnaireId: number;
   let sortOrder = 0;
-  competencies.forEach(async (competency: { label: any }) => {
-    sortOrder++;
-    const [promptId] = await db('prompts').insert({
-      label: competency.label,
-      query_text: 'What rating would you give yourself in this competency?',
-      sort_order: sortOrder,
+  // Using map for batch inserts
+
+  await db.transaction(async trx => {
+    [questionnaireId] = await trx('questionnaires').insert({});
+    await trx('categories_questionnaires').insert({
+      category_id: categoryId,
       questionnaire_id: questionnaireId,
     });
-    await db('options').insert([
-      {
-        label: 'Aware',
-        numeric_value: 1,
-        sort_order: 1,
-        prompt_id: promptId,
-      },
-      { label: 'Novice', numeric_value: 2, sort_order: 2, prompt_id: promptId },
-      {
-        label: 'Intermediate',
-        numeric_value: 3,
-        sort_order: 3,
-        prompt_id: promptId,
-      },
-      {
-        label: 'Advanced',
-        numeric_value: 4,
-        sort_order: 4,
-        prompt_id: promptId,
-      },
-      { label: 'Expert', numeric_value: 5, sort_order: 5, prompt_id: promptId },
-    ]);
+    for (const competency of competencies) {
+      sortOrder++;
+      const [promptId] = await trx('prompts').insert({
+        label: competency.label,
+        query_text: 'What rating would you give yourself in this competency?',
+        sort_order: sortOrder,
+        questionnaire_id: questionnaireId,
+      });
+      await trx('options').insert([
+        {
+          label: 'Aware',
+          numeric_value: 1,
+          sort_order: 1,
+          prompt_id: promptId,
+        },
+        {
+          label: 'Novice',
+          numeric_value: 2,
+          sort_order: 2,
+          prompt_id: promptId,
+        },
+        {
+          label: 'Intermediate',
+          numeric_value: 3,
+          sort_order: 3,
+          prompt_id: promptId,
+        },
+        {
+          label: 'Advanced',
+          numeric_value: 4,
+          sort_order: 4,
+          prompt_id: promptId,
+        },
+        {
+          label: 'Expert',
+          numeric_value: 5,
+          sort_order: 5,
+          prompt_id: promptId,
+        },
+      ]);
+    }
   });
-
+  // console.log(questionnaireId);
   return questionnaireId;
 };
+
+// createCompetencyCategoryQuestionnaire(1);
 
 export const getQuestionnaireFromCategoryId = async (categoryId: number) => {
   const competencies = await getAllCompetenciesByCategory(categoryId);
