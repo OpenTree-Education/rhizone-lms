@@ -59,7 +59,7 @@ describe('questionnairesService', () => {
       const optionLabel = 'Aware';
       const promptLabel = 'Outlook';
       const numericValue = 1;
-      const sortOrder = 1;
+      const sortOrder = 0;
       const questionnaireId = 1;
       const categoryQuestionnaireId = 1;
       const queryText =
@@ -91,13 +91,16 @@ describe('questionnairesService', () => {
         },
       ];
       const questionnaire = [{ questionnaire_Id: questionnaireId }];
+      // mockQuery('BEGIN;');
 
       mockQuery(
         'select * from `competencies` where `category_id` = ?',
         [categoryId],
         competencies
       );
-      // mockQuery('BEGIN;');
+      // expect(await getAllCompetenciesByCategory(categoryId)).toEqual(
+      //   competencies
+      // );
       mockQuery(
         'insert into `questionnaires` () values ()',
         [],

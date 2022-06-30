@@ -39,6 +39,9 @@ export const findQuestionnaire = async (questionnaireId: number) => {
 };
 
 export const createCompetencyCategoryQuestionnaire = async (
+  // If I use categories_questionnaires table, I can link the categories to the questionnaire
+  // categories_questionnaires table links to the category table
+  // cateogires_questionnaires table links to the questionnaire table
   categoryId: number
 ) => {
   const competencies = await getAllCompetenciesByCategory(categoryId);
@@ -107,7 +110,6 @@ export const getQuestionnaireFromCategoryId = async (categoryId: number) => {
     (competency: { label: any }) => competency.label
   );
   const prompts = await db('prompts').whereIn('label', competenciesLabels);
-
   let questionnaireId;
   if (prompts.length === 0) {
     questionnaireId = await createCompetencyCategoryQuestionnaire(categoryId);
