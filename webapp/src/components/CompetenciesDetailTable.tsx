@@ -136,7 +136,7 @@ const CompetenciesDetailTable = ({
                 </TableHead>
 
                 <TableBody>
-                  {reflections ? (
+                  {reflections &&
                     competencies.map(competency => (
                       <TableRow key={competency.id}>
                         <TableCell>{competency.label}</TableCell>
@@ -182,16 +182,8 @@ const CompetenciesDetailTable = ({
                               );
                             }
                           })}
-                        <TableCell></TableCell>
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell></TableCell>
-                      <TableCell></TableCell>
-                      <TableCell></TableCell>
-                    </TableRow>
-                  )}
+                    ))}
                 </TableBody>
               </Table>
             </Box>
