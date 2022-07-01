@@ -3,12 +3,15 @@ import {
   Button,
   Divider,
   Grid,
+  makeStyles,
   Paper,
   Slider,
   Typography,
 } from '@mui/material';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import { createTheme } from '@mui/system';
+import styled from '@emotion/styled';
 
 const customMarks = [
   {
@@ -33,6 +36,18 @@ const customMarks = [
   },
 ];
 
+interface IBackgroundColor {
+  [key: string]: string[];
+}
+
+const categoryBackgroundColor: IBackgroundColor = {
+  Functional: ['#CAE2FA', '#6badee'],
+  Strategic: ['#ffe59a', '#fcd35d'],
+  Operational: ['#b6d7a8', '#a6ec89'],
+  Behavioural: ['#b4a7d5', '#a88af3'],
+  Organizational: ['#F7B8D7', '#fb7bba'],
+};
+
 interface Competencies {
   id: number;
   label: string;
@@ -46,7 +61,7 @@ interface CompetenciesCardProps {
   description?: string | undefined;
   image_url?: string | undefined;
   id?: string | number | undefined;
-  label?: string | undefined;
+  label?: string;
   competencies?: Competencies[] | undefined;
 }
 
@@ -93,7 +108,26 @@ const CompetenciesCard = ({
     setCurrentRating(value);
   };
 
-  console.log(currentRatings);
+  // Custom style for the Slider component
+  const CustomSlider = styled(Slider)({
+    color: categoryBackgroundColor[label as string][1],
+    height: 8,
+    '& .MuiSlider-track': {
+      border: 'none',
+    },
+    '& .MuiSlider-thumb': {
+      height: 24,
+      width: 24,
+      backgroundColor: categoryBackgroundColor[label as string][1],
+      border: '2px solid currentColor',
+      '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
+        boxShadow: 'inherit',
+      },
+      '&:before': {
+        display: 'none',
+      },
+    },
+  });
 
   return (
     <Paper
@@ -106,6 +140,7 @@ const CompetenciesCard = ({
         height: 'auto',
         justifyContent: 'center',
         alignItems: 'center',
+        bgcolor: `${categoryBackgroundColor[label as string][0] + "30"}`
       }}
     >
       <Grid
@@ -149,16 +184,15 @@ const CompetenciesCard = ({
           {competencies![competencyIndex]?.description}
         </Typography>
       </Grid>
-      <Slider
+      <CustomSlider
         value={currentRating}
         aria-label="Competency"
         step={1}
         marks={customMarks}
         min={1}
         max={5}
-        color="primary"
         sx={{
-          width: '80%'
+          width: '80%',
         }}
         onChange={e => handleChange(e)}
       />
