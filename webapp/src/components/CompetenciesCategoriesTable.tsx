@@ -32,7 +32,7 @@ const CompetenciesCategoriesTable = () => {
           <TableRow
             sx={{
               '& > *': {
-                fontWeight: 'bold',
+                fontWeight: 'bold !important',
                 textTransform: 'uppercase',
               },
             }}

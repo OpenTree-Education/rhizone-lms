@@ -20,11 +20,11 @@ import { Competency, Reflection } from '../types/api';
 import useApiData from '../helpers/useApiData';
 import { formatDate } from '../helpers/dateTime';
 
-interface IBackgroundColor {
+export interface IBackgroundColor {
   [key: string]: string;
 }
 
-const categoryBackgroundColor: IBackgroundColor = {
+export const categoryBackgroundColor: IBackgroundColor = {
   Functional: '#CAE2FA',
   Strategic: '#ffe59a',
   Operational: '#b6d7a8',
@@ -37,6 +37,18 @@ const StyledRating = styled(Rating)({
     color: '#42a5f5',
   },
 });
+
+interface IRatingValue {
+  [key: string]: number;
+}
+
+const ratingValue: IRatingValue = {
+  Aware: 1,
+  Novice: 2,
+  Intermediate: 3,
+  Advanced: 4,
+  Expert: 5,
+};
 
 interface DetailTableProps {
   catgoryLabel: string;
@@ -88,12 +100,12 @@ const CompetenciesDetailTable = ({
                   <TableRow
                     sx={{
                       '& > *': {
-                        fontWeight: 'bold',
+                        fontWeight: 'bold !important',
                         textTransform: 'uppercase',
                       },
                     }}
                   >
-                    <TableCell component="th" scope="row">
+                    <TableCell component="th" scope="row" sx={{ width: '20%' }}>
                       Name
                     </TableCell>
                     <TableCell>Definition</TableCell>
@@ -156,7 +168,7 @@ const CompetenciesDetailTable = ({
                                 >
                                   <TableCell align="center">
                                     <StyledRating
-                                      // value={response.option.numeric_value}
+                                      value={ratingValue[response.option.label]}
                                       readOnly
                                       icon={<CircleIcon />}
                                       emptyIcon={<CircleOutlinedIcon />}
