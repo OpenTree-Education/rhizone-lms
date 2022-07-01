@@ -37,7 +37,7 @@ const CompetencyModel = () => {
   }
 
   const currentCompetency = Object.values(competencies)?.find(
-    competency => competency.id == categoryId
+    competency => competency.id === parseInt(categoryId as string)
   );
 
   console.log(currentCompetency);
