@@ -23,7 +23,6 @@ import { formatDate } from '../helpers/dateTime';
 export interface IBackgroundColor {
   [key: string]: string;
 }
-
 export const categoryBackgroundColor: IBackgroundColor = {
   Functional: '#CAE2FA',
   Strategic: '#ffe59a',
@@ -41,7 +40,6 @@ const StyledRating = styled(Rating)({
 interface IRatingValue {
   [key: string]: number;
 }
-
 const ratingValue: IRatingValue = {
   Aware: 1,
   Novice: 2,
@@ -70,7 +68,7 @@ const CompetenciesDetailTable = ({
   });
 
   return (
-    <React.Fragment>
+    <>
       <TableRow
         sx={{
           '& > *': { borderBottom: 'unset' },
@@ -109,7 +107,6 @@ const CompetenciesDetailTable = ({
                       Name
                     </TableCell>
                     <TableCell>Definition</TableCell>
-
                     {reflections &&
                       reflections
                         .filter(reflection =>
@@ -125,7 +122,6 @@ const CompetenciesDetailTable = ({
                           const reflectionCreatedAtDate = formatDate(
                             reflection.created_at
                           );
-
                           return (
                             <TableCell key={reflection.id} align="center">
                               {reflectionCreatedAtDate}
@@ -134,14 +130,12 @@ const CompetenciesDetailTable = ({
                         })}
                   </TableRow>
                 </TableHead>
-
                 <TableBody>
                   {reflections &&
                     competencies.map(competency => (
                       <TableRow key={competency.id}>
                         <TableCell>{competency.label}</TableCell>
                         <TableCell>{competency.description}</TableCell>
-
                         {reflections
                           .filter(reflection =>
                             reflection.responses.find(response =>
@@ -190,7 +184,7 @@ const CompetenciesDetailTable = ({
           </Collapse>
         </TableCell>
       </TableRow>
-    </React.Fragment>
+    </>
   );
 };
 

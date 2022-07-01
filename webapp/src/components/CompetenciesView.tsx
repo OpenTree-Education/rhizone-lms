@@ -11,7 +11,7 @@ const CompetenciesView = () => {
         <Grid item xs={12}>
           <Box textAlign="center">
             <Button variant="contained" sx={{ my: 5 }}>
-              Competency Reflections
+              Take Assessment
             </Button>
           </Box>
           <Box>
