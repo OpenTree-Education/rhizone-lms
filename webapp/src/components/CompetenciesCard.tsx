@@ -3,14 +3,12 @@ import {
   Button,
   Divider,
   Grid,
-  makeStyles,
   Paper,
   Slider,
   Typography,
 } from '@mui/material';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { createTheme } from '@mui/system';
 import styled from '@emotion/styled';
 
 const customMarks = [
@@ -140,7 +138,7 @@ const CompetenciesCard = ({
         height: 'auto',
         justifyContent: 'center',
         alignItems: 'center',
-        bgcolor: `${categoryBackgroundColor[label as string][0] + "30"}`
+        bgcolor: `${categoryBackgroundColor[label as string][0] + '30'}`,
       }}
     >
       <Grid
