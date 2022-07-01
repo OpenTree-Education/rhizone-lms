@@ -16,7 +16,7 @@ import styled from '@emotion/styled';
 const customMarks = [
   {
     value: 1,
-    label: 'Awareness',
+    label: 'Aware',
   },
   {
     value: 2,
