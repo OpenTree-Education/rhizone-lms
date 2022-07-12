@@ -1,8 +1,14 @@
 import React from 'react';
 
-import { Card, CardContent, Rating } from '@mui/material';
+import { Card, CardContent, Rating, Typography } from '@mui/material';
 import CircleIcon from '@mui/icons-material/Circle';
 import { styled } from '@mui/material/styles';
+
+const StyledCircleIcon = styled(CircleIcon)(({ theme }) => ({
+  [theme.breakpoints.down('sm')]: {
+    width: '0.8rem',
+  },
+}));
 
 const StyledRating = styled(Rating)({
   '& .MuiRating-iconFilled': {
@@ -15,77 +21,83 @@ const InformationCard = () => {
     <div>
       <Card sx={{ width: '80%', margin: '3px auto 25px' }}>
         <CardContent sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <div style={{ fontSize: 16, margin: 10 }}>
-            <h4 style={{ marginBottom: 10 }}>5-Level Proficiency Rating</h4>
-            <div style={{ display: 'flex' }}>
+          <div style={{ margin: 10 }}>
+            <Typography
+              variant="h6"
+              component="h4"
+              style={{ marginBottom: 10 }}
+            >
+              5-Level Proficiency Rating
+            </Typography>
+            <div style={{ display: 'flex', marginTop: 2 }}>
               <StyledRating
                 value={1}
                 readOnly
-                icon={<CircleIcon />}
-                emptyIcon={<CircleIcon />}
-                precision={0.1}
+                icon={<StyledCircleIcon />}
+                emptyIcon={<StyledCircleIcon />}
+                precision={1}
                 sx={{ marginRight: 2 }}
               />
-              <p style={{ marginTop: 2, fontSize: 16 }}>
-                Awareness — You are aware of the competency but are unable to
+              <Typography variant="body1" component="p">
+                Aware — You are aware of the competency but are unable to
                 perform tasks.{' '}
-              </p>
+              </Typography>
             </div>
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', marginTop: 2 }}>
               <StyledRating
                 value={2}
                 readOnly
-                icon={<CircleIcon />}
-                emptyIcon={<CircleIcon />}
-                precision={0.1}
+                icon={<StyledCircleIcon />}
+                emptyIcon={<StyledCircleIcon />}
+                precision={1}
                 sx={{ marginRight: 2 }}
               />
-              <p style={{ marginTop: 2, fontSize: 16 }}>
+              <Typography variant="body1" component="p">
                 Novice (limited proficiency) — You understand and can discuss
                 terminology, concepts, and issues.{' '}
-              </p>
+              </Typography>
             </div>
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', marginTop: 2 }}>
               <StyledRating
                 value={3}
                 readOnly
-                icon={<CircleIcon />}
-                emptyIcon={<CircleIcon />}
-                precision={0.1}
+                icon={<StyledCircleIcon />}
+                emptyIcon={<StyledCircleIcon />}
+                precision={1}
                 sx={{ marginRight: 2 }}
               />
-              <p style={{ marginTop: 2, fontSize: 16 }}>
+              <Typography variant="body1" component="p">
                 Intermediate proficiency — You have applied this skill to
                 situations occasionally without needing guidance.{' '}
-              </p>
+              </Typography>
             </div>
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', marginTop: 2 }}>
               <StyledRating
                 value={4}
                 readOnly
-                icon={<CircleIcon />}
-                emptyIcon={<CircleIcon />}
-                precision={0.1}
+                icon={<StyledCircleIcon />}
+                emptyIcon={<StyledCircleIcon />}
+                precision={1}
                 sx={{ marginRight: 2 }}
               />
-              <p style={{ marginTop: 2, fontSize: 16 }}>
+              <Typography variant="body1" component="p">
                 Advanced proficiency — You can coach others in the application
                 by explaining related nuances.{' '}
-              </p>
+              </Typography>
             </div>
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', marginTop: 2 }}>
               <StyledRating
                 value={5}
                 readOnly
-                icon={<CircleIcon />}
-                emptyIcon={<CircleIcon />}
-                precision={0.1}
+                icon={<StyledCircleIcon />}
+                emptyIcon={<StyledCircleIcon />}
+                precision={1}
                 sx={{ marginRight: 2 }}
               />
-              <p style={{ marginTop: 2, fontSize: 16 }}>
+              <Typography variant="body1" component="p">
                 Expert — You have demonstrated consistent excellence across
                 multiple projects.
-              </p>
+              </Typography>
             </div>
           </div>
         </CardContent>
