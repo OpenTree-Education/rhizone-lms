@@ -39,24 +39,18 @@ export const findQuestionnaire = async (questionnaireId: number) => {
 };
 
 export const createCompetencyCategoryQuestionnaire = async (
-  // If I use categories_questionnaires table, I can link the categories to the questionnaire
-  // categories_questionnaires table links to the category table
-  // cateogires_questionnaires table links to the questionnaire table
   categoryId: number
 ) => {
   const competencies = await getAllCompetenciesByCategory(categoryId);
 
-  let questionnaireId: number;
-  let sortOrder = 0;
-  // Using map for batch inserts
+  const [questionnaireId] = await db('questionnaires').insert({});
 
-  [questionnaireId] = await db('questionnaires').insert({});
-
-  const categoryQuestionnaire = await db('categories_questionnaires').insert({
+  await db('categories_questionnaires').insert({
     category_id: categoryId,
     questionnaire_id: questionnaireId,
   });
 
+  let sortOrder = 0;
   for (const competency of competencies) {
     sortOrder++;
     const [promptId] = await db('prompts').insert({
@@ -99,23 +93,20 @@ export const createCompetencyCategoryQuestionnaire = async (
     ]);
   }
 
-  // console.log(questionnaireId);
   return questionnaireId;
 };
 
-// createCompetencyCategoryQuestionnaire(1);
-
 export const getQuestionnaireFromCategoryId = async (categoryId: number) => {
-  const competencies = await getAllCompetenciesByCategory(categoryId);
-  const competenciesLabels = competencies.map(
-    (competency: { label: any }) => competency.label
-  );
-  const prompts = await db('prompts').whereIn('label', competenciesLabels);
+  const [categoryQuestionnaire] = await db('categories_questionnaires')
+    .select('questionnaire_id')
+    .where({ category_id: categoryId });
+
   let questionnaireId;
-  if (prompts.length === 0) {
-    questionnaireId = await createCompetencyCategoryQuestionnaire(categoryId);
+  if (categoryQuestionnaire) {
+    questionnaireId = categoryQuestionnaire.questionnaire_id;
   } else {
-    questionnaireId = prompts[0].questionnaire_id;
+    questionnaireId = await createCompetencyCategoryQuestionnaire(categoryId);
   }
+
   return questionnaireId;
 };
