@@ -11,6 +11,12 @@ const mockGetAllCompetenciesByCategory = jest.mocked(
   getAllCompetenciesByCategory
 );
 
+//
+// jest.mock('../questionnairesService');
+const mockCreateCompetencyCategoryQuestionnaire = jest.mocked(
+  createCompetencyCategoryQuestionnaire
+);
+
 describe('questionnairesService', () => {
   describe('findQuestionnaire', () => {
     it('should query for the questionnaire with the given id, its prompts and their options', async () => {
@@ -121,6 +127,17 @@ describe('questionnairesService', () => {
         questionnaireId
       );
     });
+
+    // The test below runs successfully! Change the second test below (commented out)
+    it('should return null if given invalid category id', async () => {
+      const categoryId = 90;
+
+      mockGetAllCompetenciesByCategory.mockResolvedValue(null);
+
+      expect(await createCompetencyCategoryQuestionnaire(categoryId)).toEqual(
+        null
+      );
+    });
   });
 
   describe('getQuestionnaireFromCategoryId', () => {
@@ -136,6 +153,30 @@ describe('questionnairesService', () => {
         [categoryId],
         [categoryQuestionnaire]
       );
+
+      expect(await getQuestionnaireFromCategoryId(categoryId)).toEqual(
+        questionnaireId
+      );
+    });
+
+    // The test below should be changed
+    it('should create a questionnaire if no questionnaire was found with the given category id', async () => {
+      const categoryId = 1;
+      const questionnaireId = 1;
+      // const categoryQuestionnaire = {
+      //   questionnaire_id: questionnaireId,
+      // };
+
+      mockQuery(
+        'insert into `questionnaires` () values ()',
+        [],
+        [questionnaireId]
+      );
+
+      expect(await getQuestionnaireFromCategoryId(categoryId)).toEqual(null);
+      // expect(mockCreateCompetencyCategoryQuestionnaire).toHaveBeenCalledTimes(
+      //   1
+      // );
 
       expect(await getQuestionnaireFromCategoryId(categoryId)).toEqual(
         questionnaireId
