@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Box,
   Collapse,
@@ -59,7 +59,7 @@ const CompetenciesDetailTable = ({
   categoryDescription,
   competencies,
 }: DetailTableProps) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const { data: reflections } = useApiData<Reflection[]>({
     deps: [],
