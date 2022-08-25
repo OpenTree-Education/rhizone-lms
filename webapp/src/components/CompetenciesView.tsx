@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Container, Grid, Button } from '@mui/material';
-
 import CompetenciesCategoriesTable from './CompetenciesCategoriesTable';
 
 const CompetenciesView = () => {
