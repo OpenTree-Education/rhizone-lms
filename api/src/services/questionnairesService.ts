@@ -43,6 +43,11 @@ export const createCompetencyCategoryQuestionnaire = async (
 ) => {
   const competencies = await getAllCompetenciesByCategory(categoryId);
 
+  // If categoryId isn't found, return null
+  if (!competencies) {
+    return null;
+  }
+
   const [questionnaireId] = await db('questionnaires').insert({});
 
   await db('categories_questionnaires').insert({
