@@ -5,7 +5,7 @@ ARG REACT_APP_ROLLBAR_ACCESS_TOKEN
 ENV REACT_APP_ROLLBAR_ACCESS_TOKEN $REACT_APP_ROLLBAR_ACCESS_TOKEN
 WORKDIR /app/
 COPY ./ ./
-RUN yarn install --ignore-platform --frozen-lockfile
+RUN yarn install --ignore-platform --frozen-lockfile --network-timeout 600000
 RUN yarn build
 
 FROM nginx:1.21-alpine
