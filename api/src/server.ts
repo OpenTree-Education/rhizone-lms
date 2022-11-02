@@ -23,6 +23,7 @@ import { participantExists } from './services/meetingsService';
 import questionnairesRouter from './middleware/questionnairesRouter';
 import reflectionsRouter from './middleware/reflectionsRouter';
 import settingsRouter from './middleware/settingsRouter';
+import greetingsRouter from './middleware/greetingsRouter';
 import { findConfig } from './services/configService';
 
 declare module 'express-session' {
@@ -129,6 +130,7 @@ const start = async () => {
   app.use('/questionnaires', withCors, loggedIn, questionnairesRouter);
   app.use('/reflections', withCors, loggedIn, reflectionsRouter);
   app.use('/settings', withCors, settingsRouter);
+  app.use('/greetings',withCors, greetingsRouter);
   app.get('/', (_, res) => {
     res.json({});
   });

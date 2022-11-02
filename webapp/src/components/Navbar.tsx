@@ -3,6 +3,7 @@ import EventNoteIcon from '@mui/icons-material/EventNote';
 import React, { useContext } from 'react';
 
 import MeetingsDrawerContext from './MeetingsDrawerContext';
+import Greeting from './Greeting';
 
 const Navbar = () => {
   const { open: openMeetingsDrawer } = useContext(MeetingsDrawerContext);
@@ -12,6 +13,7 @@ const Navbar = () => {
         <h1>Rhizone</h1>
       </Grid>
       <Grid item xs="auto">
+        <Greeting />
         <IconButton sx={{ mr: 1 }} onClick={openMeetingsDrawer}>
           <EventNoteIcon />
         </IconButton>

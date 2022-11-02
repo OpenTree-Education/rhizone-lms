@@ -76,3 +76,7 @@ export interface SessionData extends Entity {
 export interface Settings extends Entity {
   default_questionnaire_id: EntityId;
 }
+
+export interface Greetings extends Entity {
+  principal_id: EntityId;
+}
