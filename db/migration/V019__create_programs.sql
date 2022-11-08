@@ -70,3 +70,9 @@ CREATE TABLE participant_activities (
   FOREIGN KEY (principal_id) REFERENCES principals(id),
   PRIMARY KEY (id)
 );
+
+INSERT INTO activity_types (title) VALUES
+  ('class'),
+  ('assignment'),
+  ('standup'),
+  ('retrospective');
