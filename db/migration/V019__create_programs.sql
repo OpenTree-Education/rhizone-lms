@@ -9,7 +9,6 @@ CREATE TABLE curriculums (
   PRIMARY KEY (id)
 );
 
-
 CREATE TABLE programs (
   id BIGINT NOT NULL AUTO_INCREMENT,
   principal_id BIGINT NOT NULL,
