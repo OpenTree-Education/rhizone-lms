@@ -61,7 +61,7 @@ CREATE TABLE participant_activities (
   program_id BIGINT NOT NULL,
   activity_id BIGINT NOT NULL,
   principal_id BIGINT NOT NULL,
-  copleted BOOLEAN NOT NULL,
+  completed BOOLEAN NOT NULL,
   INDEX participant_activities_program_id (program_id),
   FOREIGN KEY (program_id) REFERENCES programs(id),
   INDEX participant_activities_activity_id (activity_id),
