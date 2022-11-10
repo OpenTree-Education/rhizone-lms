@@ -16,7 +16,7 @@ INSERT INTO activities (title, description_text, curriculum_week, curriculum_day
   ('Game time', '', 1, 4, '10:00:00', '10:30:00', 30, 1, 1),
   ('Product Specification', 'Go through the Product Specification', 1, 4, '11:00:00', '13:00:00', 120, 1, 1),
   --Week 1: Day 5
-  ('Self relection', '', 1, 5, '10:00:00', '11:00:00', 60, 4, 1),
+  ('Self-reflection', '', 1, 5, '10:00:00', '11:00:00', 60, 4, 1),
   ('Data flow demostration', 'Go through the existing codes on the app', 1, 5, '11:05:00', '13:00:00', 115, 1, 1),
   --Week 2: Day 1
   ('Morning standu', '', 2, 1, '10:00:00', '11:00:00', 60, 3, 1), 
@@ -31,7 +31,7 @@ INSERT INTO activities (title, description_text, curriculum_week, curriculum_day
   ('Game time', '', 2, 4, '10:00:00', '10:30:00', 30, 1, 1),
   ('Prototyping', 'Create messy code at the early stages of building a product to demonstrate its intended functionalities and design', 2, 4, NULL, NULL, NULL, 1, 1),
   --Week 2: Day 5
-  ('Self relection', '', 2, 5, '10:00:00', '11:00:00', 60, 4, 1),
+  ('Self-reflection', '', 2, 5, '10:00:00', '11:00:00', 60, 4, 1),
   ('Prototyping Demo', 'Demostrate the prototype from each group', 2, 5, '11:10:00', '13:30:00', 140, 2, 1),
   --Week 3: Day 1
   ('Morning standup', '', 3, 1, '10:00:00', '11:00:00', 60, 3, 1),
@@ -46,7 +46,7 @@ INSERT INTO activities (title, description_text, curriculum_week, curriculum_day
   ('Game time', '', 3, 4, '10:00:00', '10:30:00', 30, 1, 1),
   ('Group working', 'Working on the ticket', 3, 4, '10:40:00','24:00:00', 800, 1, 1),
   --Week 3: Day 5
-  ('Self relection', '', 3, 5, '10:00:00', '11:00:00', 60, 4, 1),
+  ('Self-reflection', '', 3, 5, '10:00:00', '11:00:00', 60, 4, 1),
   ('1:1 mentorship', '', 3, 5, '11:10:00', '13:10:00', 120, 4, 1),
   --Week 4: Day 1
   ('Morning standup', '', 4, 1, '10:00:00', '11:00:00', 60, 3, 1),
@@ -76,7 +76,7 @@ INSERT INTO activities (title, description_text, curriculum_week, curriculum_day
   ('Game time', '', 5, 4, '10:00:00', '10:30:00', 30, 1, 1),
   ('Working on the ticket', 'Working on the assigned ticket', 5, 4, '10:00:00','24:00:00', 840, 1, 1),
   --Week 5: Day 5  
-  ('Self relection', '', 5, 5, '10:00:00', '11:00:00', 60, 4, 1),
+  ('Self-reflection', '', 5, 5, '10:00:00', '11:00:00', 60, 4, 1),
   ('1:1 mentorship', '', 5, 5, '11:10:00', '13:10:00', 120, 4, 1),
   --Week 6: Day 1  
   ('Morning standup', '', 6, 1, '10:00:00', '11:00:00', 60, 3, 1),
@@ -91,7 +91,7 @@ INSERT INTO activities (title, description_text, curriculum_week, curriculum_day
   ('Game time', '', 6, 4, '10:00:00', '10:30:00', 30, 1, 1),
   ('Working on the ticket', 'Working on the assigned ticket', 6, 2, '11:00:00','24:00:00', 780, 1, 1),
   --Week 6: Day 5  
-  ('Self relection', '', 6, 5, '10:00:00', '11:00:00', 60, 4, 1),
+  ('Self-reflection', '', 6, 5, '10:00:00', '11:00:00', 60, 4, 1),
   ('1:1 mentorship', '', 6, 5, '11:10:00', '13:10:00', 120, 4, 1),
   --Week 7: Day 1  
   ('Morning standup', '', 7, 1, '10:00:00', '11:00:00', 60, 3, 1),
@@ -106,7 +106,7 @@ INSERT INTO activities (title, description_text, curriculum_week, curriculum_day
   ('Game time', '', 7, 4, '10:00:00', '10:30:00', 30, 1, 1),
   ('Working on the ticket', 'Working on the assigned ticket', 7, 4, '11:00:00','24:00:00', 780, 1, 1),
   --Week 7: Day 5  
-  ('Self relection', '', 7, 5, '10:00:00', '11:00:00', 60, 4, 1),
+  ('Self-reflection', '', 7, 5, '10:00:00', '11:00:00', 60, 4, 1),
   ('1:1 mentorship', '', 7, 5, '11:10:00', '13:10:00', 120, 4, 1),
   --Week 8: Day 1  
   ('Morning standup', '', 8, 1, '10:00:00', '11:00:00', 60, 3, 1),
@@ -121,8 +121,5 @@ INSERT INTO activities (title, description_text, curriculum_week, curriculum_day
   ('Game time', '', 8, 4, '10:00:00', '10:30:00', 30, 1, 1),
   ('Working on the ticket', 'Working on the assigned ticket', 8, 4, '11:00:00','24:00:00', 780, 1, 1),
   --Week 8: Day 5   
-  ('Self relection', '', 8, 5, '10:00:00', '11:00:00', 60, 4, 1),
+  ('Self-reflection', '', 8, 5, '10:00:00', '11:00:00', 60, 4, 1),
   ('1:1 mentorship', '', 8, 5, '11:10:00', '13:10:00', 120, 4, 1);
-
-
-
