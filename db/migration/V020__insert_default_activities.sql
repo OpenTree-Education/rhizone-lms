@@ -1,5 +1,11 @@
+INSERT INTO principals () VALUES ();
+SET @principalId = LAST_INSERT_ID();
+
 INSERT INTO curriculums (principal_id, title) VALUES
-  (1, 'Professional Mentorship Program');
+  (@principalId, 'Professional Mentorship Program');
+
+INSERT INTO programs (principal_id, curriculum_id, title, start_date, end_date) VALUES 
+  (@principalId, 1, 'Cohort 4', '2022-10-24', '2022-12-16');
 
 INSERT INTO activities (title, description_text, curriculum_week, curriculum_day, start_time, end_time, duration, activity_type_id, curriculum_id) VALUES
   -- Week 1: Day 1
