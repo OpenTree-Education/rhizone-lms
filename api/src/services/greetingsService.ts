@@ -7,6 +7,8 @@ export const findGreeting = async (principalId: number) => {
   .where({ principal_id: principalId });
   console.log("service" + greeting);
 return greeting || null;
+
+
 };
 
 export const createGreeting =async (principalId: number) => {
