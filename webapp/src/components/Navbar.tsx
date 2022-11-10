@@ -2,6 +2,7 @@ import { Button, Grid, IconButton } from '@mui/material';
 import React, { useContext } from 'react';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import PeopleIcon from '@mui/icons-material/People';
+
 import MeetingsDrawerContext from './MeetingsDrawerContext';
 
 const Navbar = () => {
