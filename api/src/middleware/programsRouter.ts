@@ -2,7 +2,10 @@ import { Router } from 'express';
 
 import { BadRequestError, NotFoundError, ValidationError } from './httpErrors';
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
-import { listPrograms, listCurriculumActivities } from '../services/programsService';
+import {
+  listPrograms,
+  listCurriculumActivities,
+} from '../services/programsService';
 import { parsePaginationParams } from './paginationParamsMiddleware';
 
 const programsRouter = Router();
