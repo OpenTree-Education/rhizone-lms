@@ -1,6 +1,7 @@
-import { Button, Grid, IconButton } from '@mui/material';
-import EventNoteIcon from '@mui/icons-material/EventNote';
 import React, { useContext } from 'react';
+import { Button, Grid, IconButton } from '@mui/material';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import PeopleIcon from '@mui/icons-material/People';
 
 import MeetingsDrawerContext from './MeetingsDrawerContext';
 
@@ -12,8 +13,11 @@ const Navbar = () => {
         <h1>Rhizone</h1>
       </Grid>
       <Grid item xs="auto">
+        <IconButton sx={{ mr: 1 }} href="/calendar">
+          <CalendarMonthIcon />
+        </IconButton>
         <IconButton sx={{ mr: 1 }} onClick={openMeetingsDrawer}>
-          <EventNoteIcon />
+          <PeopleIcon />
         </IconButton>
         <Button
           component="a"
