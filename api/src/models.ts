@@ -25,9 +25,9 @@ export interface CurriculumActivity {
   description_text: string;
   curriculum_week: number;
   curriculum_day: number;
-  start_time: string | NULL;
-  end_time: string | NULL;
-  duration: number | NULL;
+  start_time: string | null;
+  end_time: string | null;
+  duration: number | null;
   activity_type_id: number;
   curriculum_id: number;
 }
