@@ -1,41 +1,75 @@
 import db from './db';
+import {
+  Program,
+  ProgramActivity,
+  ProgramWithActivities,
+  CurriculumActivity,
+} from '../models';
 
-export const listPrograms = async () => {
-  const foundPrograms = await db('programs');
-  return foundPrograms ?? [];
-};
-
-export const findProgram = async (programId: number) => {
-  return (await db('programs').where('id', programId)) ?? [];
-};
-
-export const listCurriculumActivities = async (curriculumId?: number) => {
-  let foundActivities;
-
+export const listPrograms = (curriculumId?: number): Promise<Program[]> => {
   if (curriculumId) {
-    foundActivities = await db('activities')
-      .select(
-        'activities.title',
-        'activities.description_text',
-        'activities.curriculum_week',
-        'activities.curriculum_day',
-        'activities.start_time',
-        'activities.end_time',
-        'activities.duration',
-        'activity_types.title as activity_type'
-      )
-      .leftJoin(
-        'activity_types',
-        'activities.activity_type_id',
-        'activity_types.id'
-      )
-      .where({ curriculum_id: curriculumId });
+    return db<Program>('programs').where({ curriculum_id: curriculumId });
   } else {
-    foundActivities = await db('activities');
+    return db<Program>('programs');
   }
-  return foundActivities ?? [];
 };
 
-export const findActivity = async (activityId: number) => {
-  return (await db('activities').where('id', activityId)) ?? [];
+export const findProgram = (programId: number): Promise<Program> => {
+  return db<Program>('programs').first().where('id', programId);
+};
+
+export const listCurriculumActivities = (
+  curriculumId?: number
+): Promise<CurriculumActivity[]> => {
+  if (curriculumId) {
+    return db<CurriculumActivity>('activities').where({
+      curriculum_id: curriculumId,
+    });
+  } else {
+    return db<CurriculumActivity>('activities');
+  }
+};
+
+export const findCurriculumActivity = (
+  activityId: number
+): Promise<CurriculumActivity[]> => {
+  return db<CurriculumActivity>('activities').where('id', activityId);
+};
+
+export const listProgramActivities = async (
+  programId: number
+): Promise<ProgramActivity[]> => {
+  const program = await findProgram(programId);
+  const curriculumActivities = await listCurriculumActivities(
+    program.curriculum_id
+  );
+  const programActivities: ProgramActivity[] = [];
+
+  // TODO: manipulation here
+
+  return programActivities;
+};
+
+export const listProgramsWithActivities = (): Promise<
+  ProgramWithActivities[]
+> => {
+  return listPrograms().then((programs): Promise<ProgramWithActivities[]> => {
+    const promises: Promise<ProgramWithActivities>[] = [];
+    programs.forEach(program => {
+      promises.push(findProgramWithActivities(program.id));
+    });
+    return Promise.all(promises);
+  });
+};
+
+export const findProgramWithActivities = (
+  programId: number
+): Promise<ProgramWithActivities> => {
+  return findProgram(programId).then(
+    async (program): Promise<ProgramWithActivities> => {
+      const pwa = program as ProgramWithActivities;
+      pwa.activities = await listProgramActivities(program.id);
+      return pwa;
+    }
+  );
 };
