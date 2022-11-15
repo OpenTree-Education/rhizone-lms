@@ -11,8 +11,7 @@ import {
   Program,
   ProgramActivity,
   ProgramWithActivities,
-  CurriculumActivity,
-  Curriculum,
+  CurriculumActivity
 } from '../../models';
 import { mockQuery } from '../mockDb';
 
@@ -57,7 +56,37 @@ import { mockQuery } from '../mockDb';
 describe('programsService', () => {
   describe('listPrograms', () => {
     it('should list all available programs', async () => {
-      let programsList: Program[];
+      const programsList: Program[] = [{
+          id: 1,
+          principal_id: 2,
+          curriculum_id: 1,
+          title: 'Cohort 4', 
+          start_date: '2022-10-24',
+          end_date: '2022-12-16',
+          created_at: "2022-11-15 01:23:45",
+          updated_at: "2022-11-15 01:23:45"
+        },
+        {
+          id: 2,
+          principal_id: 2,
+          curriculum_id: 2,
+          title: 'Cohort 5', 
+          start_date: '2022-10-24',
+          end_date: '2022-12-16',
+          created_at: "2022-11-15 01:23:45",
+          updated_at: "2022-11-15 01:23:45"
+        },
+        {
+          id: 3,
+          principal_id: 2,
+          curriculum_id: 1,
+          title: 'Cohort 6', 
+          start_date: '2023-01-02',
+          end_date: '2023-02-24',
+          created_at: "2022-11-15 01:23:45",
+          updated_at: "2022-11-15 01:23:45"
+        }
+      ];
     });
   });
   describe('findProgram', () => {
@@ -68,7 +97,7 @@ describe('programsService', () => {
   });
   describe('listCurriculumActivities', () => {
     it('should list all available activities for the specified curriculum', async () => {
-      let curriculumActivityList: CurriculumActivity[];
+      let curriculumActivitiesList: CurriculumActivity[];
     });
   });
   describe('findCurriculumActivity', () => {
