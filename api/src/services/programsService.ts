@@ -32,8 +32,8 @@ export const listCurriculumActivities = (
 
 export const findCurriculumActivity = (
   activityId: number
-): Promise<CurriculumActivity[]> => {
-  return db<CurriculumActivity>('activities').where('id', activityId);
+): Promise<CurriculumActivity> => {
+  return db<CurriculumActivity>('activities').first().where('id', activityId);
 };
 
 export const listProgramActivities = async (
