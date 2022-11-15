@@ -50,18 +50,6 @@ export const listProgramActivities = async (
   return programActivities;
 };
 
-export const listProgramsWithActivities = (): Promise<
-  ProgramWithActivities[]
-> => {
-  return listPrograms().then((programs): Promise<ProgramWithActivities[]> => {
-    const promises: Promise<ProgramWithActivities>[] = [];
-    programs.forEach(program => {
-      promises.push(findProgramWithActivities(program.id));
-    });
-    return Promise.all(promises);
-  });
-};
-
 export const findProgramWithActivities = (
   programId: number
 ): Promise<ProgramWithActivities> => {
@@ -72,4 +60,16 @@ export const findProgramWithActivities = (
       return pwa;
     }
   );
+};
+
+export const listProgramsWithActivities = (): Promise<
+  ProgramWithActivities[]
+> => {
+  return listPrograms().then((programs): Promise<ProgramWithActivities[]> => {
+    const promises: Promise<ProgramWithActivities>[] = [];
+    programs.forEach(program => {
+      promises.push(findProgramWithActivities(program.id));
+    });
+    return Promise.all(promises);
+  });
 };

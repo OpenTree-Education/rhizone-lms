@@ -7,6 +7,13 @@ import {
   listProgramsWithActivities,
   findProgramWithActivities,
 } from '../programsService';
+import {
+  Program,
+  ProgramActivity,
+  ProgramWithActivities,
+  CurriculumActivity,
+  Curriculum,
+} from '../../models';
 import { mockQuery } from '../mockDb';
 
 /*
@@ -49,24 +56,49 @@ import { mockQuery } from '../mockDb';
 
 describe('programsService', () => {
   describe('listPrograms', () => {
-    it('should list all available programs', async () => {});
+    it('should list all available programs', async () => {
+      let programsList: Program[];
+    });
   });
   describe('findProgram', () => {
-    it('should give the details of the specified program', async () => {});
+    it('should give the details of the specified program', async () => {
+      let programId: number;
+      let program: Program;
+    });
   });
   describe('listCurriculumActivities', () => {
-    it('should list all available activities for the specified curriculum', async () => {});
+    it('should list all available activities for the specified curriculum', async () => {
+      let curriculumActivityList: CurriculumActivity[];
+    });
   });
   describe('findCurriculumActivity', () => {
-    it('should give the details of the specified curriculum activity', async () => {});
+    it('should give the details of the specified curriculum activity', async () => {
+      let curriculumActivityId: number;
+      let curriculumActivity: CurriculumActivity;
+    });
   });
   describe('listProgramActivities', () => {
-    it('should list all available activities for the specified program', async () => {});
-  });
-  describe('listProgramsWithActivities', () => {
-    it('should list all available programs including their activities', async () => {});
+    it('should list all available activities for the specified program', async () => {
+      let programId: number;
+      let program: Program;
+      let curriculumActivitiesList: CurriculumActivity[];
+      let programActivitiesList: ProgramActivity[];
+    });
   });
   describe('findProgramWithActivities', () => {
-    it('should give the details of the specified program including its activities', async () => {});
+    it('should give the details of the specified program including its activities', async () => {
+      let programId: number;
+      let program: Program;
+      let curriculumActivitiesList: CurriculumActivity[];
+      let programActivitiesList: ProgramActivity[];
+      let programWithActivities: ProgramWithActivities;
+    });
+  });
+  describe('listProgramsWithActivities', () => {
+    it('should list all available programs including their activities', async () => {
+      let programsList: Program[];
+      let curriculumActivitiesLists: [CurriculumActivity[]];
+      let programsWithActivitiesList: ProgramWithActivities[];
+    });
   });
 });
