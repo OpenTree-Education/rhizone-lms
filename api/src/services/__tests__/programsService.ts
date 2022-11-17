@@ -122,6 +122,9 @@ describe('programsService', () => {
   });
 
   describe('listCurriculumActivities', () => {
+    // TODO: implement test
+    it('should list all available curriculum activities', async () => {});
+
     it('should list all available activities for the specified curriculum', async () => {
       const curriculumId = 1;
       const curriculumActivitiesList: CurriculumActivity[] = [
@@ -333,9 +336,7 @@ describe('programsService', () => {
 
   // TODO: implement test
   describe('listProgramsWithActivities', () => {
-    it('should list all available programs including their activities', async (): Promise<void> => {
-      return null;
-    });
+    it('should list all available programs including their activities', async () => {});
   });
 
   describe('findProgramWithActivities', () => {
