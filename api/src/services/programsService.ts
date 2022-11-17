@@ -124,8 +124,6 @@ export const listProgramActivities = async (
     }
   );
 
-  console.log('programActivities being sent back: ', programActivities);
-
   return programActivities;
 };
 

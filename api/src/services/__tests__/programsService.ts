@@ -451,7 +451,7 @@ describe('programsService', () => {
       // listCurriculumActivities
       mockQuery(
         'select * from `activities` where `curriculum_id` = ?',
-        [curriculumId, 1],
+        [curriculumId],
         curriculumActivitiesList
       );
 
