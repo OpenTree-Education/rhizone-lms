@@ -30,8 +30,8 @@ export const findProgram = (programId: number): Promise<Program> => {
 };
 
 /**
- * Return a list of curriculum activities that match the given curriculum id
- * @param {number} curriculumId - The given curriculum id
+ * Returns the curriculum activities associated with an optionally specified curriculum ID. If ID is not specified, returns all curiculum activities.
+ * @param {number} curriculumId - optional ID for a specified curriculum
  * @returns {CurriculumActivity[]} - An array of curriculum activities
  */
 export const listCurriculumActivities = (
