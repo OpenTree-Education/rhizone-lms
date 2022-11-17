@@ -70,10 +70,22 @@ export const listProgramActivities = async (
   const curriculumActivities = await listCurriculumActivities(
     program.curriculum_id
   );
-  const activityTypes = await db<ActivityType>('actitivity_types');
-  const programActivities: ProgramActivity[] = [];
+  const activityTypes = await db<ActivityType>('activity_types');
+  const programActivities: ProgramActivity[] = curriculumActivities.map((obj) => {
+    
+    const findActivityType = activityTypes.find((activity) => obj.activity_type_id === activity.id)
 
-  // TODO: manipulation here
+    return {
+      title: obj.title,
+      description_text: obj.description_text,
+      program_id: programId,
+      curriculum_activity_id: obj.id,
+      activity_type: findActivityType.title,
+      start_time: new Date(obj.start_time),
+      end_time: new Date(obj.end_time),
+      duration: obj.duration,
+    }
+  })
 
   return programActivities;
 };
