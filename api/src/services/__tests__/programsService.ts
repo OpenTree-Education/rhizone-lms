@@ -307,8 +307,32 @@ describe('programsService', () => {
         },
       ];
 
-      // TODO: activityTypes List
-      let activityTypesList: ActivityType[];
+      let activityTypesList: ActivityType[] = [
+        {
+          id: 1, 
+          title: 'class', 
+          created_at: '2022-11-15 01:23:45', 
+          updated_at: '2022-11-15 01:23:45'
+        },
+        {
+          id: 2, 
+          title: 'assignment', 
+          created_at: '2022-11-15 01:23:45', 
+          updated_at: '2022-11-15 01:23:45'
+        },
+        {
+          id: 3, 
+          title: 'standup', 
+          created_at: '2022-11-15 01:23:45', 
+          updated_at: '2022-11-15 01:23:45'
+        },
+        {
+          id: 4, 
+          title: 'retrospective', 
+          created_at: '2022-11-15 01:23:45', 
+          updated_at: '2022-11-15 01:23:45'
+        }
+      ];
 
       // findProgram
       mockQuery(
@@ -432,8 +456,32 @@ describe('programsService', () => {
         },
       ];
 
-      // TODO: activityTypes List
-      let activityTypesList: ActivityType[];
+      let activityTypesList: ActivityType[] = [
+        {
+          id: 1, 
+          title: 'class', 
+          created_at: '2022-11-15 01:23:45', 
+          updated_at: '2022-11-15 01:23:45'
+        },
+        {
+          id: 2, 
+          title: 'assignment', 
+          created_at: '2022-11-15 01:23:45', 
+          updated_at: '2022-11-15 01:23:45'
+        },
+        {
+          id: 3, 
+          title: 'standup', 
+          created_at: '2022-11-15 01:23:45', 
+          updated_at: '2022-11-15 01:23:45'
+        },
+        {
+          id: 4, 
+          title: 'retrospective', 
+          created_at: '2022-11-15 01:23:45', 
+          updated_at: '2022-11-15 01:23:45'
+        }
+      ];
 
       const programWithActivities = program as ProgramWithActivities;
       programWithActivities.activities = programActivitiesList;
