@@ -30,8 +30,8 @@ export const findProgram = (programId: number): Promise<Program> => {
 };
 
 /**
- * Returns the curriculum activities associated with an optionally specified curriculum ID. If ID is not specified, returns all curiculum activities.
- * @param {number} curriculumId - optional ID for a specified curriculum
+ * Return a list of curriculum activities that match the given curriculum id
+ * @param {number} curriculumId - The given curriculum id
  * @returns {CurriculumActivity[]} - An array of curriculum activities
  */
 export const listCurriculumActivities = (
@@ -78,7 +78,11 @@ export const listProgramActivities = async (
   return programActivities;
 };
 
-// TODO: function header
+/**
+ * Get an object of the program with acticity property which is a list of activities with specified program ID
+ * @param {number} programId - the id for the unique program
+ * @returns  {ProgramWithActivities }  - a specified program with an array of activities
+ */
 export const findProgramWithActivities = (
   programId: number
 ): Promise<ProgramWithActivities> => {
@@ -91,7 +95,10 @@ export const findProgramWithActivities = (
   );
 };
 
-// TODO: function header
+/**
+ * Get all programs with acticity property which is a list of activities
+ * @returns {ProgramWithActivities[]} - an array contains all programs including their activities
+ */
 export const listProgramsWithActivities = (): Promise<
   ProgramWithActivities[]
 > => {
