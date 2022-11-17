@@ -62,7 +62,11 @@ export const findCurriculumActivity = (
   return db<CurriculumActivity>('activities').first().where('id', activityId);
 };
 
-// TODO: function header
+/**
+ * 
+ * @param {number} programId - The program ID for the specified program
+ * @returns {programActivities} - An array of program activities
+ */
 export const listProgramActivities = async (
   programId: number
 ): Promise<ProgramActivity[]> => {
@@ -71,19 +75,19 @@ export const listProgramActivities = async (
     program.curriculum_id
   );
   const activityTypes = await db<ActivityType>('activity_types');
-  const programActivities: ProgramActivity[] = curriculumActivities.map((obj) => {
+  const programActivities: ProgramActivity[] = curriculumActivities.map((activity) => {
     
-    const findActivityType = activityTypes.find((activity) => obj.activity_type_id === activity.id)
+    const findActivityType = activityTypes.find((element) => activity.activity_type_id === element.id)
 
     return {
-      title: obj.title,
-      description_text: obj.description_text,
+      title: activity.title,
+      description_text: activity.description_text,
       program_id: programId,
-      curriculum_activity_id: obj.id,
+      curriculum_activity_id: activity.id,
       activity_type: findActivityType.title,
-      start_time: new Date(obj.start_time),
-      end_time: new Date(obj.end_time),
-      duration: obj.duration,
+      start_time: new Date(activity.start_time),
+      end_time: new Date(activity.end_time),
+      duration: activity.duration,
     }
   })
 
