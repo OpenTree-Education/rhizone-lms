@@ -62,7 +62,11 @@ export const findCurriculumActivity = (
   return db<CurriculumActivity>('activities').first().where('id', activityId);
 };
 
-// TODO: function header
+/**
+ * 
+ * @param {number} programId - The program ID for the specified program
+ * @returns {programActivities} - An array of program activities
+ */
 export const listProgramActivities = async (
   programId: number
 ): Promise<ProgramActivity[]> => {
@@ -70,15 +74,31 @@ export const listProgramActivities = async (
   const curriculumActivities = await listCurriculumActivities(
     program.curriculum_id
   );
-  const activityTypes = await db<ActivityType>('actitivity_types');
-  const programActivities: ProgramActivity[] = [];
+  const activityTypes = await db<ActivityType>('activity_types');
+  const programActivities: ProgramActivity[] = curriculumActivities.map((activity) => {
+    
+    const findActivityType = activityTypes.find((element) => activity.activity_type_id === element.id)
 
-  // TODO: manipulation here
+    return {
+      title: activity.title,
+      description_text: activity.description_text,
+      program_id: programId,
+      curriculum_activity_id: activity.id,
+      activity_type: findActivityType.title,
+      start_time: new Date(activity.start_time),
+      end_time: new Date(activity.end_time),
+      duration: activity.duration,
+    }
+  })
 
   return programActivities;
 };
 
-// TODO: function header
+/**
+ * Get an object of the program with acticity property which is a list of activities with specified program ID
+ * @param {number} programId - the id for the unique program
+ * @returns  {ProgramWithActivities }  - a specified program with an array of activities
+ */
 export const findProgramWithActivities = (
   programId: number
 ): Promise<ProgramWithActivities> => {
@@ -91,7 +111,10 @@ export const findProgramWithActivities = (
   );
 };
 
-// TODO: function header
+/**
+ * Get all programs with acticity property which is a list of activities
+ * @returns {ProgramWithActivities[]} - an array contains all programs including their activities
+ */
 export const listProgramsWithActivities = (): Promise<
   ProgramWithActivities[]
 > => {
