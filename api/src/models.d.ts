@@ -38,11 +38,17 @@ export interface ProgramActivity {
   program_id: number;
   curriculum_activity_id: number;
   activity_type: string;
-  start_time?: Date;
-  end_time?: Date;
-  duration?: number;
+  start_time: Date;
+  end_time: Date;
+  duration: number; // if duration is '0', it's an all-day event
 }
 
 export interface ProgramWithActivities extends Program {
   activities: ProgramActivity[];
+}
+
+// TODO: define ActivityType structure
+export interface ActivityType {
+  id: number;
+  // TODO: fill the rest in here.
 }
