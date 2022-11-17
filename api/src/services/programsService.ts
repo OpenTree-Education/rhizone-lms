@@ -63,7 +63,7 @@ export const findCurriculumActivity = (
 };
 
 /**
- * 
+ *
  * @param {number} programId - The program ID for the specified program
  * @returns {programActivities} - An array of program activities
  */
@@ -74,22 +74,57 @@ export const listProgramActivities = async (
   const curriculumActivities = await listCurriculumActivities(
     program.curriculum_id
   );
-  const activityTypes = await db<ActivityType>('activity_types');
-  const programActivities: ProgramActivity[] = curriculumActivities.map((activity) => {
-    
-    const findActivityType = activityTypes.find((element) => activity.activity_type_id === element.id)
 
-    return {
-      title: activity.title,
-      description_text: activity.description_text,
-      program_id: programId,
-      curriculum_activity_id: activity.id,
-      activity_type: findActivityType.title,
-      start_time: new Date(activity.start_time),
-      end_time: new Date(activity.end_time),
-      duration: activity.duration,
+  const calculateProgramActivityDate = (week: number, day: number) => {
+    const programActivityDate = new Date(program.start_date);
+    const offsetDays = (week - 1) * 7 + (day - 1);
+
+    programActivityDate.setDate(programActivityDate.getDate() + offsetDays);
+
+    return programActivityDate.toDateString();
+  };
+
+  const activityTypes = await db<ActivityType>('activity_types');
+  const programActivities: ProgramActivity[] = curriculumActivities.map(
+    activity => {
+      const findActivityType = activityTypes.find(
+        element => activity.activity_type_id === element.id
+      );
+
+      const activityDate = calculateProgramActivityDate(
+        activity.curriculum_week,
+        activity.curriculum_day
+      );
+      let startTime, endTime, duration;
+
+      // If it's an all-day activity, let's set the time of the activity to midnight and the duration to 0
+      if (activity.duration === null || activity.duration === 0) {
+        startTime = new Date(`${activityDate} 00:00:00`);
+        endTime = new Date(`${activityDate} 00:00:00`);
+        duration = 0;
+      }
+
+      // However, if we specified a start and end time for the activity, use those instead
+      else {
+        startTime = new Date(`${activityDate} ${activity.start_time}`);
+        endTime = new Date(`${activityDate} ${activity.end_time}`);
+        duration = activity.duration;
+      }
+
+      return {
+        title: activity.title,
+        description_text: activity.description_text,
+        program_id: programId,
+        curriculum_activity_id: activity.id,
+        activity_type: findActivityType.title,
+        start_time: startTime,
+        end_time: endTime,
+        duration: duration,
+      };
     }
-  })
+  );
+
+  console.log('programActivities being sent back: ', programActivities);
 
   return programActivities;
 };
