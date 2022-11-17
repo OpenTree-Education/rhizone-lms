@@ -93,9 +93,24 @@ describe('programsService', () => {
       expect(await listPrograms()).toEqual(programsList);
     });
 
-    // TODO: finish this test
     it('should list all available programs with a given curriculum ID', async () => {
       const curriculumId = 2;
+      const programsList: Program[] = [{
+        id: 2,
+        title: 'Cohort 5',
+        start_date: '2022-10-24',
+        end_date: '2022-12-16',
+        principal_id: 2,
+        curriculum_id: 2,
+        created_at: '2022-11-15 01:23:45',
+        updated_at:'2022-11-15 01:23:45'
+      }];
+      mockQuery(
+        'select * from `programs` where `id` = ?', 
+        [curriculumId], 
+        programsList
+      );
+      expect(await listPrograms(curriculumId)).toEqual(programsList);
     });
   });
 
@@ -452,7 +467,9 @@ describe('programsService', () => {
 
   // TODO: implement test
   describe('listProgramsWithActivities', () => {
-    it('should list all available programs including their activities', async () => {});
+    it('should list all available programs including their activities', async () => {
+
+    });
   });
 
   describe('findProgramWithActivities', () => {
