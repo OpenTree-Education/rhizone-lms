@@ -93,9 +93,24 @@ describe('programsService', () => {
       expect(await listPrograms()).toEqual(programsList);
     });
 
-    // TODO: finish this test
     it('should list all available programs with a given curriculum ID', async () => {
       const curriculumId = 2;
+      const programsList: Program[] = [{
+        id: 2,
+        title: 'Cohort 5',
+        start_date: '2022-10-24',
+        end_date: '2022-12-16',
+        principal_id: 2,
+        curriculum_id: 2,
+        created_at: '2022-11-15 01:23:45',
+        updated_at:'2022-11-15 01:23:45'
+      }];
+      mockQuery(
+        'select * from `programs` where `id` = ?', 
+        [curriculumId], 
+        programsList
+      );
+      expect(await listPrograms(curriculumId)).toEqual(programsList);
     });
   });
 
@@ -122,8 +137,100 @@ describe('programsService', () => {
   });
 
   describe('listCurriculumActivities', () => {
-    // TODO: implement test
-    it('should list all available curriculum activities', async () => {});
+    it('should list all available curriculum activities', async () => {
+      const curriculumActivitiesList: CurriculumActivity[] = [
+        {
+          id: 1,
+          title: 'Morning Standup',
+          description_text: '',
+          curriculum_week: 1,
+          curriculum_day: 1,
+          start_time: '10:00:00',
+          end_time: '11:00:00',
+          duration: 60,
+          activity_type_id: 3,
+          curriculum_id: 1,
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
+        },
+        {
+          id: 2,
+          title: 'Self-introduction',
+          description_text: 'Get to know each other.',
+          curriculum_week: 1,
+          curriculum_day: 1,
+          start_time: '11:10:00',
+          end_time: '12:00:00',
+          duration: 50,
+          activity_type_id: 1,
+          curriculum_id: 1,
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
+        },
+        {
+          id: 3,
+          title: 'Self-assessment',
+          description_text: '',
+          curriculum_week: 1,
+          curriculum_day: 2,
+          start_time: null,
+          end_time: null,
+          duration: null,
+          activity_type_id: 2,
+          curriculum_id: 1,
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
+        },
+        {
+          id: 4,
+          title: 'Morning Standup',
+          description_text: '',
+          curriculum_week: 1,
+          curriculum_day: 1,
+          start_time: '10:00:00',
+          end_time: '11:00:00',
+          duration: 60,
+          activity_type_id: 3,
+          curriculum_id: 2,
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
+        },
+        {
+          id: 5,
+          title: 'Self-introduction',
+          description_text: 'Get to know each other.',
+          curriculum_week: 1,
+          curriculum_day: 1,
+          start_time: '11:10:00',
+          end_time: '12:00:00',
+          duration: 50,
+          activity_type_id: 1,
+          curriculum_id: 2,
+          created_at: '2022-11-15 01:23:45"',
+          updated_at: '2022-11-15 01:23:45',
+        },
+        {
+          id: 6,
+          title: 'Self-assessment',
+          description_text: '',
+          curriculum_week: 1,
+          curriculum_day: 2,
+          start_time: null,
+          end_time: null,
+          duration: null,
+          activity_type_id: 2,
+          curriculum_id: 2,
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
+        },
+      ];
+      mockQuery(
+        'select * from `activities`',
+        [],
+        curriculumActivitiesList
+      );
+      expect(await listCurriculumActivities()).toEqual(curriculumActivitiesList);
+    });
 
     it('should list all available activities for the specified curriculum', async () => {
       const curriculumId = 1;
@@ -309,27 +416,27 @@ describe('programsService', () => {
 
       let activityTypesList: ActivityType[] = [
         {
-          id: 1, 
-          title: 'class', 
-          created_at: '2022-11-15 01:23:45', 
+          id: 1,
+          title: 'class',
+          created_at: '2022-11-15 01:23:45',
           updated_at: '2022-11-15 01:23:45'
         },
         {
-          id: 2, 
-          title: 'assignment', 
-          created_at: '2022-11-15 01:23:45', 
+          id: 2,
+          title: 'assignment',
+          created_at: '2022-11-15 01:23:45',
           updated_at: '2022-11-15 01:23:45'
         },
         {
-          id: 3, 
-          title: 'standup', 
-          created_at: '2022-11-15 01:23:45', 
+          id: 3,
+          title: 'standup',
+          created_at: '2022-11-15 01:23:45',
           updated_at: '2022-11-15 01:23:45'
         },
         {
-          id: 4, 
-          title: 'retrospective', 
-          created_at: '2022-11-15 01:23:45', 
+          id: 4,
+          title: 'retrospective',
+          created_at: '2022-11-15 01:23:45',
           updated_at: '2022-11-15 01:23:45'
         }
       ];
@@ -358,9 +465,350 @@ describe('programsService', () => {
     });
   });
 
-  // TODO: implement test
   describe('listProgramsWithActivities', () => {
-    it('should list all available programs including their activities', async () => {});
+    it('should list all available programs including their activities', async () => {
+       
+      const programsList = [
+        {
+          id: 1,
+          principal_id: 2,
+          curriculum_id: 1,
+          title: 'Cohort 4',
+          start_date: '2022-10-24',
+          end_date: '2022-12-16',
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
+
+        },
+        {
+          id: 2,
+          principal_id: 2,
+          curriculum_id: 2,
+          title: 'Cohort 5',
+          start_date: '2022-10-24',
+          end_date: '2022-12-16',
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
+        },
+        {
+          id: 3,
+          principal_id: 2,
+          curriculum_id: 1,
+          title: 'Cohort 6',
+          start_date: '2023-01-02',
+          end_date: '2023-02-24',
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
+        },
+      ]
+
+      const activityTypesList: ActivityType[] = [
+        {
+          id: 1, 
+          title: 'class', 
+          created_at: '2022-11-15 01:23:45', 
+          updated_at: '2022-11-15 01:23:45'
+        },
+        {
+          id: 2, 
+          title: 'assignment', 
+          created_at: '2022-11-15 01:23:45', 
+          updated_at: '2022-11-15 01:23:45'
+        },
+        {
+          id: 3, 
+          title: 'standup', 
+          created_at: '2022-11-15 01:23:45', 
+          updated_at: '2022-11-15 01:23:45'
+        },
+        {
+          id: 4, 
+          title: 'retrospective', 
+          created_at: '2022-11-15 01:23:45', 
+          updated_at: '2022-11-15 01:23:45'
+        }
+      ];
+
+      const curriculumActivitiesListOne: CurriculumActivity[] = [
+        {
+          id: 1,
+          title: 'Morning Standup',
+          description_text: '',
+          curriculum_week: 1,
+          curriculum_day: 1,
+          start_time: '10:00:00',
+          end_time: '11:00:00',
+          duration: 60,
+          activity_type_id: 3,
+          curriculum_id: 1,
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
+        },
+        {
+          id: 2,
+          title: 'Self-introduction',
+          description_text: 'Get to know each other.',
+          curriculum_week: 1,
+          curriculum_day: 1,
+          start_time: '11:10:00',
+          end_time: '12:00:00',
+          duration: 50,
+          activity_type_id: 1,
+          curriculum_id: 1,
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
+        },
+        {
+          id: 3,
+          title: 'Self-assessment',
+          description_text: '',
+          curriculum_week: 1,
+          curriculum_day: 2,
+          start_time: null,
+          end_time: null,
+          duration: null,
+          activity_type_id: 2,
+          curriculum_id: 1,
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
+        },
+      ];
+
+      const curriculumActivitiesListTwo: CurriculumActivity[] = [
+        {
+          id: 4,
+          title: 'Morning Standup',
+          description_text: '',
+          curriculum_week: 1,
+          curriculum_day: 1,
+          start_time: '10:00:00',
+          end_time: '11:00:00',
+          duration: 60,
+          activity_type_id: 3,
+          curriculum_id: 2,
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
+        },
+        {
+          id: 5,
+          title: 'Self-introduction',
+          description_text: 'Get to know each other.',
+          curriculum_week: 1,
+          curriculum_day: 1,
+          start_time: '11:10:00',
+          end_time: '12:00:00',
+          duration: 50,
+          activity_type_id: 1,
+          curriculum_id: 2,
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
+        },
+        {
+          id: 6,
+          title: 'Self-assessment',
+          description_text: '',
+          curriculum_week: 1,
+          curriculum_day: 2,
+          start_time: null,
+          end_time: null,
+          duration: null,
+          activity_type_id: 2,
+          curriculum_id: 2,
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
+        },
+      ];
+      const programActivitiesList = [
+        [
+          //Program 1's activities (Curriculum 1)
+          {
+            title: 'Morning Standup',
+            description_text: '',
+            program_id: 1,
+            curriculum_activity_id: 1,
+            activity_type: 'standup',
+            start_time: new Date('2022-10-24 10:00:00'),
+            end_time: new Date('2022-10-24 11:00:00'),
+            duration: 60,
+          },
+          {
+            title: 'Self-introduction',
+            description_text: 'Get to know each other.',
+            program_id: 1,
+            curriculum_activity_id: 2,
+            activity_type: 'class',
+            start_time: new Date('2022-10-24 11:10:00'),
+            end_time: new Date('2022-10-24 12:00:00'),
+            duration: 50,
+          },
+          {
+            title: 'Self-assessment',
+            description_text: '',
+            program_id: 1,
+            curriculum_activity_id: 3,
+            activity_type: 'assignment',
+            start_time: new Date('2022-10-25 00:00:00'),
+            end_time: new Date('2022-10-25 00:00:00'),
+            duration: 0,
+          },
+        ],
+        //Program 2's activities (Curriculum 2)
+        [
+          {
+            title: 'Morning Standup',
+            description_text: '',
+            program_id: 2,
+            curriculum_activity_id: 4,
+            activity_type: 'standup',
+            start_time: new Date('2022-10-24 10:00:00'),
+            end_time: new Date('2022-10-24 11:00:00'),
+            duration: 60,
+          },
+          {
+            title: 'Self-introduction',
+            description_text: 'Get to know each other.',
+            program_id: 2,
+            curriculum_activity_id: 5,
+            activity_type: 'class',
+            start_time: new Date('2022-10-24 11:10:00'),
+            end_time: new Date('2022-10-24 12:00:00'),
+            duration: 50,
+          },
+          {
+            title: 'Self-assessment',
+            description_text: '',
+            program_id: 2,
+            curriculum_activity_id: 6,
+            activity_type: 'assignment',
+            start_time: new Date('2022-10-25 00:00:00'),
+            end_time: new Date('2022-10-25 00:00:00'),
+            duration: 0,
+          },
+        ],
+        //Program 3's activities (Curriculum 1)
+        [
+          {
+            title: 'Morning Standup',
+            description_text: '',
+            program_id: 3,
+            curriculum_activity_id: 1,
+            activity_type: 'standup',
+            start_time: new Date('2023-01-02 10:00:00'),
+            end_time: new Date('2023-01-02 11:00:00'),
+            duration: 60,
+          },
+          {
+            title: 'Self-introduction',
+            description_text: 'Get to know each other.',
+            program_id: 3,
+            curriculum_activity_id: 2,
+            activity_type: 'class',
+            start_time: new Date('2023-01-02 11:10:00'),
+            end_time: new Date('2023-01-02 12:00:00'),
+            duration: 50,
+          },
+          {
+            title: 'Self-assessment',
+            description_text: '',
+            program_id: 3,
+            curriculum_activity_id: 3,
+            activity_type: 'assignment',
+            start_time: new Date('2023-01-03 00:00:00'),
+            end_time: new Date('2023-01-03 00:00:00'),
+            duration: 0,
+          },
+        ]
+      ]
+
+      const programsWithActivitiesList: ProgramWithActivities[] = [];
+      
+      programsList.forEach((program, idx) => {
+        const programWithActivities = program as ProgramWithActivities
+        programWithActivities.activities = programActivitiesList[idx]
+        programsWithActivitiesList.push(programWithActivities)
+      })
+
+      // List All Programs
+      mockQuery('select * from `programs`', [], programsList);
+
+      // Program 1
+      // findProgram
+      mockQuery(
+        'select * from `programs` where `id` = ? limit ?',
+        [programsList[0].id, 1],
+        programsList[0]
+      );
+
+      // findProgram
+      mockQuery(
+        'select * from `programs` where `id` = ? limit ?',
+        [programsList[0].id, 1],
+        programsList[0]
+      );
+
+      // listCurriculumActivities
+      mockQuery(
+        'select * from `activities` where `curriculum_id` = ?',
+        [programsList[0].curriculum_id],
+        curriculumActivitiesListOne
+      );
+
+      // activityTypes
+      mockQuery('select * from `activity_types`', [], activityTypesList);
+      
+      // Program 2
+      // findProgram
+      mockQuery(
+        'select * from `programs` where `id` = ? limit ?',
+        [programsList[1].id, 1],
+        programsList[1]
+      );
+
+      //findProgram
+      mockQuery(
+        'select * from `programs` where `id` = ? limit ?',
+        [programsList[1].id, 1],
+        programsList[1]
+      );
+
+      //listCurriculumActivities
+      mockQuery(
+        'select * from `activities` where `curriculum_id` = ?',
+        [programsList[1].curriculum_id],
+        curriculumActivitiesListTwo
+      );
+
+      // activityTypes
+      mockQuery('select * from `activity_types`', [], activityTypesList);
+    
+      // Program 3
+      // findProgram
+      mockQuery(
+        'select * from `programs` where `id` = ? limit ?',
+        [programsList[2].id, 1],
+        programsList[2]
+      );
+
+      // findProgram
+      mockQuery(
+        'select * from `programs` where `id` = ? limit ?',
+        [programsList[2].id, 1],
+        programsList[2]
+      );
+
+      // listCurriculumActivities
+      mockQuery(
+        'select * from `activities` where `curriculum_id` = ?',
+        [programsList[2].curriculum_id],
+        curriculumActivitiesListOne
+      );
+
+      // activityTypes
+      mockQuery('select * from `activity_types`', [], activityTypesList);
+      
+      expect(await listProgramsWithActivities()).toEqual(programsWithActivitiesList);
+
+    });
   });
 
   describe('findProgramWithActivities', () => {
@@ -458,27 +906,27 @@ describe('programsService', () => {
 
       let activityTypesList: ActivityType[] = [
         {
-          id: 1, 
-          title: 'class', 
-          created_at: '2022-11-15 01:23:45', 
+          id: 1,
+          title: 'class',
+          created_at: '2022-11-15 01:23:45',
           updated_at: '2022-11-15 01:23:45'
         },
         {
-          id: 2, 
-          title: 'assignment', 
-          created_at: '2022-11-15 01:23:45', 
+          id: 2,
+          title: 'assignment',
+          created_at: '2022-11-15 01:23:45',
           updated_at: '2022-11-15 01:23:45'
         },
         {
-          id: 3, 
-          title: 'standup', 
-          created_at: '2022-11-15 01:23:45', 
+          id: 3,
+          title: 'standup',
+          created_at: '2022-11-15 01:23:45',
           updated_at: '2022-11-15 01:23:45'
         },
         {
-          id: 4, 
-          title: 'retrospective', 
-          created_at: '2022-11-15 01:23:45', 
+          id: 4,
+          title: 'retrospective',
+          created_at: '2022-11-15 01:23:45',
           updated_at: '2022-11-15 01:23:45'
         }
       ];
