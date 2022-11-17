@@ -95,19 +95,21 @@ describe('programsService', () => {
 
     it('should list all available programs with a given curriculum ID', async () => {
       const curriculumId = 2;
-      const programsList: Program[] = [{
-        id: 2,
-        title: 'Cohort 5',
-        start_date: '2022-10-24',
-        end_date: '2022-12-16',
-        principal_id: 2,
-        curriculum_id: 2,
-        created_at: '2022-11-15 01:23:45',
-        updated_at:'2022-11-15 01:23:45'
-      }];
+      const programsList: Program[] = [
+        {
+          id: 2,
+          title: 'Cohort 5',
+          start_date: '2022-10-24',
+          end_date: '2022-12-16',
+          principal_id: 2,
+          curriculum_id: 2,
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
+        },
+      ];
       mockQuery(
-        'select * from `programs` where `id` = ?', 
-        [curriculumId], 
+        'select * from `programs` where `id` = ?',
+        [curriculumId],
         programsList
       );
       expect(await listPrograms(curriculumId)).toEqual(programsList);
@@ -224,12 +226,10 @@ describe('programsService', () => {
           updated_at: '2022-11-15 01:23:45',
         },
       ];
-      mockQuery(
-        'select * from `activities`',
-        [],
+      mockQuery('select * from `activities`', [], curriculumActivitiesList);
+      expect(await listCurriculumActivities()).toEqual(
         curriculumActivitiesList
       );
-      expect(await listCurriculumActivities()).toEqual(curriculumActivitiesList);
     });
 
     it('should list all available activities for the specified curriculum', async () => {
@@ -414,31 +414,31 @@ describe('programsService', () => {
         },
       ];
 
-      let activityTypesList: ActivityType[] = [
+      const activityTypesList: ActivityType[] = [
         {
           id: 1,
           title: 'class',
           created_at: '2022-11-15 01:23:45',
-          updated_at: '2022-11-15 01:23:45'
+          updated_at: '2022-11-15 01:23:45',
         },
         {
           id: 2,
           title: 'assignment',
           created_at: '2022-11-15 01:23:45',
-          updated_at: '2022-11-15 01:23:45'
+          updated_at: '2022-11-15 01:23:45',
         },
         {
           id: 3,
           title: 'standup',
           created_at: '2022-11-15 01:23:45',
-          updated_at: '2022-11-15 01:23:45'
+          updated_at: '2022-11-15 01:23:45',
         },
         {
           id: 4,
           title: 'retrospective',
           created_at: '2022-11-15 01:23:45',
-          updated_at: '2022-11-15 01:23:45'
-        }
+          updated_at: '2022-11-15 01:23:45',
+        },
       ];
 
       // findProgram
@@ -467,7 +467,6 @@ describe('programsService', () => {
 
   describe('listProgramsWithActivities', () => {
     it('should list all available programs including their activities', async () => {
-       
       const programsList = [
         {
           id: 1,
@@ -478,7 +477,6 @@ describe('programsService', () => {
           end_date: '2022-12-16',
           created_at: '2022-11-15 01:23:45',
           updated_at: '2022-11-15 01:23:45',
-
         },
         {
           id: 2,
@@ -500,33 +498,33 @@ describe('programsService', () => {
           created_at: '2022-11-15 01:23:45',
           updated_at: '2022-11-15 01:23:45',
         },
-      ]
+      ];
 
       const activityTypesList: ActivityType[] = [
         {
-          id: 1, 
-          title: 'class', 
-          created_at: '2022-11-15 01:23:45', 
-          updated_at: '2022-11-15 01:23:45'
+          id: 1,
+          title: 'class',
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
         },
         {
-          id: 2, 
-          title: 'assignment', 
-          created_at: '2022-11-15 01:23:45', 
-          updated_at: '2022-11-15 01:23:45'
+          id: 2,
+          title: 'assignment',
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
         },
         {
-          id: 3, 
-          title: 'standup', 
-          created_at: '2022-11-15 01:23:45', 
-          updated_at: '2022-11-15 01:23:45'
+          id: 3,
+          title: 'standup',
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
         },
         {
-          id: 4, 
-          title: 'retrospective', 
-          created_at: '2022-11-15 01:23:45', 
-          updated_at: '2022-11-15 01:23:45'
-        }
+          id: 4,
+          title: 'retrospective',
+          created_at: '2022-11-15 01:23:45',
+          updated_at: '2022-11-15 01:23:45',
+        },
       ];
 
       const curriculumActivitiesListOne: CurriculumActivity[] = [
@@ -717,16 +715,16 @@ describe('programsService', () => {
             end_time: new Date('2023-01-03 00:00:00'),
             duration: 0,
           },
-        ]
-      ]
+        ],
+      ];
 
       const programsWithActivitiesList: ProgramWithActivities[] = [];
-      
+
       programsList.forEach((program, idx) => {
-        const programWithActivities = program as ProgramWithActivities
-        programWithActivities.activities = programActivitiesList[idx]
-        programsWithActivitiesList.push(programWithActivities)
-      })
+        const programWithActivities = program as ProgramWithActivities;
+        programWithActivities.activities = programActivitiesList[idx];
+        programsWithActivitiesList.push(programWithActivities);
+      });
 
       // List All Programs
       mockQuery('select * from `programs`', [], programsList);
@@ -755,7 +753,7 @@ describe('programsService', () => {
 
       // activityTypes
       mockQuery('select * from `activity_types`', [], activityTypesList);
-      
+
       // Program 2
       // findProgram
       mockQuery(
@@ -780,7 +778,7 @@ describe('programsService', () => {
 
       // activityTypes
       mockQuery('select * from `activity_types`', [], activityTypesList);
-    
+
       // Program 3
       // findProgram
       mockQuery(
@@ -805,9 +803,10 @@ describe('programsService', () => {
 
       // activityTypes
       mockQuery('select * from `activity_types`', [], activityTypesList);
-      
-      expect(await listProgramsWithActivities()).toEqual(programsWithActivitiesList);
 
+      expect(await listProgramsWithActivities()).toEqual(
+        programsWithActivitiesList
+      );
     });
   });
 
@@ -904,31 +903,31 @@ describe('programsService', () => {
         },
       ];
 
-      let activityTypesList: ActivityType[] = [
+      const activityTypesList: ActivityType[] = [
         {
           id: 1,
           title: 'class',
           created_at: '2022-11-15 01:23:45',
-          updated_at: '2022-11-15 01:23:45'
+          updated_at: '2022-11-15 01:23:45',
         },
         {
           id: 2,
           title: 'assignment',
           created_at: '2022-11-15 01:23:45',
-          updated_at: '2022-11-15 01:23:45'
+          updated_at: '2022-11-15 01:23:45',
         },
         {
           id: 3,
           title: 'standup',
           created_at: '2022-11-15 01:23:45',
-          updated_at: '2022-11-15 01:23:45'
+          updated_at: '2022-11-15 01:23:45',
         },
         {
           id: 4,
           title: 'retrospective',
           created_at: '2022-11-15 01:23:45',
-          updated_at: '2022-11-15 01:23:45'
-        }
+          updated_at: '2022-11-15 01:23:45',
+        },
       ];
 
       const programWithActivities = program as ProgramWithActivities;
