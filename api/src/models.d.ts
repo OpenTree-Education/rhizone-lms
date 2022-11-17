@@ -47,8 +47,9 @@ export interface ProgramWithActivities extends Program {
   activities: ProgramActivity[];
 }
 
-// TODO: define ActivityType structure
 export interface ActivityType {
   id: number;
-  // TODO: fill the rest in here.
+  title: string;
+  created_at: string;
+  updated_at: string;
 }
