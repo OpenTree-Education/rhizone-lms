@@ -3,6 +3,7 @@ export interface Program {
   title: string;
   start_date: string;
   end_date: string;
+  time_zone: string;
   principal_id: number;
   curriculum_id: number;
   created_at: string;
@@ -38,8 +39,8 @@ export interface ProgramActivity {
   program_id: number;
   curriculum_activity_id: number;
   activity_type: string;
-  start_time: Date | string;
-  end_time: Date | string;
+  start_time: string;
+  end_time: string;
   duration: number; // if duration is '0', it's an all-day event
 }
 
