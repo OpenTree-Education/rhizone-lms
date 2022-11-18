@@ -38,8 +38,8 @@ export interface ProgramActivity {
   program_id: number;
   curriculum_activity_id: number;
   activity_type: string;
-  start_time: Date;
-  end_time: Date;
+  start_time: Date | string;
+  end_time: Date | string;
   duration: number; // if duration is '0', it's an all-day event
 }
 
