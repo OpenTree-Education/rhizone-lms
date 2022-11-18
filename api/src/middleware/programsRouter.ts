@@ -5,14 +5,9 @@ import { findProgramWithActivities } from '../services/programsService';
 
 const programsRouter = Router();
 
-programsRouter.get('/', async (req, res, next) => {
+programsRouter.get('/', async (req, res) => {
   const firstProgramId = 1;
-  try {
-    res.json(itemEnvelope(await findProgramWithActivities(firstProgramId)));
-  } catch (err) {
-    next(err);
-    return;
-  }
+  res.json(itemEnvelope(await findProgramWithActivities(firstProgramId)));
 });
 
 export default programsRouter;
