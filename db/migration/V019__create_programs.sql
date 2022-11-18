@@ -14,6 +14,7 @@ CREATE TABLE programs (
   title VARCHAR(255) NOT NULL,
   start_date DATE NOT NULL,
   end_date DATE NOT NULL,
+  time_zone VARCHAR(255) NOT NULL DEFAULT 'UTC',
   principal_id BIGINT NOT NULL,
   curriculum_id BIGINT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
