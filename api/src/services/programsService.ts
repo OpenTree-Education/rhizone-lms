@@ -146,19 +146,3 @@ export const findProgramWithActivities = (
     }
   );
 };
-
-/**
- * Get all programs with acticity property which is a list of activities
- * @returns {ProgramWithActivities[]} - an array contains all programs including their activities
- */
-export const listProgramsWithActivities = (): Promise<
-  ProgramWithActivities[]
-> => {
-  return listPrograms().then((programs): Promise<ProgramWithActivities[]> => {
-    const promises: Promise<ProgramWithActivities>[] = [];
-    programs.forEach(program => {
-      promises.push(findProgramWithActivities(program.id));
-    });
-    return Promise.all(promises);
-  });
-};
