@@ -6,7 +6,7 @@ INSERT INTO curriculums (principal_id, title) VALUES
 SET @curriculumId = LAST_INSERT_ID();
 
 INSERT INTO programs (title, start_date, end_date, time_zone, principal_id, curriculum_id) VALUES 
-  ('Cohort 4', '2022-10-24', '2022-12-16', '-08:00', @principalId, @curriculumId);
+  ('Cohort 4', '2022-10-24', '2022-12-16', 'America/Los_Angeles', @principalId, @curriculumId);
 
 INSERT INTO activities (title, description_text, curriculum_week, curriculum_day, start_time, end_time, duration, activity_type_id, curriculum_id) VALUES
   -- Week 1: Day 1
