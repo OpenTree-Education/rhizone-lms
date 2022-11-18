@@ -110,8 +110,7 @@ export const listProgramActivities = async (
         endTime = activityDate
           .plus(Duration.fromISOTime(activity.end_time))
           .toUTC();
-        duration =
-          activity.duration || endTime.diff(startTime, 'minutes').minutes;
+        ({ duration } = activity);
       }
 
       return {
