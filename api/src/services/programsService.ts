@@ -6,6 +6,7 @@ import {
   CurriculumActivity,
   ActivityType,
 } from '../models';
+import { DateTime, Duration } from 'luxon';
 
 /**
  * Returns the programs associated with an optionally specified curriculum ID. If ID is not specified, returns all programs.
@@ -76,12 +77,9 @@ export const listProgramActivities = async (
   );
 
   const calculateProgramActivityDate = (week: number, day: number) => {
-    const programActivityDate = new Date(program.start_date);
-    const offsetDays = (week - 1) * 7 + (day);
-
-    programActivityDate.setDate(programActivityDate.getDate() + offsetDays);
-
-    return programActivityDate.toDateString();
+    return DateTime.fromISO(`${program.start_date}`, {
+      zone: program.time_zone,
+    }).plus({ weeks: week - 1, days: day - 1 });
   };
 
   const activityTypes = await db<ActivityType>('activity_types');
@@ -99,16 +97,21 @@ export const listProgramActivities = async (
 
       // If it's an all-day activity, let's set the time of the activity to midnight and the duration to 0
       if (activity.duration === null || activity.duration === 0) {
-        startTime = new Date(`${activityDate} 07:00:00Z`);
-        endTime = new Date(`${activityDate} 07:00:00Z`);
+        startTime = activityDate.toUTC();
+        endTime = activityDate.toUTC();
         duration = 0;
       }
 
       // However, if we specified a start and end time for the activity, use those instead
       else {
-        startTime = new Date(`${activityDate} ${activity.start_time}`);
-        endTime = new Date(`${activityDate} ${activity.end_time}`);
-        duration = activity.duration;
+        startTime = activityDate
+          .plus(Duration.fromISOTime(activity.start_time))
+          .toUTC();
+        endTime = activityDate
+          .plus(Duration.fromISOTime(activity.end_time))
+          .toUTC();
+        duration =
+          activity.duration || endTime.diff(startTime, 'minutes').minutes;
       }
 
       return {
@@ -117,8 +120,8 @@ export const listProgramActivities = async (
         program_id: programId,
         curriculum_activity_id: activity.id,
         activity_type: findActivityType.title,
-        start_time: startTime,
-        end_time: endTime,
+        start_time: startTime.toISO(),
+        end_time: endTime.toISO(),
         duration: duration,
       };
     }

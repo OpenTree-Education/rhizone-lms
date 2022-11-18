@@ -4,13 +4,11 @@ import {
   listCurriculumActivities,
   findCurriculumActivity,
   listProgramActivities,
-  listProgramsWithActivities,
   findProgramWithActivities,
 } from '../programsService';
 import {
   Program,
   ProgramActivity,
-  ProgramWithActivities,
   CurriculumActivity,
   ActivityType,
 } from '../../models';
@@ -65,6 +63,7 @@ describe('programsService', () => {
           title: 'Cohort 4',
           start_date: '2022-10-24',
           end_date: '2022-12-16',
+          time_zone: 'America/Los_Angeles',
           created_at: '2022-11-15 01:23:45',
           updated_at: '2022-11-15 01:23:45',
         },
@@ -75,6 +74,7 @@ describe('programsService', () => {
           title: 'Cohort 5',
           start_date: '2022-10-24',
           end_date: '2022-12-16',
+          time_zone: 'America/Los_Angeles',
           created_at: '2022-11-15 01:23:45',
           updated_at: '2022-11-15 01:23:45',
         },
@@ -85,6 +85,7 @@ describe('programsService', () => {
           title: 'Cohort 6',
           start_date: '2023-01-02',
           end_date: '2023-02-24',
+          time_zone: 'America/Los_Angeles',
           created_at: '2022-11-15 01:23:45',
           updated_at: '2022-11-15 01:23:45',
         },
@@ -101,6 +102,7 @@ describe('programsService', () => {
           title: 'Cohort 5',
           start_date: '2022-10-24',
           end_date: '2022-12-16',
+          time_zone: 'America/Los_Angeles',
           principal_id: 2,
           curriculum_id: 2,
           created_at: '2022-11-15 01:23:45',
@@ -123,6 +125,7 @@ describe('programsService', () => {
         id: 2,
         principal_id: 2,
         curriculum_id: 2,
+        time_zone: 'America/Los_Angeles',
         title: 'Cohort 5',
         start_date: '2022-10-24',
         end_date: '2022-12-16',
@@ -332,6 +335,7 @@ describe('programsService', () => {
         title: 'Cohort 5',
         start_date: '2022-10-24',
         end_date: '2022-12-16',
+        time_zone: 'America/Los_Angeles',
         created_at: '2022-11-15 01:23:45',
         updated_at: '2022-11-15 01:23:45',
       };
@@ -388,8 +392,8 @@ describe('programsService', () => {
           program_id: 2,
           curriculum_activity_id: 4,
           activity_type: 'standup',
-          start_time: new Date('2022-10-24 10:00:00'),
-          end_time: new Date('2022-10-24 11:00:00'),
+          start_time: '2022-10-24T17:00:00.000Z',
+          end_time: '2022-10-24T18:00:00.000Z',
           duration: 60,
         },
         {
@@ -398,8 +402,8 @@ describe('programsService', () => {
           program_id: 2,
           curriculum_activity_id: 5,
           activity_type: 'class',
-          start_time: new Date('2022-10-24 11:10:00'),
-          end_time: new Date('2022-10-24 12:00:00'),
+          start_time: '2022-10-24T18:10:00.000Z',
+          end_time: '2022-10-24T19:00:00.000Z',
           duration: 50,
         },
         {
@@ -408,8 +412,8 @@ describe('programsService', () => {
           program_id: 2,
           curriculum_activity_id: 6,
           activity_type: 'assignment',
-          start_time: new Date('2022-10-25 00:00:00'),
-          end_time: new Date('2022-10-25 00:00:00'),
+          start_time: '2022-10-25T07:00:00.000Z',
+          end_time: '2022-10-25T07:00:00.000Z',
           duration: 0,
         },
       ];
@@ -476,6 +480,7 @@ describe('programsService', () => {
         title: 'Cohort 5',
         start_date: '2022-10-24',
         end_date: '2022-12-16',
+        time_zone: 'America/Los_Angeles',
         created_at: '2022-11-15 01:23:45',
         updated_at: '2022-11-15 01:23:45',
       };
@@ -532,8 +537,8 @@ describe('programsService', () => {
           program_id: 2,
           curriculum_activity_id: 4,
           activity_type: 'standup',
-          start_time: new Date('2022-10-24 10:00:00'),
-          end_time: new Date('2022-10-24 11:00:00'),
+          start_time: '2022-10-24T17:00:00.000Z',
+          end_time: '2022-10-24T18:00:00.000Z',
           duration: 60,
         },
         {
@@ -542,8 +547,8 @@ describe('programsService', () => {
           program_id: 2,
           curriculum_activity_id: 5,
           activity_type: 'class',
-          start_time: new Date('2022-10-24 11:10:00'),
-          end_time: new Date('2022-10-24 12:00:00'),
+          start_time: '2022-10-24T18:10:00.000Z',
+          end_time: '2022-10-24T19:00:00.000Z',
           duration: 50,
         },
         {
@@ -552,8 +557,8 @@ describe('programsService', () => {
           program_id: 2,
           curriculum_activity_id: 6,
           activity_type: 'assignment',
-          start_time: new Date('2022-10-25 00:00:00'),
-          end_time: new Date('2022-10-25 00:00:00'),
+          start_time: '2022-10-25T07:00:00.000Z',
+          end_time: '2022-10-25T07:00:00.000Z',
           duration: 0,
         },
       ];
@@ -587,6 +592,8 @@ describe('programsService', () => {
 
       const programWithActivities = JSON.parse(JSON.stringify(program));
       programWithActivities.activities = programActivitiesList;
+
+      console.debug(`\n\n${JSON.stringify(programWithActivities)}\n\n`);
 
       // findProgram
       mockQuery(
