@@ -11,10 +11,10 @@ const Navbar = () => {
   return (
     <Grid alignItems="center" container px={3}>
       <Grid item xs>
-      <Link to="/" style={{textDecoration: 'none', color: 'black'}}>
+        <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>
           <h1>Rhizone</h1>
         </Link>
-              </Grid>
+      </Grid>
       <Grid item xs="auto">
         <IconButton sx={{ mr: 1 }} href="/calendar">
           <CalendarMonthIcon />
@@ -22,7 +22,7 @@ const Navbar = () => {
         <IconButton sx={{ mr: 1 }} onClick={openMeetingsDrawer}>
           <PeopleIcon />
         </IconButton>
-        <Button 
+        <Button
           component="a"
           href={`${process.env.REACT_APP_API_ORIGIN}/auth/logout`}
         >
