@@ -9,9 +9,11 @@ import {
 import { DateTime, Duration } from 'luxon';
 
 /**
- * Returns the programs associated with an optionally specified curriculum ID. If ID is not specified, returns all programs.
+ * Returns the programs associated with an optionally specified curriculum ID.
+ * If ID is not specified, returns all programs.
+ *
  * @param {number} curriculumId - optional ID for a specified curriculum
- * @returns {Array<Program>} - programs belonging to the curriculumId if specified, or all programs.
+ * @returns {Program[]} - all matching programs, or all programs
  */
 export const listPrograms = (curriculumId?: number): Promise<Program[]> => {
   if (curriculumId) {
@@ -23,6 +25,7 @@ export const listPrograms = (curriculumId?: number): Promise<Program[]> => {
 
 /**
  * Get the first program associated with the specified program ID.
+ *
  * @param {number} programId - The program ID for the specified program
  * @returns {Program} - The program data for the specified program ID
  */
@@ -32,6 +35,7 @@ export const findProgram = (programId: number): Promise<Program> => {
 
 /**
  * Return a list of curriculum activities that match the given curriculum id
+ *
  * @param {number} curriculumId - The given curriculum id
  * @returns {CurriculumActivity[]} - An array of curriculum activities
  */
@@ -50,8 +54,8 @@ export const listCurriculumActivities = (
 /**
  * Locate a single activity from list of curriculum activities.
  *
- * @param {number} activityId - the id for the unique activity we are looking for.
- * @returns {CurriculumActivity} - the specified activity, or null if not found.
+ * @param {number} activityId - the id for the unique activity
+ * @returns {CurriculumActivity} - the specified activity if exists
  *
  * @example
  * // Correct usage.
@@ -64,9 +68,12 @@ export const findCurriculumActivity = (
 };
 
 /**
+ * Generate the list of all program activities for a given program based on the
+ * activities associated with the program’s curriculum and the program’s start
+ * date.
  *
  * @param {number} programId - The program ID for the specified program
- * @returns {programActivities} - An array of program activities
+ * @returns {programActivity[]} - An array of program activities
  */
 export const listProgramActivities = async (
   programId: number
@@ -101,14 +108,16 @@ export const listProgramActivities = async (
 
       let startTime, endTime, duration;
 
-      // If it's an all-day activity, let's set the time of the activity to midnight and the duration to 0
+      // If it's an all-day activity, let’s set the time of the activity to
+      // midnight and the duration to 0
       if (activity.duration === null || activity.duration === 0) {
         startTime = activityDate.toUTC();
         endTime = activityDate.toUTC();
         duration = 0;
       }
 
-      // However, if we specified a start and end time for the activity, use those instead
+      // However, if we specified a start and end time for the activity, use
+      // those times and that duration instead
       else {
         startTime = activityDate
           .plus(Duration.fromISOTime(activity.start_time))
@@ -136,9 +145,12 @@ export const listProgramActivities = async (
 };
 
 /**
- * Get an object of the program with acticity property which is a list of activities with specified program ID
+ * Retrieve the details for a given program, including all program activities
+ * as a member of that program.
+ *
  * @param {number} programId - the id for the unique program
- * @returns  {ProgramWithActivities }  - a specified program with an array of activities
+ * @returns {ProgramWithActivities} - a specified program containing an array
+ *   of activities
  */
 export const findProgramWithActivities = (
   programId: number
