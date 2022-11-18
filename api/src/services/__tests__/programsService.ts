@@ -555,8 +555,6 @@ describe('programsService', () => {
       const programWithActivities = JSON.parse(JSON.stringify(program));
       programWithActivities.activities = programActivitiesList;
 
-      console.debug(`\n\n${JSON.stringify(programWithActivities)}\n\n`);
-
       // findProgram
       mockQuery(
         'select * from `programs` where `id` = ? limit ?',
