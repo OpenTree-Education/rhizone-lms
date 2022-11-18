@@ -77,9 +77,14 @@ export const listProgramActivities = async (
   );
 
   const calculateProgramActivityDate = (week: number, day: number) => {
-    return DateTime.fromISO(`${program.start_date}`, {
+    const startDateLuxon = DateTime.fromISO(program.start_date, {
       zone: program.time_zone,
-    }).plus({ weeks: week - 1, days: day - 1 });
+    });
+    const programActivityDate = startDateLuxon.plus({
+      weeks: week - 1,
+      days: day - 1,
+    });
+    return programActivityDate;
   };
 
   const activityTypes = await db<ActivityType>('activity_types');
@@ -93,6 +98,7 @@ export const listProgramActivities = async (
         activity.curriculum_week,
         activity.curriculum_day
       );
+
       let startTime, endTime, duration;
 
       // If it's an all-day activity, let's set the time of the activity to midnight and the duration to 0
