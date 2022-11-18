@@ -59,7 +59,7 @@ export const listCurriculumActivities = (
 export const findCurriculumActivity = (
   activityId: number
 ): Promise<CurriculumActivity> => {
-  return db<CurriculumActivity>('activities').first().where('id', activityId);
+  return db<CurriculumActivity>('activities').where('id', activityId).first();
 };
 
 /**
@@ -77,7 +77,7 @@ export const listProgramActivities = async (
 
   const calculateProgramActivityDate = (week: number, day: number) => {
     const programActivityDate = new Date(program.start_date);
-    const offsetDays = (week - 1) * 7 + (day - 1);
+    const offsetDays = (week - 1) * 7 + (day);
 
     programActivityDate.setDate(programActivityDate.getDate() + offsetDays);
 
@@ -99,8 +99,8 @@ export const listProgramActivities = async (
 
       // If it's an all-day activity, let's set the time of the activity to midnight and the duration to 0
       if (activity.duration === null || activity.duration === 0) {
-        startTime = new Date(`${activityDate} 00:00:00`);
-        endTime = new Date(`${activityDate} 00:00:00`);
+        startTime = new Date(`${activityDate} 07:00:00Z`);
+        endTime = new Date(`${activityDate} 07:00:00Z`);
         duration = 0;
       }
 
@@ -137,7 +137,7 @@ export const findProgramWithActivities = (
 ): Promise<ProgramWithActivities> => {
   return findProgram(programId).then(
     async (program): Promise<ProgramWithActivities> => {
-      const pwa = program as ProgramWithActivities;
+      const pwa: ProgramWithActivities = JSON.parse(JSON.stringify(program));
       pwa.activities = await listProgramActivities(program.id);
       return pwa;
     }
