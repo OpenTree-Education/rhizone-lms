@@ -1,4 +1,5 @@
 import { Container } from '@mui/material';
+import {Calendar, Event as RBCEvent} from 'react-big-calendar';
 import React from 'react';
 
 /**
@@ -59,13 +60,22 @@ const programsList = {
     }
   ]
 };
+// JSON.stringify(programsList)
 
 const CalendarPage = () => {
+ 
   return (
     <Container fixed>
-        {JSON.stringify(programsList)}
+        <Calendar 
+        localizer={localizer}
+        events={programEventsActivities}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500 }}
+        />
     </Container>
   );
 };
+
 
 export default CalendarPage;
