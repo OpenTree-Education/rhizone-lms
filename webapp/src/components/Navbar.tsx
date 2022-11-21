@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { Button, Grid, IconButton } from '@mui/material';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import PeopleIcon from '@mui/icons-material/People';
@@ -10,7 +11,9 @@ const Navbar = () => {
   return (
     <Grid alignItems="center" container px={3}>
       <Grid item xs>
-        <h1>Rhizone</h1>
+        <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>
+          <h1>Rhizone</h1>
+        </Link>
       </Grid>
       <Grid item xs="auto">
         <IconButton sx={{ mr: 1 }} href="/calendar">
