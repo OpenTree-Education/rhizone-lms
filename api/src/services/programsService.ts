@@ -9,18 +9,40 @@ import {
 import { DateTime, Duration } from 'luxon';
 
 /**
- * Returns the programs associated with an optionally specified curriculum ID.
- * If ID is not specified, returns all programs.
+ * Returns all programs in the database.
  *
- * @param {number} curriculumId - optional ID for a specified curriculum
- * @returns {Program[]} - all matching programs, or all programs
+ * @returns {Program[]} - all programs, or null if not found
  */
-export const listPrograms = (curriculumId?: number): Promise<Program[]> => {
-  if (curriculumId) {
-    return db<Program>('programs').where({ curriculum_id: curriculumId });
-  } else {
-    return db<Program>('programs');
-  }
+export const listAllPrograms = async () => {
+  const programsList = await db('programs').select(
+    'id',
+    'title',
+    'start_date',
+    'end_date',
+    'time_zone',
+    'curriculum_id'
+  );
+  return programsList;
+};
+
+/**
+ * Returns the programs associated with a specified curriculum ID.
+ *
+ * @param {number} curriculumId - ID for a specified curriculum
+ * @returns {Program[]} - all matching programs, or null if no match
+ */
+export const listProgramsForCurriculum = async (curriculumId: number) => {
+  const programsList = await db<Program>('programs')
+    .select(
+      'id',
+      'title',
+      'start_date',
+      'end_date',
+      'time_zone',
+      'curriculum_id'
+    )
+    .where({ curriculum_id: curriculumId });
+  return programsList;
 };
 
 /**
@@ -29,8 +51,18 @@ export const listPrograms = (curriculumId?: number): Promise<Program[]> => {
  * @param {number} programId - The program ID for the specified program
  * @returns {Program} - The program data for the specified program ID
  */
-export const findProgram = (programId: number): Promise<Program> => {
-  return db<Program>('programs').where('id', programId).first();
+export const findProgram = async (programId: number) => {
+  const [matchingProgram] = await db<Program>('programs')
+    .select(
+      'id',
+      'title',
+      'start_date',
+      'end_date',
+      'time_zone',
+      'curriculum_id'
+    )
+    .where('id', programId);
+  return matchingProgram;
 };
 
 /**
@@ -39,16 +71,25 @@ export const findProgram = (programId: number): Promise<Program> => {
  * @param {number} curriculumId - The given curriculum id
  * @returns {CurriculumActivity[]} - An array of curriculum activities
  */
-export const listCurriculumActivities = (
-  curriculumId?: number
-): Promise<CurriculumActivity[]> => {
-  if (curriculumId) {
-    return db<CurriculumActivity>('activities').where({
+
+export const listCurriculumActivities = async (curriculumId: number) => {
+  const curriculumActivities = await db<CurriculumActivity>('activities')
+    .select(
+      'id',
+      'title',
+      'description_text',
+      'curriculum_week',
+      'curriculum_day',
+      'start_time',
+      'end_time',
+      'duration',
+      'activity_type_id',
+      'curriculum_id'
+    )
+    .where({
       curriculum_id: curriculumId,
     });
-  } else {
-    return db<CurriculumActivity>('activities');
-  }
+  return curriculumActivities;
 };
 
 /**
@@ -56,15 +97,23 @@ export const listCurriculumActivities = (
  *
  * @param {number} activityId - the id for the unique activity
  * @returns {CurriculumActivity} - the specified activity if exists
- *
- * @example
- * // Correct usage.
- * findCurriculumActivity(1);
  */
-export const findCurriculumActivity = (
-  activityId: number
-): Promise<CurriculumActivity> => {
-  return db<CurriculumActivity>('activities').where('id', activityId).first();
+export const findCurriculumActivity = async (activityId: number) => {
+  const [curriculumActivity] = await db<CurriculumActivity>('activities')
+    .select(
+      'id',
+      'title',
+      'description_text',
+      'curriculum_week',
+      'curriculum_day',
+      'start_time',
+      'end_time',
+      'duration',
+      'activity_type_id',
+      'curriculum_id'
+    )
+    .where('id', activityId);
+  return curriculumActivity;
 };
 
 /**
@@ -75,9 +124,7 @@ export const findCurriculumActivity = (
  * @param {number} programId - The program ID for the specified program
  * @returns {programActivity[]} - An array of program activities
  */
-export const listProgramActivities = async (
-  programId: number
-): Promise<ProgramActivity[]> => {
+export const listProgramActivities = async (programId: number) => {
   const program = await findProgram(programId);
   const curriculumActivities = await listCurriculumActivities(
     program.curriculum_id
@@ -94,7 +141,7 @@ export const listProgramActivities = async (
     return programActivityDate;
   };
 
-  const activityTypes = await db<ActivityType>('activity_types');
+  const activityTypes = await db<ActivityType>('activity_types').select('id', 'title');
   const programActivities: ProgramActivity[] = curriculumActivities.map(
     activity => {
       const findActivityType = activityTypes.find(
@@ -150,16 +197,18 @@ export const listProgramActivities = async (
  *
  * @param {number} programId - the id for the unique program
  * @returns {ProgramWithActivities} - a specified program containing an array
- *   of activities
+ *   of activities, or null if programId is not found
  */
-export const findProgramWithActivities = (
-  programId: number
-): Promise<ProgramWithActivities> => {
-  return findProgram(programId).then(
-    async (program): Promise<ProgramWithActivities> => {
-      const pwa: ProgramWithActivities = JSON.parse(JSON.stringify(program));
-      pwa.activities = await listProgramActivities(program.id);
-      return pwa;
-    }
+export const findProgramWithActivities = async (programId: number) => {
+  const matchingProgram = await findProgram(programId);
+  if (!matchingProgram) {
+    return null;
+  }
+
+  // Cast program into variable that contains activities field
+  const pwa: ProgramWithActivities = JSON.parse(
+    JSON.stringify(matchingProgram)
   );
+  pwa.activities = await listProgramActivities(matchingProgram.id);
+  return pwa;
 };

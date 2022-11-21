@@ -96,3 +96,20 @@ export interface ProgramWithActivities extends Entity {
   curriculum_id: number;
   activities: ProgramActivity[];
 }
+
+export interface CurriculumActivity extends Entity{
+  title: string;
+  description_text: string;
+  curriculum_week: number;
+  curriculum_day: number;
+  start_time: string | null;
+  end_time: string | null;
+  duration: number | null;
+  activity_type_id: number;
+  curriculum_id: number;
+}
+
+export interface Curriculum extends Entity{
+  title: string;
+  principal_id: number;
+}

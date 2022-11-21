@@ -1,10 +1,11 @@
 import {
-  listPrograms,
+  listAllPrograms,
   findProgram,
   listCurriculumActivities,
   findCurriculumActivity,
   listProgramActivities,
   findProgramWithActivities,
+  listProgramsForCurriculum,
 } from '../programsService';
 import {
   Program,
@@ -14,8 +15,10 @@ import {
 } from '../../models';
 import { mockQuery } from '../mockDb';
 
+
+
 describe('programsService', () => {
-  describe('listPrograms', () => {
+  describe('listAllPrograms', () => {
     it('should list all available programs', async () => {
       const programsList: Program[] = [
         {
@@ -53,7 +56,7 @@ describe('programsService', () => {
         },
       ];
       mockQuery('select * from `programs`', [], programsList);
-      expect(await listPrograms()).toEqual(programsList);
+      expect(await listAllPrograms()).toEqual(programsList);
     });
 
     it('should list all available programs with a given curriculum ID', async () => {
@@ -76,7 +79,7 @@ describe('programsService', () => {
         [curriculumId],
         programsList
       );
-      expect(await listPrograms(curriculumId)).toEqual(programsList);
+      expect(await listProgramsForCurriculum(curriculumId)).toEqual(programsList);
     });
   });
 
@@ -192,7 +195,7 @@ describe('programsService', () => {
         },
       ];
       mockQuery('select * from `activities`', [], curriculumActivitiesList);
-      expect(await listCurriculumActivities()).toEqual(
+      expect(await listCurriculumActivities(2)).toEqual(
         curriculumActivitiesList
       );
     });
