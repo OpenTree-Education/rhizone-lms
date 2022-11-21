@@ -4,18 +4,18 @@ export interface Program {
   start_date: string;
   end_date: string;
   time_zone: string;
-  principal_id: number;
   curriculum_id: number;
-  created_at: string;
-  updated_at: string;
+  principal_id?: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Curriculum {
   id: number;
   title: string;
   principal_id: number;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface CurriculumActivity {
@@ -29,8 +29,8 @@ export interface CurriculumActivity {
   duration: number | null;
   activity_type_id: number;
   curriculum_id: number;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface ProgramActivity {
@@ -51,6 +51,6 @@ export interface ProgramWithActivities extends Program {
 export interface ActivityType {
   id: number;
   title: string;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
 }
