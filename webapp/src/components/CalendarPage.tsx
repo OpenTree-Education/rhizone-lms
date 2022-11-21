@@ -1,7 +1,11 @@
 import { Container } from '@mui/material';
-import {Calendar, Event as RBCEvent} from 'react-big-calendar';
+import {Calendar, luxonLocalizer, Event as RBCEvent} from 'react-big-calendar';
 import React from 'react';
+import { DateTime, Settings } from 'luxon';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
+Settings.defaultZone = 'America/Los_Angeles';
+const localizer = luxonLocalizer(DateTime);
 /**
  * Assume this is the response from the API. Use this data to fill in the
  * calendar on the front end.
@@ -60,9 +64,20 @@ const programsList = {
     }
   ]
 };
-// JSON.stringify(programsList)
 
 const CalendarPage = () => {
+
+  const programEventsActivities :  RBCEvent[] = programsList.data[0].activities.map((activity) => {
+    return (
+      {
+        title: activity.title,
+        start: new Date(activity.start_time),
+        end: new Date(activity.end_time),
+        description: activity.description_text
+      }
+    )
+  })
+
  
   return (
     <Container fixed>
