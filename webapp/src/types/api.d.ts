@@ -77,7 +77,22 @@ export interface Settings extends Entity {
   default_questionnaire_id: EntityId;
 }
 
-export interface Programs extends Entity {
-  id: number;
+export interface ProgramActivity {
   title: string;
+  description_text: string;
+  program_id: number;
+  curriculum_activity_id: number;
+  activity_type: string;
+  start_time: string;
+  end_time: string;
+  duration: number; // if duration is '0', it's an all-day event
+}
+
+export interface ProgramWithActivities extends Entity {
+  title: string;
+  start_date: string;
+  end_date: string;
+  time_zone: string;
+  curriculum_id: number;
+  activities: ProgramActivity[];
 }
