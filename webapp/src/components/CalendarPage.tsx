@@ -1,6 +1,6 @@
 import { Container } from '@mui/material';
 import {Calendar, luxonLocalizer, Event as RBCEvent} from 'react-big-calendar';
-import React from 'react';
+import React, {useCallback} from 'react';
 import { DateTime, Settings } from 'luxon';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
@@ -78,6 +78,12 @@ const CalendarPage = () => {
     )
   })
 
+  const handleSelectEvent = useCallback(
+    (event) => {
+      return window.alert(`${event.title} - ${event.description}`)
+    },
+    []
+  )
  
   return (
     <Container fixed>
@@ -87,6 +93,7 @@ const CalendarPage = () => {
         startAccessor="start"
         endAccessor="end"
         style={{ height: 500 }}
+        onSelectEvent={handleSelectEvent}
         />
     </Container>
   );
