@@ -3,69 +3,54 @@ import {Calendar, luxonLocalizer, Event as RBCEvent} from 'react-big-calendar';
 import React, {useCallback} from 'react';
 import { DateTime, Settings } from 'luxon';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import useApiData from '../helpers/useApiData';
+import { ProgramWithActivities } from '../types/api';
+import Program from './Program';
 
 Settings.defaultZone = 'America/Los_Angeles';
 const localizer = luxonLocalizer(DateTime);
-/**
- * Assume this is the response from the API. Use this data to fill in the
- * calendar on the front end.
- */
-const programsList = {
-  "data": [
-    {
-      "id": 1,
-      "title": "Cohort 4",
-      "start_date": "2022-10-24",
-      "end_date": "2022-12-16",
-      "time_zone": "America/Los_Angeles",
-      "curriculum_id": 1,
-      "activities": [
-        {
-          "title": "Morning Standup",
-          "description_text": "",
-          "program_id": 1,
-          "curriculum_activity_id": 1,
-          "activity_type": "standup",
-          "start_time": "2022-10-24T17:00:00.000Z",
-          "end_time": "2022-10-24T18:00:00.000Z",
-          "duration": 60
-        },
-        {
-          "title": "Self-introduction",
-          "description_text": "Get to know each other.",
-          "program_id": 1,
-          "curriculum_activity_id": 2,
-          "activity_type": "class",
-          "start_time": "2022-10-24T18:10:00.000Z",
-          "end_time": "2022-10-24T19:00:00.000Z",
-          "duration": 50
-        },
-        {
-          "title": "Self-assessment",
-          "description_text": "",
-          "program_id": 1,
-          "curriculum_activity_id": 3,
-          "activity_type": "assignment",
-          "start_time": "2022-10-25T07:00:00.000Z",
-          "end_time": "2022-10-25T07:00:00.000Z",
-          "duration": 0
-        },
-        {
-          "title": "PMP Introduction",
-          "description_text": "Overview of the project and technological environment.",
-          "program_id": 1,
-          "curriculum_activity_id": 4,
-          "activity_type": "class",
-          "start_time": "2022-10-25T18:00:00.000Z",
-          "end_time": "2022-10-25T19:00:00.000Z",
-          "duration": 60
-        }
-      ]
-    }
-  ]
-};
+
+//   return (
+//     <Container fixed>
+//       <h2>Programs</h2>
+//       {programs.map(program => {
+//         return (
+//           <Program
+//             key={program.id}
+//             id={program.id}
+//             title={program.title}
+//             startDate={program.start_date}
+//             endDate={program.end_date}
+//             timeZone={program.time_zone}
+//             curriculumId={program.curriculum_id}
+//             activities={program.activities}
+//           />
+//         );
+//       })}
+//     </Container>
+//   );
+// };
 
 const CalendarPage = () => {
+
+  const {
+    data: programs,
+    error,
+    isLoading,
+  } = useApiData<ProgramWithActivities[]>({
+    deps: [],
+    path: '/programs',
+    sendCredentials: true,
+  });
+  if (error) {
+    return <p>There was an error loading the programs.</p>;
+  }
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  if (!programs) {
+    return null;
+  }
 
   const programEventsActivities :  RBCEvent[] = programsList.data[0].activities.map((activity) => {
     return (
@@ -77,13 +62,6 @@ const CalendarPage = () => {
       }
     )
   })
-
-  const handleSelectEvent = useCallback(
-    (event) => {
-      return window.alert(`${event.title} - ${event.description}`)
-    },
-    []
-  )
  
   return (
     <Container fixed>
@@ -93,7 +71,6 @@ const CalendarPage = () => {
         startAccessor="start"
         endAccessor="end"
         style={{ height: 500 }}
-        onSelectEvent={handleSelectEvent}
         />
     </Container>
   );
