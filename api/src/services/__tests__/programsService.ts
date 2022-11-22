@@ -140,47 +140,49 @@ const curriculumActivitiesList: CurriculumActivity[] = [
   },
 ];
 const programActivitiesList: ProgramActivity[][] = [
-  // TODO: modify these to match program 1
-  [{
-    title: "Morning Standup",
-    description_text: "",
-    program_id: 1,
-    curriculum_activity_id: 1,
-    activity_type: "standup",
-    start_time: "2022-10-24T17:00:00.000Z",
-    end_time: "2022-10-24T18:00:00.000Z",
-    duration: 60
-  },
-  {
-    title: 'Self-introduction',
-    description_text: 'Get to know each other.',
-    program_id: 1,
-    curriculum_activity_id: 2,
-    activity_type: 'class',
-    start_time: '2022-10-24T18:10:00.000Z',
-    end_time: '2022-10-24T19:00:00.000Z',
-    duration: 50,
-  },
-  {
-    title: 'Self-assessment',
-    description_text: '',
-    program_id: 1,
-    curriculum_activity_id: 3,
-    activity_type: 'assignment',
-    start_time: '2022-10-25T07:00:00.000Z',
-    end_time: '2022-10-25T07:00:00.000Z',
-    duration: 0,
-  }],
-// program 2:
-    [{
-      title: "Morning Standup",
-      description_text: "",
+  [
+    {
+      title: 'Morning Standup',
+      description_text: '',
+      program_id: 1,
+      curriculum_activity_id: 1,
+      activity_type: 'standup',
+      start_time: '2022-10-24T17:00:00.000Z',
+      end_time: '2022-10-24T18:00:00.000Z',
+      duration: 60,
+    },
+    {
+      title: 'Self-introduction',
+      description_text: 'Get to know each other.',
+      program_id: 1,
+      curriculum_activity_id: 2,
+      activity_type: 'class',
+      start_time: '2022-10-24T18:10:00.000Z',
+      end_time: '2022-10-24T19:00:00.000Z',
+      duration: 50,
+    },
+    {
+      title: 'Self-assessment',
+      description_text: '',
+      program_id: 1,
+      curriculum_activity_id: 3,
+      activity_type: 'assignment',
+      start_time: '2022-10-25T07:00:00.000Z',
+      end_time: '2022-10-25T07:00:00.000Z',
+      duration: 0,
+    },
+  ],
+  // program 2:
+  [
+    {
+      title: 'Morning Standup',
+      description_text: '',
       program_id: 2,
       curriculum_activity_id: 4,
-      activity_type: "standup",
-      start_time: "2022-10-24T17:00:00.000Z",
-      end_time: "2022-10-24T18:00:00.000Z",
-      duration: 60
+      activity_type: 'standup',
+      start_time: '2022-10-24T17:00:00.000Z',
+      end_time: '2022-10-24T18:00:00.000Z',
+      duration: 60,
     },
     {
       title: 'Self-introduction',
@@ -203,17 +205,16 @@ const programActivitiesList: ProgramActivity[][] = [
       duration: 0,
     },
   ],
-  // TODO: modify these to match program 3:
   [
     {
-      title: "Morning Standup",
-      description_text: "",
+      title: 'Morning Standup',
+      description_text: '',
       program_id: 3,
       curriculum_activity_id: 1,
-      activity_type: "standup",
-      start_time: "2023-01-02T17:00:00.000Z",
-      end_time: "2023-01-02T18:00:00.000Z",
-      duration: 60
+      activity_type: 'standup',
+      start_time: '2023-01-02T17:00:00.000Z',
+      end_time: '2023-01-02T18:00:00.000Z',
+      duration: 60,
     },
     {
       title: 'Self-introduction',
@@ -235,7 +236,7 @@ const programActivitiesList: ProgramActivity[][] = [
       end_time: '2023-01-03T07:00:00.000Z',
       duration: 0,
     },
-  ]
+  ],
 ];
 const activityTypesList: ActivityType[] = [
   {
@@ -343,7 +344,8 @@ describe('programsService', () => {
         curriculumActivitiesList[4],
         curriculumActivitiesList[5],
       ];
-      const matchingProgramActivities: ProgramActivity[] = programActivitiesList[1];
+      const matchingProgramActivities: ProgramActivity[] =
+        programActivitiesList[1];
       mockQuery(
         'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
         [programId],
@@ -373,7 +375,8 @@ describe('programsService', () => {
         curriculumActivitiesList[4],
         curriculumActivitiesList[5],
       ];
-      const matchingProgramActivities: ProgramActivity[] = programActivitiesList[1];
+      const matchingProgramActivities: ProgramActivity[] =
+        programActivitiesList[1];
       const programWithActivities = JSON.parse(JSON.stringify(matchingProgram));
       programWithActivities.activities = matchingProgramActivities;
       mockQuery(
@@ -440,8 +443,6 @@ describe('programsService', () => {
         activityTypesList
       );
 
-
-
       mockQuery(
         'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
         [2],
@@ -473,10 +474,10 @@ describe('programsService', () => {
         [],
         activityTypesList
       );
-        // findProgram(program id)
-        // listCurriculumActivities(curriculumid of that program)
-        // query activity types
-    
+      // findProgram(program id)
+      // listCurriculumActivities(curriculumid of that program)
+      // query activity types
+
       // this will be the only "expect" call:
       // the final result of listProgramsWithActivities within the tests will be an array with three items of type ProgramWithActivities, all three of which have an activities member that is an array of ProgramActivity
 
