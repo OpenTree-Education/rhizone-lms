@@ -228,24 +228,17 @@ describe('programsService', () => {
   describe('findProgram', () => {
     it('should give the details of the specified program', async () => {
       const programId = 2;
-      const matchingPrograms: Program[] = [programsList[1]];
+      const [matchingProgram] = [programsList[1]];
       mockQuery(
         'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
-        [programId, 1],
-        matchingPrograms
+        [programId],
+        [programsList[1]]
       );
-      expect(await findProgram(programId)).toEqual(matchingPrograms);
+      expect(await findProgram(programId)).toEqual(matchingProgram);
     });
   });
 
   describe('listCurriculumActivities', () => {
-    it('should list all available curriculum activities', async () => {
-      mockQuery('select * from `activities`', [], curriculumActivitiesList);
-      expect(await listCurriculumActivities(2)).toEqual(
-        curriculumActivitiesList
-      );
-    });
-
     it('should list all available activities for the specified curriculum', async () => {
       const curriculumId = 1;
       const matchingCurriculumActivities: CurriculumActivity[] = [
@@ -272,8 +265,8 @@ describe('programsService', () => {
 
       mockQuery(
         'select `id`, `title`, `description_text`, `curriculum_week`, `curriculum_day`, `start_time`, `end_time`, `duration`, `activity_type_id`, `curriculum_id` from `activities` where `id` = ?',
-        [curriculumActivityId, 1], // binding param // replace above ? with the value // findProgram() get the first program object, so the limit is 1
-        matchingCurriculumActivity
+        [curriculumActivityId], // binding param // replace above ? with the value // findProgram() get the first program object, so the limit is 1
+        [matchingCurriculumActivity]
       );
 
       expect(await findCurriculumActivity(curriculumActivityId)).toEqual(
@@ -304,8 +297,8 @@ describe('programsService', () => {
       // findProgram
       mockQuery(
         'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
-        [programId, 1],
-        matchingProgram
+        [programId],
+        [matchingProgram]
       );
 
       // listCurriculumActivities
@@ -316,7 +309,11 @@ describe('programsService', () => {
       );
 
       // activity types
-      mockQuery('select * from `activity_types`', [], activityTypesList);
+      mockQuery(
+        'select `id`, `title` from `activity_types`',
+        [],
+        activityTypesList
+      );
 
       // listProgramActivities
       expect(await listProgramActivities(programId)).toEqual(
@@ -349,8 +346,8 @@ describe('programsService', () => {
       // findProgram
       mockQuery(
         'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
-        [programId, 1],
-        matchingProgram
+        [programId],
+        [matchingProgram]
       );
 
       //listCurriculumActivities
@@ -361,7 +358,11 @@ describe('programsService', () => {
       );
 
       // activityTypes
-      mockQuery('select * from `activity_types`', [], activityTypesList);
+      mockQuery(
+        'select `id`, `title` from `activity_types`',
+        [],
+        activityTypesList
+      );
 
       expect(await findProgramWithActivities(programId)).toEqual(
         programWithActivities

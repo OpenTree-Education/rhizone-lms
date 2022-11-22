@@ -61,7 +61,7 @@ export const findProgram = async (programId: number) => {
       'time_zone',
       'curriculum_id'
     )
-    .where('id', programId);
+    .where({ id: programId });
   return matchingProgram;
 };
 
@@ -204,9 +204,6 @@ export const listProgramActivities = async (programId: number) => {
  */
 export const findProgramWithActivities = async (programId: number) => {
   const matchingProgram = await findProgram(programId);
-  if (!matchingProgram) {
-    return null;
-  }
 
   // Cast program into variable that contains activities field
   const pwa: ProgramWithActivities = JSON.parse(
