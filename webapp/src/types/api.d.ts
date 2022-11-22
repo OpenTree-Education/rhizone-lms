@@ -76,3 +76,40 @@ export interface SessionData extends Entity {
 export interface Settings extends Entity {
   default_questionnaire_id: EntityId;
 }
+
+export interface ProgramActivity {
+  title: string;
+  description_text: string;
+  program_id: number;
+  curriculum_activity_id: number;
+  activity_type: string;
+  start_time: string;
+  end_time: string;
+  duration: number; // if duration is '0', it's an all-day event
+}
+
+export interface ProgramWithActivities extends Entity {
+  title: string;
+  start_date: string;
+  end_date: string;
+  time_zone: string;
+  curriculum_id: number;
+  activities: ProgramActivity[];
+}
+
+export interface CurriculumActivity extends Entity {
+  title: string;
+  description_text: string;
+  curriculum_week: number;
+  curriculum_day: number;
+  start_time: string | null;
+  end_time: string | null;
+  duration: number | null;
+  activity_type_id: number;
+  curriculum_id: number;
+}
+
+export interface Curriculum extends Entity {
+  title: string;
+  principal_id: number;
+}
