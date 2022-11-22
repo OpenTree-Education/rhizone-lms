@@ -18,15 +18,12 @@ const CalendarPage = () => {
   if (error) {
     return <p>There was an error loading the programs.</p>;
   }
-
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
   if (!programs) {
     return null;
   }
-
   return (
     <Container fixed>
       <h2>Programs</h2>
