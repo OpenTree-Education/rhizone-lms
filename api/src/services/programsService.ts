@@ -141,7 +141,10 @@ export const listProgramActivities = async (programId: number) => {
     return programActivityDate;
   };
 
-  const activityTypes = await db<ActivityType>('activity_types').select('id', 'title');
+  const activityTypes = await db<ActivityType>('activity_types').select(
+    'id',
+    'title'
+  );
   const programActivities: ProgramActivity[] = curriculumActivities.map(
     activity => {
       const findActivityType = activityTypes.find(

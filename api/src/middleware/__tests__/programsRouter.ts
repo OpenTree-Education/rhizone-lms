@@ -1,4 +1,4 @@
-import { itemEnvelope } from '../responseEnvelope';
+import { collectionEnvelope } from '../responseEnvelope';
 import { findProgramWithActivities } from '../../services/programsService';
 import { createAppAgentForRouter } from '../routerTestUtils';
 import programsRouter from '../programsRouter';
@@ -56,7 +56,7 @@ describe('programsRouter', () => {
         ],
       };
       mockFindProgramWithActivities.mockResolvedValue(program);
-      appAgent.get('/').expect(200, itemEnvelope(program), err => {
+      appAgent.get('/').expect(200, collectionEnvelope([program], 1), err => {
         expect(mockFindProgramWithActivities).toHaveBeenCalled();
         done(err);
       });
