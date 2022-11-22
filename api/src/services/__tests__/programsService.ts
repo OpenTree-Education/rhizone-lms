@@ -6,12 +6,14 @@ import {
   listProgramActivities,
   findProgramWithActivities,
   listProgramsForCurriculum,
+  listProgramsWithActivities,
 } from '../programsService';
 import {
   Program,
   ProgramActivity,
   CurriculumActivity,
   ActivityType,
+  ProgramWithActivities,
 } from '../../models';
 
 import { mockQuery } from '../mockDb';
@@ -137,22 +139,23 @@ const curriculumActivitiesList: CurriculumActivity[] = [
     updated_at: '2022-11-15 01:23:45',
   },
 ];
-const program2ActivitiesList: ProgramActivity[] = [
-  {
-    title: 'Morning Standup',
-    description_text: '',
-    program_id: 2,
-    curriculum_activity_id: 4,
-    activity_type: 'standup',
-    start_time: '2022-10-24T17:00:00.000Z',
-    end_time: '2022-10-24T18:00:00.000Z',
-    duration: 60,
+const programActivitiesList: ProgramActivity[][] = [
+  // TODO: modify these to match program 1
+  [{
+    title: "Morning Standup",
+    description_text: "",
+    program_id: 1,
+    curriculum_activity_id: 1,
+    activity_type: "standup",
+    start_time: "2022-10-24T17:00:00.000Z",
+    end_time: "2022-10-24T18:00:00.000Z",
+    duration: 60
   },
   {
     title: 'Self-introduction',
     description_text: 'Get to know each other.',
-    program_id: 2,
-    curriculum_activity_id: 5,
+    program_id: 1,
+    curriculum_activity_id: 2,
     activity_type: 'class',
     start_time: '2022-10-24T18:10:00.000Z',
     end_time: '2022-10-24T19:00:00.000Z',
@@ -161,13 +164,78 @@ const program2ActivitiesList: ProgramActivity[] = [
   {
     title: 'Self-assessment',
     description_text: '',
-    program_id: 2,
-    curriculum_activity_id: 6,
+    program_id: 1,
+    curriculum_activity_id: 3,
     activity_type: 'assignment',
     start_time: '2022-10-25T07:00:00.000Z',
     end_time: '2022-10-25T07:00:00.000Z',
     duration: 0,
-  },
+  }],
+// program 2:
+    [{
+      title: "Morning Standup",
+      description_text: "",
+      program_id: 2,
+      curriculum_activity_id: 4,
+      activity_type: "standup",
+      start_time: "2022-10-24T17:00:00.000Z",
+      end_time: "2022-10-24T18:00:00.000Z",
+      duration: 60
+    },
+    {
+      title: 'Self-introduction',
+      description_text: 'Get to know each other.',
+      program_id: 2,
+      curriculum_activity_id: 5,
+      activity_type: 'class',
+      start_time: '2022-10-24T18:10:00.000Z',
+      end_time: '2022-10-24T19:00:00.000Z',
+      duration: 50,
+    },
+    {
+      title: 'Self-assessment',
+      description_text: '',
+      program_id: 2,
+      curriculum_activity_id: 6,
+      activity_type: 'assignment',
+      start_time: '2022-10-25T07:00:00.000Z',
+      end_time: '2022-10-25T07:00:00.000Z',
+      duration: 0,
+    },
+  ],
+  // TODO: modify these to match program 3:
+  [
+    {
+      title: "Morning Standup",
+      description_text: "",
+      program_id: 3,
+      curriculum_activity_id: 1,
+      activity_type: "standup",
+      start_time: "2023-01-02T17:00:00.000Z",
+      end_time: "2023-01-02T18:00:00.000Z",
+      duration: 60
+    },
+    {
+      title: 'Self-introduction',
+      description_text: 'Get to know each other.',
+      program_id: 3,
+      curriculum_activity_id: 2,
+      activity_type: 'class',
+      start_time: '2023-01-02T18:10:00.000Z',
+      end_time: '2023-01-02T19:00:00.000Z',
+      duration: 50,
+    },
+    {
+      title: 'Self-assessment',
+      description_text: '',
+      program_id: 3,
+      curriculum_activity_id: 6,
+      activity_type: 'assignment',
+      start_time: '2023-01-03T07:00:00.000Z',
+      end_time: '2023-01-03T07:00:00.000Z',
+      duration: 0,
+    },
+  ]
 ];
 const activityTypesList: ActivityType[] = [
   {
@@ -275,11 +343,7 @@ describe('programsService', () => {
         curriculumActivitiesList[4],
         curriculumActivitiesList[5],
       ];
-      const matchingProgramActivities: ProgramActivity[] = [
-        program2ActivitiesList[0],
-        program2ActivitiesList[1],
-        program2ActivitiesList[2],
-      ];
+      const matchingProgramActivities: ProgramActivity[] = programActivitiesList[1];
       mockQuery(
         'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
         [programId],
@@ -309,11 +373,7 @@ describe('programsService', () => {
         curriculumActivitiesList[4],
         curriculumActivitiesList[5],
       ];
-      const matchingProgramActivities: ProgramActivity[] = [
-        program2ActivitiesList[0],
-        program2ActivitiesList[1],
-        program2ActivitiesList[2],
-      ];
+      const matchingProgramActivities: ProgramActivity[] = programActivitiesList[1];
       const programWithActivities = JSON.parse(JSON.stringify(matchingProgram));
       programWithActivities.activities = matchingProgramActivities;
       mockQuery(
@@ -333,6 +393,95 @@ describe('programsService', () => {
       );
       expect(await findProgramWithActivities(programId)).toEqual(
         programWithActivities
+      );
+    });
+  });
+
+  describe('listProgramsWithActivities', () => {
+    it('should list all available activities for the specified program', async () => {
+      const matchingCurriculumActivitiesCurriculumId1: CurriculumActivity[] = [
+        curriculumActivitiesList[0],
+        curriculumActivitiesList[1],
+        curriculumActivitiesList[2],
+      ];
+      const matchingCurriculumActivitiesCurriculumId2: CurriculumActivity[] = [
+        curriculumActivitiesList[3],
+        curriculumActivitiesList[4],
+        curriculumActivitiesList[5],
+      ];
+
+      const programsWithActivitiesList: ProgramWithActivities[] = JSON.parse(
+        JSON.stringify(programsList)
+      );
+      programsWithActivitiesList[0].activities = programActivitiesList[0];
+      programsWithActivitiesList[1].activities = programActivitiesList[1];
+      programsWithActivitiesList[2].activities = programActivitiesList[2];
+      // listAllPrograms
+      mockQuery(
+        'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs`',
+        [],
+        programsList
+      );
+
+      // foreach of the three programs:
+      mockQuery(
+        'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
+        [1],
+        [programsList[0]]
+      );
+      mockQuery(
+        'select `id`, `title`, `description_text`, `curriculum_week`, `curriculum_day`, `start_time`, `end_time`, `duration`, `activity_type_id`, `curriculum_id` from `activities` where `curriculum_id` = ?',
+        [1],
+        matchingCurriculumActivitiesCurriculumId1
+      );
+      mockQuery(
+        'select `id`, `title` from `activity_types`',
+        [],
+        activityTypesList
+      );
+
+
+
+      mockQuery(
+        'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
+        [2],
+        [programsList[1]]
+      );
+      mockQuery(
+        'select `id`, `title`, `description_text`, `curriculum_week`, `curriculum_day`, `start_time`, `end_time`, `duration`, `activity_type_id`, `curriculum_id` from `activities` where `curriculum_id` = ?',
+        [2],
+        matchingCurriculumActivitiesCurriculumId2
+      );
+      mockQuery(
+        'select `id`, `title` from `activity_types`',
+        [],
+        activityTypesList
+      );
+
+      mockQuery(
+        'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
+        [3],
+        [programsList[2]]
+      );
+      mockQuery(
+        'select `id`, `title`, `description_text`, `curriculum_week`, `curriculum_day`, `start_time`, `end_time`, `duration`, `activity_type_id`, `curriculum_id` from `activities` where `curriculum_id` = ?',
+        [1],
+        matchingCurriculumActivitiesCurriculumId1
+      );
+      mockQuery(
+        'select `id`, `title` from `activity_types`',
+        [],
+        activityTypesList
+      );
+        // findProgram(program id)
+        // listCurriculumActivities(curriculumid of that program)
+        // query activity types
+    
+      // this will be the only "expect" call:
+      // the final result of listProgramsWithActivities within the tests will be an array with three items of type ProgramWithActivities, all three of which have an activities member that is an array of ProgramActivity
+
+      expect(await listProgramsWithActivities()).toEqual(
+        programsWithActivitiesList
       );
     });
   });

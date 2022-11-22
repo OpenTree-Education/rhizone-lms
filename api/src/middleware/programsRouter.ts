@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { collectionEnvelope } from './responseEnvelope';
-import { findProgramWithActivities } from '../services/programsService';
+import { findProgramWithActivities,listProgramsWithActivities } from '../services/programsService';
 
 const programsRouter = Router();
 
@@ -11,6 +11,11 @@ programsRouter.get('/', async (req, res) => {
     await findProgramWithActivities(firstProgramId),
   ];
   res.json(collectionEnvelope(programsWithActivities, 1));
+});
+
+programsRouter.get('/test', async (req, res) => {
+  const programsWithActivities = await listProgramsWithActivities();
+  res.json(collectionEnvelope(programsWithActivities, programsWithActivities.length));
 });
 
 export default programsRouter;

@@ -212,3 +212,26 @@ export const findProgramWithActivities = async (programId: number) => {
   pwa.activities = await listProgramActivities(matchingProgram.id);
   return pwa;
 };
+
+/**
+ * Get all programs with acticity property which is a list of activities
+ * @returns {ProgramWithActivities[]} - an array contains all programs including their activities
+ */
+ export const listProgramsWithActivities = async () => {
+  const allPrograms = await listAllPrograms();
+
+  if (!allPrograms) {
+    return null;
+  }
+
+  const programsWithActivities: ProgramWithActivities[] = [];
+
+  for (const program of allPrograms) {
+    const programWithActivities: ProgramWithActivities = {...program, activities: []};
+    programWithActivities.activities = await listProgramActivities(programWithActivities.id);
+
+    programsWithActivities.push(programWithActivities);
+  }
+
+  return programsWithActivities;
+};
