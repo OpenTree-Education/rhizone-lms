@@ -344,8 +344,7 @@ describe('programsService', () => {
         curriculumActivitiesList[4],
         curriculumActivitiesList[5],
       ];
-      const matchingProgramActivities: ProgramActivity[] =
-        programActivitiesList[1];
+      const [, matchingProgramActivities] = programActivitiesList;
       mockQuery(
         'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
         [programId],
@@ -375,8 +374,7 @@ describe('programsService', () => {
         curriculumActivitiesList[4],
         curriculumActivitiesList[5],
       ];
-      const matchingProgramActivities: ProgramActivity[] =
-        programActivitiesList[1];
+      const [, matchingProgramActivities] = programActivitiesList;
       const programWithActivities = JSON.parse(JSON.stringify(matchingProgram));
       programWithActivities.activities = matchingProgramActivities;
       mockQuery(
@@ -416,9 +414,12 @@ describe('programsService', () => {
       const programsWithActivitiesList: ProgramWithActivities[] = JSON.parse(
         JSON.stringify(programsList)
       );
-      programsWithActivitiesList[0].activities = programActivitiesList[0];
-      programsWithActivitiesList[1].activities = programActivitiesList[1];
-      programsWithActivitiesList[2].activities = programActivitiesList[2];
+      [
+        programsWithActivitiesList[0].activities,
+        programsWithActivitiesList[1].activities,
+        programsWithActivitiesList[2].activities,
+      ] = programActivitiesList;
+
       // listAllPrograms
       mockQuery(
         'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs`',
