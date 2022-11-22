@@ -97,7 +97,7 @@ export interface ProgramWithActivities extends Entity {
   activities: ProgramActivity[];
 }
 
-export interface CurriculumActivity extends Entity{
+export interface CurriculumActivity extends Entity {
   title: string;
   description_text: string;
   curriculum_week: number;
@@ -109,7 +109,7 @@ export interface CurriculumActivity extends Entity{
   curriculum_id: number;
 }
 
-export interface Curriculum extends Entity{
+export interface Curriculum extends Entity {
   title: string;
   principal_id: number;
 }
