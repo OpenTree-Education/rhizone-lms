@@ -13,6 +13,7 @@ import {
   CurriculumActivity,
   ActivityType,
 } from '../../models';
+
 import { mockQuery } from '../mockDb';
 
 const programsList: Program[] = [
@@ -50,7 +51,6 @@ const programsList: Program[] = [
     updated_at: '2022-11-15 01:23:45',
   },
 ];
-
 const curriculumActivitiesList: CurriculumActivity[] = [
   {
     id: 1,
@@ -137,7 +137,6 @@ const curriculumActivitiesList: CurriculumActivity[] = [
     updated_at: '2022-11-15 01:23:45',
   },
 ];
-
 const program2ActivitiesList: ProgramActivity[] = [
   {
     title: 'Morning Standup',
@@ -170,7 +169,6 @@ const program2ActivitiesList: ProgramActivity[] = [
     duration: 0,
   },
 ];
-
 const activityTypesList: ActivityType[] = [
   {
     id: 1,
@@ -209,7 +207,6 @@ describe('programsService', () => {
       expect(await listAllPrograms()).toEqual(programsList);
     });
   });
-
   describe('listProgramsForCurriculum', () => {
     it('should list all available programs with a given curriculum ID', async () => {
       const curriculumId = 2;
@@ -224,7 +221,6 @@ describe('programsService', () => {
       );
     });
   });
-
   describe('findProgram', () => {
     it('should give the details of the specified program', async () => {
       const programId = 2;
@@ -237,7 +233,6 @@ describe('programsService', () => {
       expect(await findProgram(programId)).toEqual(matchingProgram);
     });
   });
-
   describe('listCurriculumActivities', () => {
     it('should list all available activities for the specified curriculum', async () => {
       const curriculumId = 1;
@@ -256,114 +251,86 @@ describe('programsService', () => {
       );
     });
   });
-
   describe('findCurriculumActivity', () => {
     it('should give the details of the specified program', async () => {
       const curriculumActivityId = 4;
-
       const [, , , matchingCurriculumActivity] = curriculumActivitiesList;
-
       mockQuery(
         'select `id`, `title`, `description_text`, `curriculum_week`, `curriculum_day`, `start_time`, `end_time`, `duration`, `activity_type_id`, `curriculum_id` from `activities` where `id` = ?',
-        [curriculumActivityId], // binding param // replace above ? with the value // findProgram() get the first program object, so the limit is 1
+        [curriculumActivityId],
         [matchingCurriculumActivity]
       );
-
       expect(await findCurriculumActivity(curriculumActivityId)).toEqual(
         matchingCurriculumActivity
       );
     });
   });
-
   describe('listProgramActivities', () => {
     it('should list all available activities for the specified program', async () => {
       const programId = 2;
       const curriculumId = 2;
-
       const [, matchingProgram] = programsList;
-
       const matchingCurriculumActivities: CurriculumActivity[] = [
         curriculumActivitiesList[3],
         curriculumActivitiesList[4],
         curriculumActivitiesList[5],
       ];
-
       const matchingProgramActivities: ProgramActivity[] = [
         program2ActivitiesList[0],
         program2ActivitiesList[1],
         program2ActivitiesList[2],
       ];
-
-      // findProgram
       mockQuery(
         'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
         [programId],
         [matchingProgram]
       );
-
-      // listCurriculumActivities
       mockQuery(
         'select `id`, `title`, `description_text`, `curriculum_week`, `curriculum_day`, `start_time`, `end_time`, `duration`, `activity_type_id`, `curriculum_id` from `activities` where `curriculum_id` = ?',
         [curriculumId],
         matchingCurriculumActivities
       );
-
-      // activity types
       mockQuery(
         'select `id`, `title` from `activity_types`',
         [],
         activityTypesList
       );
-
-      // listProgramActivities
       expect(await listProgramActivities(programId)).toEqual(
         matchingProgramActivities
       );
     });
   });
-
   describe('findProgramWithActivities', () => {
     it('should give the details of the specified program including its activities', async () => {
       const programId = 2;
-
       const [, matchingProgram] = programsList;
-
       const matchingCurriculumActivities: CurriculumActivity[] = [
         curriculumActivitiesList[3],
         curriculumActivitiesList[4],
         curriculumActivitiesList[5],
       ];
-
       const matchingProgramActivities: ProgramActivity[] = [
         program2ActivitiesList[0],
         program2ActivitiesList[1],
         program2ActivitiesList[2],
       ];
-
       const programWithActivities = JSON.parse(JSON.stringify(matchingProgram));
       programWithActivities.activities = matchingProgramActivities;
-
-      // findProgram
       mockQuery(
         'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
         [programId],
         [matchingProgram]
       );
-
-      //listCurriculumActivities
       mockQuery(
         'select `id`, `title`, `description_text`, `curriculum_week`, `curriculum_day`, `start_time`, `end_time`, `duration`, `activity_type_id`, `curriculum_id` from `activities` where `curriculum_id` = ?',
         [matchingProgram.curriculum_id],
         matchingCurriculumActivities
       );
-
-      // activityTypes
       mockQuery(
         'select `id`, `title` from `activity_types`',
         [],
         activityTypesList
       );
-
       expect(await findProgramWithActivities(programId)).toEqual(
         programWithActivities
       );
