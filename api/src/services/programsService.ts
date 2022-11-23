@@ -11,9 +11,9 @@ import { DateTime, Duration } from 'luxon';
 /**
  * Returns all programs in the database.
  *
- * @returns {Program[]} - all programs, or null if not found
+ * @returns {Program[]} - all programs in the db
  */
-export const listAllPrograms = async () => {
+export const listPrograms = async () => {
   const programsList = await db('programs').select(
     'id',
     'title',
@@ -29,7 +29,7 @@ export const listAllPrograms = async () => {
  * Returns the programs associated with a specified curriculum ID.
  *
  * @param {number} curriculumId - ID for a specified curriculum
- * @returns {Program[]} - all matching programs, or null if no match
+ * @returns {Program[]} - all matching programs
  */
 export const listProgramsForCurriculum = async (curriculumId: number) => {
   const programsList = await db<Program>('programs')
@@ -66,13 +66,35 @@ export const findProgram = async (programId: number) => {
 };
 
 /**
- * Return a list of curriculum activities that match the given curriculum id
+ * Return a list of all curriculum activities in the database.
  *
- * @param {number} curriculumId - The given curriculum id
  * @returns {CurriculumActivity[]} - An array of curriculum activities
  */
+export const listCurriculumActivities = async () => {
+  return await db<CurriculumActivity>('activities').select(
+    'id',
+    'title',
+    'description_text',
+    'curriculum_week',
+    'curriculum_day',
+    'start_time',
+    'end_time',
+    'duration',
+    'activity_type_id',
+    'curriculum_id'
+  );
+};
 
-export const listCurriculumActivities = async (curriculumId: number) => {
+/**
+ * Return a list of curriculum activities that match the given curriculum ID.
+ *
+ * @param {number} curriculumId - The given curriculum id
+ * @returns {CurriculumActivity[]} - An array of matching curriculum activities
+ */
+
+export const listCurriculumActivitiesForCurriculum = async (
+  curriculumId: number
+) => {
   const curriculumActivities = await db<CurriculumActivity>('activities')
     .select(
       'id',
@@ -117,41 +139,57 @@ export const findCurriculumActivity = async (activityId: number) => {
 };
 
 /**
- * Generate the list of all program activities for a given program based on the
- * activities associated with the program’s curriculum and the program’s start
- * date.
+ * Helper function to calculate the date of a given program activity given the
+ * program with which it's associated and the curriculum week and day of the
+ * event.
  *
- * @param {number} programId - The program ID for the specified program
- * @returns {programActivity[]} - An array of program activities
+ * @param {Program} program - the program associated with the activity
+ * @param {number} week - week number of the activity, starting with 1
+ * @param {number} day - day of the curriculum week, starting with 1
+ * @returns {DateTime} - a Luxon DateTime for the activity date
  */
-export const listProgramActivities = async (programId: number) => {
-  const program = await findProgram(programId);
-  const curriculumActivities = await listCurriculumActivities(
-    program.curriculum_id
-  );
+const calculateProgramActivityDate = (
+  program: Program,
+  week: number,
+  day: number
+) => {
+  const startDateLuxon = DateTime.fromISO(program.start_date, {
+    zone: program.time_zone,
+  });
+  const programActivityDate = startDateLuxon.plus({
+    weeks: week - 1,
+    days: day - 1,
+  });
+  return programActivityDate;
+};
 
-  const calculateProgramActivityDate = (week: number, day: number) => {
-    const startDateLuxon = DateTime.fromISO(program.start_date, {
-      zone: program.time_zone,
-    });
-    const programActivityDate = startDateLuxon.plus({
-      weeks: week - 1,
-      days: day - 1,
-    });
-    return programActivityDate;
-  };
-
-  const activityTypes = await db<ActivityType>('activity_types').select(
-    'id',
-    'title'
+/**
+ * Generate the list of all program activities for a given program based on the
+ * activities associated with the program’s curriculum and the list of all
+ * activity types.
+ *
+ * @param {Program} program - The program whose activities we should generate
+ * @param {CurriculumActivity[]} curriculumActivities - All curriculum activities
+ *   in the database
+ * @param {ActivityType[]} activityType - All activity types in the database
+ * @returns {ProgramActivity[]} - An array of program activities
+ */
+export const constructProgramActivities = (
+  program: Program,
+  curriculumActivities: CurriculumActivity[],
+  activityTypes: ActivityType[]
+) => {
+  const matchingCurriculumActivities = curriculumActivities.filter(
+    activity => activity.curriculum_id === program.curriculum_id
   );
-  const programActivities: ProgramActivity[] = curriculumActivities.map(
+  const programActivities: ProgramActivity[] = matchingCurriculumActivities.map(
     activity => {
-      const findActivityType = activityTypes.find(
+      const activityType = activityTypes.find(
         element => activity.activity_type_id === element.id
       );
 
       const activityDate = calculateProgramActivityDate(
+        program,
         activity.curriculum_week,
         activity.curriculum_day
       );
@@ -181,17 +219,25 @@ export const listProgramActivities = async (programId: number) => {
       return {
         title: activity.title,
         description_text: activity.description_text,
-        program_id: programId,
+        program_id: program.id,
         curriculum_activity_id: activity.id,
-        activity_type: findActivityType.title,
+        activity_type: activityType.title,
         start_time: startTime.toISO(),
         end_time: endTime.toISO(),
         duration: duration,
-      };
+      } as ProgramActivity;
     }
   );
-
   return programActivities;
+};
+
+/**
+ * Retrieve all activity types from the database.
+ *
+ * @returns {ActivityType[]} - array of all activity types from the database
+ */
+export const listActivityTypes = async () => {
+  return await db<ActivityType>('activity_types').select('id', 'title');
 };
 
 /**
@@ -200,15 +246,46 @@ export const listProgramActivities = async (programId: number) => {
  *
  * @param {number} programId - the id for the unique program
  * @returns {ProgramWithActivities} - a specified program containing an array
- *   of activities, or null if programId is not found
+ *   of activities
  */
 export const findProgramWithActivities = async (programId: number) => {
-  const matchingProgram = await findProgram(programId);
+  const program = await findProgram(programId);
+  const allCurriculumActivities = await listCurriculumActivities();
+  const activityTypes = await listActivityTypes();
 
-  // Cast program into variable that contains activities field
-  const pwa: ProgramWithActivities = JSON.parse(
-    JSON.stringify(matchingProgram)
-  );
-  pwa.activities = await listProgramActivities(matchingProgram.id);
+  const pwa: ProgramWithActivities = {
+    ...program,
+    activities: constructProgramActivities(
+      program,
+      allCurriculumActivities,
+      activityTypes
+    ),
+  };
+
   return pwa;
+};
+
+/**
+ * Retrieve the details for all programs in the database, including all program
+ * activities as a member of that program.
+ *
+ * @returns {ProgramWithActivities[]} - all programs with their activities
+ */
+export const listProgramsWithActivities = async () => {
+  const allPrograms = await listPrograms();
+  const allCurriculumActivities = await listCurriculumActivities();
+  const activityTypes = await listActivityTypes();
+
+  const programsWithActivities: ProgramWithActivities[] = allPrograms.map(
+    program => ({
+      ...program,
+      activities: constructProgramActivities(
+        program,
+        allCurriculumActivities,
+        activityTypes
+      ),
+    })
+  );
+
+  return programsWithActivities;
 };
