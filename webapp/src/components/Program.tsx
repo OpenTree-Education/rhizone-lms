@@ -11,17 +11,35 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { formatDate } from '../helpers/dateTime';
 import { ProgramActivity } from '../types/api';
 
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+
+import Stack from '@mui/material/Stack';
+
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+
 Settings.defaultZone = 'America/Vancouver';
 const localizer = luxonLocalizer(DateTime);
 
 interface ProgramProps {
+  id: number;
   title: string;
   startDate: string;
   endDate: string;
   activities: ProgramActivity[];
 }
 
-const Program = ({ title, startDate, endDate, activities }: ProgramProps) => {
+const Program = ({
+  id,
+  title,
+  startDate,
+  endDate,
+  activities,
+}: ProgramProps) => {
   const programEventsActivities: RBCEvent[] = activities.map(activity => {
     return {
       title: activity.title,
@@ -33,11 +51,23 @@ const Program = ({ title, startDate, endDate, activities }: ProgramProps) => {
   });
   return (
     <>
-      <Container fixed>
-        <p>Program: {title}</p>
-        <p>Start Date: {formatDate(startDate)}</p>
-        <p>End Date: {formatDate(endDate)}</p>
-      </Container>
+      <Stack direction="row" justifyContent="flex-start" alignItems="center">
+        <FormControl sx={{ mb: 0.6, minWidth: 450, maxWidth: 600 }}>
+          <InputLabel id="demo-simple-select-label">Program</InputLabel>
+          <Select
+            labelId="program-select-label"
+            id="program-select"
+            value={id}
+            label="Program"
+          >
+            <MenuItem value={id}>
+              <strong>{title}</strong> ({formatDate(startDate)} &ndash;{' '}
+              {formatDate(endDate)})
+            </MenuItem>
+          </Select>
+        </FormControl>
+      </Stack>
+
       <Calendar
         localizer={localizer}
         events={programEventsActivities}
