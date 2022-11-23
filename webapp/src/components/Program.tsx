@@ -1,50 +1,50 @@
 import React from 'react';
+import { DateTime, Settings } from 'luxon';
+import { Container } from '@mui/material';
+import {
+  Calendar,
+  luxonLocalizer,
+  Event as RBCEvent,
+} from 'react-big-calendar';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-import { EntityId, ProgramActivity } from '../types/api';
-import Activity from './Activity';
+import { formatDate } from '../helpers/dateTime';
+import { ProgramActivity } from '../types/api';
+
+Settings.defaultZone = 'America/Vancouver';
+const localizer = luxonLocalizer(DateTime);
 
 interface ProgramProps {
-  id: EntityId;
   title: string;
   startDate: string;
   endDate: string;
-  timeZone: string;
-  curriculumId: number;
   activities: ProgramActivity[];
 }
 
-const Program = ({
-  id,
-  title,
-  startDate,
-  endDate,
-  timeZone,
-  curriculumId,
-  activities,
-}: ProgramProps) => {
+const Program = ({ title, startDate, endDate, activities }: ProgramProps) => {
+  const programEventsActivities: RBCEvent[] = activities.map(activity => {
+    return {
+      title: activity.title,
+      start: new Date(activity.start_time),
+      end: new Date(activity.end_time),
+      description: activity.description_text,
+      allDay: activity.duration === 0,
+    };
+  });
   return (
     <>
-      <p>Program ID#{id}</p>
-      <p>Title: {title}</p>
-      <p>Start Date: {startDate}</p>
-      <p>End Date: {endDate}</p>
-      <p>Time Zone: {timeZone}</p>
-      <p>Curriculum ID: {curriculumId}</p>
-      {activities.map((activity, index) => {
-        return (
-          <Activity
-            key={index}
-            title={activity.title}
-            descriptionText={activity.description_text}
-            programId={activity.program_id}
-            curriculumActivityId={activity.curriculum_activity_id}
-            startTime={activity.start_time}
-            endTime={activity.end_time}
-            activityType={activity.activity_type}
-            duration={activity.duration}
-          />
-        );
-      })}
+      <Container fixed>
+        <p>Program: {title}</p>
+        <p>Start Date: {formatDate(startDate)}</p>
+        <p>End Date: {formatDate(endDate)}</p>
+      </Container>
+      <Calendar
+        localizer={localizer}
+        events={programEventsActivities}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500 }}
+      />
     </>
   );
 };
