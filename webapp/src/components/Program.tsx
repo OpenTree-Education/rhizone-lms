@@ -11,6 +11,7 @@ import {
   Event as RBCEvent,
 } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { decodeHTML } from "entities";
 
 import { formatDate } from '../helpers/dateTime';
 import { EntityId, ProgramActivity } from '../types/api';
@@ -36,11 +37,11 @@ const Program = ({
 
   const programEventsActivities: RBCEvent[] = activities.map(activity => {
     return {
-      title: activity.title,
+      title: decodeHTML(activity.title),
       start: new Date(activity.start_time),
       end: new Date(activity.end_time),
-      description: activity.description_text,
-      allDay: activity.duration === 0,
+      description: decodeHTML(activity.description_text),
+      allDay: !activity.duration,
     };
   });
   return (
