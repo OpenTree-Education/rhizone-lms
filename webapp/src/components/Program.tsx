@@ -1,6 +1,10 @@
 import React from 'react';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Stack from '@mui/material/Stack';
 import { DateTime, Settings } from 'luxon';
-import { Container } from '@mui/material';
 import {
   Calendar,
   luxonLocalizer,
@@ -11,35 +15,17 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { formatDate } from '../helpers/dateTime';
 import { ProgramActivity } from '../types/api';
 
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-
-import Stack from '@mui/material/Stack';
-
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-
 Settings.defaultZone = 'America/Vancouver';
 const localizer = luxonLocalizer(DateTime);
 
 interface ProgramProps {
-  id: number;
   title: string;
   startDate: string;
   endDate: string;
   activities: ProgramActivity[];
 }
 
-const Program = ({
-  id,
-  title,
-  startDate,
-  endDate,
-  activities,
-}: ProgramProps) => {
+const Program = ({ title, startDate, endDate, activities }: ProgramProps) => {
   const programEventsActivities: RBCEvent[] = activities.map(activity => {
     return {
       title: activity.title,
