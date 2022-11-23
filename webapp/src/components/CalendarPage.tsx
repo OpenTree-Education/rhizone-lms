@@ -39,6 +39,7 @@ const CalendarPage = () => {
         return (
           <Program
             key={program.id}
+            id={program.id}
             title={program.title}
             startDate={program.start_date}
             endDate={program.end_date}

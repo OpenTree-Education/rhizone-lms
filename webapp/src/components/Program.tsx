@@ -4,7 +4,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
-import { DateTime, Settings } from 'luxon';
+import { DateTime } from 'luxon';
 import {
   Calendar,
   luxonLocalizer,
@@ -13,19 +13,27 @@ import {
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 import { formatDate } from '../helpers/dateTime';
-import { ProgramActivity } from '../types/api';
+import { EntityId, ProgramActivity } from '../types/api';
 
-Settings.defaultZone = 'America/Vancouver';
 const localizer = luxonLocalizer(DateTime);
 
 interface ProgramProps {
+  id: EntityId;
   title: string;
   startDate: string;
   endDate: string;
   activities: ProgramActivity[];
 }
 
-const Program = ({ title, startDate, endDate, activities }: ProgramProps) => {
+const Program = ({
+  id,
+  title,
+  startDate,
+  endDate,
+  activities,
+}: ProgramProps) => {
+  const programId = id as number;
+
   const programEventsActivities: RBCEvent[] = activities.map(activity => {
     return {
       title: activity.title,
@@ -43,10 +51,10 @@ const Program = ({ title, startDate, endDate, activities }: ProgramProps) => {
           <Select
             labelId="program-select-label"
             id="program-select"
-            value={id}
+            value={programId}
             label="Program"
           >
-            <MenuItem value={id}>
+            <MenuItem value={programId}>
               <strong>{title}</strong> ({formatDate(startDate)} &ndash;{' '}
               {formatDate(endDate)})
             </MenuItem>
