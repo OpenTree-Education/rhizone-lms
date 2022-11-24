@@ -1,87 +1,60 @@
 import React from 'react';
-import { DateTime, Settings } from 'luxon';
-import { Container } from '@mui/material';
+import { decodeHTML } from 'entities';
+import { DateTime } from 'luxon';
 import {
   Calendar,
   luxonLocalizer,
+  Views,
   Event as RBCEvent,
 } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-import { formatDate } from '../helpers/dateTime';
-import { ProgramActivity } from '../types/api';
-import ActivityDialog from './ActivityDialog';
-
-Settings.defaultZone = 'America/Vancouver';
-const localizer = luxonLocalizer(DateTime);
+import { EntityId, ProgramActivity } from '../types/api';
 
 interface ProgramProps {
+  id: EntityId;
   title: string;
   startDate: string;
   endDate: string;
   activities: ProgramActivity[];
 }
 
-const Program = ({ title, startDate, endDate, activities }: ProgramProps) => {
-  const [dialogShow, setDialogShow] = React.useState(false);
-  const [dialogContents, setDialogContents] = React.useState("");
+export class Program {
+  id: EntityId;
+  title: string;
+  startDate: string;
+  endDate: string;
+  activities: ProgramActivity[];
 
-  // TODO: create a function that toggles the dialog show state after setting its contents.
-
-
-  const handleClickActivity = (clickEvent?: any) => {
-    if (dialogShow) {
-      setDialogShow(false)
-      setDialogContents("")
-    }
-    else {
-      setDialogShow(true)
-      setDialogContents(clickEvent.title)
-    }
-  };
-
-  const { scrollToTime } = React.useMemo(
-    () => ({
-      scrollToTime: new Date(1970, 1, 1, 6),
-    }),
-    []
-  );
-
-
-  const programEventsActivities: RBCEvent[] = activities.map(activity => {
-    return {
-      title: activity.title,
+  constructor({ id, title, startDate, endDate, activities }: ProgramProps) {
+    this.id = id;
+    this.title = title;
+    this.startDate = startDate;
+    this.endDate = endDate;
+    this.activities = activities;
+  }
+  activitiesForCalendar() {
+    return this.activities.map(activity => ({
+      title: decodeHTML(activity.title),
       start: new Date(activity.start_time),
       end: new Date(activity.end_time),
-      description: activity.description_text,
-      allDay: activity.duration === 0,
-    };
-  });
-  return (
-    <>
-      <Container fixed>
-        <p>Program: {title}</p>
-        <p>Start Date: {formatDate(startDate)}</p>
-        <p>End Date: {formatDate(endDate)}</p>
-      </Container>
+      description: decodeHTML(activity.description_text),
+      allDay: !activity.duration,
+    }));
+  }
+  getCalendar(handleClickActivity: (_: RBCEvent) => void) {
+    return (
       <Calendar
-        localizer={localizer}
-        events={programEventsActivities}
-        // TODO: click handler
+        events={this.activitiesForCalendar()}
         onSelectEvent={handleClickActivity}
-
-        scrollToTime={scrollToTime}
+        localizer={luxonLocalizer(DateTime)}
+        defaultView={Views.WEEK}
         startAccessor="start"
         endAccessor="end"
+        getNow={() => DateTime.local().toJSDate()}
+        scrollToTime={DateTime.local().set({ hour: 8, minute: 0 }).toJSDate()}
         style={{ height: 500 }}
       />
-      <ActivityDialog
-        show={dialogShow}
-        contents={dialogContents}
-        handleClose={handleClickActivity}
-      />
-    </>
-  );
-};
-
-export default Program;
+    );
+  }
+}
