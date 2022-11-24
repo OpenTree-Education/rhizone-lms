@@ -24,19 +24,20 @@ interface ProgramProps {
 
 const Program = ({ title, startDate, endDate, activities }: ProgramProps) => {
   const [dialogShow, setDialogShow] = React.useState(false);
-  const [dialogContents, setDialogContents] = React.useState("");
-
-  // TODO: create a function that toggles the dialog show state after setting its contents.
-
+  const [dialogContents, setDialogContents] = React.useState({});
 
   const handleClickActivity = (clickEvent?: any) => {
     if (dialogShow) {
-      setDialogShow(false)
-      setDialogContents("")
-    }
-    else {
-      setDialogShow(true)
-      setDialogContents(clickEvent.title)
+      setDialogShow(false);
+      setDialogContents([]);
+    } else {
+      setDialogShow(true);
+      setDialogContents({
+        title: clickEvent.title,
+        description_text: clickEvent.description,
+        start_time: clickEvent.start,
+        end_time: clickEvent.end,
+      });
     }
   };
 
@@ -46,8 +47,6 @@ const Program = ({ title, startDate, endDate, activities }: ProgramProps) => {
     }),
     []
   );
-
-
   const programEventsActivities: RBCEvent[] = activities.map(activity => {
     return {
       title: activity.title,
@@ -67,9 +66,7 @@ const Program = ({ title, startDate, endDate, activities }: ProgramProps) => {
       <Calendar
         localizer={localizer}
         events={programEventsActivities}
-        // TODO: click handler
         onSelectEvent={handleClickActivity}
-
         scrollToTime={scrollToTime}
         startAccessor="start"
         endAccessor="end"
@@ -83,5 +80,4 @@ const Program = ({ title, startDate, endDate, activities }: ProgramProps) => {
     </>
   );
 };
-
 export default Program;
