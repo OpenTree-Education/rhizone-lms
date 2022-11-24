@@ -1,13 +1,24 @@
-import { Container } from '@mui/material';
 import React from 'react';
-import useApiData from '../helpers/useApiData';
+import {
+  Container,
+  Stack,
+  Select,
+  SelectChangeEvent,
+  MenuItem,
+  InputLabel,
+  FormControl,
+} from '@mui/material';
 
+import { formatDate } from '../helpers/dateTime';
+import useApiData from '../helpers/useApiData';
 import { ProgramWithActivities } from '../types/api';
-import Program from './Program';
+
+import { Program } from './Program';
 
 const CalendarPage = () => {
+  const [selectedProgram, setSelectedProgram] = React.useState(0);
   const {
-    data: programs,
+    data: apiPrograms,
     error,
     isLoading,
   } = useApiData<ProgramWithActivities[]>({
@@ -16,31 +27,59 @@ const CalendarPage = () => {
     sendCredentials: true,
   });
   if (error) {
-    return <p>There was an error loading the programs.</p>;
+    return (
+      <Container fixed>
+        <p>There was an error loading the programs.</p>
+      </Container>
+    );
   }
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <Container fixed>
+        <div>Loading...</div>
+      </Container>
+    );
   }
-  if (!programs) {
+  if (!apiPrograms) {
     return null;
   }
+  const programs = apiPrograms.map(
+    program =>
+      new Program({
+        id: program.id,
+        title: program.title,
+        startDate: program.start_date,
+        endDate: program.end_date,
+        activities: program.activities,
+      })
+  );
+  const changeProgram = (event: SelectChangeEvent) => {
+    setSelectedProgram(parseInt(event.target.value));
+  };
   return (
-    <Container fixed>
-      <h2>Programs</h2>
-      {programs.map(program => {
-        return (
-          <Program
-            key={program.id}
-            id={program.id}
-            title={program.title}
-            startDate={program.start_date}
-            endDate={program.end_date}
-            timeZone={program.time_zone}
-            curriculumId={program.curriculum_id}
-            activities={program.activities}
-          />
-        );
-      })}
+    <Container>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <h2>Program Activities</h2>
+        <FormControl sx={{ my: 3, minWidth: 450, maxWidth: 600 }}>
+          <InputLabel id="program-select-label">Program</InputLabel>
+          <Select
+            labelId="program-select-label"
+            id="program-select"
+            value={selectedProgram.toString()}
+            label="Program"
+            onChange={changeProgram}
+          >
+            {programs.map((program, index) => (
+              <MenuItem value={index} key={index}>
+                <strong>{program.title}</strong>&nbsp; (
+                {formatDate(program.startDate)} &ndash;{' '}
+                {formatDate(program.endDate)})
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Stack>
+      {programs[selectedProgram].getCalendar()}
     </Container>
   );
 };
