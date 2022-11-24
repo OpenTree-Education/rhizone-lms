@@ -1,7 +1,7 @@
 import React from 'react';
 import { decodeHTML } from 'entities';
 import { DateTime } from 'luxon';
-import { Calendar, luxonLocalizer } from 'react-big-calendar';
+import { Calendar, luxonLocalizer, Views } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 import { EntityId, ProgramActivity } from '../types/api';
@@ -42,8 +42,11 @@ export class Program {
       <Calendar
         localizer={luxonLocalizer(DateTime)}
         events={this.activitiesForCalendar()}
+        defaultView={Views.WEEK}
         startAccessor="start"
         endAccessor="end"
+        getNow={() => DateTime.local().toJSDate()}
+        scrollToTime={DateTime.local().set({ hour: 8, minute: 0 }).toJSDate()}
         style={{ height: 500 }}
       />
     );
