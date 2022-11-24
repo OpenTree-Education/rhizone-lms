@@ -72,7 +72,12 @@ CREATE TABLE participant_activities (
 );
 
 INSERT INTO activity_types (title) VALUES
-  ('class'),
   ('assignment'),
+  ('all-day activity'),
+  ('planning'),
   ('standup'),
-  ('retrospective');
+  ('bulk development'),
+  ('office hours'),
+  ('workshop'),
+  ('retrospective'),
+  ('other meeting');
