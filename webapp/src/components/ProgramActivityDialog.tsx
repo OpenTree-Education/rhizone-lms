@@ -7,7 +7,7 @@ interface ActivityDialogProps {
   handleClose: () => void;
 }
 
-const ActivityDialog = ({
+const ProgramActivityDialog = ({
   show,
   contents,
   handleClose,
@@ -26,4 +26,4 @@ const ActivityDialog = ({
   );
 };
 
-export default ActivityDialog;
+export default ProgramActivityDialog;
