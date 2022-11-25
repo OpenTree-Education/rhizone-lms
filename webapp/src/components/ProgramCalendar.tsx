@@ -30,7 +30,6 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
     if (dialogShow) {
       setDialogShow(false);
     } else {
-      setDialogContents({});
       setDialogShow(true);
       setDialogContents({
         title: clickEvent.title,
