@@ -1,9 +1,14 @@
 import React from 'react';
-import { Dialog } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider } from '@mui/material';
 
-interface ActivityDialogProps {
+interface ProgramActivityDialogProps {
   show: boolean;
-  contents: string;
+  contents: {
+    title?: string;
+    description_text?: string;
+    start_time?: Date;
+    end_time?: Date;
+  };
   handleClose: () => void;
 }
 
@@ -11,17 +16,59 @@ const ProgramActivityDialog = ({
   show,
   contents,
   handleClose,
-}: ActivityDialogProps) => {
+}: ProgramActivityDialogProps) => {
   return (
-    // TODO: pass the appropriate props to Dialog for it to display the information you need,
-    // then use the other imports to style the Dialog to look more... attractive.
     <Dialog
       open={show}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      {contents}
+      <DialogTitle id="alert-dialog-title" sx={{ textAlign: 'center' }}>
+        {contents.title}
+      </DialogTitle>
+
+      <Divider />
+
+      <DialogContent>
+        {contents.start_time?.toLocaleDateString() ===
+        contents.end_time?.toLocaleDateString() ? (
+          <DialogContentText id="alert-dialog-description">
+            <b>Date:</b> {contents.start_time?.toLocaleDateString()}
+          </DialogContentText>
+        ) : (
+          <DialogContentText id="alert-dialog-description">
+            <b>Date:</b> {contents.start_time?.toLocaleDateString()} -{' '}
+            {contents.end_time?.toLocaleDateString()}
+          </DialogContentText>
+        )}
+        <DialogContentText id="alert-dialog-description">
+          <b>Time:</b> {contents.start_time?.toLocaleTimeString()} -{' '}
+          {contents.end_time?.toLocaleTimeString()}
+        </DialogContentText>
+
+        <DialogContentText id="alert-dialog-description">
+          <b>Desciption:</b> {contents.description_text}
+        </DialogContentText>
+      </DialogContent>
+
+      <Divider />
+
+      <DialogActions>
+        <Button
+          onClick={handleClose}
+          sx={{
+            backgroundColor: 'primary.main',
+            color: 'common.white',
+            '&:hover': {
+              backgroundColor: 'primary.main',
+              color: 'common.white',
+            },
+          }}
+        >
+          Close
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };
