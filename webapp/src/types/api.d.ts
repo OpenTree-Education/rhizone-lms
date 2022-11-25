@@ -1,3 +1,5 @@
+import { Event as RBCEvent } from 'react-big-calendar';
+
 export type EntityId = number | string | null | undefined;
 
 export interface Entity {
@@ -85,7 +87,7 @@ export interface ProgramActivity {
   activity_type: string;
   start_time: string;
   end_time: string;
-  duration: number; // if duration is '0', it's an all-day event
+  duration: number;
 }
 
 export interface ProgramWithActivities extends Entity {
@@ -95,6 +97,11 @@ export interface ProgramWithActivities extends Entity {
   time_zone: string;
   curriculum_id: number;
   activities: ProgramActivity[];
+}
+
+export interface Curriculum extends Entity {
+  title: string;
+  principal_id: number;
 }
 
 export interface CurriculumActivity extends Entity {
@@ -109,7 +116,6 @@ export interface CurriculumActivity extends Entity {
   curriculum_id: number;
 }
 
-export interface Curriculum extends Entity {
-  title: string;
-  principal_id: number;
+interface CalendarEvent extends RBCEvent {
+  description: string;
 }
