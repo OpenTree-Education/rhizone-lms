@@ -10,7 +10,7 @@ import Navbar from './Navbar';
 import ReflectionsPage from './ReflectionsPage';
 import RequireAuth from './RequireAuth';
 import SessionContext from './SessionContext';
-import CalendarPage from './CalendarPage';
+import ProgramsPage from './ProgramsPage';
 
 const App = () => {
   const { isAuthenticated } = useContext(SessionContext);
@@ -55,7 +55,7 @@ const App = () => {
             path="/calendar"
             element={
               <RequireAuth>
-                <CalendarPage />
+                <ProgramsPage />
               </RequireAuth>
             }
           />
