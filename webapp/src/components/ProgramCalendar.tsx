@@ -24,15 +24,20 @@ const activitiesForCalendar = (activities: ProgramActivity[]) => {
 
 const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
   const [dialogShow, setDialogShow] = React.useState(false);
-  const [dialogContents, setDialogContents] = React.useState('');
+  const [dialogContents, setDialogContents] = React.useState({});
 
   const handleClickActivity = (clickEvent?: any) => {
     if (dialogShow) {
       setDialogShow(false);
-      setDialogContents('');
+      setDialogContents([]);
     } else {
       setDialogShow(true);
-      setDialogContents(clickEvent.title);
+      setDialogContents({
+        title: clickEvent.title,
+        description_text: clickEvent.description,
+        start_time: clickEvent.start,
+        end_time: clickEvent.end,
+      });
     }
   };
 
