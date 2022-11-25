@@ -6,39 +6,47 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 import ProgramActivityDialog from './ProgramActivityDialog';
 
-import { ProgramWithActivities, ProgramActivity } from '../types/api';
+import {
+  CalendarEvent,
+  ProgramWithActivities,
+  ProgramActivity,
+} from '../types/api';
 
 interface ProgramCalendarProps {
   program: ProgramWithActivities;
 }
 
-const activitiesForCalendar = (activities: ProgramActivity[]) => {
-  return activities.map(activity => ({
-    title: decodeHTML(activity.title),
-    start: new Date(activity.start_time),
-    end: new Date(activity.end_time),
-    description: decodeHTML(activity.description_text),
-    allDay: !activity.duration,
-  }));
+const activitiesForCalendar = (
+  activities: ProgramActivity[]
+): CalendarEvent[] => {
+  return activities.map(
+    activity =>
+      ({
+        title: decodeHTML(activity.title),
+        start: new Date(activity.start_time),
+        end: new Date(activity.end_time),
+        description: decodeHTML(activity.description_text),
+        allDay: !activity.duration,
+      } as CalendarEvent)
+  );
 };
 
 const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
   const [dialogShow, setDialogShow] = React.useState(false);
-  const [dialogContents, setDialogContents] = React.useState({});
+  const [dialogContents, setDialogContents] = React.useState<CalendarEvent>({
+    title: '',
+    description: '',
+    allDay: false,
+    start: new Date(),
+    end: new Date(),
+  });
 
-  const handleClickActivity = (clickEvent?: any) => {
-    if (dialogShow) {
-      setDialogShow(false);
-    } else {
-      setDialogShow(true);
-      setDialogContents({
-        title: clickEvent.title,
-        description_text: clickEvent.description,
-        start_time: clickEvent.start,
-        end_time: clickEvent.end,
-      });
-    }
+  const handleClickActivity = (activity: CalendarEvent) => {
+    setDialogShow(true);
+    setDialogContents(activity);
   };
+
+  const closeDialog = () => setDialogShow(false);
 
   return (
     <>
@@ -56,7 +64,7 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
       <ProgramActivityDialog
         show={dialogShow}
         contents={dialogContents}
-        handleClose={handleClickActivity}
+        handleClose={closeDialog}
       />
     </>
   );

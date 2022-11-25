@@ -1,4 +1,5 @@
 import React from 'react';
+import { decodeHTML } from 'entities';
 import {
   Button,
   Dialog,
@@ -9,14 +10,12 @@ import {
   Divider,
 } from '@mui/material';
 
+import { formatDate, formatTime } from '../helpers/dateTime';
+import { CalendarEvent } from '../types/api';
+
 interface ProgramActivityDialogProps {
   show: boolean;
-  contents: {
-    title?: string;
-    description_text?: string;
-    start_time?: Date;
-    end_time?: Date;
-  };
+  contents: CalendarEvent;
   handleClose: () => void;
 }
 
@@ -25,6 +24,40 @@ const ProgramActivityDialog = ({
   contents,
   handleClose,
 }: ProgramActivityDialogProps) => {
+  const timeRange = () => {
+    if (
+      !(
+        contents.start &&
+        contents.end &&
+        contents.description &&
+        contents.title
+      )
+    ) {
+      return;
+    }
+    if (contents.allDay) {
+      return formatDate(contents.start.toDateString());
+    }
+
+    let timeRangeString = '';
+
+    timeRangeString += formatDate(contents.start.toString()) + ' ';
+    timeRangeString += formatTime(contents.start.toString());
+
+    if (contents.start.toString() === contents.end.toString()) {
+      return timeRangeString;
+    }
+
+    timeRangeString += decodeHTML('&nbsp;&ndash;&nbsp;');
+
+    if (contents.start.toDateString() !== contents.end.toDateString()) {
+      timeRangeString += formatDate(contents.end.toString()) + ' ';
+    }
+    timeRangeString += formatTime(contents.end.toString());
+
+    return timeRangeString;
+  };
+
   return (
     <Dialog
       open={show}
@@ -39,24 +72,12 @@ const ProgramActivityDialog = ({
       <Divider />
 
       <DialogContent>
-        {contents.start_time?.toLocaleDateString() ===
-        contents.end_time?.toLocaleDateString() ? (
-          <DialogContentText id="alert-dialog-description">
-            <b>Date:</b> {contents.start_time?.toLocaleDateString()}
-          </DialogContentText>
-        ) : (
-          <DialogContentText id="alert-dialog-description">
-            <b>Date:</b> {contents.start_time?.toLocaleDateString()} -{' '}
-            {contents.end_time?.toLocaleDateString()}
-          </DialogContentText>
-        )}
-        <DialogContentText id="alert-dialog-description">
-          <b>Time:</b> {contents.start_time?.toLocaleTimeString()} -{' '}
-          {contents.end_time?.toLocaleTimeString()}
+        <DialogContentText id="alert-dialog-description" sx={{ mb: 1 }}>
+          {timeRange()}
         </DialogContentText>
 
         <DialogContentText id="alert-dialog-description">
-          <b>Description:</b> {contents.description_text}
+          <b>Description:</b> {contents.description}
         </DialogContentText>
       </DialogContent>
 
