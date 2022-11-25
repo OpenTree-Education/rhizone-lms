@@ -84,17 +84,7 @@ const ProgramActivityDialog = ({
       <Divider />
 
       <DialogActions>
-        <Button
-          onClick={handleClose}
-          sx={{
-            backgroundColor: 'primary.main',
-            color: 'common.white',
-            '&:hover': {
-              backgroundColor: 'primary.main',
-              color: 'common.white',
-            },
-          }}
-        >
+        <Button onClick={handleClose} variant="contained">
           Close
         </Button>
       </DialogActions>
