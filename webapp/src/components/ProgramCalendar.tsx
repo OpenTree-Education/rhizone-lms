@@ -29,8 +29,8 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
   const handleClickActivity = (clickEvent?: any) => {
     if (dialogShow) {
       setDialogShow(false);
-      setDialogContents([]);
     } else {
+      setDialogContents({});
       setDialogShow(true);
       setDialogContents({
         title: clickEvent.title,

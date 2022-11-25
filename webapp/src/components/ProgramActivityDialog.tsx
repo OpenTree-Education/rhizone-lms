@@ -48,7 +48,7 @@ const ProgramActivityDialog = ({
         </DialogContentText>
 
         <DialogContentText id="alert-dialog-description">
-          <b>Desciption:</b> {contents.description_text}
+          <b>Description:</b> {contents.description_text}
         </DialogContentText>
       </DialogContent>
 
