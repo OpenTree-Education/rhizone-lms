@@ -29,7 +29,7 @@
     "mysql": "^2.18.1",
     "redis": "^3.1.2",
     "rollbar": "^2.24.0",
-    "socket.io": "^4.4.1",
+    "socket.io": "^4.5.4",
     "superagent": "^6.1.0"
   },
   "devDependencies": {
