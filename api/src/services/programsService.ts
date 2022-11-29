@@ -289,3 +289,54 @@ export const listProgramsWithActivities = async () => {
 
   return programsWithActivities;
 };
+
+// return an activity? or only CompletionStatus?
+export const getActivityWithCompletionStatus = async (
+  principalId: number,
+  programId: number,
+  activityId: number
+) => {
+   return await db('participant_activities')
+    .select('id','program_id', 'activity_id', 'principal_id', 'completed')
+    .where({ principalId, programId, activityId});
+};
+
+export const createParticipantActivity = async (
+  principalId: number,
+  programId: number,
+  activityId: number
+) => {
+  let participantActivityId: number;
+
+  // check if participant_activitie exists
+  [participantActivityId] = await db('participant_activities')
+    .select('id')
+    .where({ principalId, programId, activityId});
+
+  // if participant_activitie doesn't exist, create one
+  if(!participantActivityId){
+    await db.transaction(async trx => {
+      [participantActivityId] = await trx('participant_activities').insert({
+        principal_id: principalId,
+        program_id: programId,
+        activity_id: activityId,
+      })
+    });
+  }
+  return { id: participantActivityId };
+};
+
+export const toggleCompletionStatus = async (
+  id: number,
+  principalId: number,
+  programId: number,
+  activityId: number
+) => {
+  const [completed] = await db('participant_activities')
+    .select('completed')
+    .where({ id, principalId, programId, activityId});
+  await db('participant_activities')
+    .where({ id, principalId, programId, activityId })
+    .update({ completed: !completed });
+};
+
