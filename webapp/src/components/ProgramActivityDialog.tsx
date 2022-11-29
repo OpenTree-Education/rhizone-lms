@@ -19,6 +19,11 @@ interface ProgramActivityDialogProps {
   handleClose: () => void;
 }
 
+//todo
+// const findProgram = (programId: number) => {
+//   return
+// }
+
 const ProgramActivityDialog = ({
   show,
   contents,
@@ -76,9 +81,12 @@ const ProgramActivityDialog = ({
           {timeRange()}
         </DialogContentText>
 
+        <DialogContentText><b>Program:</b>{contents.theProgram}</DialogContentText>
+
         <DialogContentText id="alert-dialog-description">
-          <b>Description:</b> {contents.description}
+          <b>Description: </b> {contents.description}
         </DialogContentText>
+
       </DialogContent>
 
       <Divider />
