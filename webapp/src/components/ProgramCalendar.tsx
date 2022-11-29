@@ -60,6 +60,7 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
         getNow={() => DateTime.local().toJSDate()}
         scrollToTime={DateTime.local().set({ hour: 8, minute: 0 }).toJSDate()}
         style={{ height: 500 }}
+        popup
       />
       <ProgramActivityDialog
         show={dialogShow}
