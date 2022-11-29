@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Stack } from '@mui/material';
+import { CircularProgress, Container, Stack } from '@mui/material';
 
 import ProgramPicker from './ProgramPicker';
 import ProgramCalendar from './ProgramCalendar';
@@ -28,9 +28,13 @@ const ProgramsPage = () => {
   }
   if (isLoading) {
     return (
-      <Container fixed>
-        <div>Loading...</div>
-      </Container>
+      <Stack
+        alignItems="center"
+        justifyContent="center"
+        sx={{ height: '100vh' }}
+      >
+        <CircularProgress disableShrink />
+      </Stack>
     );
   }
   if (!programsList) {
