@@ -290,43 +290,20 @@ export const listProgramsWithActivities = async () => {
   return programsWithActivities;
 };
 
-// return CompletionStatus (a boolean value, true or false)
-export const getCompletionStatus = async (
-  participantActivityId: number
-) => {
-  const isCompleted =  await db('participant_activities')
-    .select('completed')
-    .where({participantActivityId});
-  return Boolean(isCompleted)
-
-};
-/*
-export const getCompletionStatus = async (
-  principalId: number,
-  programId: number,
-  activityId: number
-) => {
-   return await db('participant_activities')
-    .select('completed')
-    .where({ principalId, programId, activityId});
-};
-*/
-
-
 // return participantActivityId
-export const getParticipantActivityId = async (
+const getParticipantActivityId = async (
   principalId: number,
   programId: number,
   activityId: number
 ) => {
   let participantActivityId: number;
 
-  // if participant_activitie exists, get participantActivityId
+  // if participant_activity exists, get participantActivityId
   [participantActivityId] = await db('participant_activities')
     .select('id')
     .where({ principalId, programId, activityId});
 
-  // if participant_activitie doesn't exist, create one
+  // if participant_activity doesn't exist, create one
   if(!participantActivityId){
     await db.transaction(async trx => {
       [participantActivityId] = await trx('participant_activities').insert({
@@ -339,15 +316,31 @@ export const getParticipantActivityId = async (
   return { id: participantActivityId };
 };
 
-export const toggleCompletionStatus = async (
-  id: number,
+// getter -return CompletionStatus (a boolean value, true or false)
+export const getParticipantActivityCompletion = async (
+  principalId: number,
+  programId: number,
+  activityId: number,
+) => {
+  const participantActivityId = await getParticipantActivityId(principalId, programId, activityId);
+  const isCompleted =  await db('participant_activities')
+    .select('completed')
+    .where({id: participantActivityId});
+  return Boolean(isCompleted)
+};
+
+// setter
+export const setParticipantActivityCompletion = async (
   principalId: number,
   programId: number,
   activityId: number,
   completed:boolean
 ) => {
+  const participantActivityId = await getParticipantActivityId(principalId, programId, activityId);
   await db('participant_activities')
-    .where({ id, principalId, programId, activityId })
+    .where({ participantActivityId, principalId, programId, activityId })
     .update({ completed: !completed });
 };
+
+
 
