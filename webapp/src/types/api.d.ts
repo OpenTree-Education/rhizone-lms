@@ -118,4 +118,5 @@ export interface CurriculumActivity extends Entity {
 
 interface CalendarEvent extends RBCEvent {
   description: string;
+  activityType: string;
 }
