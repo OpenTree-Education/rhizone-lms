@@ -9,15 +9,17 @@ import PeopleIcon from '@mui/icons-material/People';
 import MeetingsDrawerContext from './MeetingsDrawerContext';
 
 const StyledLogo = styled.ul`
-  &:hover { color: blue }
-`
+  &:hover {
+    color: blue;
+  }
+`;
 
 const Navbar = () => {
   const { open: openMeetingsDrawer } = useContext(MeetingsDrawerContext);
   return (
     <Grid alignItems="center" container px={3}>
       <Grid item xs>
-        <Link to="/" style={{textDecoration: 'none', color: 'black'}}>
+        <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>
           <StyledLogo>
             <h1>Rhizone</h1>
           </StyledLogo>
