@@ -290,25 +290,38 @@ export const listProgramsWithActivities = async () => {
   return programsWithActivities;
 };
 
-// return an activity? or only CompletionStatus?
-export const getActivityWithCompletionStatus = async (
+// return CompletionStatus (a boolean value, true or false)
+export const getCompletionStatus = async (
+  participantActivityId: number
+) => {
+  const isCompleted =  await db('participant_activities')
+    .select('completed')
+    .where({participantActivityId});
+  return Boolean(isCompleted)
+
+};
+/*
+export const getCompletionStatus = async (
   principalId: number,
   programId: number,
   activityId: number
 ) => {
    return await db('participant_activities')
-    .select('id','program_id', 'activity_id', 'principal_id', 'completed')
+    .select('completed')
     .where({ principalId, programId, activityId});
 };
+*/
 
-export const createParticipantActivity = async (
+
+// return participantActivityId
+export const getParticipantActivityId = async (
   principalId: number,
   programId: number,
   activityId: number
 ) => {
   let participantActivityId: number;
 
-  // check if participant_activitie exists
+  // if participant_activitie exists, get participantActivityId
   [participantActivityId] = await db('participant_activities')
     .select('id')
     .where({ principalId, programId, activityId});
@@ -330,11 +343,9 @@ export const toggleCompletionStatus = async (
   id: number,
   principalId: number,
   programId: number,
-  activityId: number
+  activityId: number,
+  completed:boolean
 ) => {
-  const [completed] = await db('participant_activities')
-    .select('completed')
-    .where({ id, principalId, programId, activityId});
   await db('participant_activities')
     .where({ id, principalId, programId, activityId })
     .update({ completed: !completed });
