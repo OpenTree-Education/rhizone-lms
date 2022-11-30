@@ -27,6 +27,7 @@ const activitiesForCalendar = (
         end: new Date(activity.end_time),
         description: decodeHTML(activity.description_text),
         allDay: !activity.duration,
+        activityType: decodeHTML(activity.activity_type),
       } as CalendarEvent)
   );
 };
@@ -39,6 +40,7 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
     allDay: false,
     start: new Date(),
     end: new Date(),
+    activityType: '',
   });
 
   const handleClickActivity = (activity: CalendarEvent) => {

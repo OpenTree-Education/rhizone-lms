@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { decodeHTML } from 'entities';
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
   Divider,
+  FormControlLabel,
+  FormGroup,
 } from '@mui/material';
 
 import { formatDate, formatTime } from '../helpers/dateTime';
@@ -24,13 +27,20 @@ const ProgramActivityDialog = ({
   contents,
   handleClose,
 }: ProgramActivityDialogProps) => {
+  const [checked, setChecked] = useState(true);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked);
+  };
+
   const timeRange = () => {
     if (
       !(
         contents.start &&
         contents.end &&
         contents.description &&
-        contents.title
+        contents.title &&
+        contents.activityType
       )
     ) {
       return;
@@ -75,12 +85,33 @@ const ProgramActivityDialog = ({
         <DialogContentText id="alert-dialog-description" sx={{ mb: 1 }}>
           {timeRange()}
         </DialogContentText>
-
+        <DialogContentText id="alert-dialog-description">
+          <b>Activity Type:</b> {contents.activityType}
+        </DialogContentText>
         <DialogContentText id="alert-dialog-description">
           <b>Description:</b> {contents.description}
         </DialogContentText>
+        {contents.activityType === 'assignment' && (
+          <FormGroup
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+            }}
+          >
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={checked}
+                  onChange={handleChange}
+                  inputProps={{ 'aria-label': 'controlled' }}
+                />
+              }
+              label="Mark Completed"
+            />
+          </FormGroup>
+        )}
       </DialogContent>
-
       <Divider />
 
       <DialogActions>
