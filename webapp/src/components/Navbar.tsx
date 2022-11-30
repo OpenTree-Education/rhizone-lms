@@ -1,11 +1,16 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Grid, IconButton } from '@mui/material';
+import styled from '@emotion/styled';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import HomeIcon from '@mui/icons-material/Home';
 import PeopleIcon from '@mui/icons-material/People';
 
 import MeetingsDrawerContext from './MeetingsDrawerContext';
+
+const StyledLogo = styled.ul`
+  &:hover { color: blue }
+`
 
 const Navbar = () => {
   const { open: openMeetingsDrawer } = useContext(MeetingsDrawerContext);
@@ -13,7 +18,9 @@ const Navbar = () => {
     <Grid alignItems="center" container px={3}>
       <Grid item xs>
         <Link to="/" style={{textDecoration: 'none', color: 'black'}}>
-          <h1>Rhizone</h1>
+          <StyledLogo>
+            <h1>Rhizone</h1>
+          </StyledLogo>
         </Link>
       </Grid>
       <Grid item xs="auto">
