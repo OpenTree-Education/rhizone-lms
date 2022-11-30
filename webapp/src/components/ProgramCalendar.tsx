@@ -65,6 +65,7 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
         components={{
           timeGutterHeader: TimeGutter,
         }}
+        popup
       />
       <ProgramActivityDialog
         show={dialogShow}
