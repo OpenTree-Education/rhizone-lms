@@ -19,6 +19,12 @@ programsRouter.get('/activityStatus/:programId/:activityId', async (req, res, ne
   let participantActivityId;
   let activityCompletionStatus; // alternative variable names: isCompleted; completionStatus
 
+ // checks:
+  // program exists
+  // activity exists
+  // curriculumId of program matches curriculumId of activity
+  // there's a ParticipantActivities record associated with the specified principalId, programId, and activityId
+  
   try {
     activityCompletionStatus = await getParticipantActivityCompletion(principalId, Number(programId), Number(activityId))
   } catch (err) {
