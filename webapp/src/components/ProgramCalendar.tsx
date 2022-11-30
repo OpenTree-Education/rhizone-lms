@@ -21,13 +21,13 @@ const activitiesForCalendar = (
 ): CalendarEvent[] => {
   return activities.map(
     activity =>
-      ({
-        title: decodeHTML(activity.title),
-        start: new Date(activity.start_time),
-        end: new Date(activity.end_time),
-        description: decodeHTML(activity.description_text),
-        allDay: !activity.duration,
-      } as CalendarEvent)
+    ({
+      title: decodeHTML(activity.title),
+      start: new Date(activity.start_time),
+      end: new Date(activity.end_time),
+      description: decodeHTML(activity.description_text),
+      allDay: !activity.duration,
+    } as CalendarEvent)
   );
 };
 
@@ -40,6 +40,7 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
     start: new Date(),
     end: new Date(),
   });
+  const [currentView, setCurrentView] = React.useState<string>(Views.WEEK);
 
   const handleClickActivity = (activity: CalendarEvent) => {
     setDialogShow(true);
@@ -48,11 +49,30 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
 
   const closeDialog = () => setDialogShow(false);
 
+  const handleChangingView = React.useCallback((newView: string): void => setCurrentView(newView), [setCurrentView]);
+
+  const eventStyleGetter = (event: any) => {
+    let style;
+    if (currentView === 'week') {
+      style = {
+        display: 'block',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap' as 'nowrap',
+        minHeight: '4%'
+      }
+    }
+
+    return { style: style };
+  }
+
   return (
     <>
       <Calendar
         events={activitiesForCalendar(program.activities)}
         onSelectEvent={handleClickActivity}
+        onView={handleChangingView}
+        eventPropGetter={eventStyleGetter}
         localizer={luxonLocalizer(DateTime)}
         defaultView={Views.WEEK}
         startAccessor="start"
