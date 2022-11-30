@@ -19,11 +19,6 @@ interface ProgramActivityDialogProps {
   handleClose: () => void;
 }
 
-//todo
-// const findProgram = (programId: number) => {
-//   return
-// }
-
 const ProgramActivityDialog = ({
   show,
   contents,
