@@ -31,9 +31,9 @@ const ProgramsPage = () => {
       <Stack
         alignItems="center"
         justifyContent="center"
-        sx={{ height: '100vh' }}
+        sx={{ height: '80vh' }}
       >
-        <CircularProgress disableShrink />
+        <CircularProgress size={100} disableShrink />
       </Stack>
     );
   }
