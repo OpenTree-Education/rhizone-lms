@@ -46,7 +46,7 @@ programsRouter.get(
       )
     };
 
-    res.json(itemEnvelope({ status: activityCompletionStatus }));
+    res.json(itemEnvelope(activityCompletionStatus));
   }
 );
 
