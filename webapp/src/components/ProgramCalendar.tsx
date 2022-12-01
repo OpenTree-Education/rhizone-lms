@@ -22,13 +22,13 @@ const activitiesForCalendar = (
 ): CalendarEvent[] => {
   return activities.map(
     activity =>
-    ({
-      title: decodeHTML(activity.title),
-      start: new Date(activity.start_time),
-      end: new Date(activity.end_time),
-      description: decodeHTML(activity.description_text),
-      allDay: !activity.duration,
-    } as CalendarEvent)
+      ({
+        title: decodeHTML(activity.title),
+        start: new Date(activity.start_time),
+        end: new Date(activity.end_time),
+        description: decodeHTML(activity.description_text),
+        allDay: !activity.duration,
+      } as CalendarEvent)
   );
 };
 
