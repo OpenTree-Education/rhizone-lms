@@ -22,13 +22,13 @@ const activitiesForCalendar = (
 ): CalendarEvent[] => {
   return activities.map(
     activity =>
-      ({
-        title: decodeHTML(activity.title),
-        start: new Date(activity.start_time),
-        end: new Date(activity.end_time),
-        description: decodeHTML(activity.description_text),
-        allDay: !activity.duration,
-      } as CalendarEvent)
+    ({
+      title: decodeHTML(activity.title),
+      start: new Date(activity.start_time),
+      end: new Date(activity.end_time),
+      description: decodeHTML(activity.description_text),
+      allDay: !activity.duration,
+    } as CalendarEvent)
   );
 };
 
@@ -59,27 +59,37 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
     let style;
     if (currentView === 'week') {
       style = {
-        display: 'block',
-        whiteSpace: 'nowrap' as 'nowrap',
-        minHeight: '4%',
-      };
+        flexDirection: 'row' as 'row',
+        minHeight: '4%'
+      }
     }
     return { style: style };
   };
 
   const CustomWeekEvent = (event: any) => {
+    const getValueProperty = (event: any) => {
+      const durationEvent = (event.event.end - event.event.start) / 1000 / 60;
+      if (durationEvent <= 60) {
+        return 'nowrap';
+      } else {
+        return 'normal';
+      }
+    }
+
     return (
       <Box
         className="rbc-event-content-custom"
         sx={{
+          display: 'block',
           height: '100%',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}
+          whiteSpace: getValueProperty(event)
+        }
+        }
       >
         {event.title}
-      </Box>
+      </Box >
     );
   };
 
