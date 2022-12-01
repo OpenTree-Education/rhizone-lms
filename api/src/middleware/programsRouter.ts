@@ -6,6 +6,7 @@ import { NotFoundError } from './httpErrors';
 import {
   listProgramsWithActivities,
   getParticipantActivityCompletion,
+  setParticipantActivityCompletion,
 } from '../services/programsService';
 
 const programsRouter = Router();
@@ -49,6 +50,26 @@ programsRouter.get(
     res.json(itemEnvelope(activityCompletionStatus));
   }
 );
+
+programsRouter.post('/activityStatus/:programId/:activityId', async (req, res, next) => {
+  const { programId, activityId } = req.params;
+  const { completed } = req.body;
+  const { principalId } = req.session;
+
+  const programIdNum = Number(programId);
+  const activityIdNum = Number(activityId);
+
+  let updatedCompletionStatus;
+
+  try {
+    updatedCompletionStatus = await setParticipantActivityCompletion(principalId, programIdNum, activityIdNum, completed);
+  } catch (error) {
+    next(error);
+    return;
+  }
+
+  res.status(201).json(itemEnvelope(updatedCompletionStatus));
+});
 
 // future issue: grabbing participant activities upon render in order to enable color coding of event types in program calendar view
   // specifically re: color coding completed assignment activities
