@@ -1,10 +1,12 @@
 import { Router } from 'express';
 
+
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
+import { NotFoundError } from './httpErrors';
 import {
   listProgramsWithActivities,
   getParticipantActivityCompletion,
-} from '../services/programsService'; // add participantActivity functions
+} from '../services/programsService';
 
 const programsRouter = Router();
 
@@ -21,28 +23,34 @@ programsRouter.get(
     const { programId, activityId } = req.params;
     const { principalId } = req.session;
 
-    let participantActivityId;
-    let activityCompletionStatus; // alternative variable names: isCompleted; completionStatus
+    const programIdNum = Number(programId);
+    const activityIdNum = Number(activityId);
 
-    // checks:
-    // program exists
-    // activity exists
-    // curriculumId of program matches curriculumId of activity
-    // there's a ParticipantActivities record associated with the specified principalId, programId, and activityId
+    let activityCompletionStatus;
 
     try {
       activityCompletionStatus = await getParticipantActivityCompletion(
         principalId,
-        Number(programId),
-        Number(activityId)
+        programIdNum,
+        activityIdNum
       );
     } catch (err) {
       next(err);
       return;
     }
+    if (!activityCompletionStatus) {
+      next(
+        new NotFoundError(
+          `A participant activity with the activity id "${activityIdNum}" could not be found.`
+        )
+      )
+    };
 
     res.json(itemEnvelope({ status: activityCompletionStatus }));
   }
 );
+
+// future issue: grabbing participant activities upon render in order to enable color coding of event types in program calendar view
+  // specifically re: color coding completed assignment activities
 
 export default programsRouter;
