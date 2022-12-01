@@ -48,6 +48,8 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
     setDialogContents(activity);
   };
 
+  const TimeGutter = () => <p style={{ textAlign: 'center' }}>All Day</p>;
+
   const closeDialog = () => setDialogShow(false);
 
   return (
@@ -62,6 +64,9 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
         getNow={() => DateTime.local().toJSDate()}
         scrollToTime={DateTime.local().set({ hour: 8, minute: 0 }).toJSDate()}
         style={{ height: 500 }}
+        components={{
+          timeGutterHeader: TimeGutter,
+        }}
         popup
       />
       <ProgramActivityDialog

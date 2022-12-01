@@ -1,9 +1,11 @@
 import {
+  CircularProgress,
   FormControl,
   FormControlLabel,
   FormLabel,
   Radio,
   RadioGroup,
+  Stack,
 } from '@mui/material';
 import React, { Fragment } from 'react';
 
@@ -35,7 +37,15 @@ const Questionnaire = ({
     return <div>There was an error loading the questionnaire.</div>;
   }
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <Stack
+        alignItems="center"
+        justifyContent="center"
+        sx={{ height: '40em' }}
+      >
+        <CircularProgress size={100} disableShrink />
+      </Stack>
+    );
   }
   if (!questionnaire) {
     return null;
