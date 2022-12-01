@@ -10,7 +10,7 @@ import MeetingsDrawerContext from './MeetingsDrawerContext';
 
 const StyledLogo = styled.ul`
   &:hover {
-    color: blue;
+    color: #1565c0;
   }
 `;
 
