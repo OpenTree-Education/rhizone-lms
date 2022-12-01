@@ -1,6 +1,5 @@
 import { Router } from 'express';
 
-
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
 import { NotFoundError } from './httpErrors';
 import {
@@ -44,34 +43,42 @@ programsRouter.get(
         new NotFoundError(
           `A participant activity with the activity id "${activityIdNum}" could not be found.`
         )
-      )
-    };
+      );
+    }
 
     res.json(itemEnvelope(activityCompletionStatus));
   }
 );
 
-programsRouter.post('/activityStatus/:programId/:activityId', async (req, res, next) => {
-  const { programId, activityId } = req.params;
-  const { completed } = req.body;
-  const { principalId } = req.session;
+programsRouter.post(
+  '/activityStatus/:programId/:activityId',
+  async (req, res, next) => {
+    const { programId, activityId } = req.params;
+    const { completed } = req.body;
+    const { principalId } = req.session;
 
-  const programIdNum = Number(programId);
-  const activityIdNum = Number(activityId);
+    const programIdNum = Number(programId);
+    const activityIdNum = Number(activityId);
 
-  let updatedCompletionStatus;
+    let updatedCompletionStatus;
 
-  try {
-    updatedCompletionStatus = await setParticipantActivityCompletion(principalId, programIdNum, activityIdNum, completed);
-  } catch (error) {
-    next(error);
-    return;
+    try {
+      updatedCompletionStatus = await setParticipantActivityCompletion(
+        principalId,
+        programIdNum,
+        activityIdNum,
+        completed
+      );
+    } catch (error) {
+      next(error);
+      return;
+    }
+
+    res.status(201).json(itemEnvelope(updatedCompletionStatus));
   }
-
-  res.status(201).json(itemEnvelope(updatedCompletionStatus));
-});
+);
 
 // future issue: grabbing participant activities upon render in order to enable color coding of event types in program calendar view
-  // specifically re: color coding completed assignment activities
+// specifically re: color coding completed assignment activities
 
 export default programsRouter;
