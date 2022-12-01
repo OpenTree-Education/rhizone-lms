@@ -301,32 +301,35 @@ const getParticipantActivityId = async (
   // if participant_activity exists, get participantActivityId
   [participantActivityId] = await db('participant_activities')
     .select('id')
-    .where({ principalId, programId, activityId});
+    .where({ principalId, programId, activityId });
+  if (participantActivityId) return false;
 
-  // if participant_activity doesn't exist, create one
-  if(!participantActivityId){
-    await db.transaction(async trx => {
-      [participantActivityId] = await trx('participant_activities').insert({
-        principal_id: principalId,
-        program_id: programId,
-        activity_id: activityId,
-      })
-    });
-  }
   return { id: participantActivityId };
 };
 
 // getter -return CompletionStatus (a boolean value, true or false)
+/**
+ *
+ * @param principalId
+ * @param programId
+ * @param activityId
+ * @returns
+ */
 export const getParticipantActivityCompletion = async (
   principalId: number,
   programId: number,
-  activityId: number,
+  activityId: number
 ) => {
-  const participantActivityId = await getParticipantActivityId(principalId, programId, activityId);
-  const isCompleted =  await db('participant_activities')
+  const participantActivityId = await getParticipantActivityId(
+    principalId,
+    programId,
+    activityId
+  );
+  if (!participantActivityId) return;
+  const [completed]: boolean[] = await db('participant_activities')
     .select('completed')
-    .where({id: participantActivityId});
-  return Boolean(isCompleted)
+    .where({ id: participantActivityId });
+  return Boolean(completed);
 };
 
 // setter
@@ -334,13 +337,31 @@ export const setParticipantActivityCompletion = async (
   principalId: number,
   programId: number,
   activityId: number,
-  completed:boolean
+  completed: boolean
 ) => {
-  const participantActivityId = await getParticipantActivityId(principalId, programId, activityId);
+  let participantActivityId = await getParticipantActivityId(
+    principalId,
+    programId,
+    activityId
+  );
+  if (!participantActivityId) {
+    // if participant_activity doesn't exist, create one
+    if (!participantActivityId) {
+      await db.transaction(async trx => {
+        [participantActivityId] = await trx('participant_activities').insert({
+          principal_id: principalId,
+          program_id: programId,
+          activity_id: activityId,
+        });
+      });
+    }
+  }
   await db('participant_activities')
-    .where({ participantActivityId, principalId, programId, activityId })
+    .where({
+      id: participantActivityId,
+      principal_id: principalId,
+      program_id: programId,
+      activity_id: activityId,
+    })
     .update({ completed: !completed });
 };
-
-
-
