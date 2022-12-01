@@ -62,8 +62,8 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
     if (currentView === 'week') {
       style = {
         flexDirection: 'row' as 'row',
-        minHeight: '4%'
-      }
+        minHeight: '4%',
+      };
     }
     return { style: style };
   };
@@ -76,7 +76,7 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
       } else {
         return 'normal';
       }
-    }
+    };
 
     return (
       <Box
@@ -86,12 +86,11 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
           height: '100%',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
-          whiteSpace: getValueProperty(event)
-        }
-        }
+          whiteSpace: getValueProperty(event),
+        }}
       >
         {event.title}
-      </Box >
+      </Box>
     );
   };
 
@@ -109,11 +108,11 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
         style={{ height: 500 }}
         components={{
           timeGutterHeader: TimeGutter,
+          week: { event: CustomWeekEvent },
         }}
         popup
         onView={handleChangingView}
         eventPropGetter={eventStyleGetter}
-        components={{ week: { event: CustomWeekEvent } }}
       />
       <ProgramActivityDialog
         show={dialogShow}
