@@ -301,8 +301,13 @@ const getParticipantActivityId = async (
   // if participant_activity exists, get participantActivityId
   [participantActivityId] = await db('participant_activities')
     .select('id')
-    .where({ principalId, programId, activityId });
-  if (participantActivityId) return false;
+    .where({
+      principal_id: principalId,
+      program_id: programId,
+      activity_id: activityId,
+    });
+
+  if (!participantActivityId) return null;
 
   return { id: participantActivityId };
 };
@@ -325,12 +330,19 @@ export const getParticipantActivityCompletion = async (
     programId,
     activityId
   );
-  if (!participantActivityId) return;
+  console.log(participantActivityId);
+
+  if (!participantActivityId) return { status: false }; //future note: need to be updated once we work on the color tag feture
   const [completed]: boolean[] = await db('participant_activities')
     .select('completed')
     .where({ id: participantActivityId });
-  return Boolean(completed);
+  //return Boolean(completed);
+  return { status: completed };
 };
+
+// for the future feature: having different color based on the status, type....
+// return status for all activities
+//export getParticipantActivities =
 
 // setter
 export const setParticipantActivityCompletion = async (
