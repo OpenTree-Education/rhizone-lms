@@ -3,6 +3,7 @@ import { decodeHTML } from 'entities';
 import { DateTime } from 'luxon';
 import { Calendar, luxonLocalizer, Views } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { Box } from '@mui/material';
 
 import ProgramActivityDialog from './ProgramActivityDialog';
 
@@ -56,14 +57,19 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
     if (currentView === 'week') {
       style = {
         display: 'block',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
         whiteSpace: 'nowrap' as 'nowrap',
         minHeight: '4%'
       }
-    }
-
+    };
     return { style: style };
+  }
+
+  const CustomWeekEvent = (event: any) => {
+    return (
+      <Box className='rbc-event-content-custom' sx={{ height: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} >
+        {event.title}
+      </Box>
+    );
   }
 
   return (
@@ -71,8 +77,6 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
       <Calendar
         events={activitiesForCalendar(program.activities)}
         onSelectEvent={handleClickActivity}
-        onView={handleChangingView}
-        eventPropGetter={eventStyleGetter}
         localizer={luxonLocalizer(DateTime)}
         defaultView={Views.WEEK}
         startAccessor="start"
@@ -80,6 +84,9 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
         getNow={() => DateTime.local().toJSDate()}
         scrollToTime={DateTime.local().set({ hour: 8, minute: 0 }).toJSDate()}
         style={{ height: 500 }}
+        onView={handleChangingView}
+        eventPropGetter={eventStyleGetter}
+        components={{ week: { event: CustomWeekEvent } }}
       />
       <ProgramActivityDialog
         show={dialogShow}
