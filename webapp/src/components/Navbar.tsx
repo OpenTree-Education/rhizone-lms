@@ -8,7 +8,7 @@ import PeopleIcon from '@mui/icons-material/People';
 
 import MeetingsDrawerContext from './MeetingsDrawerContext';
 
-const StyledLogo = styled.ul`
+const StyledLogo = styled.span`
   &:hover {
     color: #1565c0;
   }
