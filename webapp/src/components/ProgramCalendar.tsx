@@ -22,13 +22,13 @@ const activitiesForCalendar = (
 ): CalendarEvent[] => {
   return activities.map(
     activity =>
-    ({
-      title: decodeHTML(activity.title),
-      start: new Date(activity.start_time),
-      end: new Date(activity.end_time),
-      description: decodeHTML(activity.description_text),
-      allDay: !activity.duration,
-    } as CalendarEvent)
+      ({
+        title: decodeHTML(activity.title),
+        start: new Date(activity.start_time),
+        end: new Date(activity.end_time),
+        description: decodeHTML(activity.description_text),
+        allDay: !activity.duration,
+      } as CalendarEvent)
   );
 };
 
@@ -50,7 +50,10 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
 
   const closeDialog = () => setDialogShow(false);
 
-  const handleChangingView = React.useCallback((newView: string): void => setCurrentView(newView), [setCurrentView]);
+  const handleChangingView = React.useCallback(
+    (newView: string): void => setCurrentView(newView),
+    [setCurrentView]
+  );
 
   const eventStyleGetter = (event: any) => {
     let style;
@@ -58,19 +61,27 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
       style = {
         display: 'block',
         whiteSpace: 'nowrap' as 'nowrap',
-        minHeight: '4%'
-      }
-    };
+        minHeight: '4%',
+      };
+    }
     return { style: style };
-  }
+  };
 
   const CustomWeekEvent = (event: any) => {
     return (
-      <Box className='rbc-event-content-custom' sx={{ height: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} >
+      <Box
+        className="rbc-event-content-custom"
+        sx={{
+          height: '100%',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
         {event.title}
       </Box>
     );
-  }
+  };
 
   return (
     <>
