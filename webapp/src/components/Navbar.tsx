@@ -21,9 +21,9 @@ const Navbar = () => {
   return (
     <Grid alignItems="center" container px={3}>
       <Grid item xs>
-        <Link to="/" style={{ textDecoration: 'none', color: 'black'}}>
+        <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>
           <StyledLogo>
-            <h1 style={{height: '50px', width:'125px'}}>Rhizone</h1>
+            <h1 style={{ height: '50px', width: '125px' }}>Rhizone</h1>
           </StyledLogo>
         </Link>
       </Grid>
