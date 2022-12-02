@@ -64,4 +64,32 @@ describe('programsRouter', () => {
       });
     });
   });
+
+  describe('GET /activityStatus/:programId/:activityId', () => {
+    it('should respond with a program activity completion status', done => {
+      
+    });
+
+    it('should respond with an internal server error if an error was thrown when trying to find a participant activity', done => {
+
+    });
+  });
+
+  describe('POST /activityStatus/:programId/:activityId', () => {
+    it('should respond with a program activity completion status', done => {
+      // see competenciesRouter test L119 for PUT/setter function test example
+    });
+
+    it('should respond with a validation error if the completion value in the request body is not a boolean', done => {
+
+    });
+
+    it('should respond with a validation error if completion value is not provided in the request body', done => {
+
+    });
+
+    it('should respond with an internal server error if an error was thrown when trying to find a participant activity', done => {
+
+    });
+  });
 });
