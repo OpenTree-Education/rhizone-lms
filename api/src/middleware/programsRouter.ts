@@ -22,7 +22,8 @@ programsRouter.get(
   async (req, res, next) => {
     const { programId, activityId } = req.params;
     const { principalId } = req.session;
-
+    
+    // should these be moved into the try/catch statement so that an error is thrown if the id params cant be translated into a num?
     const programIdNum = Number(programId);
     const activityIdNum = Number(activityId);
 
@@ -63,6 +64,7 @@ programsRouter.post(
 
     let updatedCompletionStatus;
 
+    // will this also address a case in which a completed value is not included in the request body?
     if (typeof completed !== 'boolean') {
       next(new ValidationError('`completion` must be a boolean'));
       return;
