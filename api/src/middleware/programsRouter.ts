@@ -34,8 +34,8 @@ programsRouter.get(
         programIdNum,
         activityIdNum
       );
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      next(error);
       return;
     }
     if (!activityCompletionStatus) {
