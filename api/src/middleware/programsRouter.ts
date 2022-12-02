@@ -55,6 +55,7 @@ programsRouter.post(
   async (req, res, next) => {
     const { programId, activityId } = req.params;
     const { completed } = req.body;
+    // request body shoud look like: {"completed": true}
     const { principalId } = req.session;
 
     const programIdNum = Number(programId);
