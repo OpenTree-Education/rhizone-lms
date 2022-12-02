@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
-import { NotFoundError } from './httpErrors';
+import { NotFoundError, ValidationError } from './httpErrors';
 import {
   listProgramsWithActivities,
   getParticipantActivityCompletion,
@@ -61,6 +61,11 @@ programsRouter.post(
     const activityIdNum = Number(activityId);
 
     let updatedCompletionStatus;
+
+    if (typeof completed !== 'boolean') {
+      next(new ValidationError('`completion` must be a boolean'));
+      return;
+    }
 
     try {
       updatedCompletionStatus = await setParticipantActivityCompletion(
