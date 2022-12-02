@@ -1,11 +1,13 @@
-import { collectionEnvelope } from '../responseEnvelope';
-import { listProgramsWithActivities } from '../../services/programsService';
-import { createAppAgentForRouter } from '../routerTestUtils';
+import { collectionEnvelope, itemEnvelope } from '../responseEnvelope';
+import { listProgramsWithActivities, getParticipantActivityId, getParticipantActivityCompletion } from '../../services/programsService';
+import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
 import programsRouter from '../programsRouter';
 import { ProgramWithActivities } from '../../models';
 
 jest.mock('../../services/programsService');
 const mockListProgramsWithActivities = jest.mocked(listProgramsWithActivities);
+const mockGetParticipantActivityId = jest.mocked(getParticipantActivityId);
+const mockGetParticipantActivityCompletion = jest.mocked(getParticipantActivityCompletion);
 
 describe('programsRouter', () => {
   const appAgent = createAppAgentForRouter(programsRouter);
@@ -67,11 +69,32 @@ describe('programsRouter', () => {
 
   describe('GET /activityStatus/:programId/:activityId', () => {
     it('should respond with a program activity completion status', done => {
-      
+      // referencing reflectionsRouter GET test L19
+      const principalId = 1;
+      const programId = 1;
+      const activityId = 1;
+      const participantActivity = { id: 1, completed: false };
+
+      mockPrincipalId(principalId);
+      mockGetParticipantActivityId.mockResolvedValue({ id: 1}); // how to access participantAvtivity.id from const on L76
+      mockGetParticipantActivityCompletion.mockResolvedValue({ status: false }); // how to better set this up
+      appAgent
+        .get(`/activityStatus/${programId}/${activityId}`)
+        .expect(200, itemEnvelope({ status: false }), err => { // again, figure out how to write this better
+          expect(mockGetParticipantActivityCompletion).toHaveBeenCalledWith(principalId, programId, activityId);
+          done(err);
+        });
     });
 
     it('should respond with an internal server error if an error was thrown when trying to find a participant activity', done => {
-
+      // get clarity on the case in which this would happen - what would prompt the service's getParticipantActivityId function to return null?
+      const programId = 1;
+      const erroneousActivityId = 2;
+      
+      mockGetParticipantActivityId.mockResolvedValue(null);
+      mockGetParticipantActivityCompletion.mockRejectedValue(new Error());
+      appAgent.get(`/activityStatus/${programId}/${erroneousActivityId}`).expect(500, done);
+      // shouldn't this return the NotFoundError message on programsRouter L45? how to test that?
     });
   });
 
