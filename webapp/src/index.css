@@ -11,3 +11,7 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.rbc-agenda-view table.rbc-agenda-table .rbc-agenda-time-cell span {
+  text-transform: capitalize;
+}
