@@ -290,35 +290,38 @@ export const listProgramsWithActivities = async () => {
   return programsWithActivities;
 };
 
-// return participantActivityId
-const getParticipantActivityId = async (
+/**
+ * Get the unique id of the participant_activities that belong to the given user, program and activity
+ * @param {number} principalId - the unique id for the user
+ * @param {number} programId - the id for the unique program
+ * @param {number} activityId - the id for the unique activity
+ * @returns {number} - id of participant_activities table
+ */
+export const getParticipantActivityId = async (
   principalId: number,
   programId: number,
   activityId: number
 ) => {
   let participantActivityId: number;
-
   // if participant_activity exists, get participantActivityId
-  [participantActivityId] = await db('participant_activities')
+  const [participantActivity] = await db('participant_activities')
     .select('id')
     .where({
       principal_id: principalId,
       program_id: programId,
       activity_id: activityId,
     });
-
-  if (!participantActivityId) return null;
-
-  return { id: participantActivityId };
+  if (!participantActivity) return null; // when participantActivity is undefined
+  participantActivityId = participantActivity.id;
+  return participantActivityId;
 };
 
-// getter -return CompletionStatus (a boolean value, true or false)
 /**
- *
- * @param principalId
- * @param programId
- * @param activityId
- * @returns
+ * Get the completion status (either ture or false) of the specific acivity.
+ * @param {number} principalId - the unique id for the user
+ * @param {number} programId - the id for the unique program
+ * @param {number} activityId - the id for the unique activity
+ * @returns {number}  - return true if the specific activity is completed, return false when either completion status is false or participant_activities table doesn't exist
  */
 export const getParticipantActivityCompletion = async (
   principalId: number,
@@ -330,21 +333,27 @@ export const getParticipantActivityCompletion = async (
     programId,
     activityId
   );
-  console.log(participantActivityId);
-
-  if (!participantActivityId) return { status: false }; //future note: need to be updated once we work on the color tag feture
-  const [completed]: boolean[] = await db('participant_activities')
+  if (!participantActivityId) return { status: false }; //future note: need to be updated once we work on the color tag feature
+  const [{ completed }] = await db('participant_activities')
     .select('completed')
     .where({ id: participantActivityId });
   //return Boolean(completed);
-  return { status: completed };
+  return { status: Boolean(completed) };
 };
 
 // for the future feature: having different color based on the status, type....
 // return status for all activities
 //export getParticipantActivities =
 
-// setter
+/**
+ * Set/Update the completion status of the specific activity by certain participantActivityId
+ * If the participant_activities table doesn't exist, crerate one and get its participantActivityId to proceed
+ * @param {number} principalId - the unique id for the user
+ * @param {number} programId - the id for the unique program
+ * @param {number} activityId - the id for the unique activity
+ * @param {boolean} completed - the boolean value that a user wants to set into the completed filed
+ * @returns
+ */
 export const setParticipantActivityCompletion = async (
   principalId: number,
   programId: number,
@@ -356,17 +365,16 @@ export const setParticipantActivityCompletion = async (
     programId,
     activityId
   );
+  // if participant_activity doesn't exist, create one
   if (!participantActivityId) {
-    // if participant_activity doesn't exist, create one
-    if (!participantActivityId) {
-      await db.transaction(async trx => {
-        [participantActivityId] = await trx('participant_activities').insert({
-          principal_id: principalId,
-          program_id: programId,
-          activity_id: activityId,
-        });
+    await db.transaction(async trx => {
+      [participantActivityId] = await trx('participant_activities').insert({
+        principal_id: principalId,
+        program_id: programId,
+        activity_id: activityId,
+        completed: false, // defalt value
       });
-    }
+    });
   }
   await db('participant_activities')
     .where({
@@ -375,5 +383,6 @@ export const setParticipantActivityCompletion = async (
       program_id: programId,
       activity_id: activityId,
     })
-    .update({ completed: !completed });
+    .update({ completed: completed });
+  return { id: participantActivityId, completed: completed };
 };
