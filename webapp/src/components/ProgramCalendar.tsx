@@ -30,7 +30,7 @@ const activitiesForCalendar = (
         end: new Date(activity.end_time),
         description: decodeHTML(activity.description_text),
         allDay: !activity.duration,
-        theProgram: correspondingProgramTitle//activity.program_id.toString()
+        programTitle: correspondingProgramTitle,
       } as CalendarEvent)
   );
 };
@@ -43,7 +43,7 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
     allDay: false,
     start: new Date(),
     end: new Date(),
-    theProgram: ''
+    programTitle: '',
   });
   const [currentView, setCurrentView] = React.useState<string>(Views.WEEK);
 

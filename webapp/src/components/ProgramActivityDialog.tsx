@@ -76,12 +76,14 @@ const ProgramActivityDialog = ({
           {timeRange()}
         </DialogContentText>
 
-        <DialogContentText><b>Program:</b>{contents.theProgram}</DialogContentText>
-
-        <DialogContentText id="alert-dialog-description">
-          <b>Description: </b> {contents.description}
+        <DialogContentText>
+          <strong>Program:</strong>
+          {contents.programTitle}
         </DialogContentText>
 
+        <DialogContentText id="alert-dialog-description">
+          <strong>Description:</strong> {contents.description}
+        </DialogContentText>
       </DialogContent>
 
       <Divider />
