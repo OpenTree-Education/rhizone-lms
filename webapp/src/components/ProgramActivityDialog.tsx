@@ -88,8 +88,13 @@ const ProgramActivityDialog = ({
         <DialogContentText id="alert-dialog-description">
           <b>Activity Type:</b> {contents.activityType}
         </DialogContentText>
+        <DialogContentText>
+          <strong>Program:</strong>
+          {contents.programTitle}
+        </DialogContentText>
+
         <DialogContentText id="alert-dialog-description">
-          <b>Description:</b> {contents.description}
+          <strong>Description:</strong> {contents.description}
         </DialogContentText>
         {contents.activityType === 'assignment' && (
           <FormGroup
