@@ -17,6 +17,8 @@ interface ProgramCalendarProps {
   program: ProgramWithActivities;
 }
 
+let correspondingProgramTitle = '';
+
 const activitiesForCalendar = (
   activities: ProgramActivity[]
 ): CalendarEvent[] => {
@@ -28,6 +30,7 @@ const activitiesForCalendar = (
         end: new Date(activity.end_time),
         description: decodeHTML(activity.description_text),
         allDay: !activity.duration,
+        programTitle: correspondingProgramTitle,
       } as CalendarEvent)
   );
 };
@@ -40,6 +43,7 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
     allDay: false,
     start: new Date(),
     end: new Date(),
+    programTitle: '',
   });
   const [currentView, setCurrentView] = React.useState<string>(Views.WEEK);
 
@@ -93,6 +97,8 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
       </Box>
     );
   };
+
+  correspondingProgramTitle = program.title;
 
   return (
     <>
