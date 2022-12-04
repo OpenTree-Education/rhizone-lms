@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { decodeHTML } from 'entities';
 import {
   Button,
@@ -29,7 +29,6 @@ const ProgramActivityDialog = ({
   contents,
   handleClose,
 }: ProgramActivityDialogProps) => {
-
   const timeRange = () => {
     if (
       !(
@@ -105,6 +104,29 @@ const ProgramActivityDialog = ({
                 </TableCell>
                 <TableCell sx={{ border: 'none', fontWeight: 'bold' }}>
                   {contents.programTitle}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell
+                  component="th"
+                  scope="row"
+                  sx={{
+                    fontWeight: 'bold',
+                    border: 'none',
+                    verticalAlign: 'top',
+                    textAlign: 'right',
+                  }}
+                >
+                  Activity Type:
+                </TableCell>
+                <TableCell
+                  sx={{
+                    border: 'none',
+                    fontWeight: 'bold',
+                    textTransform: 'capitalize',
+                  }}
+                >
+                  {contents.activityType}
                 </TableCell>
               </TableRow>
               <TableRow>
