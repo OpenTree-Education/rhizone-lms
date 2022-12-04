@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { FormEventHandler, useState } from 'react';
 import { decodeHTML } from 'entities';
+import CancelIcon from '@mui/icons-material/Cancel';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import {
   Button,
   Dialog,
@@ -8,6 +10,7 @@ import {
   DialogContentText,
   DialogTitle,
   Divider,
+  FormGroup,
   Table,
   TableBody,
   TableCell,
@@ -29,6 +32,38 @@ const ProgramActivityDialog = ({
   contents,
   handleClose,
 }: ProgramActivityDialogProps) => {
+  const [completed, setCompleted] = useState(false);
+  // const [markCompletedError, setMarkCompletedError] = useState(null);
+  // const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
+
+  //Using onClick for UI demo but onSubmit should be used in future development
+  const onClick: FormEventHandler = event => {
+    event.preventDefault();
+    setCompleted(!completed);
+    // fetch(
+    //   `${process.env.REACT_APP_API_ORIGIN}/programs/activityStatus/${programId}/${activityId}`,
+    //   {
+    //     method: 'PATCH',
+    //     credentials: 'include',
+    //     headers: { 'Content-Type': 'application/json' },
+    //   }
+    // )
+    //   .then(res => res.json())
+    //   .then(({ data, error }) => {
+    //     setCompleted(!completed);
+    //     if (error) {
+    //       setMarkCompletedError(error);
+    //     }
+    //     if (data) {
+    //       setIsSuccessMessageVisible(true);
+    //     }
+    //   })
+    //   .catch(error => {
+    //     setCompleted(completed);
+    //     setMarkCompletedError(error);
+    //   });
+  };
+
   const timeRange = () => {
     if (
       !(
@@ -68,15 +103,22 @@ const ProgramActivityDialog = ({
     <Dialog
       open={show}
       onClose={handleClose}
-      maxWidth="xs"
+      maxWidth="sm"
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
       <DialogTitle
         id="alert-dialog-title"
-        sx={{ textAlign: 'center', fontWeight: 'bold' }}
+        sx={{
+          textAlign: 'center',
+          fontWeight: 'bold',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
         {contents.title}
+        {completed && <TaskAltIcon sx={{ ml: 1 }} />}
       </DialogTitle>
 
       <Divider />
@@ -149,6 +191,29 @@ const ProgramActivityDialog = ({
             </TableBody>
           </Table>
         </TableContainer>
+        {contents.activityType === 'assignment' && (
+          <FormGroup
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              marginTop: '1em',
+            }}
+            // onSubmit={onSubmit}
+          >
+            {completed === false ? (
+              <Button onClick={onClick} type="submit" variant="contained">
+                <TaskAltIcon sx={{ mr: 1 }} />
+                Mark Complete
+              </Button>
+            ) : (
+              <Button onClick={onClick} type="submit" variant="outlined">
+                <CancelIcon sx={{ mr: 1 }} />
+                Mark Incomplete
+              </Button>
+            )}
+          </FormGroup>
+        )}
       </DialogContent>
       <Divider />
 
