@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import { decodeHTML } from 'entities';
 import {
   Button,
-  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
   Divider,
-  FormControlLabel,
-  FormGroup,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
 } from '@mui/material';
 
 import { formatDate, formatTime } from '../helpers/dateTime';
@@ -27,11 +29,6 @@ const ProgramActivityDialog = ({
   contents,
   handleClose,
 }: ProgramActivityDialogProps) => {
-  const [checked, setChecked] = useState(true);
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setChecked(event.target.checked);
-  };
 
   const timeRange = () => {
     if (
@@ -72,50 +69,64 @@ const ProgramActivityDialog = ({
     <Dialog
       open={show}
       onClose={handleClose}
+      maxWidth="xs"
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title" sx={{ textAlign: 'center' }}>
+      <DialogTitle
+        id="alert-dialog-title"
+        sx={{ textAlign: 'center', fontWeight: 'bold' }}
+      >
         {contents.title}
       </DialogTitle>
 
       <Divider />
 
+      <DialogContent sx={{ textAlign: 'center' }}>
+        <DialogContentText>{timeRange()}</DialogContentText>
+      </DialogContent>
+      <Divider />
       <DialogContent>
-        <DialogContentText id="alert-dialog-description" sx={{ mb: 1 }}>
-          {timeRange()}
-        </DialogContentText>
-        <DialogContentText id="alert-dialog-description">
-          <b>Activity Type:</b> {contents.activityType}
-        </DialogContentText>
-        <DialogContentText>
-          <strong>Program:</strong>
-          {contents.programTitle}
-        </DialogContentText>
-
-        <DialogContentText id="alert-dialog-description">
-          <strong>Description:</strong> {contents.description}
-        </DialogContentText>
-        {contents.activityType === 'assignment' && (
-          <FormGroup
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-            }}
-          >
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={checked}
-                  onChange={handleChange}
-                  inputProps={{ 'aria-label': 'controlled' }}
-                />
-              }
-              label="Mark Completed"
-            />
-          </FormGroup>
-        )}
+        <TableContainer>
+          <Table size="small">
+            <TableBody>
+              <TableRow>
+                <TableCell
+                  component="th"
+                  scope="row"
+                  sx={{
+                    fontWeight: 'bold',
+                    border: 'none',
+                    verticalAlign: 'top',
+                    textAlign: 'right',
+                  }}
+                >
+                  Program:
+                </TableCell>
+                <TableCell sx={{ border: 'none', fontWeight: 'bold' }}>
+                  {contents.programTitle}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell
+                  component="th"
+                  scope="row"
+                  sx={{
+                    fontWeight: 'bold',
+                    border: 'none',
+                    verticalAlign: 'top',
+                    textAlign: 'right',
+                  }}
+                >
+                  Description:
+                </TableCell>
+                <TableCell sx={{ border: 'none' }}>
+                  {contents.description}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
       </DialogContent>
       <Divider />
 
