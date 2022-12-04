@@ -26,7 +26,14 @@ const ProgramPicker = ({
   };
 
   return (
-    <FormControl sx={{ my: 3, minWidth: { xs: 320, md: 450 }, maxWidth: { xs: 340, md: 600 }, alignSelf: { xs: 'center' } }}>
+    <FormControl
+      sx={{
+        my: 3,
+        minWidth: { xs: 320, md: 450 },
+        maxWidth: { xs: 340, md: 600 },
+        alignSelf: { xs: 'center' },
+      }}
+    >
       <InputLabel id="program-select-label">Program</InputLabel>
       <Select
         labelId="program-select-label"
@@ -36,7 +43,11 @@ const ProgramPicker = ({
         onChange={changeProgram}
       >
         {programs.map((program, index) => (
-          <MenuItem value={index} key={index} sx={{ fontSize: { xs: '0.85rem' } }}>
+          <MenuItem
+            value={index}
+            key={index}
+            sx={{ fontSize: { xs: '0.85rem' } }}
+          >
             <strong>{program.title}</strong>&nbsp; (
             {formatDate(program.start_date)} &ndash;{' '}
             {formatDate(program.end_date)})

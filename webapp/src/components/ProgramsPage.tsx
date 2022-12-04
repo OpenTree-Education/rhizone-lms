@@ -41,8 +41,12 @@ const ProgramsPage = () => {
     return null;
   }
   return (
-    <Container >
-      <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" alignItems={{ xs: "flex-start", md: "center" }}>
+    <Container>
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        justifyContent="space-between"
+        alignItems={{ xs: 'flex-start', md: 'center' }}
+      >
         <h1>Program Activities</h1>
         <ProgramPicker
           programs={programsList}
