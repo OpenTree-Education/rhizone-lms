@@ -99,6 +99,13 @@ const ProgramActivityDialog = ({
     return timeRangeString;
   };
 
+  const tableHeaderCellStyle = {
+    fontWeight: 'bold',
+    border: 'none',
+    verticalAlign: 'top',
+    textAlign: 'right',
+  };
+
   return (
     <Dialog
       open={show}
@@ -135,12 +142,7 @@ const ProgramActivityDialog = ({
                 <TableCell
                   component="th"
                   scope="row"
-                  sx={{
-                    fontWeight: 'bold',
-                    border: 'none',
-                    verticalAlign: 'top',
-                    textAlign: 'right',
-                  }}
+                  sx={tableHeaderCellStyle}
                 >
                   Program:
                 </TableCell>
@@ -152,12 +154,7 @@ const ProgramActivityDialog = ({
                 <TableCell
                   component="th"
                   scope="row"
-                  sx={{
-                    fontWeight: 'bold',
-                    border: 'none',
-                    verticalAlign: 'top',
-                    textAlign: 'right',
-                  }}
+                  sx={tableHeaderCellStyle}
                 >
                   Activity Type:
                 </TableCell>
@@ -175,12 +172,7 @@ const ProgramActivityDialog = ({
                 <TableCell
                   component="th"
                   scope="row"
-                  sx={{
-                    fontWeight: 'bold',
-                    border: 'none',
-                    verticalAlign: 'top',
-                    textAlign: 'right',
-                  }}
+                  sx={tableHeaderCellStyle}
                 >
                   Description:
                 </TableCell>
