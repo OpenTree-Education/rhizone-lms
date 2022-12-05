@@ -302,7 +302,6 @@ export const getParticipantActivityId = async (
   programId: number,
   activityId: number
 ) => {
-  let participantActivityId: number;
   // if participant_activity exists, get participantActivityId
   const [participantActivity] = await db('participant_activities')
     .select('id')
@@ -312,8 +311,7 @@ export const getParticipantActivityId = async (
       activity_id: activityId,
     });
   if (!participantActivity) return null; // when participantActivity is undefined
-  participantActivityId = participantActivity.id;
-  return participantActivityId;
+  return participantActivity.id;
 };
 
 /**
