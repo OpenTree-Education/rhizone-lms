@@ -345,26 +345,6 @@ export const getParticipantActivityCompletion = async (
 };
 
 /**
- * Get the completion status (either true or false) of all activities of type assignment in a given program.
- *
- * @param {number} principalId - the unique id for the user
- * @param {number} programId - the id for the unique program
- * @returns List of activities and their completion statuses,
- *   or null if programId doesn't exist or it doesn't have activities
- *   of type "assignment"
- */
-export const listParticipantActivitiesCompletionForProgram = async (
-  principalId: number,
-  programId: number
-) => {
-  // TODO: get list of all activities in program where activity_type_id is assignment (you'll need a join statement here)
-  // TODO: get all `participant_activities` records for the principalId and programId
-  // TODO: match up the two lists and generate the return list
-  // TODO: return list should be an array of objects that look like this:
-  // { programId: number, activityId: number, completed: boolean }
-};
-
-/**
  * Set/Update the completion status of the specific activity. If the
  * `participant_activities` record doesn't exist, create it.
  *
