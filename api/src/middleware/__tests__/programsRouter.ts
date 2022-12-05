@@ -67,12 +67,6 @@ describe('programsRouter', () => {
     });
   });
 
-  describe('GET /activityStatus/:programId', () => {
-    it('should return a list of activities and their completed statuses', done => {
-      // TODO once this function is written.
-    });
-  });
-
   describe('GET /activityStatus/:programId/:activityId', () => {
     it('should respond with a program activity completion status', done => {
       // referencing reflectionsRouter GET test L19

@@ -17,10 +17,6 @@ programsRouter.get('/', async (req, res) => {
   );
 });
 
-// TODO: get a list of "assignment" activities and their statuses for this user
-// The response should look like collectionEnvelope([{programId: ,activityId: ,completed: }, ...]
-programsRouter.get('/activityStatus/:programId', async (req, res, next) => {});
-
 programsRouter.get(
   '/activityStatus/:programId/:activityId',
   async (req, res, next) => {
