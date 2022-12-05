@@ -1,6 +1,7 @@
 import React, { FormEventHandler, useState } from 'react';
 import { decodeHTML } from 'entities';
 import CancelIcon from '@mui/icons-material/Cancel';
+import CloseIcon from '@mui/icons-material/Close';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import {
   Button,
@@ -17,6 +18,7 @@ import {
   TableContainer,
   TableRow,
 } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
 
 import { formatDate, formatTime } from '../helpers/dateTime';
 import { CalendarEvent } from '../types/api';
@@ -35,7 +37,6 @@ const ProgramActivityDialog = ({
   const [completed, setCompleted] = useState(false);
   // const [markCompletedError, setMarkCompletedError] = useState(null);
   // const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
-
   //Using onClick for UI demo but onSubmit should be used in future development
   const onClick: FormEventHandler = event => {
     event.preventDefault();
@@ -63,7 +64,6 @@ const ProgramActivityDialog = ({
     //     setMarkCompletedError(error);
     //   });
   };
-
   const timeRange = () => {
     if (
       !(
@@ -79,33 +79,25 @@ const ProgramActivityDialog = ({
     if (contents.allDay) {
       return formatDate(contents.start.toDateString());
     }
-
     let timeRangeString = '';
-
     timeRangeString += formatDate(contents.start.toString()) + ' ';
     timeRangeString += formatTime(contents.start.toString());
-
     if (contents.start.toString() === contents.end.toString()) {
       return timeRangeString;
     }
-
     timeRangeString += decodeHTML('&nbsp;&ndash;&nbsp;');
-
     if (contents.start.toDateString() !== contents.end.toDateString()) {
       timeRangeString += formatDate(contents.end.toString()) + ' ';
     }
     timeRangeString += formatTime(contents.end.toString());
-
     return timeRangeString;
   };
-
   const tableHeaderCellStyle = {
     fontWeight: 'bold',
     border: 'none',
     verticalAlign: 'top',
     textAlign: 'right',
   };
-
   return (
     <Dialog
       open={show}
@@ -126,10 +118,21 @@ const ProgramActivityDialog = ({
       >
         {contents.title}
         {completed && <TaskAltIcon sx={{ ml: 1 }} />}
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{
+            position: 'absolute',
+            ml: 10,
+            right: 8,
+            top: 8,
+            color: theme => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
-
       <Divider />
-
       <DialogContent sx={{ textAlign: 'center' }}>
         <DialogContentText>{timeRange()}</DialogContentText>
       </DialogContent>
@@ -139,11 +142,7 @@ const ProgramActivityDialog = ({
           <Table size="small">
             <TableBody>
               <TableRow>
-                <TableCell
-                  component="th"
-                  scope="row"
-                  sx={tableHeaderCellStyle}
-                >
+                <TableCell component="th" scope="row" sx={tableHeaderCellStyle}>
                   Program:
                 </TableCell>
                 <TableCell sx={{ border: 'none', fontWeight: 'bold' }}>
@@ -151,11 +150,7 @@ const ProgramActivityDialog = ({
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell
-                  component="th"
-                  scope="row"
-                  sx={tableHeaderCellStyle}
-                >
+                <TableCell component="th" scope="row" sx={tableHeaderCellStyle}>
                   Activity Type:
                 </TableCell>
                 <TableCell
@@ -169,11 +164,7 @@ const ProgramActivityDialog = ({
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell
-                  component="th"
-                  scope="row"
-                  sx={tableHeaderCellStyle}
-                >
+                <TableCell component="th" scope="row" sx={tableHeaderCellStyle}>
                   Description:
                 </TableCell>
                 <TableCell sx={{ border: 'none' }}>
@@ -183,39 +174,35 @@ const ProgramActivityDialog = ({
             </TableBody>
           </Table>
         </TableContainer>
-        {contents.activityType === 'assignment' && (
-          <FormGroup
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-              marginTop: '1em',
-            }}
-            // onSubmit={onSubmit}
-          >
-            {completed === false ? (
-              <Button onClick={onClick} type="submit" variant="contained">
-                <TaskAltIcon sx={{ mr: 1 }} />
-                Mark Complete
-              </Button>
-            ) : (
-              <Button onClick={onClick} type="submit" variant="outlined">
-                <CancelIcon sx={{ mr: 1 }} />
-                Mark Incomplete
-              </Button>
-            )}
-          </FormGroup>
-        )}
       </DialogContent>
-      <Divider />
-
-      <DialogActions>
-        <Button onClick={handleClose} variant="contained">
-          Close
-        </Button>
-      </DialogActions>
+      {contents.activityType === 'assignment' && (
+        <>
+          <Divider />
+          <DialogActions>
+            <FormGroup
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+              }}
+              // onSubmit={onSubmit}
+            >
+              {completed === false ? (
+                <Button onClick={onClick} type="submit" variant="contained">
+                  <TaskAltIcon sx={{ mr: 1 }} />
+                  Mark Complete
+                </Button>
+              ) : (
+                <Button onClick={onClick} type="submit" variant="outlined">
+                  <CancelIcon sx={{ mr: 1 }} />
+                  Mark Incomplete
+                </Button>
+              )}
+            </FormGroup>
+          </DialogActions>
+        </>
+      )}
     </Dialog>
   );
 };
-
 export default ProgramActivityDialog;
