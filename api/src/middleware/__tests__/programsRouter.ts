@@ -67,6 +67,12 @@ describe('programsRouter', () => {
     });
   });
 
+  describe('GET /activityStatus/:programId', () => {
+    it('should return a list of activities and their completed statuses', done => {
+      // TODO once this function is written.
+    });
+  });
+
   describe('GET /activityStatus/:programId/:activityId', () => {
     it('should respond with a program activity completion status', done => {
       // referencing reflectionsRouter GET test L19
@@ -76,7 +82,7 @@ describe('programsRouter', () => {
       const participantActivity = { id: 1, completed: false };
 
       mockPrincipalId(principalId);
-      mockGetParticipantActivityId.mockResolvedValue({ id: 1}); // how to access participantAvtivity.id from const on L76
+      mockGetParticipantActivityId.mockResolvedValue({ id: 1}); // how to access participantActivity.id from const on L76
       mockGetParticipantActivityCompletion.mockResolvedValue({ status: false }); // how to better set this up
       appAgent
         .get(`/activityStatus/${programId}/${activityId}`)
@@ -87,18 +93,21 @@ describe('programsRouter', () => {
     });
 
     it('should respond with an internal server error if an error was thrown when trying to find a participant activity', done => {
-      // get clarity on the case in which this would happen - what would prompt the service's getParticipantActivityId function to return null?
+      // q: get clarity on the case in which this would happen - what would prompt the service's getParticipantActivityId function to return null?
+      // a: your intuition (as always) here is right. I wouldn't worry too much about testing this unless it's required.
+      // a: but to directly answer your question, getParticipantActivityId should return null if the row isn't found in the table.
       const programId = 1;
       const erroneousActivityId = 2;
       
       mockGetParticipantActivityId.mockResolvedValue(null);
       mockGetParticipantActivityCompletion.mockRejectedValue(new Error());
       appAgent.get(`/activityStatus/${programId}/${erroneousActivityId}`).expect(500, done);
-      // shouldn't this return the NotFoundError message on programsRouter L45? how to test that?
+      // q: shouldn't this return the NotFoundError message on programsRouter L45? how to test that?
+      // a: a NotFoundError message should return HTTP status 404. see line 35 from the questionnairesRouter test for example here.
     });
   });
 
-  describe('POST /activityStatus/:programId/:activityId', () => {
+  describe('PUT /activityStatus/:programId/:activityId', () => {
     it('should respond with a program activity completion status', done => {
       // see competenciesRouter test L119 for PUT/setter function test example
     });

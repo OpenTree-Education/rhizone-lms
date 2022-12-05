@@ -17,13 +17,18 @@ programsRouter.get('/', async (req, res) => {
   );
 });
 
+// TODO: get a list of "assignment" activities and their statuses for this user
+// The response should look like collectionEnvelope([{programId: ,activityId: ,completed: }, ...]
+programsRouter.get('/activityStatus/:programId', async (req, res, next) => {});
+
 programsRouter.get(
   '/activityStatus/:programId/:activityId',
   async (req, res, next) => {
     const { programId, activityId } = req.params;
     const { principalId } = req.session;
     
-    // should these be moved into the try/catch statement so that an error is thrown if the id params cant be translated into a num?
+    // q: should these be moved into the try/catch statement so that an error is thrown if the id params cant be translated into a num?
+    // a: Good thinking! Check out line 12 in questionnairesRouter for an example of how to handle this without try/catch.
     const programIdNum = Number(programId);
     const activityIdNum = Number(activityId);
 
@@ -39,6 +44,7 @@ programsRouter.get(
       next(error);
       return;
     }
+    // TODO: activityCompletionStatus should always be true/false, since we've decided not to do any error checking on the backend
     if (!activityCompletionStatus) {
       next(
         new NotFoundError(
@@ -47,11 +53,15 @@ programsRouter.get(
       );
     }
 
-    res.json(itemEnvelope(activityCompletionStatus));
+    res.json(itemEnvelope({
+      programId: programIdNum,
+      activityId: activityIdNum,
+      completed: activityCompletionStatus
+    }));
   }
 );
 
-programsRouter.post(
+programsRouter.put(
   '/activityStatus/:programId/:activityId',
   async (req, res, next) => {
     const { programId, activityId } = req.params;
@@ -59,14 +69,16 @@ programsRouter.post(
     // request body shoud look like: {"completed": true}
     const { principalId } = req.session;
 
+    // TODO: see comment from line 31 above
     const programIdNum = Number(programId);
     const activityIdNum = Number(activityId);
 
     let updatedCompletionStatus;
 
-    // will this also address a case in which a completed value is not included in the request body?
+    // q: will this also address a case in which a completed value is not included in the request body?
+    // a: if the body doesn't contain a key called "completed", then the value of completed will be null
     if (typeof completed !== 'boolean') {
-      next(new ValidationError('`completion` must be a boolean'));
+      next(new ValidationError('`completed` must be a boolean'));
       return;
     }
 
@@ -77,6 +89,9 @@ programsRouter.post(
         activityIdNum,
         completed
       );
+
+      // TODO: this function should return the row ID if successful. send back an error if it isn't.
+      if (typeof updatedCompletionStatus !== 'number') {}
     } catch (error) {
       next(error);
       return;
