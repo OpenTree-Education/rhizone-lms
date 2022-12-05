@@ -266,6 +266,8 @@ const activityTypesList: ActivityType[] = [
   },
 ];
 
+// TODO: Define some example participant_activity data
+
 describe('programsService', () => {
   describe('listAllPrograms', () => {
     it('should list all available programs', async () => {
@@ -424,5 +426,24 @@ describe('programsService', () => {
         programsWithActivities
       );
     });
+  });
+
+  // TODO: tests for getParticipantActivityId
+  describe('getParticipantActivityId', () => {
+    it('should return the ID of an existing row in the table', async () => {});
+    it('should return null if requesting the ID of row that does not exist', async () => {});
+  });
+
+  // TODO: tests for getParticipantActivityCompletion
+  describe('getParticipantActivityCompletion', () => {
+    it('should return true for a completed activity by a participant', async () => {});
+    it('should return false for an activity marked incomplete by participant', async () => {});
+    it('should return false for an activity status not in the table', async () => {});
+  });
+
+  // TODO: tests for setParticipantActivityCompletion
+  describe('setParticipantActivityCompletion', () => {
+    it('should return the participant activity ID of an updated existing row in the table', async () => {});
+    it('should return the participant activity ID of an inserted row in the table', async () => {});
   });
 });
