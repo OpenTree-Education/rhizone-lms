@@ -441,12 +441,6 @@ describe('programsService', () => {
     it('should return false for an activity status not in the table', async () => {});
   });
 
-  describe('listParticipantActivitiesCompletionForProgram', () => {
-    it('should return a list of participant activities with their completion statuses', async () => {});
-    it('should return null if the programId does not exist', () => {});
-    it('should return null if the programId does not have any assignments', () => {});
-  });
-
   // TODO: tests for setParticipantActivityCompletion
   describe('setParticipantActivityCompletion', () => {
     it('should return the participant activity ID of an updated existing row in the table', async () => {});
