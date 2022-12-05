@@ -30,7 +30,7 @@ const activitiesForCalendar = (
         end: new Date(activity.end_time),
         description: decodeHTML(activity.description_text),
         allDay: !activity.duration,
-        activityType: decodeHTML(activity.activity_type),
+        activityType: activity.activity_type,
         programTitle: correspondingProgramTitle,
       } as CalendarEvent)
   );
