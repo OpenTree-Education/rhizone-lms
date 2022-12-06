@@ -82,12 +82,11 @@ describe('programsRouter', () => {
       const participantActivity = { id: 1, completed: false };
 
       mockPrincipalId(principalId);
-      mockGetParticipantActivityId.mockResolvedValue({ id: 1 }); // how to access participantActivity.id from const on L76
-      mockGetParticipantActivityCompletion.mockResolvedValue({ status: false }); // how to better set this up
+      mockGetParticipantActivityId.mockResolvedValue({ id: participantActivity.id });
+      mockGetParticipantActivityCompletion.mockResolvedValue({ status: participantActivity.completed }); // this error will go away after updates to service file return value
       appAgent
         .get(`/activityStatus/${programId}/${activityId}`)
         .expect(200, itemEnvelope({ status: false }), err => {
-          // again, figure out how to write this better
           expect(mockGetParticipantActivityCompletion).toHaveBeenCalledWith(
             principalId,
             programId,
@@ -97,22 +96,6 @@ describe('programsRouter', () => {
         });
     });
 
-    it('should respond with an internal server error if an error was thrown when trying to find a participant activity', done => {
-      // q: get clarity on the case in which this would happen - what would prompt the service's getParticipantActivityId function to return null?
-      // a: your intuition (as always) here is right. I wouldn't worry too much about testing this unless it's required.
-      // a: but to directly answer your question, getParticipantActivityId should return null if the row isn't found in the table.
-      const programId = 1;
-      const erroneousActivityId = 2;
-
-      mockGetParticipantActivityId.mockResolvedValue(null);
-      mockGetParticipantActivityCompletion.mockRejectedValue(new Error());
-      appAgent
-        .get(`/activityStatus/${programId}/${erroneousActivityId}`)
-        .expect(500, done);
-      // q: shouldn't this return the NotFoundError message on programsRouter L45? how to test that?
-      // a: a NotFoundError message should return HTTP status 404. see line 35 from the questionnairesRouter test for example here.
-    });
-
     // test handling program id and activity id that aren't integers
   });
 
@@ -120,13 +103,6 @@ describe('programsRouter', () => {
     it('should respond with a program activity completion status', done => {
       // see competenciesRouter test L119 for PUT/setter function test example
     });
-
-    it('should respond with a validation error if the completion value in the request body is not a boolean', done => {});
-
-    it('should respond with a validation error if completion value is not provided in the request body', done => {});
-
-    it('should respond with an internal server error if an error was thrown when trying to find a participant activity', done => {});
-  });
 
     // test handling program id and activity id that aren't integers
 });
