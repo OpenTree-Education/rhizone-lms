@@ -24,14 +24,14 @@ const activitiesForCalendar = (
 ): CalendarEvent[] => {
   return activities.map(
     activity =>
-    ({
-      title: decodeHTML(activity.title),
-      start: new Date(activity.start_time),
-      end: new Date(activity.end_time),
-      description: decodeHTML(activity.description_text),
-      allDay: !activity.duration,
-      programTitle: correspondingProgramTitle,
-    } as CalendarEvent)
+      ({
+        title: decodeHTML(activity.title),
+        start: new Date(activity.start_time),
+        end: new Date(activity.end_time),
+        description: decodeHTML(activity.description_text),
+        allDay: !activity.duration,
+        programTitle: correspondingProgramTitle,
+      } as CalendarEvent)
   );
 };
 
@@ -45,8 +45,18 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
     end: new Date(),
     programTitle: '',
   });
-  const [currentView, setCurrentView] = React.useState<string>(Views.WEEK);
-  const [width, setWidth] = React.useState<number>(window.innerWidth);
+  const [currentWidth, setCurrentWidth] = React.useState<number>(
+    window.innerWidth
+  );
+  const [currentView, setCurrentView] = React.useState(
+    currentWidth <= 600 ? Views.DAY : Views.WEEK
+  );
+  const [views, setViews] = React.useState([
+    Views.MONTH,
+    Views.WEEK,
+    Views.DAY,
+    Views.AGENDA,
+  ]);
 
   const handleClickActivity = (activity: CalendarEvent) => {
     setDialogShow(true);
@@ -58,7 +68,7 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
   const closeDialog = () => setDialogShow(false);
 
   const handleChangingView = React.useCallback(
-    (newView: string): void => setCurrentView(newView),
+    newView => setCurrentView(newView),
     [setCurrentView]
   );
 
@@ -102,13 +112,21 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
   correspondingProgramTitle = program.title;
 
   const updateDimension = () => {
-    setWidth(window.innerWidth);
+    setCurrentWidth(window.innerWidth);
   };
 
   useEffect(() => {
-    window.addEventListener("resize", updateDimension);
-    return () => window.removeEventListener("resize", updateDimension);
+    window.addEventListener('resize', updateDimension);
+    return () => window.removeEventListener('resize', updateDimension);
   }, []);
+
+  useEffect(() => {
+    if (currentWidth <= 600) {
+      setViews([Views.DAY, Views.AGENDA]);
+    } else {
+      setViews([Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]);
+    }
+  }, [currentWidth]);
 
   return (
     <>
@@ -116,7 +134,7 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
         events={activitiesForCalendar(program.activities)}
         onSelectEvent={handleClickActivity}
         localizer={luxonLocalizer(DateTime)}
-        defaultView={Views.WEEK}
+        defaultView={currentView}
         startAccessor="start"
         endAccessor="end"
         getNow={() => DateTime.local().toJSDate()}
@@ -129,6 +147,7 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
         popup
         onView={handleChangingView}
         eventPropGetter={eventStyleGetter}
+        views={views}
       />
       <ProgramActivityDialog
         show={dialogShow}

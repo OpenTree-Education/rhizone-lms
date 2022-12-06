@@ -34,10 +34,7 @@ const ProgramPicker = ({
         fontSize: { xs: '0.78rem', sm: '1rem' },
       }}
     >
-      <InputLabel
-        id="program-select-label"
-        sx={{ fontSize: 'inherit' }}
-      >
+      <InputLabel id="program-select-label" sx={{ fontSize: 'inherit' }}>
         Program
       </InputLabel>
       <Select
