@@ -84,11 +84,6 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
         flexDirection: 'column' as 'column',
         minHeight: '4%',
       };
-    } else if (currentView === 'agenda' && currentWidth <= 600) {
-      style = {
-        fontSize: '90%',
-        wordBreak: 'break-word' as 'break-word',
-      };
     }
     return { style: style };
   };
@@ -132,7 +127,7 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
 
   useEffect(() => {
     if (currentWidth <= 600) {
-      setViews([Views.DAY, Views.AGENDA]);
+      setViews([Views.DAY]);
     } else {
       setViews([Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]);
     }

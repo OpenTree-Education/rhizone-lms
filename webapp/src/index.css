@@ -15,3 +15,13 @@ code {
 .rbc-agenda-view table.rbc-agenda-table .rbc-agenda-time-cell span {
   text-transform: capitalize;
 }
+
+.rbc-toolbar {
+  flex-wrap: nowrap !important;
+}
+
+@media screen and (max-width: 680px) {
+  .rbc-toolbar {
+    font-size: 0.75rem !important;
+  }
+}
