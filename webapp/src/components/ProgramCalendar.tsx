@@ -48,7 +48,7 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
   const [currentWidth, setCurrentWidth] = React.useState<number>(
     window.innerWidth
   );
-  const [currentView, setCurrentView] = React.useState(
+  const [currentView, setCurrentView] = React.useState<any>(
     currentWidth <= 600 ? Views.DAY : Views.WEEK
   );
   const [views, setViews] = React.useState([
@@ -78,6 +78,16 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
       style = {
         flexDirection: 'row' as 'row',
         minHeight: '4%',
+      };
+    } else if (currentView === 'day') {
+      style = {
+        flexDirection: 'column' as 'column',
+        minHeight: '4%',
+      };
+    } else if (currentView === 'agenda' && currentWidth <= 600) {
+      style = {
+        fontSize: '90%',
+        wordBreak: 'break-word' as 'break-word',
       };
     }
     return { style: style };
