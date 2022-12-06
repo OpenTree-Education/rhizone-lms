@@ -112,6 +112,8 @@ describe('programsRouter', () => {
       // q: shouldn't this return the NotFoundError message on programsRouter L45? how to test that?
       // a: a NotFoundError message should return HTTP status 404. see line 35 from the questionnairesRouter test for example here.
     });
+
+    // test handling program id and activity id that aren't integers
   });
 
   describe('PUT /activityStatus/:programId/:activityId', () => {
@@ -125,4 +127,6 @@ describe('programsRouter', () => {
 
     it('should respond with an internal server error if an error was thrown when trying to find a participant activity', done => {});
   });
+
+    // test handling program id and activity id that aren't integers
 });
