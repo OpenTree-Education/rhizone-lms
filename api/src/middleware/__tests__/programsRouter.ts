@@ -1,5 +1,9 @@
 import { collectionEnvelope, itemEnvelope } from '../responseEnvelope';
-import { listProgramsWithActivities, getParticipantActivityId, getParticipantActivityCompletion } from '../../services/programsService';
+import {
+  listProgramsWithActivities,
+  getParticipantActivityId,
+  getParticipantActivityCompletion,
+} from '../../services/programsService';
 import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
 import programsRouter from '../programsRouter';
 import { ProgramWithActivities } from '../../models';
@@ -7,7 +11,9 @@ import { ProgramWithActivities } from '../../models';
 jest.mock('../../services/programsService');
 const mockListProgramsWithActivities = jest.mocked(listProgramsWithActivities);
 const mockGetParticipantActivityId = jest.mocked(getParticipantActivityId);
-const mockGetParticipantActivityCompletion = jest.mocked(getParticipantActivityCompletion);
+const mockGetParticipantActivityCompletion = jest.mocked(
+  getParticipantActivityCompletion
+);
 
 describe('programsRouter', () => {
   const appAgent = createAppAgentForRouter(programsRouter);
@@ -76,12 +82,17 @@ describe('programsRouter', () => {
       const participantActivity = { id: 1, completed: false };
 
       mockPrincipalId(principalId);
-      mockGetParticipantActivityId.mockResolvedValue({ id: 1}); // how to access participantActivity.id from const on L76
+      mockGetParticipantActivityId.mockResolvedValue({ id: 1 }); // how to access participantActivity.id from const on L76
       mockGetParticipantActivityCompletion.mockResolvedValue({ status: false }); // how to better set this up
       appAgent
         .get(`/activityStatus/${programId}/${activityId}`)
-        .expect(200, itemEnvelope({ status: false }), err => { // again, figure out how to write this better
-          expect(mockGetParticipantActivityCompletion).toHaveBeenCalledWith(principalId, programId, activityId);
+        .expect(200, itemEnvelope({ status: false }), err => {
+          // again, figure out how to write this better
+          expect(mockGetParticipantActivityCompletion).toHaveBeenCalledWith(
+            principalId,
+            programId,
+            activityId
+          );
           done(err);
         });
     });
@@ -92,10 +103,12 @@ describe('programsRouter', () => {
       // a: but to directly answer your question, getParticipantActivityId should return null if the row isn't found in the table.
       const programId = 1;
       const erroneousActivityId = 2;
-      
+
       mockGetParticipantActivityId.mockResolvedValue(null);
       mockGetParticipantActivityCompletion.mockRejectedValue(new Error());
-      appAgent.get(`/activityStatus/${programId}/${erroneousActivityId}`).expect(500, done);
+      appAgent
+        .get(`/activityStatus/${programId}/${erroneousActivityId}`)
+        .expect(500, done);
       // q: shouldn't this return the NotFoundError message on programsRouter L45? how to test that?
       // a: a NotFoundError message should return HTTP status 404. see line 35 from the questionnairesRouter test for example here.
     });
@@ -106,16 +119,10 @@ describe('programsRouter', () => {
       // see competenciesRouter test L119 for PUT/setter function test example
     });
 
-    it('should respond with a validation error if the completion value in the request body is not a boolean', done => {
+    it('should respond with a validation error if the completion value in the request body is not a boolean', done => {});
 
-    });
+    it('should respond with a validation error if completion value is not provided in the request body', done => {});
 
-    it('should respond with a validation error if completion value is not provided in the request body', done => {
-
-    });
-
-    it('should respond with an internal server error if an error was thrown when trying to find a participant activity', done => {
-
-    });
+    it('should respond with an internal server error if an error was thrown when trying to find a participant activity', done => {});
   });
 });
