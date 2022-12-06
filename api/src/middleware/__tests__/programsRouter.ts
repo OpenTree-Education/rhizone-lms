@@ -82,8 +82,12 @@ describe('programsRouter', () => {
       const participantActivity = { id: 1, completed: false };
 
       mockPrincipalId(principalId);
-      mockGetParticipantActivityId.mockResolvedValue({ id: participantActivity.id });
-      mockGetParticipantActivityCompletion.mockResolvedValue({ status: participantActivity.completed }); // this error will go away after updates to service file return value
+      mockGetParticipantActivityId.mockResolvedValue({
+        id: participantActivity.id,
+      });
+      mockGetParticipantActivityCompletion.mockResolvedValue({
+        status: participantActivity.completed,
+      }); // this error will go away after updates to service file return value
       appAgent
         .get(`/activityStatus/${programId}/${activityId}`)
         .expect(200, itemEnvelope({ status: false }), err => {
@@ -103,6 +107,7 @@ describe('programsRouter', () => {
     it('should respond with a program activity completion status', done => {
       // see competenciesRouter test L119 for PUT/setter function test example
     });
+  });
 
-    // test handling program id and activity id that aren't integers
+  // test handling program id and activity id that aren't integers
 });

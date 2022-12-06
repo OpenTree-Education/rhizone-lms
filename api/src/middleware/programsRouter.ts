@@ -26,12 +26,12 @@ programsRouter.get(
     const programIdNum = Number(programId);
     const activityIdNum = Number(activityId);
 
-    if(!Number.isInteger(programIdNum) || programIdNum < 1) {
+    if (!Number.isInteger(programIdNum) || programIdNum < 1) {
       next(new BadRequestError(`"${programIdNum}" is not a valid program id.`));
       return;
     }
 
-    if(!Number.isInteger(activityIdNum) || activityIdNum < 1) {
+    if (!Number.isInteger(activityIdNum) || activityIdNum < 1) {
       next(new BadRequestError(`"${activityId}" is not a valid activity id.`));
       return;
     }
@@ -51,7 +51,8 @@ programsRouter.get(
       return;
     }
 
-    if (!activityCompletionStatus) { // value will be empty if service function doesn't successfully locate a participant activity
+    if (!activityCompletionStatus) {
+      // value will be empty if service function doesn't successfully locate a participant activity
       next(
         new NotFoundError(
           `A participant activity with the activity id "${activityIdNum}" could not be found.`
