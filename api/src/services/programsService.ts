@@ -322,7 +322,7 @@ export const getParticipantActivityId = async (
  * @param {number} programId - the id for the unique program
  * @param {number} activityId - the id for the unique activity
  * @returns {boolean} - return true if the specific activity is completed,
- *    return false when either completion status is false or row in
+ *    return false when either completion status is false or any row in
  *    `participant_activities` table doesn't exist
  */
 export const getParticipantActivityCompletion = async (
@@ -335,13 +335,15 @@ export const getParticipantActivityCompletion = async (
     programId,
     activityId
   );
+  console.log('getter participantActivityId:', participantActivityId);
   if (!participantActivityId) return false;
   const [{ completed }] = await db('participant_activities')
     .select('completed')
     .where({ id: participantActivityId });
   // TODO: Fix the following line in case what we get back from the database
   // isn't exactly a string with the value of "true" or "false"
-  return completed === 'true';
+  //return completed === 'true';
+  return Boolean(completed);
 };
 
 /**
@@ -367,6 +369,8 @@ export const setParticipantActivityCompletion = async (
     programId,
     activityId
   );
+  //console.log('HI participantActivityId:',participantActivityId);
+
   if (!participantActivityId) {
     await db.transaction(async trx => {
       [participantActivityId] = await trx('participant_activities').insert({
@@ -386,5 +390,7 @@ export const setParticipantActivityCompletion = async (
       })
       .update({ completed: completed });
   }
+  //console.log('after insert -  participantActivityId:',participantActivityId);
+
   return participantActivityId;
 };
