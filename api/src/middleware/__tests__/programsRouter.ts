@@ -127,7 +127,7 @@ describe('programsRouter', () => {
       appAgent
         .put(`/activityStatus/${programId}/${activityId}`)
         .send({
-          "completed": true,
+          completed: true,
         })
         .expect(200, err => {
           // should there be an expectation here for getParticipantActivityId to have been called as well?
