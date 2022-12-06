@@ -81,7 +81,9 @@ const ProgramActivityDialog = ({
       <Divider />
 
       <DialogContent sx={{ textAlign: 'center' }}>
-        <DialogContentText sx={{ fontSize: { xs: "89%", sm: "100%" } }}>{timeRange()}</DialogContentText>
+        <DialogContentText sx={{ fontSize: { xs: '89%', sm: '100%' } }}>
+          {timeRange()}
+        </DialogContentText>
       </DialogContent>
       <Divider />
       <DialogContent>
