@@ -486,19 +486,16 @@ describe('programsService', () => {
     const principalId = 3;
     const programId = 1;
     const activityId = 10;
-    // TODO: should update it('')
-    it('should return true for a completed activity by a participant', async () => {
+    it('should return an object of completion status being true for a completed activity by a participant', async () => {
       mockQuery(
         'select `id` from `participant_activities` where `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
         [principalId, programId, activityId],
         [{ id: 3 }]
       );
       mockQuery(
-        //'select `completed` from `participant_activities` where `id` = ?',
         'select `activity_id`, `id`, `completed` from `participant_activities` where `id` = ?',
         [3],
-        //[{ completed: true }]
-        [{ activity_id: activityId, id: 3, completed: true }]
+        [{ activity_id: activityId, id: 3, completed: 1 }]
       );
       expect(
         await getParticipantActivityCompletion(
@@ -506,26 +503,21 @@ describe('programsService', () => {
           programId,
           activityId
         )
-        //).toEqual(true);
       ).toEqual({
-        activityId: activityId,
-        participantActivityId: 3,
         completed: true,
       });
     });
 
-    it('should return false for an activity marked incomplete by participant', async () => {
+    it('should return an object of completion status being false with activity id and participantActivityId for an activity marked incomplete by participant', async () => {
       mockQuery(
         'select `id` from `participant_activities` where `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
         [principalId, programId, activityId],
         [{ id: 2 }]
       );
       mockQuery(
-        //'select `completed` from `participant_activities` where `id` = ?',
         'select `activity_id`, `id`, `completed` from `participant_activities` where `id` = ?',
         [2],
-        //[{ completed: false }]
-        [{ activity_id: activityId, id: 2, completed: false }]
+        [{ activity_id: activityId, id: 3, completed: 0 }]
       );
       expect(
         await getParticipantActivityCompletion(
@@ -533,15 +525,12 @@ describe('programsService', () => {
           programId,
           activityId
         )
-        //).toEqual(false);
       ).toEqual({
-        activityId: activityId,
-        participantActivityId: 2,
         completed: false,
       });
     });
 
-    it('should return false for an activity status not in the table', async () => {
+    it('should return an object of completion status being false for an activity status not in the table', async () => {
       mockQuery(
         'select `id` from `participant_activities` where `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
         [principalId, programId, activityId],
@@ -553,11 +542,8 @@ describe('programsService', () => {
           programId,
           activityId
         )
-        //).toEqual(false);
       ).toEqual({
-        activityId: 10,
-        completed: null,
-        participantActivityId: null,
+        completed: false,
       });
     });
   });
@@ -569,30 +555,12 @@ describe('programsService', () => {
     const activityId2 = 9;
     const completed = true;
     const newIndex = participantActivitiesList.length;
-    // TODO: should update it('')
-    it('should return the participant activity ID of an updated existing row in the table', async () => {
+    it('should return the participant activity ID and the completion status of an updated existing row in the table', async () => {
       mockQuery(
-        'select `id` from `participant_activities` where `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
-        [principalId, programId, activityId],
-        [{ id: participantActivitiesList[0].id }]
-      );
-      mockQuery(
-        'update `participant_activities` set `completed` = ? where `id` = ? and `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
-        [
-          completed,
-          participantActivitiesList[0].id,
-          principalId,
-          programId,
-          activityId,
-        ],
-        [participantActivitiesList[0].id]
-      );
-      mockQuery(
-        'select `activity_id`, `id`, `completed` from `participant_activities` where `id` = ?',
-        [participantActivitiesList[0].id],
+        'insert into `participant_activities` (`activity_id`, `completed`, `principal_id`, `program_id`) values (?, ?, ?, ?) on duplicate key update `completed` = ?',
+        [activityId, completed, principalId, programId, completed],
         [
           {
-            activity_id: activityId,
             id: participantActivitiesList[0].id,
             completed: false,
           },
@@ -605,34 +573,22 @@ describe('programsService', () => {
           activityId,
           completed
         )
-        //).toEqual(participantActivitiesList[0].id);
       ).toEqual({
-        activityId: activityId,
         participantActivityId: participantActivitiesList[0].id,
         completed: false,
       });
     });
 
-    it('should return the participant activity ID of an inserted row in the table', async () => {
+    it('should return the participant activity ID and the completion status of an inserted row in the table', async () => {
       mockQuery(
-        'select `id` from `participant_activities` where `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
-        [principalId, programId, activityId2],
-        [null]
-      );
-      mockQuery(
-        'insert into `participant_activities` (`activity_id`, `completed`, `principal_id`, `program_id`) values (?, ?, ?, ?)',
-        [activityId2, false, principalId, programId],
-        [newIndex]
-      );
-      mockQuery(
-        'update `participant_activities` set `completed` = ? where `id` = ? and `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
-        [completed, newIndex, principalId, programId, activityId2],
-        [newIndex]
-      );
-      mockQuery(
-        'select `activity_id`, `id`, `completed` from `participant_activities` where `id` = ?',
-        [newIndex],
-        [{ activity_id: activityId2, id: newIndex, completed: false }]
+        'insert into `participant_activities` (`activity_id`, `completed`, `principal_id`, `program_id`) values (?, ?, ?, ?) on duplicate key update `completed` = ?',
+        [activityId2, completed, principalId, programId, completed],
+        [
+          {
+            id: newIndex,
+            completed: false,
+          },
+        ]
       );
       expect(
         await setParticipantActivityCompletion(
@@ -641,9 +597,7 @@ describe('programsService', () => {
           activityId2,
           completed
         )
-        //).toEqual(newIndex);
       ).toEqual({
-        activityId: activityId2,
         participantActivityId: newIndex,
         completed: false,
       });
