@@ -293,8 +293,6 @@ const activityTypesList: ActivityType[] = [
   },
 ];
 
-// TODO: Define some example participant_activity data
-
 describe('programsService', () => {
   describe('listAllPrograms', () => {
     it('should list all available programs', async () => {
