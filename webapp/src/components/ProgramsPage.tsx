@@ -1,5 +1,6 @@
 import React from 'react';
 import { CircularProgress, Container, Stack } from '@mui/material';
+import { View, Views } from 'react-big-calendar';
 
 import ProgramPicker from './ProgramPicker';
 import ProgramCalendar from './ProgramCalendar';
@@ -9,6 +10,41 @@ import { ProgramWithActivities } from '../types/api';
 
 const ProgramsPage = () => {
   const [selectedProgram, setSelectedProgram] = React.useState(0);
+  const [windowWidth, setWindowWidth] = React.useState(720);
+  const [currentView, setCurrentView] = React.useState<View>(
+    windowWidth <= 680 ? Views.DAY : Views.WEEK
+  );
+  const [viewOptions, setViewOptions] = React.useState<View[]>(
+    windowWidth <= 680
+      ? [Views.DAY]
+      : [Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]
+  );
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+      setCurrentView(windowWidth <= 680 ? Views.DAY : currentView);
+      setViewOptions(
+        windowWidth <= 680
+          ? [Views.DAY]
+          : [Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]
+      );
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  });
+
+  React.useEffect(() => {
+    setWindowWidth(window.innerWidth);
+    setCurrentView(window.innerWidth <= 680 ? Views.DAY : Views.WEEK);
+    setViewOptions(
+      window.innerWidth <= 680
+        ? [Views.DAY]
+        : [Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]
+    );
+  }, []);
 
   const {
     data: programsList,
@@ -40,6 +76,7 @@ const ProgramsPage = () => {
   if (!programsList) {
     return null;
   }
+
   return (
     <Container>
       <Stack
@@ -54,7 +91,13 @@ const ProgramsPage = () => {
           setSelectedProgram={setSelectedProgram}
         />
       </Stack>
-      <ProgramCalendar program={programsList[selectedProgram]} />
+      <ProgramCalendar
+        program={programsList[selectedProgram]}
+        windowWidth={windowWidth}
+        currentView={currentView}
+        setCurrentView={setCurrentView}
+        viewOptions={viewOptions}
+      />
     </Container>
   );
 };
