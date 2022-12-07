@@ -97,7 +97,4 @@ programsRouter.put(
   }
 );
 
-// future issue: grabbing participant activities upon render in order to enable color coding of event types in program calendar view
-// specifically re: color coding completed assignment activities
-
 export default programsRouter;
