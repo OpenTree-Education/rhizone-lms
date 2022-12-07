@@ -79,23 +79,19 @@ describe('programsRouter', () => {
 
   describe('GET /activityStatus/:programId/:activityId', () => {
     it('should respond with a program activity completion status', done => {
-      // referencing reflectionsRouter GET test L19
       const principalId = 1;
       const programId = 1;
       const activityId = 1;
       const participantActivity = { id: 1, completed: false };
 
       mockPrincipalId(principalId);
-      mockGetParticipantActivityId.mockResolvedValue({
-        id: participantActivity.id,
-      });
       mockGetParticipantActivityCompletion.mockResolvedValue({
-        status: participantActivity.completed,
-      }); // this error will go away after updates to service file return value
+        completed: participantActivity.completed,
+      });
+      
       appAgent
         .get(`/activityStatus/${programId}/${activityId}`)
-        .expect(200, itemEnvelope({ status: false }), err => {
-          // should there be an expectation here for getParticipantActivityId to have been called as well?
+        .expect(200, itemEnvelope({ programId: programId, activityId: activityId, completed: participantActivity.completed }), err => {
           expect(mockGetParticipantActivityCompletion).toHaveBeenCalledWith(
             principalId,
             programId,
@@ -110,27 +106,23 @@ describe('programsRouter', () => {
 
   describe('PUT /activityStatus/:programId/:activityId', () => {
     it('should respond with a program activity completion status', done => {
-      // see competenciesRouter test L119 for PUT/setter function test example
       const principalId = 1;
       const programId = 1;
       const activityId = 1;
       const participantActivity = { id: 1, completed: false };
 
       mockPrincipalId(principalId);
-      mockGetParticipantActivityId.mockResolvedValue({
-        id: participantActivity.id,
-      });
       mockSetParticipantActivityCompletion.mockResolvedValue({
-        id: 1,
+        participantActivityId: 1,
         completed: true,
       });
+
       appAgent
         .put(`/activityStatus/${programId}/${activityId}`)
         .send({
           completed: true,
         })
         .expect(200, err => {
-          // should there be an expectation here for getParticipantActivityId to have been called as well?
           expect(mockSetParticipantActivityCompletion).toHaveBeenCalledWith(
             principalId,
             programId,
