@@ -335,14 +335,10 @@ export const getParticipantActivityCompletion = async (
     programId,
     activityId
   );
-  console.log('getter participantActivityId:', participantActivityId);
   if (!participantActivityId) return false;
   const [{ completed }] = await db('participant_activities')
     .select('completed')
     .where({ id: participantActivityId });
-  // TODO: Fix the following line in case what we get back from the database
-  // isn't exactly a string with the value of "true" or "false"
-  //return completed === 'true';
   return Boolean(completed);
 };
 
@@ -369,28 +365,21 @@ export const setParticipantActivityCompletion = async (
     programId,
     activityId
   );
-  //console.log('HI participantActivityId:',participantActivityId);
-
   if (!participantActivityId) {
-    await db.transaction(async trx => {
-      [participantActivityId] = await trx('participant_activities').insert({
-        principal_id: principalId,
-        program_id: programId,
-        activity_id: activityId,
-        completed,
-      });
+    [participantActivityId] = await db('participant_activities').insert({
+      principal_id: principalId,
+      program_id: programId,
+      activity_id: activityId,
+      completed: false,
     });
-  } else {
-    await db('participant_activities')
-      .where({
-        id: participantActivityId,
-        principal_id: principalId,
-        program_id: programId,
-        activity_id: activityId,
-      })
-      .update({ completed: completed });
   }
-  //console.log('after insert -  participantActivityId:',participantActivityId);
-
+  await db('participant_activities')
+    .where({
+      id: participantActivityId,
+      principal_id: principalId,
+      program_id: programId,
+      activity_id: activityId,
+    })
+    .update({ completed: completed });
   return participantActivityId;
 };
