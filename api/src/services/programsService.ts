@@ -321,9 +321,7 @@ export const getParticipantActivityId = async (
  * @param {number} principalId - the unique id for the user
  * @param {number} programId - the id for the unique program
  * @param {number} activityId - the id for the unique activity
- * @returns {boolean} - return true if the specific activity is completed,
- *    return false when either completion status is false or any row in
- *    `participant_activities` table doesn't exist
+ * @returns {Object} - if successful, the completed status
  */
 export const getParticipantActivityCompletion = async (
   principalId: number,
@@ -335,26 +333,12 @@ export const getParticipantActivityCompletion = async (
     programId,
     activityId
   );
-  //if (!participantActivityId) return false;
-  if (!participantActivityId)
-    return {
-      activityId: activityId,
-      participantActivityId: null,
-      completed: null,
-    };
-  /*
-  const [{ completed }] = await db('participant_activities')
-    .select('completed')
-    .where({ id: participantActivityId });
-  */
+  if (!participantActivityId) return { completed: false };
   const [participantActivity] = await db('participant_activities')
     .select('activity_id', 'id', 'completed')
     .where({ id: participantActivityId });
-  //return Boolean(completed);
   return {
-    activityId: activityId,
-    participantActivityId: participantActivityId,
-    completed: Boolean(participantActivity.completed),
+    completed: (participantActivity.completed === 1),
   };
 };
 
@@ -367,8 +351,8 @@ export const getParticipantActivityCompletion = async (
  * @param {number} activityId - the id for the unique activity
  * @param {boolean} completed - the boolean value that a user wants to set
  *    into the completed field
- * @returns {number} - if successful, the ID of the record in the table
- *    that was updated/inserted
+ * @returns {Object} - if successful, the ID of the record in the table
+ *    that was updated/inserted and the completed status
  */
 export const setParticipantActivityCompletion = async (
   principalId: number,
@@ -376,34 +360,14 @@ export const setParticipantActivityCompletion = async (
   activityId: number,
   completed: boolean
 ) => {
-  let participantActivityId = await getParticipantActivityId(
-    principalId,
-    programId,
-    activityId
-  );
-  if (!participantActivityId) {
-    [participantActivityId] = await db('participant_activities').insert({
-      principal_id: principalId,
-      program_id: programId,
-      activity_id: activityId,
-      completed: false,
-    });
-  }
-  await db('participant_activities')
-    .where({
-      id: participantActivityId,
-      principal_id: principalId,
-      program_id: programId,
-      activity_id: activityId,
-    })
-    .update({ completed: completed });
-  const [participantActivity] = await db('participant_activities')
-    .select('activity_id', 'id', 'completed')
-    .where({ id: participantActivityId });
-  //return participantActivityId;
+  const [participantActivityRow] = await db('participant_activities').insert({
+    principal_id: principalId,
+    program_id: programId,
+    activity_id: activityId,
+    completed: completed,
+  }).onConflict(['program_id', 'principal_id', 'activity_id']).merge({completed: completed});
   return {
-    activityId: activityId,
-    participantActivityId: participantActivityId,
-    completed: Boolean(participantActivity.completed),
+    participantActivityId: participantActivityRow.id,
+    completed: (participantActivityRow.completed === 1),
   };
 };
