@@ -486,6 +486,7 @@ describe('programsService', () => {
     const principalId = 3;
     const programId = 1;
     const activityId = 10;
+    // TODO: should update it('')
     it('should return true for a completed activity by a participant', async () => {
       mockQuery(
         'select `id` from `participant_activities` where `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
@@ -493,9 +494,11 @@ describe('programsService', () => {
         [{ id: 3 }]
       );
       mockQuery(
-        'select `completed` from `participant_activities` where `id` = ?',
+        //'select `completed` from `participant_activities` where `id` = ?',
+        'select `activity_id`, `id`, `completed` from `participant_activities` where `id` = ?',
         [3],
-        [{ completed: true }]
+        //[{ completed: true }]
+        [{ activity_id: activityId, id: 3, completed: true }]
       );
       expect(
         await getParticipantActivityCompletion(
@@ -504,7 +507,11 @@ describe('programsService', () => {
           activityId
         )
         //).toEqual(true);
-      ).toEqual(true);
+      ).toEqual({
+        activityId: activityId,
+        participantActivityId: 3,
+        completed: true,
+      });
     });
 
     it('should return false for an activity marked incomplete by participant', async () => {
@@ -514,9 +521,11 @@ describe('programsService', () => {
         [{ id: 2 }]
       );
       mockQuery(
-        'select `completed` from `participant_activities` where `id` = ?',
+        //'select `completed` from `participant_activities` where `id` = ?',
+        'select `activity_id`, `id`, `completed` from `participant_activities` where `id` = ?',
         [2],
-        [{ completed: false }]
+        //[{ completed: false }]
+        [{ activity_id: activityId, id: 2, completed: false }]
       );
       expect(
         await getParticipantActivityCompletion(
@@ -524,7 +533,12 @@ describe('programsService', () => {
           programId,
           activityId
         )
-      ).toEqual(false);
+      //).toEqual(false);
+      ).toEqual({
+        activityId: activityId,
+        participantActivityId: 2,
+        completed: false,
+      });
     });
 
     it('should return false for an activity status not in the table', async () => {
@@ -539,7 +553,13 @@ describe('programsService', () => {
           programId,
           activityId
         )
-      ).toEqual(false);
+      //).toEqual(false);
+      ).toEqual({
+        "activityId": 10, 
+        "completed": null, 
+        "participantActivityId": null
+      });
+      
     });
   });
 

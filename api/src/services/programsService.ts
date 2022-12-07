@@ -335,11 +335,27 @@ export const getParticipantActivityCompletion = async (
     programId,
     activityId
   );
-  if (!participantActivityId) return false;
+  //if (!participantActivityId) return false;
+  if (!participantActivityId)
+    return {
+      activityId: activityId,
+      participantActivityId: null,
+      completed: null,
+    };
+  /*
   const [{ completed }] = await db('participant_activities')
     .select('completed')
     .where({ id: participantActivityId });
-  return Boolean(completed);
+  */
+  const [participantActivity] = await db('participant_activities')
+    .select('activity_id', 'id', 'completed')
+    .where({ id: participantActivityId });
+  //return Boolean(completed);
+  return {
+    activityId: activityId,
+    participantActivityId: participantActivityId,
+    completed: Boolean(participantActivity.completed),
+  };
 };
 
 /**
