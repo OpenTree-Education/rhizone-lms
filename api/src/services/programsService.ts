@@ -292,12 +292,12 @@ export const listProgramsWithActivities = async () => {
 
 /**
  * Get the id of the row in the `participant_activities` table that belongs to
- * the given user, program, and activity.
+ * the given user, program, and activity if it exists, Otherwise, , otherwise returns null.
  *
  * @param {number} principalId - the unique id for the user
  * @param {number} programId - the id for the unique program
  * @param {number} activityId - the id for the unique activity
- * @returns {number} - id of matching row in the table, if it exists
+ * @returns - either id of matching row in the table, if it exists or null
  */
 export const getParticipantActivityId = async (
   principalId: number,
