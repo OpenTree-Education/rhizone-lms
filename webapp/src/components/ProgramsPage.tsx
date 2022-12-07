@@ -11,24 +11,31 @@ import { ProgramWithActivities } from '../types/api';
 const ProgramsPage = () => {
   const [selectedProgram, setSelectedProgram] = React.useState(0);
   const [windowWidth, setWindowWidth] = React.useState(720);
-  const [currentView, setCurrentView] = React.useState<View>(
-    windowWidth <= 680 ? Views.DAY : Views.WEEK
+  const [currentView, setCurrentView] = React.useState<View>(Views.WEEK);
+  const [manuallyChosenView, setManuallyChosenView] = React.useState<View>(
+    Views.WEEK
   );
-  const [viewOptions, setViewOptions] = React.useState<View[]>(
-    windowWidth <= 680
-      ? [Views.DAY]
-      : [Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]
-  );
+  const [viewOptions, setViewOptions] = React.useState<View[]>([
+    Views.MONTH,
+    Views.WEEK,
+    Views.DAY,
+    Views.AGENDA,
+  ]);
+
+  const handleViewChange = (manualView: View) => {
+    setCurrentView(windowWidth <= 680 ? Views.DAY : manualView);
+    setManuallyChosenView(manualView);
+  };
 
   React.useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
-      setCurrentView(windowWidth <= 680 ? Views.DAY : currentView);
       setViewOptions(
-        windowWidth <= 680
+        windowWidth <= 600
           ? [Views.DAY]
           : [Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]
       );
+      setCurrentView(windowWidth <= 680 ? Views.DAY : manuallyChosenView);
     };
     window.addEventListener('resize', handleResize);
     return () => {
@@ -95,7 +102,7 @@ const ProgramsPage = () => {
         program={programsList[selectedProgram]}
         windowWidth={windowWidth}
         currentView={currentView}
-        setCurrentView={setCurrentView}
+        setCurrentView={handleViewChange}
         viewOptions={viewOptions}
       />
     </Container>

@@ -17,7 +17,7 @@ interface ProgramCalendarProps {
   program: ProgramWithActivities;
   windowWidth: number;
   currentView: View;
-  setCurrentView: React.Dispatch<React.SetStateAction<View>>;
+  setCurrentView: (manualView: View) => void;
   viewOptions: View[];
 }
 
