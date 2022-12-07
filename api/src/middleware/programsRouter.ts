@@ -44,27 +44,16 @@ programsRouter.get(
         programIdNum,
         activityIdNum
       );
-      // return value should look like: { participantActivityId: x, completedStatus: boolean}
-      // if a participantActivityId does not exist: value is null or object/hash is empty?
     } catch (error) {
       next(error);
       return;
-    }
-
-    if (!activityCompletionStatus) {
-      // value will be empty if service function doesn't successfully locate a participant activity
-      next(
-        new NotFoundError(
-          `A participant activity with the activity id "${activityIdNum}" could not be found.`
-        )
-      );
     }
 
     res.json(
       itemEnvelope({
         programId: programIdNum,
         activityId: activityIdNum,
-        completed: activityCompletionStatus,
+        completed: activityCompletionStatus.completed,
       })
     );
   }
@@ -75,7 +64,6 @@ programsRouter.put(
   async (req, res, next) => {
     const { programId, activityId } = req.params;
     const { completed } = req.body;
-    // request body shoud look like: {"completed": true}
     const { principalId } = req.session;
 
     const programIdNum = Number(programId);
@@ -91,10 +79,10 @@ programsRouter.put(
       return;
     }
 
-    let updatedCompletionStatus;
+    let updatedParticipantActivity;
 
     try {
-      updatedCompletionStatus = await setParticipantActivityCompletion(
+      updatedParticipantActivity = await setParticipantActivityCompletion(
         principalId,
         programIdNum,
         activityIdNum,
@@ -105,7 +93,7 @@ programsRouter.put(
       return;
     }
 
-    res.status(201).json(itemEnvelope(updatedCompletionStatus));
+    res.status(201).json(itemEnvelope(updatedParticipantActivity));
   }
 );
 
