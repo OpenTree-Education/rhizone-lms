@@ -533,7 +533,7 @@ describe('programsService', () => {
           programId,
           activityId
         )
-      //).toEqual(false);
+        //).toEqual(false);
       ).toEqual({
         activityId: activityId,
         participantActivityId: 2,
@@ -553,13 +553,12 @@ describe('programsService', () => {
           programId,
           activityId
         )
-      //).toEqual(false);
+        //).toEqual(false);
       ).toEqual({
-        "activityId": 10, 
-        "completed": null, 
-        "participantActivityId": null
+        activityId: 10,
+        completed: null,
+        participantActivityId: null,
       });
-      
     });
   });
 
@@ -570,7 +569,7 @@ describe('programsService', () => {
     const activityId2 = 9;
     const completed = true;
     const newIndex = participantActivitiesList.length;
-
+    // TODO: should update it('')
     it('should return the participant activity ID of an updated existing row in the table', async () => {
       mockQuery(
         'select `id` from `participant_activities` where `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
@@ -588,6 +587,17 @@ describe('programsService', () => {
         ],
         [participantActivitiesList[0].id]
       );
+      mockQuery(
+        'select `activity_id`, `id`, `completed` from `participant_activities` where `id` = ?',
+        [participantActivitiesList[0].id],
+        [
+          {
+            activity_id: activityId,
+            id: participantActivitiesList[0].id,
+            completed: false,
+          },
+        ]
+      );
       expect(
         await setParticipantActivityCompletion(
           principalId,
@@ -595,7 +605,12 @@ describe('programsService', () => {
           activityId,
           completed
         )
-      ).toEqual(participantActivitiesList[0].id);
+        //).toEqual(participantActivitiesList[0].id);
+      ).toEqual({
+        activityId: activityId,
+        participantActivityId: participantActivitiesList[0].id,
+        completed: false,
+      });
     });
 
     it('should return the participant activity ID of an inserted row in the table', async () => {
@@ -614,6 +629,11 @@ describe('programsService', () => {
         [completed, newIndex, principalId, programId, activityId2],
         [newIndex]
       );
+      mockQuery(
+        'select `activity_id`, `id`, `completed` from `participant_activities` where `id` = ?',
+        [newIndex],
+        [{ activity_id: activityId2, id: newIndex, completed: false }]
+      );
       expect(
         await setParticipantActivityCompletion(
           principalId,
@@ -621,7 +641,12 @@ describe('programsService', () => {
           activityId2,
           completed
         )
-      ).toEqual(newIndex);
+        //).toEqual(newIndex);
+      ).toEqual({
+        activityId: activityId2,
+        participantActivityId: newIndex,
+        completed: false,
+      });
     });
   });
 });

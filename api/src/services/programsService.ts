@@ -397,5 +397,13 @@ export const setParticipantActivityCompletion = async (
       activity_id: activityId,
     })
     .update({ completed: completed });
-  return participantActivityId;
+  const [participantActivity] = await db('participant_activities')
+    .select('activity_id', 'id', 'completed')
+    .where({ id: participantActivityId });
+  //return participantActivityId;
+  return {
+    activityId: activityId,
+    participantActivityId: participantActivityId,
+    completed: Boolean(participantActivity.completed),
+  };
 };
