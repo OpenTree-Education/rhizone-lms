@@ -75,20 +75,6 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
       };
     }
 
-    if (event.allDay && currentView === 'week') {
-      style = {
-        height: '190%',
-        backgroundColor: 'midnightblue',
-      };
-    }
-
-    if (event.allDay && currentView === 'day') {
-      style = {
-        height: '220%',
-        backgroundColor: 'midnightblue',
-      };
-    }
-
     return { style: style };
   };
 
