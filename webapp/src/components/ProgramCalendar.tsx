@@ -69,6 +69,12 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
         minHeight: '4%',
       };
     }
+    if (event.allDay && currentView !== 'agenda') {
+      style = {
+        backgroundColor: 'midnightblue',
+      };
+    }
+
     return { style: style };
   };
 
