@@ -19,7 +19,7 @@ import {
   CurriculumActivity,
   ActivityType,
   ProgramWithActivities,
-  participantActivities,
+  ParticipantActivities,
 } from '../../models';
 
 import { mockQuery } from '../mockDb';
@@ -145,7 +145,7 @@ const curriculumActivitiesList: CurriculumActivity[] = [
     updated_at: '2022-11-15 01:23:45',
   },
 ];
-const participantActivitiesList: participantActivities[] = [
+const participantActivitiesList: ParticipantActivities[] = [
   {
     id: 1,
     program_id: 1,
