@@ -23,25 +23,25 @@ const ProgramsPage = () => {
   ]);
 
   const handleViewChange = (manualView: View) => {
-    setCurrentView(windowWidth <= 680 ? Views.DAY : manualView);
+    setCurrentView(windowWidth <= 600 ? Views.DAY : manualView);
     setManuallyChosenView(manualView);
   };
 
   const handleResize = () => {
     if (window.innerWidth < windowWidth) {
-      setCurrentView(window.innerWidth <= 680 ? Views.DAY : manuallyChosenView);
+      setCurrentView(window.innerWidth <= 600 ? Views.DAY : manuallyChosenView);
       setViewOptions(
-        window.innerWidth <= 680
+        window.innerWidth <= 600
           ? [Views.DAY]
           : [Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]
       );
     } else {
       setViewOptions(
-        window.innerWidth <= 680
+        window.innerWidth <= 600
           ? [Views.DAY]
           : [Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]
       );
-      setCurrentView(window.innerWidth <= 680 ? Views.DAY : manuallyChosenView);
+      setCurrentView(window.innerWidth <= 600 ? Views.DAY : manuallyChosenView);
     }
   };
 

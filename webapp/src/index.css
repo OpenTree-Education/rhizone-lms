@@ -24,7 +24,13 @@ code {
   flex-wrap: nowrap !important;
 }
 
-@media screen and (max-width: 680px) {
+@media screen and (max-width: 390px) {
+  .rbc-toolbar span {
+    font-size: 0.75rem;
+  }
+}
+
+@media screen and (min-width: 601px) and (max-width: 740px) {
   .rbc-toolbar span {
     font-size: 0.75rem;
   }
