@@ -12,6 +12,10 @@ code {
     monospace;
 }
 
+.rbc-agenda-event-cell {
+  cursor: pointer;
+}
+
 .rbc-agenda-view table.rbc-agenda-table .rbc-agenda-time-cell span {
   text-transform: capitalize;
 }

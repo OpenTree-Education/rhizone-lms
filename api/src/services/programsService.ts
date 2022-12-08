@@ -289,3 +289,89 @@ export const listProgramsWithActivities = async () => {
 
   return programsWithActivities;
 };
+
+/**
+ * Get the id of the row in the `participant_activities` table that belongs to
+ * the given user, program, and activity if it exists, Otherwise it returns null.
+ *
+ * @param {number} principalId - the unique id for the user
+ * @param {number} programId - the id for the unique program
+ * @param {number} activityId - the id for the unique activity
+ * @returns - Either id of matching row in the table or null if participantActivity doesn't exists
+ */
+export const getParticipantActivityId = async (
+  principalId: number,
+  programId: number,
+  activityId: number
+) => {
+  const [participantActivity] = await db('participant_activities')
+    .select('id')
+    .where({
+      principal_id: principalId,
+      program_id: programId,
+      activity_id: activityId,
+    });
+  if (!participantActivity) return null;
+  return participantActivity.id;
+};
+
+/**
+ * Get the completion status (either true or false) of the specific activity.
+ *
+ * @param {number} principalId - the unique id for the user
+ * @param {number} programId - the id for the unique program
+ * @param {number} activityId - the id for the unique activity
+ * @returns {Object} - return the completion status (true or false) of the activity by the given participantActivityId.
+ *                     If participantActivityId doesn't exist, the completion status is false.
+ */
+export const getParticipantActivityCompletion = async (
+  principalId: number,
+  programId: number,
+  activityId: number
+) => {
+  const participantActivityId = await getParticipantActivityId(
+    principalId,
+    programId,
+    activityId
+  );
+  if (!participantActivityId) return { completed: false };
+  const [participantActivity] = await db('participant_activities')
+    .select('activity_id', 'id', 'completed')
+    .where({ id: participantActivityId });
+  return {
+    completed: participantActivity.completed === 1,
+  };
+};
+
+/**
+ *  Set/Update the completion status of the specific activity.
+ *  Insert a new row and if conflict occurs which means it already has a row matching 'program_id', 'principal_id', 'activity_id',
+ *  then .merge({}) to update with 'completed' field to what we received from a user.
+ *
+ * @param {number} principalId - the unique id for the user
+ * @param {number} programId - the id for the unique program
+ * @param {number} activityId - the id for the unique activity
+ * @param {boolean} completed - the boolean value that a user wants to set
+ *    into the completed field
+ * @returns {Object} - return the participantActivityId and the completion status (true or false) of an inserted row in the table
+ */
+export const setParticipantActivityCompletion = async (
+  principalId: number,
+  programId: number,
+  activityId: number,
+  completed: boolean
+) => {
+  const [participantActivityRow] = await db('participant_activities')
+    .insert({
+      principal_id: principalId,
+      program_id: programId,
+      activity_id: activityId,
+      completed: completed,
+    })
+    .onConflict(['program_id', 'principal_id', 'activity_id'])
+    .merge({ completed: completed });
+  return {
+    participantActivityId: participantActivityRow.id,
+    completed: participantActivityRow.completed === 1,
+  };
+};

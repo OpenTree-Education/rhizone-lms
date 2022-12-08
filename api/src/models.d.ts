@@ -54,3 +54,11 @@ export interface ActivityType {
   created_at?: string;
   updated_at?: string;
 }
+
+export interface ParticipantActivities {
+  id: number;
+  program_id: number;
+  activity_id: number;
+  principal_id: number;
+  completed: boolean;
+}
