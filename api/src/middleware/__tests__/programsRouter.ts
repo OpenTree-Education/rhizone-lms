@@ -94,24 +94,22 @@ describe('programsRouter', () => {
         completed: participantActivity.completed,
       });
 
-      appAgent
-        .get(`/activityStatus/${programId}/${activityId}`)
-        .expect(
-          200,
-          itemEnvelope({
-            programId: programId,
-            activityId: activityId,
-            completed: participantActivity.completed,
-          }),
-          err => {
-            expect(mockGetParticipantActivityCompletion).toHaveBeenCalledWith(
-              principalId,
-              programId,
-              activityId
-            );
-            done(err);
-          }
-        );
+      appAgent.get(`/activityStatus/${programId}/${activityId}`).expect(
+        200,
+        itemEnvelope({
+          programId: programId,
+          activityId: activityId,
+          completed: participantActivity.completed,
+        }),
+        err => {
+          expect(mockGetParticipantActivityCompletion).toHaveBeenCalledWith(
+            principalId,
+            programId,
+            activityId
+          );
+          done(err);
+        }
+      );
     });
 
     it('should respond with a bad request error if given an invalid program id', done => {
@@ -121,7 +119,7 @@ describe('programsRouter', () => {
       appAgent
         .get(`/activityStatus/${programId}/${activityId}`)
         .expect(400, done);
-        // should this include a check for the error message content? programsRouter L36
+      // should this include a check for the error message content? programsRouter L36
     });
 
     it('should respond with a bad request error if given an invalid activity id', done => {
@@ -131,7 +129,7 @@ describe('programsRouter', () => {
       appAgent
         .get(`/activityStatus/${programId}/${activityId}`)
         .expect(400, done);
-        // should this include a check for the error message content? programsRouter L36
+      // should this include a check for the error message content? programsRouter L36
     });
 
     it('should respond with an internal server error if an error was thrown while getting participant activity completion status', done => {
@@ -185,7 +183,7 @@ describe('programsRouter', () => {
           completed: true,
         })
         .expect(400, done);
-        // should this include a check for the error message content? programsRouter L79
+      // should this include a check for the error message content? programsRouter L79
     });
 
     it('should respond with a bad request error if given an invalid activity id', done => {
@@ -198,7 +196,7 @@ describe('programsRouter', () => {
           completed: true,
         })
         .expect(400, done);
-        // should this include a check for the error message content? programsRouter L79
+      // should this include a check for the error message content? programsRouter L79
     });
 
     it('should respond with an internal server error if an error was thrown while setting participant activity completion status', done => {
