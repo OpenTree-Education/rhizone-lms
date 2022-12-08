@@ -99,11 +99,18 @@ const ProgramActivityDialog = ({
                     border: 'none',
                     verticalAlign: 'top',
                     textAlign: 'right',
+                    pr: { xs: '0.375rem', sm: '1rem' },
                   }}
                 >
                   Program:
                 </TableCell>
-                <TableCell sx={{ border: 'none', fontWeight: 'bold' }}>
+                <TableCell
+                  sx={{
+                    border: 'none',
+                    fontWeight: 'bold',
+                    px: { xs: '0rem', sm: '1rem' },
+                  }}
+                >
                   {contents.programTitle}
                 </TableCell>
               </TableRow>
@@ -116,11 +123,14 @@ const ProgramActivityDialog = ({
                     border: 'none',
                     verticalAlign: 'top',
                     textAlign: 'right',
+                    pr: { xs: '0.375rem', sm: '1rem' },
                   }}
                 >
                   Description:
                 </TableCell>
-                <TableCell sx={{ border: 'none' }}>
+                <TableCell
+                  sx={{ border: 'none', px: { xs: '0rem', sm: '1rem' } }}
+                >
                   {contents.description}
                 </TableCell>
               </TableRow>
