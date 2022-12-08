@@ -27,31 +27,41 @@ const ProgramsPage = () => {
     setManuallyChosenView(manualView);
   };
 
-  React.useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
+  const handleResize = () => {
+    if (window.innerWidth < windowWidth) {
+      setCurrentView(window.innerWidth <= 680 ? Views.DAY : manuallyChosenView);
       setViewOptions(
-        windowWidth <= 600
+        window.innerWidth <= 680
           ? [Views.DAY]
           : [Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]
       );
-      setCurrentView(windowWidth <= 680 ? Views.DAY : manuallyChosenView);
-    };
-    window.addEventListener('resize', handleResize);
+    } else {
+      setViewOptions(
+        window.innerWidth <= 680
+          ? [Views.DAY]
+          : [Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]
+      );
+      setCurrentView(window.innerWidth <= 680 ? Views.DAY : manuallyChosenView);
+    }
+  };
+
+  const setWidth = (e: Event) => {
+    if (!e || !e.target) return;
+    const window = e.target as Window;
+    const { innerWidth } = window;
+    if (innerWidth) {
+      setWindowWidth(innerWidth);
+    }
+  };
+
+  React.useEffect(() => {
+    window.addEventListener('resize', setWidth);
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', setWidth);
     };
   });
 
-  React.useEffect(() => {
-    setWindowWidth(window.innerWidth);
-    setCurrentView(window.innerWidth <= 680 ? Views.DAY : Views.WEEK);
-    setViewOptions(
-      window.innerWidth <= 680
-        ? [Views.DAY]
-        : [Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]
-    );
-  }, []);
+  React.useEffect(handleResize, [manuallyChosenView, windowWidth]);
 
   const {
     data: programsList,
