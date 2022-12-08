@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { decodeHTML } from 'entities';
 import { DateTime } from 'luxon';
 import { Calendar, luxonLocalizer, View } from 'react-big-calendar';
