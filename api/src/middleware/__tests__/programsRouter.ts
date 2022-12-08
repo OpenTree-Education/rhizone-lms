@@ -121,9 +121,19 @@ describe('programsRouter', () => {
       appAgent
         .get(`/activityStatus/${programId}/${activityId}`)
         .expect(400, done);
+        // should this include a check for the error message content? programsRouter L36
     });
 
-    it('should respond with an internal server error if an error was thrown while getting participant activity completion status', done => {});
+    it('should respond with an internal server error if an error was thrown while getting participant activity completion status', done => {
+      const programId = 1;
+      const activityId = 1;
+
+      mockGetParticipantActivityCompletion.mockRejectedValue(new Error());
+
+      appAgent
+        .get(`/activityStatus/${programId}/${activityId}`)
+        .expect(500, done);
+    });
   });
 
   describe('PUT /activityStatus/:programId/:activityId', () => {
@@ -164,8 +174,19 @@ describe('programsRouter', () => {
           completed: true,
         })
         .expect(400, done);
+        // should this include a check for the error message content? programsRouter L79
     });
 
-    it('should respond with an internal server error if an error was thrown while setting participant activity completion status', done => {});
+    it('should respond with an internal server error if an error was thrown while setting participant activity completion status', done => {
+      const programId = 1;
+      const activityId = 1;
+
+      mockSetParticipantActivityCompletion.mockRejectedValue(new Error());
+
+      appAgent
+        .put(`/activityStatus/${programId}/${activityId}`)
+        .send({ completed: true })
+        .expect(500, done);
+    });
   });
 });
