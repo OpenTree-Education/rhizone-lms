@@ -68,6 +68,7 @@ CREATE TABLE participant_activities (
   FOREIGN KEY (activity_id) REFERENCES activities(id),
   INDEX participant_activities_principal_id (principal_id),
   FOREIGN KEY (principal_id) REFERENCES principals(id),
+  UNIQUE (program_id, activity_id, principal_id),
   PRIMARY KEY (id)
 );
 
