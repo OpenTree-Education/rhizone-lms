@@ -9,6 +9,9 @@ import {
   findProgramWithActivities,
   listProgramsForCurriculum,
   listProgramsWithActivities,
+  getParticipantActivityId,
+  getParticipantActivityCompletion,
+  setParticipantActivityCompletion,
 } from '../programsService';
 import {
   Program,
@@ -16,6 +19,7 @@ import {
   CurriculumActivity,
   ActivityType,
   ProgramWithActivities,
+  ParticipantActivities,
 } from '../../models';
 
 import { mockQuery } from '../mockDb';
@@ -139,6 +143,29 @@ const curriculumActivitiesList: CurriculumActivity[] = [
     curriculum_id: 2,
     created_at: '2022-11-15 01:23:45',
     updated_at: '2022-11-15 01:23:45',
+  },
+];
+const participantActivitiesList: ParticipantActivities[] = [
+  {
+    id: 1,
+    program_id: 1,
+    activity_id: 7,
+    principal_id: 3,
+    completed: false,
+  },
+  {
+    id: 2,
+    program_id: 1,
+    activity_id: 8,
+    principal_id: 3,
+    completed: false,
+  },
+  {
+    id: 3,
+    program_id: 1,
+    activity_id: 10,
+    principal_id: 3,
+    completed: true,
   },
 ];
 const programActivitiesList: ProgramActivity[][] = [
@@ -423,6 +450,155 @@ describe('programsService', () => {
       expect(await listProgramsWithActivities()).toEqual(
         programsWithActivities
       );
+    });
+  });
+
+  describe('getParticipantActivityId', () => {
+    const principalId = 3;
+    const programId = 1;
+    const activityId = 7;
+    it('should return the ID of an existing row in the table', async () => {
+      mockQuery(
+        'select `id` from `participant_activities` where `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
+        [principalId, programId, activityId],
+        [{ id: participantActivitiesList[0].id }]
+      );
+      expect(
+        await getParticipantActivityId(principalId, programId, activityId)
+      ).toEqual(participantActivitiesList[0].id);
+    });
+
+    it('should return null if requesting the ID of row that does not exist', async () => {
+      mockQuery(
+        'select `id` from `participant_activities` where `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
+        [principalId, programId, activityId],
+        []
+      );
+      expect(
+        await getParticipantActivityId(principalId, programId, activityId)
+      ).toEqual(null);
+    });
+  });
+
+  describe('getParticipantActivityCompletion', () => {
+    const principalId = 3;
+    const programId = 1;
+    const activityId = 10;
+    it('should return an object of completion status being true for a completed activity by a participant', async () => {
+      mockQuery(
+        'select `id` from `participant_activities` where `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
+        [principalId, programId, activityId],
+        [{ id: 3 }]
+      );
+      mockQuery(
+        'select `activity_id`, `id`, `completed` from `participant_activities` where `id` = ?',
+        [3],
+        [{ activity_id: activityId, id: 3, completed: 1 }]
+      );
+      expect(
+        await getParticipantActivityCompletion(
+          principalId,
+          programId,
+          activityId
+        )
+      ).toEqual({
+        completed: true,
+      });
+    });
+
+    it('should return an object of completion status being false with activity id and participantActivityId for an activity marked incomplete by participant', async () => {
+      mockQuery(
+        'select `id` from `participant_activities` where `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
+        [principalId, programId, activityId],
+        [{ id: 2 }]
+      );
+      mockQuery(
+        'select `activity_id`, `id`, `completed` from `participant_activities` where `id` = ?',
+        [2],
+        [{ activity_id: activityId, id: 3, completed: 0 }]
+      );
+      expect(
+        await getParticipantActivityCompletion(
+          principalId,
+          programId,
+          activityId
+        )
+      ).toEqual({
+        completed: false,
+      });
+    });
+
+    it('should return an object of completion status being false for an activity status not in the table', async () => {
+      mockQuery(
+        'select `id` from `participant_activities` where `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
+        [principalId, programId, activityId],
+        []
+      );
+      expect(
+        await getParticipantActivityCompletion(
+          principalId,
+          programId,
+          activityId
+        )
+      ).toEqual({
+        completed: false,
+      });
+    });
+  });
+
+  describe('setParticipantActivityCompletion', () => {
+    const principalId = 3;
+    const programId = 1;
+    const activityId = 7;
+    const activityId2 = 9;
+    const completed = true;
+    const newIndex = participantActivitiesList.length;
+    it('should return the participant activity ID and the completion status of an updated existing row in the table', async () => {
+      mockQuery(
+        'insert into `participant_activities` (`activity_id`, `completed`, `principal_id`, `program_id`) values (?, ?, ?, ?) on duplicate key update `completed` = ?',
+        [activityId, completed, principalId, programId, completed],
+        [
+          {
+            id: participantActivitiesList[0].id,
+            completed: false,
+          },
+        ]
+      );
+      expect(
+        await setParticipantActivityCompletion(
+          principalId,
+          programId,
+          activityId,
+          completed
+        )
+      ).toEqual({
+        participantActivityId: participantActivitiesList[0].id,
+        completed: false,
+      });
+    });
+
+    it('should return the participant activity ID and the completion status of an inserted row in the table', async () => {
+      mockQuery(
+        'insert into `participant_activities` (`activity_id`, `completed`, `principal_id`, `program_id`) values (?, ?, ?, ?) on duplicate key update `completed` = ?',
+        [activityId2, completed, principalId, programId, completed],
+        [
+          {
+            id: newIndex,
+            completed: false,
+          },
+        ]
+      );
+      expect(
+        await setParticipantActivityCompletion(
+          principalId,
+          programId,
+          activityId2,
+          completed
+        )
+      ).toEqual({
+        participantActivityId: newIndex,
+        completed: false,
+      });
     });
   });
 });
