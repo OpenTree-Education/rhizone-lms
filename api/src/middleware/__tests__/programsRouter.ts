@@ -102,6 +102,8 @@ describe('programsRouter', () => {
     });
 
     // test handling program id and activity id that aren't integers
+
+    // test that try catch block encounters an error
   });
 
   describe('PUT /activityStatus/:programId/:activityId', () => {
@@ -134,4 +136,6 @@ describe('programsRouter', () => {
   });
 
   // test handling program id and activity id that aren't integers
+
+  // test that try catch block encounters an error
 });
