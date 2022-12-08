@@ -154,11 +154,12 @@ describe('programsRouter', () => {
         .send({
           completed: true,
         })
-        .expect(200, err => {
+        .expect(201, err => {
           expect(mockSetParticipantActivityCompletion).toHaveBeenCalledWith(
             principalId,
             programId,
-            activityId
+            activityId,
+            true
           );
           done(err);
         });
