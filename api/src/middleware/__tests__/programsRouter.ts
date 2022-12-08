@@ -63,5 +63,10 @@ describe('programsRouter', () => {
         done(err);
       });
     });
+
+    it('should respond with an internal server error if an error was thrown while listing programs', done => {
+      mockListProgramsWithActivities.mockRejectedValue(new Error());
+      appAgent.get('/').expect(500, done);
+    });
   });
 });
