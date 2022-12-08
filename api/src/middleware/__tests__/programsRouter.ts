@@ -145,9 +145,20 @@ describe('programsRouter', () => {
           done(err);
         });
     });
+
+    it('should respond with a bad request error if given an invalid program id', done => {
+      const programId = 0;
+      const activityId = 1;
+
+      appAgent
+        .put(`/activityStatus/${programId}/${activityId}`)
+        .send({
+          completed: true,
+        })
+        .expect(400, done);
+    });
   });
 
-  // test handling program id and activity id that aren't integers
 
   // test that try catch block encounters an error
 });
