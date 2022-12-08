@@ -124,6 +124,16 @@ describe('programsRouter', () => {
         // should this include a check for the error message content? programsRouter L36
     });
 
+    it('should respond with a bad request error if given an invalid activity id', done => {
+      const programId = 1;
+      const activityId = 0;
+
+      appAgent
+        .get(`/activityStatus/${programId}/${activityId}`)
+        .expect(400, done);
+        // should this include a check for the error message content? programsRouter L36
+    });
+
     it('should respond with an internal server error if an error was thrown while getting participant activity completion status', done => {
       const programId = 1;
       const activityId = 1;
@@ -168,6 +178,19 @@ describe('programsRouter', () => {
     it('should respond with a bad request error if given an invalid program id', done => {
       const programId = 0;
       const activityId = 1;
+
+      appAgent
+        .put(`/activityStatus/${programId}/${activityId}`)
+        .send({
+          completed: true,
+        })
+        .expect(400, done);
+        // should this include a check for the error message content? programsRouter L79
+    });
+
+    it('should respond with a bad request error if given an invalid activity id', done => {
+      const programId = 1;
+      const activityId = 0;
 
       appAgent
         .put(`/activityStatus/${programId}/${activityId}`)
