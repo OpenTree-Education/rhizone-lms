@@ -93,29 +93,37 @@ describe('programsRouter', () => {
       mockGetParticipantActivityCompletion.mockResolvedValue({
         completed: participantActivity.completed,
       });
-      
+
       appAgent
         .get(`/activityStatus/${programId}/${activityId}`)
-        .expect(200, itemEnvelope({ programId: programId, activityId: activityId, completed: participantActivity.completed }), err => {
-          expect(mockGetParticipantActivityCompletion).toHaveBeenCalledWith(
-            principalId,
-            programId,
-            activityId
-          );
-          done(err);
-        });
+        .expect(
+          200,
+          itemEnvelope({
+            programId: programId,
+            activityId: activityId,
+            completed: participantActivity.completed,
+          }),
+          err => {
+            expect(mockGetParticipantActivityCompletion).toHaveBeenCalledWith(
+              principalId,
+              programId,
+              activityId
+            );
+            done(err);
+          }
+        );
     });
 
     it('should respond with a bad request error if given an invalid program id', done => {
       const programId = 0;
       const activityId = 1;
-      
+
       appAgent
         .get(`/activityStatus/${programId}/${activityId}`)
         .expect(400, done);
     });
 
-    // test that try catch block encounters an error
+    it('should respond with an internal server error if an error was thrown while getting participant activity completion status', done => {});
   });
 
   describe('PUT /activityStatus/:programId/:activityId', () => {
@@ -157,8 +165,7 @@ describe('programsRouter', () => {
         })
         .expect(400, done);
     });
+
+    it('should respond with an internal server error if an error was thrown while setting participant activity completion status', done => {});
   });
-
-
-  // test that try catch block encounters an error
 });
