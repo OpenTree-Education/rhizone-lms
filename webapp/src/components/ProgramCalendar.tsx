@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { decodeHTML } from 'entities';
 import { DateTime } from 'luxon';
 import { Calendar, luxonLocalizer, View } from 'react-big-calendar';
@@ -78,6 +78,26 @@ const ProgramCalendar = ({
         minHeight: '4%',
       };
     }
+    if (event.allDay && currentView !== 'agenda') {
+      style = {
+        backgroundColor: 'midnightblue',
+      };
+    }
+
+    if (event.allDay && currentView === 'week') {
+      style = {
+        height: '190%',
+        backgroundColor: 'midnightblue',
+      };
+    }
+
+    if (event.allDay && currentView === 'day') {
+      style = {
+        height: '220%',
+        backgroundColor: 'midnightblue',
+      };
+    }
+
     return { style: style };
   };
 
