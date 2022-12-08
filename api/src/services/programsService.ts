@@ -292,12 +292,12 @@ export const listProgramsWithActivities = async () => {
 
 /**
  * Get the id of the row in the `participant_activities` table that belongs to
- * the given user, program, and activity if it exists, Otherwise, , otherwise returns null.
+ * the given user, program, and activity if it exists, Otherwise it returns null.
  *
  * @param {number} principalId - the unique id for the user
  * @param {number} programId - the id for the unique program
  * @param {number} activityId - the id for the unique activity
- * @returns - either id of matching row in the table, if it exists or null
+ * @returns - Either id of matching row in the table or null if participantActivity doesn't exists
  */
 export const getParticipantActivityId = async (
   principalId: number,
@@ -321,7 +321,8 @@ export const getParticipantActivityId = async (
  * @param {number} principalId - the unique id for the user
  * @param {number} programId - the id for the unique program
  * @param {number} activityId - the id for the unique activity
- * @returns {Object} - if successful, the completed status
+ * @returns {Object} - return the completion status (true or false) of the activity by the given participantActivityId.
+ *                     If participantActivityId doesn't exist, the completion status is false.
  */
 export const getParticipantActivityCompletion = async (
   principalId: number,
@@ -343,16 +344,16 @@ export const getParticipantActivityCompletion = async (
 };
 
 /**
- * Set/Update the completion status of the specific activity. If the
- * `participant_activities` record doesn't exist, create it.
+ *  Set/Update the completion status of the specific activity.
+ *  Insert a new row and if conflict occurs which means it already has a row matching 'program_id', 'principal_id', 'activity_id',
+ *  then .merge({}) to update with 'completed' field to what we received from a user.
  *
  * @param {number} principalId - the unique id for the user
  * @param {number} programId - the id for the unique program
  * @param {number} activityId - the id for the unique activity
  * @param {boolean} completed - the boolean value that a user wants to set
  *    into the completed field
- * @returns {Object} - if successful, the ID of the record in the table
- *    that was updated/inserted and the completed status
+ * @returns {Object} - return the participantActivityId and the completion status (true or false) of an inserted row in the table
  */
 export const setParticipantActivityCompletion = async (
   principalId: number,
