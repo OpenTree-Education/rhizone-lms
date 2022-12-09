@@ -1,11 +1,21 @@
-import { collectionEnvelope } from '../responseEnvelope';
-import { listProgramsWithActivities } from '../../services/programsService';
-import { createAppAgentForRouter } from '../routerTestUtils';
+import { collectionEnvelope, itemEnvelope } from '../responseEnvelope';
+import {
+  listProgramsWithActivities,
+  getParticipantActivityCompletion,
+  setParticipantActivityCompletion,
+} from '../../services/programsService';
+import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
 import programsRouter from '../programsRouter';
 import { ProgramWithActivities } from '../../models';
 
 jest.mock('../../services/programsService');
 const mockListProgramsWithActivities = jest.mocked(listProgramsWithActivities);
+const mockGetParticipantActivityCompletion = jest.mocked(
+  getParticipantActivityCompletion
+);
+const mockSetParticipantActivityCompletion = jest.mocked(
+  setParticipantActivityCompletion
+);
 
 describe('programsRouter', () => {
   const appAgent = createAppAgentForRouter(programsRouter);
@@ -67,6 +77,138 @@ describe('programsRouter', () => {
     it('should respond with an internal server error if an error was thrown while listing programs', done => {
       mockListProgramsWithActivities.mockRejectedValue(new Error());
       appAgent.get('/').expect(500, done);
+    });
+  });
+
+  describe('GET /activityStatus/:programId/:activityId', () => {
+    it('should respond with a program activity completion status', done => {
+      const principalId = 1;
+      const programId = 1;
+      const activityId = 1;
+      const participantActivity = { id: 1, completed: false };
+
+      mockPrincipalId(principalId);
+      mockGetParticipantActivityCompletion.mockResolvedValue({
+        completed: participantActivity.completed,
+      });
+
+      appAgent.get(`/activityStatus/${programId}/${activityId}`).expect(
+        200,
+        itemEnvelope({
+          programId: programId,
+          activityId: activityId,
+          completed: participantActivity.completed,
+        }),
+        err => {
+          expect(mockGetParticipantActivityCompletion).toHaveBeenCalledWith(
+            principalId,
+            programId,
+            activityId
+          );
+          done(err);
+        }
+      );
+    });
+
+    it('should respond with a bad request error if given an invalid program id', done => {
+      const programId = 0;
+      const activityId = 1;
+
+      appAgent
+        .get(`/activityStatus/${programId}/${activityId}`)
+        .expect(400, done);
+      // should this include a check for the error message content? programsRouter L36
+    });
+
+    it('should respond with a bad request error if given an invalid activity id', done => {
+      const programId = 1;
+      const activityId = 0;
+
+      appAgent
+        .get(`/activityStatus/${programId}/${activityId}`)
+        .expect(400, done);
+      // should this include a check for the error message content? programsRouter L36
+    });
+
+    it('should respond with an internal server error if an error was thrown while getting participant activity completion status', done => {
+      const programId = 1;
+      const activityId = 1;
+
+      mockGetParticipantActivityCompletion.mockRejectedValue(new Error());
+
+      appAgent
+        .get(`/activityStatus/${programId}/${activityId}`)
+        .expect(500, done);
+    });
+  });
+
+  describe('PUT /activityStatus/:programId/:activityId', () => {
+    it('should respond with a program activity completion status', done => {
+      const principalId = 1;
+      const programId = 1;
+      const activityId = 1;
+      const participantActivity = {
+        participantActivityId: 1,
+        completed: true,
+      };
+
+      mockPrincipalId(principalId);
+      mockSetParticipantActivityCompletion.mockResolvedValue(
+        participantActivity
+      );
+
+      appAgent
+        .put(`/activityStatus/${programId}/${activityId}`)
+        .send({
+          completed: true,
+        })
+        .expect(201, err => {
+          expect(mockSetParticipantActivityCompletion).toHaveBeenCalledWith(
+            principalId,
+            programId,
+            activityId,
+            true
+          );
+          done(err);
+        });
+    });
+
+    it('should respond with a bad request error if given an invalid program id', done => {
+      const programId = 0;
+      const activityId = 1;
+
+      appAgent
+        .put(`/activityStatus/${programId}/${activityId}`)
+        .send({
+          completed: true,
+        })
+        .expect(400, done);
+      // should this include a check for the error message content? programsRouter L79
+    });
+
+    it('should respond with a bad request error if given an invalid activity id', done => {
+      const programId = 1;
+      const activityId = 0;
+
+      appAgent
+        .put(`/activityStatus/${programId}/${activityId}`)
+        .send({
+          completed: true,
+        })
+        .expect(400, done);
+      // should this include a check for the error message content? programsRouter L79
+    });
+
+    it('should respond with an internal server error if an error was thrown while setting participant activity completion status', done => {
+      const programId = 1;
+      const activityId = 1;
+
+      mockSetParticipantActivityCompletion.mockRejectedValue(new Error());
+
+      appAgent
+        .put(`/activityStatus/${programId}/${activityId}`)
+        .send({ completed: true })
+        .expect(500, done);
     });
   });
 });
