@@ -1,7 +1,7 @@
 import React from 'react';
 import { decodeHTML } from 'entities';
 import { DateTime } from 'luxon';
-import { Calendar, luxonLocalizer, Views } from 'react-big-calendar';
+import { Calendar, luxonLocalizer, View } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Box } from '@mui/material';
 
@@ -15,6 +15,10 @@ import {
 
 interface ProgramCalendarProps {
   program: ProgramWithActivities;
+  windowWidth: number;
+  currentView: View;
+  setCurrentView: (manualView: View) => void;
+  viewOptions: View[];
 }
 
 let correspondingProgramTitle = '';
@@ -35,7 +39,13 @@ const activitiesForCalendar = (
   );
 };
 
-const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
+const ProgramCalendar = ({
+  program,
+  windowWidth,
+  currentView,
+  setCurrentView,
+  viewOptions,
+}: ProgramCalendarProps) => {
   const [dialogShow, setDialogShow] = React.useState(false);
   const [dialogContents, setDialogContents] = React.useState<CalendarEvent>({
     title: '',
@@ -45,7 +55,6 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
     end: new Date(),
     programTitle: '',
   });
-  const [currentView, setCurrentView] = React.useState<string>(Views.WEEK);
 
   const handleClickActivity = (activity: CalendarEvent) => {
     setDialogShow(true);
@@ -56,16 +65,16 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
 
   const closeDialog = () => setDialogShow(false);
 
-  const handleChangingView = React.useCallback(
-    (newView: string): void => setCurrentView(newView),
-    [setCurrentView]
-  );
-
   const eventStyleGetter = (event: any) => {
     let style;
     if (currentView === 'week') {
       style = {
         flexDirection: 'row' as 'row',
+        minHeight: '4%',
+      };
+    } else if (currentView === 'day') {
+      style = {
+        flexDirection: 'column' as 'column',
         minHeight: '4%',
       };
     }
@@ -112,7 +121,7 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
         events={activitiesForCalendar(program.activities)}
         onSelectEvent={handleClickActivity}
         localizer={luxonLocalizer(DateTime)}
-        defaultView={Views.WEEK}
+        defaultView={currentView}
         startAccessor="start"
         endAccessor="end"
         getNow={() => DateTime.local().toJSDate()}
@@ -123,8 +132,12 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
           week: { event: CustomWeekEvent },
         }}
         popup
-        onView={handleChangingView}
+        onView={(newView: View) => {
+          setCurrentView(newView);
+        }}
+        view={currentView}
         eventPropGetter={eventStyleGetter}
+        views={viewOptions}
       />
       <ProgramActivityDialog
         show={dialogShow}
