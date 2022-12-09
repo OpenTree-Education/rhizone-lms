@@ -557,6 +557,11 @@ describe('programsService', () => {
       mockQuery(
         'insert into `participant_activities` (`activity_id`, `completed`, `principal_id`, `program_id`) values (?, ?, ?, ?) on duplicate key update `completed` = ?',
         [activityId, completed, principalId, programId, completed],
+        []
+      );
+      mockQuery(
+        'select `id`, `completed` from `participant_activities` where `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
+        [principalId, programId, activityId],
         [
           {
             id: participantActivitiesList[0].id,
@@ -581,6 +586,11 @@ describe('programsService', () => {
       mockQuery(
         'insert into `participant_activities` (`activity_id`, `completed`, `principal_id`, `program_id`) values (?, ?, ?, ?) on duplicate key update `completed` = ?',
         [activityId2, completed, principalId, programId, completed],
+        []
+      );
+      mockQuery(
+        'select `id`, `completed` from `participant_activities` where `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
+        [principalId, programId, activityId2],
         [
           {
             id: newIndex,
