@@ -361,7 +361,7 @@ export const setParticipantActivityCompletion = async (
   activityId: number,
   completed: boolean
 ) => {
-  const [participantActivityRow] = await db('participant_activities')
+  await db('participant_activities')
     .insert({
       principal_id: principalId,
       program_id: programId,
@@ -370,8 +370,17 @@ export const setParticipantActivityCompletion = async (
     })
     .onConflict(['program_id', 'principal_id', 'activity_id'])
     .merge({ completed: completed });
+
+  const [participantActivity] = await db('participant_activities')
+    .select('id', 'completed')
+    .where({
+      principal_id: principalId,
+      program_id: programId,
+      activity_id: activityId,
+    });
+
   return {
-    participantActivityId: participantActivityRow.id,
-    completed: participantActivityRow.completed === 1,
+    participantActivityId: participantActivity.id,
+    completed: participantActivity.completed === 1,
   };
 };
