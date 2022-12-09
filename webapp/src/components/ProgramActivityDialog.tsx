@@ -20,8 +20,7 @@ import {
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { formatDate, formatTime } from '../helpers/dateTime';
-import useApiData from '../helpers/useApiData';
-import { CalendarEvent, ActivityCompletionStatus } from '../types/api';
+import { CalendarEvent } from '../types/api';
 interface ProgramActivityDialogProps {
   show: boolean;
   contents: CalendarEvent;
@@ -35,35 +34,24 @@ const ProgramActivityDialog = ({
   const [completed, setCompleted] = useState<boolean | null>(null);
   // const [markCompletedError, setMarkCompletedError] = useState(null);
   // const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
-  const { data: activityCompletionStatus, error } =
-    useApiData<ActivityCompletionStatus>({
-      deps: [completed],
-      path: `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
-      sendCredentials: true,
-      shouldFetch: () => !!contents.programId,
-    });
 
-  if (error) {
-    return null;
-  }
-
-  const closeDialog = () => {
-    handleClose();
-    setCompleted(null);
+  const sendAPIGetRequest = (path: string) => {
+    if (contents.activityType !== 'assignment') return;
+    return fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
+      method: 'GET',
+      credentials: 'include',
+    })
+      .then(res => res.json())
+      .then(async ({ data }) => {
+        if (data) {
+          setCompleted(data.completed);
+        }
+      });
   };
-
-  if (
-    activityCompletionStatus &&
-    activityCompletionStatus.completed !== completed
-  ) {
-    //setCompleted(activityCompletionStatus.completed)
-    //console.log(`The status of data: activityCompletionStatus: ${activityCompletionStatus.completed}`)
-  }
-  // Post Request for updating activity completion status
-  // programsRouter.post('/activityStatus/:programId/:activityId')
-  // request body shoud look like: {"completed": true}
-  // Using onClick for UI demo but onSubmit should be used in future development
   const sendAPIPutRequest = (path: string, body: Object) => {
+    if ('completed' in body && body.completed === null) {
+      return;
+    }
     fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
       method: 'PUT',
       credentials: 'include',
@@ -77,8 +65,22 @@ const ProgramActivityDialog = ({
         }
       });
   };
+
+  React.useEffect(() => {
+    async function fetchData() {
+      setCompleted(null);
+      if (show) {
+        await sendAPIGetRequest(
+          `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`
+        );
+      }
+    }
+    fetchData();
+  }, [contents, show]);
+
   const markCompleted: FormEventHandler = event => {
     event.preventDefault();
+    if (event.type !== 'click') return;
     sendAPIPutRequest(
       `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
       { completed: true }
@@ -86,6 +88,7 @@ const ProgramActivityDialog = ({
   };
   const markIncomplete: FormEventHandler = event => {
     event.preventDefault();
+    if (event.type !== 'click') return;
     sendAPIPutRequest(
       `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
       { completed: false }
@@ -147,7 +150,7 @@ const ProgramActivityDialog = ({
         {completed && <TaskAltIcon sx={{ ml: 1 }} />}
         <IconButton
           aria-label="close"
-          onClick={closeDialog}
+          onClick={handleClose}
           sx={{
             position: 'absolute',
             ml: 10,
