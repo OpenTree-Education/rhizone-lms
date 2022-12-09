@@ -19,50 +19,95 @@ import {
   TableRow,
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-
 import { formatDate, formatTime } from '../helpers/dateTime';
-import { CalendarEvent } from '../types/api';
-
+import useApiData from '../helpers/useApiData';
+import { CalendarEvent, ActivityCompletionStatus } from '../types/api';
 interface ProgramActivityDialogProps {
   show: boolean;
   contents: CalendarEvent;
   handleClose: () => void;
 }
-
 const ProgramActivityDialog = ({
   show,
   contents,
   handleClose,
 }: ProgramActivityDialogProps) => {
-  const [completed, setCompleted] = useState(false);
+  const [completed, setCompleted] = useState();
   // const [markCompletedError, setMarkCompletedError] = useState(null);
   // const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
-  //Using onClick for UI demo but onSubmit should be used in future development
+  // Get Request for activity completsion status
+  // programsRouter.get('/activityStatus/:programId/:activityId')
+  // return {activityId:1, participantActivityId: 1, completed: true}
+  const {
+    data: activityCompletionStatus,
+    error,
+    isLoading,
+  } = useApiData<ActivityCompletionStatus>({
+    deps: [completed],
+    path: `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
+    sendCredentials: true,
+    shouldFetch: () => !!contents.programId,
+  });
+  console.log('hi:', completed);
+
+  if (
+    activityCompletionStatus &&
+    activityCompletionStatus.completed !== completed
+  ) {
+    //setCompleted(activityCompletionStatus.completed)
+    //console.log(`The status of data: activityCompletionStatus: ${activityCompletionStatus.completed}`)
+  }
+  // Post Request for updating activity completion status
+  // programsRouter.post('/activityStatus/:programId/:activityId')
+  // request body shoud look like: {"completed": true}
+  // Using onClick for UI demo but onSubmit should be used in future development
   const onClick: FormEventHandler = event => {
     event.preventDefault();
-    setCompleted(!completed);
-    // fetch(
-    //   `${process.env.REACT_APP_API_ORIGIN}/programs/activityStatus/${programId}/${activityId}`,
-    //   {
-    //     method: 'PATCH',
-    //     credentials: 'include',
-    //     headers: { 'Content-Type': 'application/json' },
-    //   }
-    // )
-    //   .then(res => res.json())
-    //   .then(({ data, error }) => {
-    //     setCompleted(!completed);
-    //     if (error) {
-    //       setMarkCompletedError(error);
-    //     }
-    //     if (data) {
-    //       setIsSuccessMessageVisible(true);
-    //     }
-    //   })
-    //   .catch(error => {
-    //     setCompleted(completed);
-    //     setMarkCompletedError(error);
-    //   });
+    console.log('PUT REQUEST');
+    console.log(contents.programId);
+    console.log(contents.curriculumActivityId);
+
+    console.log('activityCompletionStatus is:', activityCompletionStatus);
+
+    if (activityCompletionStatus) {
+      console.log(
+        `The status of data: activityCompletionStatus is ${activityCompletionStatus.completed}`
+      );
+      //Send to the backend
+      console.log(
+        `Send to the backend: ${!activityCompletionStatus.completed}`
+      );
+      fetch(
+        `${process.env.REACT_APP_API_ORIGIN}/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
+        {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            completed: !activityCompletionStatus.completed,
+          }),
+        }
+      )
+        .then(res => res.json())
+        .then(({ data, error }) => {
+          if (error) {
+            // setMarkCompletedError(error);
+            console.log(error);
+          }
+          if (data) {
+            console.log(`data.completed from the backend: ${data.completed}`);
+            //setCompleted(data.completed)
+            console.log('data.completed:', data.completed);
+            setCompleted(data.completed);
+            console.log(`The useState completed is now ${completed}`);
+            // setIsSuccessMessageVisible(true);
+          }
+        })
+        .catch(error => {
+          // setMarkCompletedError(error);
+          console.log(error);
+        });
+    }
   };
   const timeRange = () => {
     if (
@@ -117,6 +162,7 @@ const ProgramActivityDialog = ({
         }}
       >
         {contents.title}
+        {/* return value should look like: { participantActivityId: x, completedStatus: boolean} */}
         {completed && <TaskAltIcon sx={{ ml: 1 }} />}
         <IconButton
           aria-label="close"
@@ -186,9 +232,15 @@ const ProgramActivityDialog = ({
                 justifyContent: 'flex-end',
               }}
               // onSubmit={onSubmit}
+              id="form"
             >
-              {completed === false ? (
-                <Button onClick={onClick} type="submit" variant="contained">
+              {!completed ? (
+                <Button
+                  onClick={onClick}
+                  type="submit"
+                  form="form"
+                  variant="contained"
+                >
                   <TaskAltIcon sx={{ mr: 1 }} />
                   Mark Complete
                 </Button>
