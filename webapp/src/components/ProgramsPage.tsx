@@ -1,5 +1,6 @@
 import React from 'react';
 import { CircularProgress, Container, Stack } from '@mui/material';
+import { View, Views } from 'react-big-calendar';
 
 import ProgramPicker from './ProgramPicker';
 import ProgramCalendar from './ProgramCalendar';
@@ -9,6 +10,58 @@ import { ProgramWithActivities } from '../types/api';
 
 const ProgramsPage = () => {
   const [selectedProgram, setSelectedProgram] = React.useState(0);
+  const [windowWidth, setWindowWidth] = React.useState(720);
+  const [currentView, setCurrentView] = React.useState<View>(Views.WEEK);
+  const [manuallyChosenView, setManuallyChosenView] = React.useState<View>(
+    Views.WEEK
+  );
+  const [viewOptions, setViewOptions] = React.useState<View[]>([
+    Views.MONTH,
+    Views.WEEK,
+    Views.DAY,
+    Views.AGENDA,
+  ]);
+
+  const handleViewChange = (manualView: View) => {
+    setCurrentView(windowWidth <= 600 ? Views.DAY : manualView);
+    setManuallyChosenView(manualView);
+  };
+
+  const handleResize = () => {
+    if (window.innerWidth < windowWidth) {
+      setCurrentView(window.innerWidth <= 600 ? Views.DAY : manuallyChosenView);
+      setViewOptions(
+        window.innerWidth <= 600
+          ? [Views.DAY]
+          : [Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]
+      );
+    } else {
+      setViewOptions(
+        window.innerWidth <= 600
+          ? [Views.DAY]
+          : [Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]
+      );
+      setCurrentView(window.innerWidth <= 600 ? Views.DAY : manuallyChosenView);
+    }
+  };
+
+  const setWidth = (e: Event) => {
+    if (!e || !e.target) return;
+    const window = e.target as Window;
+    const { innerWidth } = window;
+    if (innerWidth) {
+      setWindowWidth(innerWidth);
+    }
+  };
+
+  React.useEffect(() => {
+    window.addEventListener('resize', setWidth);
+    return () => {
+      window.removeEventListener('resize', setWidth);
+    };
+  });
+
+  React.useEffect(handleResize, [manuallyChosenView, windowWidth]);
 
   const {
     data: programsList,
@@ -40,17 +93,28 @@ const ProgramsPage = () => {
   if (!programsList) {
     return null;
   }
+
   return (
     <Container>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <h2>Program Activities</h2>
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        justifyContent="space-between"
+        alignItems={{ xs: 'flex-start', md: 'center' }}
+      >
+        <h1>Program Activities</h1>
         <ProgramPicker
           programs={programsList}
           selectedProgram={selectedProgram}
           setSelectedProgram={setSelectedProgram}
         />
       </Stack>
-      <ProgramCalendar program={programsList[selectedProgram]} />
+      <ProgramCalendar
+        program={programsList[selectedProgram]}
+        windowWidth={windowWidth}
+        currentView={currentView}
+        setCurrentView={handleViewChange}
+        viewOptions={viewOptions}
+      />
     </Container>
   );
 };

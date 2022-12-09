@@ -19,3 +19,19 @@ code {
 .rbc-agenda-view table.rbc-agenda-table .rbc-agenda-time-cell span {
   text-transform: capitalize;
 }
+
+.rbc-toolbar {
+  flex-wrap: nowrap !important;
+}
+
+@media screen and (max-width: 390px) {
+  .rbc-toolbar span {
+    font-size: 0.75rem;
+  }
+}
+
+@media screen and (min-width: 601px) and (max-width: 740px) {
+  .rbc-toolbar span {
+    font-size: 0.75rem;
+  }
+}
