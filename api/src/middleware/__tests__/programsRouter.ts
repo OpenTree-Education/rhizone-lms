@@ -1,7 +1,6 @@
 import { collectionEnvelope, itemEnvelope } from '../responseEnvelope';
 import {
   listProgramsWithActivities,
-  getParticipantActivityId,
   getParticipantActivityCompletion,
   setParticipantActivityCompletion,
 } from '../../services/programsService';
@@ -11,7 +10,6 @@ import { ProgramWithActivities } from '../../models';
 
 jest.mock('../../services/programsService');
 const mockListProgramsWithActivities = jest.mocked(listProgramsWithActivities);
-const mockGetParticipantActivityId = jest.mocked(getParticipantActivityId);
 const mockGetParticipantActivityCompletion = jest.mocked(
   getParticipantActivityCompletion
 );
@@ -149,13 +147,15 @@ describe('programsRouter', () => {
       const principalId = 1;
       const programId = 1;
       const activityId = 1;
-      const participantActivity = { id: 1, completed: false };
-
-      mockPrincipalId(principalId);
-      mockSetParticipantActivityCompletion.mockResolvedValue({
+      const participantActivity = {
         participantActivityId: 1,
         completed: true,
-      });
+      };
+
+      mockPrincipalId(principalId);
+      mockSetParticipantActivityCompletion.mockResolvedValue(
+        participantActivity
+      );
 
       appAgent
         .put(`/activityStatus/${programId}/${activityId}`)

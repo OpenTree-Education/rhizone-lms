@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
-import { BadRequestError, NotFoundError, ValidationError } from './httpErrors';
+import { BadRequestError } from './httpErrors';
 import {
   listProgramsWithActivities,
   getParticipantActivityCompletion,
