@@ -32,23 +32,25 @@ const ProgramActivityDialog = ({
   contents,
   handleClose,
 }: ProgramActivityDialogProps) => {
-  const [completed, setCompleted] = useState();
+  const [completed, setCompleted] = useState<boolean | null>(null);
   // const [markCompletedError, setMarkCompletedError] = useState(null);
   // const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
-  // Get Request for activity completsion status
-  // programsRouter.get('/activityStatus/:programId/:activityId')
-  // return {activityId:1, participantActivityId: 1, completed: true}
-  const {
-    data: activityCompletionStatus,
-    error,
-    isLoading,
-  } = useApiData<ActivityCompletionStatus>({
-    deps: [completed],
-    path: `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
-    sendCredentials: true,
-    shouldFetch: () => !!contents.programId,
-  });
-  console.log('hi:', completed);
+  const { data: activityCompletionStatus, error } =
+    useApiData<ActivityCompletionStatus>({
+      deps: [completed],
+      path: `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
+      sendCredentials: true,
+      shouldFetch: () => !!contents.programId,
+    });
+
+  if (error) {
+    return null;
+  }
+
+  const closeDialog = () => {
+    handleClose();
+    setCompleted(null);
+  };
 
   if (
     activityCompletionStatus &&
@@ -61,53 +63,33 @@ const ProgramActivityDialog = ({
   // programsRouter.post('/activityStatus/:programId/:activityId')
   // request body shoud look like: {"completed": true}
   // Using onClick for UI demo but onSubmit should be used in future development
-  const onClick: FormEventHandler = event => {
-    event.preventDefault();
-    console.log('PUT REQUEST');
-    console.log(contents.programId);
-    console.log(contents.curriculumActivityId);
-
-    console.log('activityCompletionStatus is:', activityCompletionStatus);
-
-    if (activityCompletionStatus) {
-      console.log(
-        `The status of data: activityCompletionStatus is ${activityCompletionStatus.completed}`
-      );
-      //Send to the backend
-      console.log(
-        `Send to the backend: ${!activityCompletionStatus.completed}`
-      );
-      fetch(
-        `${process.env.REACT_APP_API_ORIGIN}/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
-        {
-          method: 'PUT',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            completed: !activityCompletionStatus.completed,
-          }),
+  const sendAPIPutRequest = (path: string, body: Object) => {
+    fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
+      method: 'PUT',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+      .then(res => res.json())
+      .then(({ data }) => {
+        if (data) {
+          setCompleted(data.completed);
         }
-      )
-        .then(res => res.json())
-        .then(({ data, error }) => {
-          if (error) {
-            // setMarkCompletedError(error);
-            console.log(error);
-          }
-          if (data) {
-            console.log(`data.completed from the backend: ${data.completed}`);
-            //setCompleted(data.completed)
-            console.log('data.completed:', data.completed);
-            setCompleted(data.completed);
-            console.log(`The useState completed is now ${completed}`);
-            // setIsSuccessMessageVisible(true);
-          }
-        })
-        .catch(error => {
-          // setMarkCompletedError(error);
-          console.log(error);
-        });
-    }
+      });
+  };
+  const markCompleted: FormEventHandler = event => {
+    event.preventDefault();
+    sendAPIPutRequest(
+      `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
+      { completed: true }
+    );
+  };
+  const markIncomplete: FormEventHandler = event => {
+    event.preventDefault();
+    sendAPIPutRequest(
+      `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
+      { completed: false }
+    );
   };
   const timeRange = () => {
     if (
@@ -162,11 +144,10 @@ const ProgramActivityDialog = ({
         }}
       >
         {contents.title}
-        {/* return value should look like: { participantActivityId: x, completedStatus: boolean} */}
         {completed && <TaskAltIcon sx={{ ml: 1 }} />}
         <IconButton
           aria-label="close"
-          onClick={handleClose}
+          onClick={closeDialog}
           sx={{
             position: 'absolute',
             ml: 10,
@@ -231,12 +212,11 @@ const ProgramActivityDialog = ({
                 flexDirection: 'row',
                 justifyContent: 'flex-end',
               }}
-              // onSubmit={onSubmit}
               id="form"
             >
               {!completed ? (
                 <Button
-                  onClick={onClick}
+                  onClick={markCompleted}
                   type="submit"
                   form="form"
                   variant="contained"
@@ -245,7 +225,11 @@ const ProgramActivityDialog = ({
                   Mark Complete
                 </Button>
               ) : (
-                <Button onClick={onClick} type="submit" variant="outlined">
+                <Button
+                  onClick={markIncomplete}
+                  type="submit"
+                  variant="outlined"
+                >
                   <CancelIcon sx={{ mr: 1 }} />
                   Mark Incomplete
                 </Button>
