@@ -32,6 +32,8 @@ const activitiesForCalendar = (
         allDay: !activity.duration,
         activityType: activity.activity_type,
         programTitle: correspondingProgramTitle,
+        programId: activity.program_id,
+        curriculumActivityId: activity.curriculum_activity_id,
       } as CalendarEvent)
   );
 };
@@ -46,6 +48,8 @@ const ProgramCalendar = ({ program }: ProgramCalendarProps) => {
     end: new Date(),
     activityType: '',
     programTitle: '',
+    programId: 0,
+    curriculumActivityId: 0,
   });
   const [currentView, setCurrentView] = React.useState<string>(Views.WEEK);
 
