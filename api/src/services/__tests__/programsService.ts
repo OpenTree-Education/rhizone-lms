@@ -562,10 +562,12 @@ describe('programsService', () => {
       mockQuery(
         'select `id`, `completed` from `participant_activities` where `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
         [principalId, programId, activityId],
-        [{ 
-          id: participantActivitiesList[0].id,
-          completed: false, 
-        }]
+        [
+          {
+            id: participantActivitiesList[0].id,
+            completed: false,
+          },
+        ]
       );
       expect(
         await setParticipantActivityCompletion(
@@ -589,10 +591,12 @@ describe('programsService', () => {
       mockQuery(
         'select `id`, `completed` from `participant_activities` where `principal_id` = ? and `program_id` = ? and `activity_id` = ?',
         [principalId, programId, activityId2],
-        [{ 
-          id: newIndex,
-          completed: false, 
-        }]
+        [
+          {
+            id: newIndex,
+            completed: false,
+          },
+        ]
       );
       expect(
         await setParticipantActivityCompletion(
