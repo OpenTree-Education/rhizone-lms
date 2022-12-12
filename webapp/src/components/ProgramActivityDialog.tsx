@@ -4,6 +4,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import CloseIcon from '@mui/icons-material/Close';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import {
+  Alert,
   Button,
   Dialog,
   DialogActions,
@@ -12,6 +13,7 @@ import {
   DialogTitle,
   Divider,
   FormGroup,
+  Snackbar,
   Table,
   TableBody,
   TableCell,
@@ -47,7 +49,9 @@ const sendAPIGetRequest = (
 const sendAPIPutRequest = (
   path: string,
   body: Object,
-  setCompleted: React.Dispatch<React.SetStateAction<boolean | null>>
+  setCompleted: React.Dispatch<React.SetStateAction<boolean | null>>,
+  setSuccess: React.Dispatch<React.SetStateAction<boolean>>,
+  setMessageVisible: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   if ('completed' in body && body.completed === null) {
     return;
@@ -62,7 +66,13 @@ const sendAPIPutRequest = (
     .then(({ data }) => {
       if (data) {
         setCompleted(data.completed);
+        setSuccess(true);
+        setMessageVisible(true);
       }
+    })
+    .catch(error => {
+      setSuccess(false);
+      setMessageVisible(true);
     });
 };
 
@@ -72,7 +82,8 @@ const ProgramActivityDialog = ({
   handleClose,
 }: ProgramActivityDialogProps) => {
   const [completed, setCompleted] = useState<boolean | null>(null);
-
+  const [success, setSuccess] = useState(false);
+  const [isMessageVisible, setMessageVisible] = useState(false);
   React.useEffect(() => {
     async function fetchData() {
       setCompleted(null);
@@ -96,7 +107,9 @@ const ProgramActivityDialog = ({
     sendAPIPutRequest(
       `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
       { completed: completed },
-      setCompleted
+      setCompleted,
+      setSuccess,
+      setMessageVisible
     );
   };
 
@@ -269,6 +282,23 @@ const ProgramActivityDialog = ({
                   <CancelIcon sx={{ mr: 1 }} />
                   Mark Incomplete
                 </Button>
+              )}
+              {isMessageVisible && (
+                <Snackbar
+                  open={true}
+                  autoHideDuration={1500}
+                  onClose={() => setMessageVisible(false)}
+                >
+                  <Alert
+                    onClose={() => setMessageVisible(false)}
+                    severity={success ? 'success' : 'error'}
+                    sx={{ width: '100%' }}
+                  >
+                    {success
+                      ? 'Assignment stauts updated successfully.'
+                      : 'There was an error updating the assignment status.'}
+                  </Alert>
+                </Snackbar>
               )}
             </FormGroup>
           </DialogActions>
