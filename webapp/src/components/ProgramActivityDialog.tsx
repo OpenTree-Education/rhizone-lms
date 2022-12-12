@@ -218,6 +218,7 @@ const ProgramActivityDialog = ({
                     fontWeight: 'bold',
                     verticalAlign: 'top',
                     textAlign: 'left',
+                    textTransform: 'capitalize',
                     pr: { xs: '0.375rem', sm: '1rem' },
                   }}
                 >
