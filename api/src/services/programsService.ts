@@ -7,6 +7,7 @@ import {
   ActivityType,
 } from '../models';
 import { DateTime, Duration } from 'luxon';
+import { participantExists } from './meetingsService';
 
 /**
  * Returns all programs in the database.
@@ -383,4 +384,31 @@ export const setParticipantActivityCompletion = async (
     participantActivityId: participantActivity.id,
     completed: participantActivity.completed === 1,
   };
+};
+
+//  * Get the completion status (either true or false) of all activities of type assignment in a given program.
+//  *
+//  * @param {number} principalId - the unique id for the user
+//  * @param {number} programId - the id for the unique program
+//  * @returns List of participant_activities and their completion statuses,
+//  *   or null if programId doesn't exist or it doesn't have activities
+//  */
+export const listParticipantActivitiesCompletionForProgram = async (
+  principalId: number,
+  programId: number
+) => {
+  // TODO: get all `participant_activities` records for the principalId and programId
+  // { programId: number, participant_activities: { activityId: number, completed: boolean} }
+  const result = await db('participant_activities')
+    .select('activityId', 'completed')
+    .where({
+      program_id: programId,
+      principal_id: principalId,
+    });
+
+  if (!programId) {
+    return null;
+  }
+
+  return { programId: programId, participantActivities: result };
 };
