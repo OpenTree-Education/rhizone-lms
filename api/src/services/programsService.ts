@@ -396,21 +396,16 @@ export const listParticipantActivitiesCompletionForProgram = async (
   principalId: number,
   programId: number
 ) => {
-  let result;
-  try {
-    result = await db('participant_activities')
-      .select('activity_id', 'completed')
-      .where({
-        program_id: programId,
-        principal_id: principalId,
-      });
-  } catch (e) {
+  const participantActivities = await db('participant_activities')
+    .select('activity_id', 'completed')
+    .where({
+      program_id: programId,
+      principal_id: principalId,
+    });
+
+  if (!participantActivities) {
     return null;
   }
 
-  if (!result) {
-    return null;
-  }
-
-  return { programId: programId, participantActivities: result };
+  return { programId: programId, participantActivities };
 };
