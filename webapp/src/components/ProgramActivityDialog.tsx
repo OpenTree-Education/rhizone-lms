@@ -210,7 +210,7 @@ const ProgramActivityDialog = ({
               </TableRow>
               <TableRow>
                 <TableCell component="th" scope="row" sx={tableHeaderCellStyle}>
-                  Activity Type:
+                  Activity Type:
                 </TableCell>
                 <TableCell
                   sx={{
