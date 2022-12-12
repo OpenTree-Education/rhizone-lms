@@ -217,7 +217,7 @@ const ProgramActivityDialog = ({
                     border: 'none',
                     fontWeight: 'bold',
                     verticalAlign: 'top',
-                    textAlign: 'right',
+                    textAlign: 'left',
                     pr: { xs: '0.375rem', sm: '1rem' },
                   }}
                 >
