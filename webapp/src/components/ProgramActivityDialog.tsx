@@ -1,4 +1,4 @@
-import React, { FormEventHandler, useState } from 'react';
+import React, { useState } from 'react';
 import { decodeHTML } from 'entities';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CloseIcon from '@mui/icons-material/Close';
@@ -87,24 +87,19 @@ const ProgramActivityDialog = ({
     fetchData();
   }, [contents, show]);
 
-  const markCompleted: FormEventHandler = event => {
+  const sendCompletedStatus = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    completed: boolean
+  ) => {
     event.preventDefault();
     if (event.type !== 'click') return;
     sendAPIPutRequest(
       `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
-      { completed: true },
+      { completed: completed },
       setCompleted
     );
   };
-  const markIncomplete: FormEventHandler = event => {
-    event.preventDefault();
-    if (event.type !== 'click') return;
-    sendAPIPutRequest(
-      `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
-      { completed: false },
-      setCompleted
-    );
-  };
+
   const timeRange = () => {
     if (
       !(
@@ -253,7 +248,9 @@ const ProgramActivityDialog = ({
             >
               {!completed ? (
                 <Button
-                  onClick={markCompleted}
+                  onClick={event => {
+                    sendCompletedStatus(event, true);
+                  }}
                   type="submit"
                   form="form"
                   variant="contained"
@@ -263,7 +260,9 @@ const ProgramActivityDialog = ({
                 </Button>
               ) : (
                 <Button
-                  onClick={markIncomplete}
+                  onClick={event => {
+                    sendCompletedStatus(event, false);
+                  }}
                   type="submit"
                   variant="outlined"
                 >
