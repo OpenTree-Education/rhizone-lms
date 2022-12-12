@@ -26,52 +26,61 @@ interface ProgramActivityDialogProps {
   contents: CalendarEvent;
   handleClose: () => void;
 }
+const sendAPIGetRequest = (
+  path: string,
+  activityType: string,
+  setCompleted: React.Dispatch<React.SetStateAction<boolean | null>>
+) => {
+  if (activityType !== 'assignment') return;
+  return fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
+    method: 'GET',
+    credentials: 'include',
+  })
+    .then(res => res.json())
+    .then(async ({ data }) => {
+      if (data) {
+        setCompleted(data.completed);
+      }
+    });
+};
+
+const sendAPIPutRequest = (
+  path: string,
+  body: Object,
+  setCompleted: React.Dispatch<React.SetStateAction<boolean | null>>
+) => {
+  if ('completed' in body && body.completed === null) {
+    return;
+  }
+  fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
+    method: 'PUT',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+    .then(res => res.json())
+    .then(({ data }) => {
+      if (data) {
+        setCompleted(data.completed);
+      }
+    });
+};
+
 const ProgramActivityDialog = ({
   show,
   contents,
   handleClose,
 }: ProgramActivityDialogProps) => {
   const [completed, setCompleted] = useState<boolean | null>(null);
-  // const [markCompletedError, setMarkCompletedError] = useState(null);
-  // const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
-
-  const sendAPIGetRequest = (path: string) => {
-    if (contents.activityType !== 'assignment') return;
-    return fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
-      method: 'GET',
-      credentials: 'include',
-    })
-      .then(res => res.json())
-      .then(async ({ data }) => {
-        if (data) {
-          setCompleted(data.completed);
-        }
-      });
-  };
-  const sendAPIPutRequest = (path: string, body: Object) => {
-    if ('completed' in body && body.completed === null) {
-      return;
-    }
-    fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
-      method: 'PUT',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-      .then(res => res.json())
-      .then(({ data }) => {
-        if (data) {
-          setCompleted(data.completed);
-        }
-      });
-  };
 
   React.useEffect(() => {
     async function fetchData() {
       setCompleted(null);
       if (show) {
         await sendAPIGetRequest(
-          `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`
+          `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
+          contents.activityType,
+          setCompleted
         );
       }
     }
@@ -83,7 +92,8 @@ const ProgramActivityDialog = ({
     if (event.type !== 'click') return;
     sendAPIPutRequest(
       `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
-      { completed: true }
+      { completed: true },
+      setCompleted
     );
   };
   const markIncomplete: FormEventHandler = event => {
@@ -91,7 +101,8 @@ const ProgramActivityDialog = ({
     if (event.type !== 'click') return;
     sendAPIPutRequest(
       `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
-      { completed: false }
+      { completed: false },
+      setCompleted
     );
   };
   const timeRange = () => {
