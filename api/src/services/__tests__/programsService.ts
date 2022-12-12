@@ -611,4 +611,15 @@ describe('programsService', () => {
       });
     });
   });
+
+  describe('listParticipantActivitiesCompletionForProgram', () => {
+    // const programId = 1;
+    // const principalId = 3;
+    it('should return a list of participant activities with their completion statuses', async () => {
+      return;
+    });
+    it('should return null if the programId does not exist', async () => {
+      return;
+    });
+  });
 });

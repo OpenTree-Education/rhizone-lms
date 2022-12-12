@@ -7,7 +7,6 @@ import {
   ActivityType,
 } from '../models';
 import { DateTime, Duration } from 'luxon';
-import { participantExists } from './meetingsService';
 
 /**
  * Returns all programs in the database.
@@ -397,16 +396,19 @@ export const listParticipantActivitiesCompletionForProgram = async (
   principalId: number,
   programId: number
 ) => {
-  // TODO: get all `participant_activities` records for the principalId and programId
-  // { programId: number, participant_activities: { activityId: number, completed: boolean} }
-  const result = await db('participant_activities')
-    .select('activityId', 'completed')
-    .where({
-      program_id: programId,
-      principal_id: principalId,
-    });
+  let result;
+  try {
+    result = await db('participant_activities')
+      .select('activity_id', 'completed')
+      .where({
+        program_id: programId,
+        principal_id: principalId,
+      });
+  } catch (e) {
+    return null;
+  }
 
-  if (!programId) {
+  if (!result) {
     return null;
   }
 
