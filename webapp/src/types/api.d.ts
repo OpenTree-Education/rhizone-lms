@@ -88,7 +88,7 @@ export interface ProgramActivity {
   start_time: string;
   end_time: string;
   duration: number;
-  completed:boolean | null;
+  completed: boolean | null;
 }
 
 export interface ProgramWithActivities extends Entity {
@@ -127,5 +127,5 @@ interface participantActivity {
   completed: number;
 }
 export interface participantActivitiesCompletionList extends Entity {
-  participantActivities:participantActivity[]
+  participantActivities: participantActivity[];
 }

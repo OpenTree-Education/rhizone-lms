@@ -51,30 +51,40 @@ const ProgramCalendar = ({
   setCurrentView,
   viewOptions,
 }: ProgramCalendarProps) => {
-console.log(program.activities); 
-const {
-  data: participantActivitiesCompletionList,
-  error,
-  isLoading,
-} = useApiData<participantActivitiesCompletionList>({
-  deps: [],
-  path: `/programs/activityStatus/${selectedProgram+1}`,
-  sendCredentials: true,
-});
-console.log( participantActivitiesCompletionList);
-console.log(program.activities);
-if(participantActivitiesCompletionList){
-  for(var i = 0; i < program.activities.length; i++){
-    for(var j = 0; j < participantActivitiesCompletionList?.participantActivities.length; j++){ 
-        if(program.activities[i].curriculum_activity_id=== participantActivitiesCompletionList.participantActivities[j].activity_id){
-          program.activities[i].completed = participantActivitiesCompletionList.participantActivities[j].completed === 1
-        }else{
-          program.activities[i].completed = null
+  console.log(program.activities);
+  const {
+    data: participantActivitiesCompletionList,
+    error,
+    isLoading,
+  } = useApiData<participantActivitiesCompletionList>({
+    deps: [],
+    path: `/programs/activityStatus/${selectedProgram + 1}`,
+    sendCredentials: true,
+  });
+  console.log(participantActivitiesCompletionList);
+  console.log(program.activities);
+  if (participantActivitiesCompletionList) {
+    for (var i = 0; i < program.activities.length; i++) {
+      for (
+        var j = 0;
+        j < participantActivitiesCompletionList?.participantActivities.length;
+        j++
+      ) {
+        if (
+          program.activities[i].curriculum_activity_id ===
+          participantActivitiesCompletionList.participantActivities[j]
+            .activity_id
+        ) {
+          program.activities[i].completed =
+            participantActivitiesCompletionList.participantActivities[j]
+              .completed === 1;
+        } else {
+          program.activities[i].completed = null;
         }
+      }
     }
   }
-}
-console.log(program.activities);
+  console.log(program.activities);
 
   const [dialogShow, setDialogShow] = React.useState(false);
   const [dialogContents, setDialogContents] = React.useState<CalendarEvent>({
