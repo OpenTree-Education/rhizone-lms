@@ -277,7 +277,7 @@ const ProgramActivityDialog = ({
               }}
               id="form"
             >
-              {!completed ? (
+              {completed === false ? (
                 <Button
                   onClick={event => {
                     sendCompletedStatus(event, true);
@@ -285,7 +285,6 @@ const ProgramActivityDialog = ({
                   type="submit"
                   form="form"
                   variant="contained"
-                  disabled={error ? true : false}
                 >
                   <TaskAltIcon sx={{ mr: 1 }} />
                   Mark Complete
