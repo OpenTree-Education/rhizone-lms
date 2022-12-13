@@ -19,7 +19,7 @@ const StyledLogo = styled.span`
 const Navbar = () => {
   const { open: openMeetingsDrawer } = useContext(MeetingsDrawerContext);
   return (
-    <Grid alignItems="center" container px={3}>
+    <Grid alignItems="center" container px={3} >
       <Grid item xs>
         <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>
           <StyledLogo>
