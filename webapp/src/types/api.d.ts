@@ -88,6 +88,7 @@ export interface ProgramActivity {
   start_time: string;
   end_time: string;
   duration: number;
+  completed:boolean | null;
 }
 
 export interface ProgramWithActivities extends Entity {
@@ -119,4 +120,12 @@ export interface CurriculumActivity extends Entity {
 interface CalendarEvent extends RBCEvent {
   description: string;
   programTitle: string;
+}
+
+interface participantActivity {
+  activity_id: number;
+  completed: number;
+}
+export interface participantActivitiesCompletionList extends Entity {
+  participantActivities:participantActivity[]
 }
