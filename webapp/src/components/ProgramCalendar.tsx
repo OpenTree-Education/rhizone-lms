@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { decodeHTML } from 'entities';
 import { DateTime } from 'luxon';
 import { Calendar, luxonLocalizer, View } from 'react-big-calendar';
@@ -13,12 +13,11 @@ import {
   CalendarEvent,
   ProgramWithActivities,
   ProgramActivity,
-  participantActivitiesCompletionList,
+  ProgramParticipantActivitiesList,
 } from '../types/api';
 
 interface ProgramCalendarProps {
   program: ProgramWithActivities;
-  selectedProgram: number;
   windowWidth: number;
   currentView: View;
   setCurrentView: (manualView: View) => void;
@@ -28,8 +27,24 @@ interface ProgramCalendarProps {
 let correspondingProgramTitle = '';
 
 const activitiesForCalendar = (
-  activities: ProgramActivity[]
+  activities: ProgramActivity[],
+  activitiesCompletion: ProgramParticipantActivitiesList
 ): CalendarEvent[] => {
+  for (var i = 0; i < activities.length; i++) {
+    for (
+      var j = 0;
+      j < activitiesCompletion.participantActivities.length;
+      j++
+    ) {
+      if (
+        activities[i].curriculum_activity_id ===
+        activitiesCompletion.participantActivities[j].activity_id
+      ) {
+        activities[i].completed =
+          activitiesCompletion.participantActivities[j].completed === 1;
+      }
+    }
+  }
   return activities.map(
     activity =>
       ({
@@ -39,53 +54,18 @@ const activitiesForCalendar = (
         description: decodeHTML(activity.description_text),
         allDay: !activity.duration,
         programTitle: correspondingProgramTitle,
+        completed: activity.completed,
       } as CalendarEvent)
   );
 };
 
 const ProgramCalendar = ({
   program,
-  selectedProgram,
   windowWidth,
   currentView,
   setCurrentView,
   viewOptions,
 }: ProgramCalendarProps) => {
-  console.log(program.activities);
-  const {
-    data: participantActivitiesCompletionList,
-    error,
-    isLoading,
-  } = useApiData<participantActivitiesCompletionList>({
-    deps: [],
-    path: `/programs/activityStatus/${selectedProgram + 1}`,
-    sendCredentials: true,
-  });
-  console.log(participantActivitiesCompletionList);
-  console.log(program.activities);
-  if (participantActivitiesCompletionList) {
-    for (var i = 0; i < program.activities.length; i++) {
-      for (
-        var j = 0;
-        j < participantActivitiesCompletionList?.participantActivities.length;
-        j++
-      ) {
-        if (
-          program.activities[i].curriculum_activity_id ===
-          participantActivitiesCompletionList.participantActivities[j]
-            .activity_id
-        ) {
-          program.activities[i].completed =
-            participantActivitiesCompletionList.participantActivities[j]
-              .completed === 1;
-        } else {
-          program.activities[i].completed = null;
-        }
-      }
-    }
-  }
-  console.log(program.activities);
-
   const [dialogShow, setDialogShow] = React.useState(false);
   const [dialogContents, setDialogContents] = React.useState<CalendarEvent>({
     title: '',
@@ -95,6 +75,26 @@ const ProgramCalendar = ({
     end: new Date(),
     programTitle: '',
   });
+  const [activitiesCompletion, setActivitiesCompletion] =
+    React.useState<ProgramParticipantActivitiesList>({
+      programId: -1,
+      participantActivities: [],
+    });
+
+  const {
+    data: participantActivitiesCompletionList,
+    error,
+    isLoading,
+  } = useApiData<ProgramParticipantActivitiesList>({
+    deps: [program],
+    path: `/programs/activityStatus/${Number(program.id || 0)}`,
+    sendCredentials: true,
+  });
+  useEffect(() => {
+    if (participantActivitiesCompletionList) {
+      setActivitiesCompletion(participantActivitiesCompletionList);
+    }
+  }, [participantActivitiesCompletionList]);
 
   const handleClickActivity = (activity: CalendarEvent) => {
     setDialogShow(true);
@@ -158,7 +158,7 @@ const ProgramCalendar = ({
   return (
     <>
       <Calendar
-        events={activitiesForCalendar(program.activities)}
+        events={activitiesForCalendar(program.activities, activitiesCompletion)}
         onSelectEvent={handleClickActivity}
         localizer={luxonLocalizer(DateTime)}
         defaultView={currentView}

@@ -120,12 +120,14 @@ export interface CurriculumActivity extends Entity {
 interface CalendarEvent extends RBCEvent {
   description: string;
   programTitle: string;
+  completed?: boolean | null;
 }
 
-interface participantActivity {
+interface ParticipantActivity {
   activity_id: number;
   completed: number;
 }
-export interface participantActivitiesCompletionList extends Entity {
+export interface ProgramParticipantActivitiesList {
+  programId: number;
   participantActivities: participantActivity[];
 }
