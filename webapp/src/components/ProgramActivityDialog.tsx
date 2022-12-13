@@ -292,6 +292,7 @@ const ProgramActivityDialog = ({
                   form="form"
                   variant="contained"
                   loading={isLoading}
+                  sx={{width: "15em" }}
                 >
                   <TaskAltIcon sx={{ mr: 1 }} />
                   Mark Complete
@@ -305,6 +306,7 @@ const ProgramActivityDialog = ({
                   variant="outlined"
                   disabled={error ? true : false}
                   loading={isLoading}
+                  sx={{width: "15em" }}
                 >
                   <CancelIcon sx={{ mr: 1 }} />
                   Mark Incomplete
