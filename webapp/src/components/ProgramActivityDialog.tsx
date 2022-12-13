@@ -71,6 +71,7 @@ const sendAPIPutRequest = (
   if ('completed' in body && body.completed === null) {
     return;
   }
+
   fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
     method: 'PUT',
     credentials: 'include',
@@ -283,35 +284,24 @@ const ProgramActivityDialog = ({
               }}
               id="form"
             >
-              {completed === false ? (
-                <LoadingButton
-                  onClick={event => {
-                    sendCompletedStatus(event, true);
-                  }}
-                  type="submit"
-                  form="form"
-                  variant="contained"
-                  loading={isLoading}
-                  sx={{width: "15em" }}
-                >
+              <LoadingButton
+                onClick={event => {
+                  sendCompletedStatus(event, !completed);
+                }}
+                type="submit"
+                form="form"
+                variant={completed === false ? 'contained' : 'outlined'}
+                loading={isLoading}
+                sx={{ width: '15em' }}
+                disabled={error ? true : false}
+              >
+                {completed === false ? (
                   <TaskAltIcon sx={{ mr: 1 }} />
-                  Mark Complete
-                </LoadingButton>
-              ) : (
-                <LoadingButton
-                  onClick={event => {
-                    sendCompletedStatus(event, false);
-                  }}
-                  type="submit"
-                  variant="outlined"
-                  disabled={error ? true : false}
-                  loading={isLoading}
-                  sx={{width: "15em" }}
-                >
+                ) : (
                   <CancelIcon sx={{ mr: 1 }} />
-                  Mark Incomplete
-                </LoadingButton>
-              )}
+                )}
+                {completed === false ? 'Mark Complete' : 'Mark Incomplete'}
+              </LoadingButton>
               {isMessageVisible && (
                 <Snackbar
                   open={true}
