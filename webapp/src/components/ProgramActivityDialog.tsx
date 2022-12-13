@@ -31,7 +31,9 @@ interface ProgramActivityDialogProps {
 const sendAPIGetRequest = (
   path: string,
   activityType: string,
-  setCompleted: React.Dispatch<React.SetStateAction<boolean | null>>
+  setCompleted: React.Dispatch<React.SetStateAction<boolean | null>>,
+  setError: React.Dispatch<React.SetStateAction<boolean | null>>,
+  setIsErrorShown: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   if (activityType !== 'assignment') return;
   return fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
@@ -39,11 +41,23 @@ const sendAPIGetRequest = (
     credentials: 'include',
   })
     .then(res => res.json())
-    .then(async ({ data }) => {
-      if (data) {
-        setCompleted(data.completed);
+    .then(
+      async ({ data }) => {
+        if (data) {
+          // setIsLoading(false);
+          setError(false);
+          setCompleted(data.completed);
+        }
+      },
+      error => {
+        // setIsLoading(false);
+        if (error.name === 'AbortError') {
+          return;
+        }
+        setError(true);
+        setIsErrorShown(true);
       }
-    });
+    );
 };
 
 const sendAPIPutRequest = (
@@ -84,6 +98,8 @@ const ProgramActivityDialog = ({
   const [completed, setCompleted] = useState<boolean | null>(null);
   const [isUpdateSuccess, setIsUpdateSuccess] = useState<boolean>(false);
   const [isMessageVisible, setIsMessageVisible] = useState<boolean>(false);
+  const [error, setError] = useState<boolean | null>(null);
+  const [isErrorShown, setIsErrorShown] = useState(false);
   React.useEffect(() => {
     async function fetchData() {
       setCompleted(null);
@@ -91,7 +107,9 @@ const ProgramActivityDialog = ({
         await sendAPIGetRequest(
           `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
           contents.activityType,
-          setCompleted
+          setCompleted,
+          setError,
+          setIsErrorShown
         );
       }
     }
@@ -267,6 +285,7 @@ const ProgramActivityDialog = ({
                   type="submit"
                   form="form"
                   variant="contained"
+                  disabled={error ? true : false}
                 >
                   <TaskAltIcon sx={{ mr: 1 }} />
                   Mark Complete
@@ -278,6 +297,7 @@ const ProgramActivityDialog = ({
                   }}
                   type="submit"
                   variant="outlined"
+                  disabled={error ? true : false}
                 >
                   <CancelIcon sx={{ mr: 1 }} />
                   Mark Incomplete
@@ -297,6 +317,17 @@ const ProgramActivityDialog = ({
                     {isUpdateSuccess
                       ? 'Assignment status updated successfully.'
                       : 'There was an error updating the assignment status.'}
+                  </Alert>
+                </Snackbar>
+              )}
+              {isErrorShown && (
+                <Snackbar open={true} onClose={() => setIsErrorShown(false)}>
+                  <Alert
+                    onClose={() => setIsErrorShown(false)}
+                    severity="warning"
+                    sx={{ width: '100%' }}
+                  >
+                    There was an error getting the assignment status.
                   </Alert>
                 </Snackbar>
               )}
