@@ -50,8 +50,8 @@ const sendAPIPutRequest = (
   path: string,
   body: Object,
   setCompleted: React.Dispatch<React.SetStateAction<boolean | null>>,
-  setSuccess: React.Dispatch<React.SetStateAction<boolean>>,
-  setMessageVisible: React.Dispatch<React.SetStateAction<boolean>>
+  setIsUpdateSuccess: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsMessageVisible: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   if ('completed' in body && body.completed === null) {
     return;
@@ -66,13 +66,13 @@ const sendAPIPutRequest = (
     .then(({ data }) => {
       if (data) {
         setCompleted(data.completed);
-        setSuccess(true);
-        setMessageVisible(true);
+        setIsUpdateSuccess(true);
+        setIsMessageVisible(true);
       }
     })
     .catch(error => {
-      setSuccess(false);
-      setMessageVisible(true);
+      setIsUpdateSuccess(false);
+      setIsMessageVisible(true);
     });
 };
 
@@ -82,8 +82,8 @@ const ProgramActivityDialog = ({
   handleClose,
 }: ProgramActivityDialogProps) => {
   const [completed, setCompleted] = useState<boolean | null>(null);
-  const [success, setSuccess] = useState(false);
-  const [isMessageVisible, setMessageVisible] = useState(false);
+  const [isUpdateSuccess, setIsUpdateSuccess] = useState<boolean>(false);
+  const [isMessageVisible, setIsMessageVisible] = useState<boolean>(false);
   React.useEffect(() => {
     async function fetchData() {
       setCompleted(null);
@@ -108,8 +108,8 @@ const ProgramActivityDialog = ({
       `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
       { completed: completed },
       setCompleted,
-      setSuccess,
-      setMessageVisible
+      setIsUpdateSuccess,
+      setIsMessageVisible
     );
   };
 
@@ -287,15 +287,15 @@ const ProgramActivityDialog = ({
                 <Snackbar
                   open={true}
                   autoHideDuration={1500}
-                  onClose={() => setMessageVisible(false)}
+                  onClose={() => setIsMessageVisible(false)}
                 >
                   <Alert
-                    onClose={() => setMessageVisible(false)}
-                    severity={success ? 'success' : 'error'}
+                    onClose={() => setIsMessageVisible(false)}
+                    severity={isUpdateSuccess ? 'success' : 'error'}
                     sx={{ width: '100%' }}
                   >
-                    {success
-                      ? 'Assignment stauts updated successfully.'
+                    {isUpdateSuccess
+                      ? 'Assignment status updated successfully.'
                       : 'There was an error updating the assignment status.'}
                   </Alert>
                 </Snackbar>
