@@ -62,3 +62,13 @@ export interface ParticipantActivities {
   principal_id: number;
   completed: boolean;
 }
+
+export interface ParticipantActivitiesWithCompletionStatus {
+  activity_id: number;
+  completed: boolean;
+}
+
+export interface participantAcitivityForProgram {
+  programId: number;
+  participantActivities: ParticipantActivitiesWithCompletionStatus[];
+}

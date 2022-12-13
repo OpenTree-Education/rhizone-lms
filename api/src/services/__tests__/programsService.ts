@@ -12,6 +12,7 @@ import {
   getParticipantActivityId,
   getParticipantActivityCompletion,
   setParticipantActivityCompletion,
+  listParticipantActivitiesCompletionForProgram,
 } from '../programsService';
 import {
   Program,
@@ -20,6 +21,7 @@ import {
   ActivityType,
   ProgramWithActivities,
   ParticipantActivities,
+  participantAcitivityForProgram,
 } from '../../models';
 
 import { mockQuery } from '../mockDb';
@@ -168,6 +170,16 @@ const participantActivitiesList: ParticipantActivities[] = [
     completed: true,
   },
 ];
+
+const participantActivitiesForProgram: participantAcitivityForProgram = {
+  programId: 1,
+  participantActivities: [
+    { activity_id: 7, completed: false },
+    { activity_id: 8, completed: false },
+    { activity_id: 10, completed: true },
+  ],
+};
+
 const programActivitiesList: ProgramActivity[][] = [
   [
     {
@@ -613,13 +625,24 @@ describe('programsService', () => {
   });
 
   describe('listParticipantActivitiesCompletionForProgram', () => {
-    // const programId = 1;
-    // const principalId = 3;
+    const programId = 1;
+    const principalId = 3;
     it('should return a list of participant activities with their completion statuses', async () => {
-      return;
-    });
-    it('should return null if the programId does not exist', async () => {
-      return;
+      mockQuery(
+        'select `activity_id`, `completed` from `participant_activities` where `program_id` = ? and `principal_id` = ?',
+        [programId, principalId],
+        [
+          { activity_id: 7, completed: false },
+          { activity_id: 8, completed: false },
+          { activity_id: 10, completed: true },
+        ]
+      );
+      expect(
+        await listParticipantActivitiesCompletionForProgram(
+          principalId,
+          programId
+        )
+      ).toEqual(participantActivitiesForProgram);
     });
   });
 });

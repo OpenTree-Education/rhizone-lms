@@ -403,9 +403,5 @@ export const listParticipantActivitiesCompletionForProgram = async (
       principal_id: principalId,
     });
 
-  if (!participantActivities) {
-    return null;
-  }
-
   return { programId: programId, participantActivities };
 };
