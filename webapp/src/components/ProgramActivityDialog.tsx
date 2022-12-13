@@ -3,9 +3,9 @@ import { decodeHTML } from 'entities';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CloseIcon from '@mui/icons-material/Close';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Alert,
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -33,8 +33,10 @@ const sendAPIGetRequest = (
   activityType: string,
   setCompleted: React.Dispatch<React.SetStateAction<boolean | null>>,
   setError: React.Dispatch<React.SetStateAction<boolean | null>>,
-  setIsErrorShown: React.Dispatch<React.SetStateAction<boolean>>
+  setIsErrorShown: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
+  setIsLoading(true);
   if (activityType !== 'assignment') return;
   return fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
     method: 'GET',
@@ -44,16 +46,13 @@ const sendAPIGetRequest = (
     .then(
       async ({ data }) => {
         if (data) {
-          // setIsLoading(false);
+          setIsLoading(false);
           setError(false);
           setCompleted(data.completed);
         }
       },
       error => {
-        // setIsLoading(false);
-        if (error.name === 'AbortError') {
-          return;
-        }
+        setIsLoading(false);
         setError(true);
         setIsErrorShown(true);
       }
@@ -65,8 +64,10 @@ const sendAPIPutRequest = (
   body: Object,
   setCompleted: React.Dispatch<React.SetStateAction<boolean | null>>,
   setIsUpdateSuccess: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsMessageVisible: React.Dispatch<React.SetStateAction<boolean>>
+  setIsMessageVisible: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
+  setIsLoading(true);
   if ('completed' in body && body.completed === null) {
     return;
   }
@@ -79,12 +80,14 @@ const sendAPIPutRequest = (
     .then(res => res.json())
     .then(({ data }) => {
       if (data) {
+        setIsLoading(false);
         setCompleted(data.completed);
         setIsUpdateSuccess(true);
         setIsMessageVisible(true);
       }
     })
     .catch(error => {
+      setIsLoading(false);
       setIsUpdateSuccess(false);
       setIsMessageVisible(true);
     });
@@ -99,7 +102,8 @@ const ProgramActivityDialog = ({
   const [isUpdateSuccess, setIsUpdateSuccess] = useState<boolean>(false);
   const [isMessageVisible, setIsMessageVisible] = useState<boolean>(false);
   const [error, setError] = useState<boolean | null>(null);
-  const [isErrorShown, setIsErrorShown] = useState(false);
+  const [isErrorShown, setIsErrorShown] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   React.useEffect(() => {
     async function fetchData() {
       setCompleted(null);
@@ -109,7 +113,8 @@ const ProgramActivityDialog = ({
           contents.activityType,
           setCompleted,
           setError,
-          setIsErrorShown
+          setIsErrorShown,
+          setIsLoading
         );
       }
     }
@@ -127,7 +132,8 @@ const ProgramActivityDialog = ({
       { completed: completed },
       setCompleted,
       setIsUpdateSuccess,
-      setIsMessageVisible
+      setIsMessageVisible,
+      setIsLoading
     );
   };
 
@@ -278,29 +284,31 @@ const ProgramActivityDialog = ({
               id="form"
             >
               {completed === false ? (
-                <Button
+                <LoadingButton
                   onClick={event => {
                     sendCompletedStatus(event, true);
                   }}
                   type="submit"
                   form="form"
                   variant="contained"
+                  loading={isLoading}
                 >
                   <TaskAltIcon sx={{ mr: 1 }} />
                   Mark Complete
-                </Button>
+                </LoadingButton>
               ) : (
-                <Button
+                <LoadingButton
                   onClick={event => {
                     sendCompletedStatus(event, false);
                   }}
                   type="submit"
                   variant="outlined"
                   disabled={error ? true : false}
+                  loading={isLoading}
                 >
                   <CancelIcon sx={{ mr: 1 }} />
                   Mark Incomplete
-                </Button>
+                </LoadingButton>
               )}
               {isMessageVisible && (
                 <Snackbar
