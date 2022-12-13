@@ -5,7 +5,7 @@ import styled from '@emotion/styled';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import HomeIcon from '@mui/icons-material/Home';
 import PeopleIcon from '@mui/icons-material/People';
-
+import EngineeringIcon from '@mui/icons-material/Engineering';
 import MeetingsDrawerContext from './MeetingsDrawerContext';
 
 const StyledLogo = styled.span`
@@ -19,7 +19,7 @@ const StyledLogo = styled.span`
 const Navbar = () => {
   const { open: openMeetingsDrawer } = useContext(MeetingsDrawerContext);
   return (
-    <Grid alignItems="center" container px={3}>
+    <Grid alignItems="center" container px={3} >
       <Grid item xs>
         <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>
           <StyledLogo>
@@ -27,14 +27,19 @@ const Navbar = () => {
           </StyledLogo>
         </Link>
       </Grid>
+    
+
       <Grid item xs="auto">
-        <IconButton sx={{ mr: 1 }} href="/">
+        <IconButton sx={{ mr: 1 }} href="/" title="Home" >
           <HomeIcon />
         </IconButton>
-        <IconButton sx={{ mr: 1 }} href="/calendar">
+        <IconButton sx={{ mr: 1 }} href="/competencies" title="Competencies"> 
+        < EngineeringIcon />
+        </IconButton>
+        <IconButton sx={{ mr: 1 }} href="/calendar" title="Calendar">
           <CalendarMonthIcon />
         </IconButton>
-        <IconButton sx={{ mr: 1 }} onClick={openMeetingsDrawer}>
+        <IconButton sx={{ mr: 1 }} onClick={openMeetingsDrawer} title="Drawer">
           <PeopleIcon />
         </IconButton>
         <Button
