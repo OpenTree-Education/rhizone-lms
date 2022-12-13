@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { decodeHTML } from 'entities';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CloseIcon from '@mui/icons-material/Close';
@@ -105,7 +105,7 @@ const ProgramActivityDialog = ({
   const [error, setError] = useState<boolean | null>(null);
   const [isErrorShown, setIsErrorShown] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  React.useEffect(() => {
+  useEffect(() => {
     async function fetchData() {
       setCompleted(null);
       if (show) {
