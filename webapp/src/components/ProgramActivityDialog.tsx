@@ -61,7 +61,7 @@ const sendAPIGetRequest = (
 
 const sendAPIPutRequest = (
   path: string,
-  body: Object,
+  body: { completed: boolean },
   setCompleted: React.Dispatch<React.SetStateAction<boolean | null>>,
   setIsUpdateSuccess: React.Dispatch<React.SetStateAction<boolean>>,
   setIsMessageVisible: React.Dispatch<React.SetStateAction<boolean>>,
