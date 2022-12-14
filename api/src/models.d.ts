@@ -63,12 +63,12 @@ export interface ParticipantActivities {
   completed: boolean;
 }
 
-export interface ParticipantActivitiesWithCompletionStatus {
+export interface ParticipantActivityCompletionStatus {
   activity_id: number;
   completed: boolean;
 }
 
-export interface participantAcitivityForProgram {
-  programId: number;
-  participantActivities: ParticipantActivitiesWithCompletionStatus[];
+export interface ParticipantActivityForProgram {
+  program_id: number;
+  participant_activities: ParticipantActivityCompletionStatus[];
 }

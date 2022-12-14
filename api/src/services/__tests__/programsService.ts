@@ -21,7 +21,7 @@ import {
   ActivityType,
   ProgramWithActivities,
   ParticipantActivities,
-  participantAcitivityForProgram,
+  ParticipantActivityForProgram,
 } from '../../models';
 
 import { mockQuery } from '../mockDb';
@@ -171,9 +171,9 @@ const participantActivitiesList: ParticipantActivities[] = [
   },
 ];
 
-const participantActivitiesForProgram: participantAcitivityForProgram = {
-  programId: 1,
-  participantActivities: [
+const participantActivitiesForProgram: ParticipantActivityForProgram = {
+  program_id: 1,
+  participant_activities: [
     { activity_id: 7, completed: false },
     { activity_id: 8, completed: false },
     { activity_id: 10, completed: true },
@@ -625,17 +625,13 @@ describe('programsService', () => {
   });
 
   describe('listParticipantActivitiesCompletionForProgram', () => {
-    const programId = 1;
-    const principalId = 3;
     it('should return a list of participant activities with their completion statuses', async () => {
+      const programId = 1;
+      const principalId = 3;
       mockQuery(
         'select `activity_id`, `completed` from `participant_activities` where `program_id` = ? and `principal_id` = ?',
         [programId, principalId],
-        [
-          { activity_id: 7, completed: false },
-          { activity_id: 8, completed: false },
-          { activity_id: 10, completed: true },
-        ]
+        participantActivitiesForProgram.participant_activities
       );
       expect(
         await listParticipantActivitiesCompletionForProgram(

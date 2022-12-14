@@ -385,13 +385,14 @@ export const setParticipantActivityCompletion = async (
   };
 };
 
-//  * Get the completion status (either true or false) of all activities of type assignment in a given program.
-//  *
-//  * @param {number} principalId - the unique id for the user
-//  * @param {number} programId - the id for the unique program
-//  * @returns List of participant_activities and their completion statuses,
-//  *   or null if programId doesn't exist or it doesn't have activities
-//  */
+/**
+ *   Get the completion status (either true or false) of all activities of type assignment in a given program.
+ *
+ * @param {number} principalId - the unique id for the user
+ * @param {number} programId - the id for the unique program
+ * @returns List of participant_activities and their completion statuses,
+ *    or null if programId doesn't exist or it doesn't have activities
+ */
 export const listParticipantActivitiesCompletionForProgram = async (
   principalId: number,
   programId: number
@@ -403,5 +404,8 @@ export const listParticipantActivitiesCompletionForProgram = async (
       principal_id: principalId,
     });
 
-  return { programId: programId, participantActivities };
+  return {
+    program_id: programId,
+    participant_activities: participantActivities,
+  };
 };

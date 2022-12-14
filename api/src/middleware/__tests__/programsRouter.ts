@@ -84,6 +84,50 @@ describe('programsRouter', () => {
     });
   });
 
+  describe('GET /activityStatus/:programId', () => {
+    it("should return the program ID and a list of the program's activities and the principal's completed statuses.", done => {
+      const programId = 1;
+      const principalId = 3;
+
+      const participantActivitiesForProgram = {
+        program_id: 1,
+        participant_activities: [
+          { activity_id: 7, completed: false },
+          { activity_id: 8, completed: false },
+          { activity_id: 10, completed: true },
+        ],
+      };
+      mockPrincipalId(principalId);
+
+      mockListParticipantActivitiesCompletionForProgram.mockResolvedValue(
+        participantActivitiesForProgram
+      );
+
+      appAgent
+        .get(`/activityStatus/${programId}`)
+        .expect(200, itemEnvelope(participantActivitiesForProgram), err => {
+          expect(
+            mockListParticipantActivitiesCompletionForProgram
+          ).toHaveBeenCalledWith(principalId, programId);
+          done(err);
+        });
+    });
+
+    it('should respond with a bad request error if given an invalid program id', done => {
+      const programId = 0;
+
+      appAgent.get(`/activityStatus/${programId}`).expect(400, done);
+    });
+
+    it('should respond with an internal server error if an error was thrown while listing programs', done => {
+      const programId = 1;
+      mockListParticipantActivitiesCompletionForProgram.mockRejectedValue(
+        new Error()
+      );
+      appAgent.get(`/activityStatus/${programId}`).expect(500, done);
+    });
+  });
+
   describe('GET /activityStatus/:programId/:activityId', () => {
     it('should respond with a program activity completion status', done => {
       const principalId = 1;
@@ -209,50 +253,6 @@ describe('programsRouter', () => {
         .put(`/activityStatus/${programId}/${activityId}`)
         .send({ completed: true })
         .expect(500, done);
-    });
-  });
-
-  describe('GET /activityStatus/:programId', () => {
-    it('should return a list of activities and their completed statuses', done => {
-      const programId = 1;
-      const principalId = 3;
-
-      const participantActivitiesForProgram = {
-        programId: 1,
-        participantActivities: [
-          { activity_id: 7, completed: false },
-          { activity_id: 8, completed: false },
-          { activity_id: 10, completed: true },
-        ],
-      };
-      mockPrincipalId(principalId);
-
-      mockListParticipantActivitiesCompletionForProgram.mockResolvedValue(
-        participantActivitiesForProgram
-      );
-
-      appAgent
-        .get(`/activityStatus/${programId}`)
-        .expect(200, itemEnvelope(participantActivitiesForProgram), err => {
-          expect(
-            mockListParticipantActivitiesCompletionForProgram
-          ).toHaveBeenCalledWith(principalId, programId);
-          done(err);
-        });
-    });
-
-    it('should respond with a bad request error if given an invalid program id', done => {
-      const programId = 0;
-
-      appAgent.get(`/activityStatus/${programId}`).expect(400, done);
-    });
-
-    it('should respond with an internal server error if an error was thrown while listing programs', done => {
-      const programId = 1;
-      mockListParticipantActivitiesCompletionForProgram.mockRejectedValue(
-        new Error()
-      );
-      appAgent.get(`/activityStatus/${programId}`).expect(500, done);
     });
   });
 });
