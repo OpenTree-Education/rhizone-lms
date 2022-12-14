@@ -1,9 +1,7 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { decodeHTML } from 'entities';
-import CancelIcon from '@mui/icons-material/Cancel';
-import CloseIcon from '@mui/icons-material/Close';
-import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import LoadingButton from '@mui/lab/LoadingButton';
+import { Cancel, Close, TaskAlt } from '@mui/icons-material';
+import { LoadingButton } from '@mui/lab';
 import {
   Alert,
   Dialog,
@@ -13,18 +11,18 @@ import {
   DialogTitle,
   Divider,
   FormGroup,
+  IconButton,
   Snackbar,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableRow,
-  IconButton
 } from '@mui/material';
-// import IconButton from '@mui/material/IconButton';
 
 import { formatDate, formatTime } from '../helpers/dateTime';
 import { CalendarEvent } from '../types/api';
+import { __String } from 'typescript';
 
 interface ProgramActivityDialogProps {
   show: boolean;
@@ -36,30 +34,35 @@ const sendAPIGetRequest = (
   path: string,
   activityType: string,
   setCompleted: Dispatch<SetStateAction<boolean | null>>,
-  setError: Dispatch<SetStateAction<boolean | null>>,
+  setError: Dispatch<SetStateAction<string | null>>,
   setIsErrorShown: Dispatch<SetStateAction<boolean>>,
   setIsLoading: Dispatch<SetStateAction<boolean>>
 ) => {
   setIsLoading(true);
   if (activityType !== 'assignment') return;
-  return fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
+  // return fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
+  return fetch(`abc.com`, {
     method: 'GET',
     credentials: 'include',
   })
     .then(res => res.json())
     .then(({ data, error }) => {
       setIsLoading(false);
+      console.log(error);
       if (error) {
-        setError(true);
+        if (error.name === 'AbortError') {
+          return;
+        }
+        setError(error.message);
         setIsErrorShown(true);
       }
       if (data) {
-        setError(false);
         setCompleted(data.completed);
       }
     })
     .catch(error => {
-      setError(true);
+      setError(error);
+      console.error(error.message);
       setIsErrorShown(true);
     });
 };
@@ -76,7 +79,6 @@ const sendAPIPutRequest = (
   if ('completed' in body && body.completed === null) {
     return;
   }
-
   fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
     method: 'PUT',
     credentials: 'include',
@@ -107,9 +109,10 @@ const ProgramActivityDialog = ({
   const [completed, setCompleted] = useState<boolean | null>(null);
   const [isUpdateSuccess, setIsUpdateSuccess] = useState<boolean>(false);
   const [isMessageVisible, setIsMessageVisible] = useState<boolean>(false);
-  const [error, setError] = useState<boolean | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isErrorShown, setIsErrorShown] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
   useEffect(() => {
     async function fetchData() {
       setCompleted(null);
@@ -196,7 +199,7 @@ const ProgramActivityDialog = ({
         }}
       >
         {contents.title}
-        {completed && <TaskAltIcon sx={{ ml: 1 }} />}
+        {completed && <TaskAlt sx={{ ml: 1 }} />}
         <IconButton
           aria-label="close"
           onClick={handleClose}
@@ -208,7 +211,7 @@ const ProgramActivityDialog = ({
             color: theme => theme.palette.grey[500],
           }}
         >
-          <CloseIcon />
+          <Close />
         </IconButton>
       </DialogTitle>
       <Divider />
@@ -301,9 +304,9 @@ const ProgramActivityDialog = ({
                 disabled={error ? true : false}
               >
                 {completed === false ? (
-                  <TaskAltIcon sx={{ mr: 1 }} />
+                  <TaskAlt sx={{ mr: 1 }} />
                 ) : (
-                  <CancelIcon sx={{ mr: 1 }} />
+                  <Cancel sx={{ mr: 1 }} />
                 )}
                 {completed === false ? 'Mark Complete' : 'Mark Incomplete'}
               </LoadingButton>
@@ -331,7 +334,7 @@ const ProgramActivityDialog = ({
                     severity="warning"
                     sx={{ width: '100%' }}
                   >
-                    There was an error getting the assignment status.
+                    Received error from server: {error}
                   </Alert>
                 </Snackbar>
               )}
