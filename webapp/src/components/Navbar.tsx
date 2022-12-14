@@ -35,7 +35,7 @@ const Navbar = () => {
         <IconButton sx={{ mr: 1 }} href="/competencies" title="Competencies">
           <EngineeringIcon />
         </IconButton>
-        <IconButton sx={{ mr: 1 }} href="/calendar" title="Calendar">
+        <IconButton sx={{ mr: 1 }} href="/calendar" title="Program Activities">
           <CalendarMonthIcon />
         </IconButton>
         <IconButton sx={{ mr: 1 }} onClick={openMeetingsDrawer} title="Drawer">
