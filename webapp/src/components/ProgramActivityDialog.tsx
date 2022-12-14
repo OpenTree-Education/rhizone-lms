@@ -21,8 +21,10 @@ import {
   TableRow,
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
+
 import { formatDate, formatTime } from '../helpers/dateTime';
 import { CalendarEvent } from '../types/api';
+
 interface ProgramActivityDialogProps {
   show: boolean;
   contents: CalendarEvent;
