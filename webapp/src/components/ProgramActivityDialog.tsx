@@ -28,6 +28,7 @@ interface ProgramActivityDialogProps {
   contents: CalendarEvent;
   handleClose: () => void;
 }
+
 const sendAPIGetRequest = (
   path: string,
   activityType: string,
