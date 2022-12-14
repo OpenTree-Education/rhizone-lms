@@ -44,20 +44,21 @@ const sendAPIGetRequest = (
     credentials: 'include',
   })
     .then(res => res.json())
-    .then(
-      async ({ data }) => {
-        if (data) {
-          setIsLoading(false);
-          setError(false);
-          setCompleted(data.completed);
-        }
-      },
-      error => {
-        setIsLoading(false);
+    .then(({ data, error }) => {
+      setIsLoading(false);
+      if (error) {
         setError(true);
         setIsErrorShown(true);
       }
-    );
+      if (data) {
+        setError(false);
+        setCompleted(data.completed);
+      }
+    })
+    .catch(error => {
+      setError(true);
+      setIsErrorShown(true);
+    });
 };
 
 const sendAPIPutRequest = (
