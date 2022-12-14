@@ -266,12 +266,55 @@ export const findProgramWithActivities = async (programId: number) => {
 };
 
 /**
+ * Temporary workaround to check if the `participant_activities` table has been
+ * pre-filled with data for each program assignment.
+ *
+ * @param {number} principalId - restrict result to programs with which the
+ *   user is associated
+ */
+const checkForPrefill = async (principalId?: number) => {
+  if (!principalId) {
+    return;
+  }
+
+  const allPrograms = await listPrograms();
+
+  allPrograms.forEach(async program => {
+    const programAssignments = await db('activities')
+      .select('id')
+      .where({ curriculum_id: program.curriculum_id, activity_type_id: 1 });
+    const participantActivities = await db('activities')
+      .select('program_id', 'activity_id', 'principal_id', 'completed')
+      .where({ program_id: program.id, principal_id: principalId });
+
+    if (programAssignments.length > participantActivities.length) {
+      programAssignments.forEach(async assignment => {
+        await db('participant_activities')
+          .insert({
+            principal_id: principalId,
+            program_id: program.id,
+            activity_id: assignment.id,
+            completed: false,
+          })
+          .onConflict(['program_id', 'principal_id', 'activity_id'])
+          .ignore();
+      });
+    }
+  });
+};
+
+/**
  * Retrieve the details for all programs in the database, including all program
  * activities as a member of that program.
  *
+ * @param {number} principalId - optional parameter to restrict result to
+ *   programs with which the user is associated
  * @returns {ProgramWithActivities[]} - all programs with their activities
  */
-export const listProgramsWithActivities = async () => {
+export const listProgramsWithActivities = async (principalId?: number) => {
+  // Temporary workaround until we have an admin feature
+  await checkForPrefill(principalId);
+
   const allPrograms = await listPrograms();
   const allCurriculumActivities = await listCurriculumActivities();
   const activityTypes = await listActivityTypes();
