@@ -51,23 +51,30 @@ const sendAPIGetRequest = (
     credentials: 'include',
   })
     .then(res => res.json())
-    .then(({ data, error }) => {
-      setIsLoading(false);
-      console.log(error);
-      if (error) {
-        if (error.name === 'AbortError') {
-          return;
+    .then(
+      ({ data, error }) => {
+        setIsLoading(false);
+        if (data) {
+          setIsErrorShown(false);
+          setCompleted(data.completed);
+        } else if (error) {
+          if (error.name === 'AbortError') {
+            return;
+          }
+          setError(error.message);
+          setIsErrorShown(true);
+        } else {
+          setError('Trouble encountered communicating with server.');
+          setIsErrorShown(true);
         }
-        setError(error.message);
+      },
+      reason => {
+        setError(`Can't communicate with server because: ${reason}`);
         setIsErrorShown(true);
       }
-      if (data) {
-        setCompleted(data.completed);
-      }
-    })
+    )
     .catch(error => {
-      setError(error);
-      console.error(error.message);
+      setError(error.message);
       setIsErrorShown(true);
     });
 };
@@ -339,7 +346,8 @@ const ProgramActivityDialog = ({
                     severity="warning"
                     sx={{ width: '100%' }}
                   >
-                    Received error from server: {error}
+                    Received error from server while getting completion
+                    {error ? `status: ${error}` : 'status.'}
                   </Alert>
                 </Snackbar>
               )}
