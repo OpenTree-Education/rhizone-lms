@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { decodeHTML } from 'entities';
-import CancelIcon from '@mui/icons-material/Cancel';
-import CloseIcon from '@mui/icons-material/Close';
-import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import LoadingButton from '@mui/lab/LoadingButton';
+import { Cancel, Close, TaskAlt } from '@mui/icons-material';
+import { LoadingButton } from '@mui/lab';
 import {
   Alert,
   Dialog,
@@ -13,6 +11,7 @@ import {
   DialogTitle,
   Divider,
   FormGroup,
+  IconButton,
   Snackbar,
   Table,
   TableBody,
@@ -20,7 +19,6 @@ import {
   TableContainer,
   TableRow,
 } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
 
 import { formatDate, formatTime } from '../helpers/dateTime';
 import { CalendarEvent } from '../types/api';
@@ -75,7 +73,6 @@ const sendAPIPutRequest = (
   if ('completed' in body && body.completed === null) {
     return;
   }
-
   fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
     method: 'PUT',
     credentials: 'include',
@@ -195,7 +192,7 @@ const ProgramActivityDialog = ({
         }}
       >
         {contents.title}
-        {completed && <TaskAltIcon sx={{ ml: 1 }} />}
+        {completed && <TaskAlt sx={{ ml: 1 }} />}
         <IconButton
           aria-label="close"
           onClick={handleClose}
@@ -207,7 +204,7 @@ const ProgramActivityDialog = ({
             color: theme => theme.palette.grey[500],
           }}
         >
-          <CloseIcon />
+          <Close />
         </IconButton>
       </DialogTitle>
       <Divider />
@@ -300,9 +297,9 @@ const ProgramActivityDialog = ({
                 disabled={error ? true : false}
               >
                 {completed === false ? (
-                  <TaskAltIcon sx={{ mr: 1 }} />
+                  <TaskAlt sx={{ mr: 1 }} />
                 ) : (
-                  <CancelIcon sx={{ mr: 1 }} />
+                  <Cancel sx={{ mr: 1 }} />
                 )}
                 {completed === false ? 'Mark Complete' : 'Mark Incomplete'}
               </LoadingButton>
