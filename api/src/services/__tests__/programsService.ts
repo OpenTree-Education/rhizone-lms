@@ -173,11 +173,12 @@ const participantActivitiesList: ParticipantActivities[] = [
 
 const participantActivitiesForProgram: ParticipantActivityForProgram = {
   program_id: 1,
-  participant_activities: [
-    { activity_id: 7, completed: false },
-    { activity_id: 8, completed: false },
-    { activity_id: 10, completed: true },
-  ],
+  participant_activities: participantActivitiesList.map(participantActivity => {
+    return {
+      activity_id: participantActivity.activity_id,
+      completed: participantActivity.completed,
+    };
+  }),
 };
 
 const programActivitiesList: ProgramActivity[][] = [
