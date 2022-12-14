@@ -22,7 +22,6 @@ import {
 
 import { formatDate, formatTime } from '../helpers/dateTime';
 import { CalendarEvent } from '../types/api';
-import { __String } from 'typescript';
 
 interface ProgramActivityDialogProps {
   show: boolean;
