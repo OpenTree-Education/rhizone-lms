@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { decodeHTML } from 'entities';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CloseIcon from '@mui/icons-material/Close';
@@ -19,8 +19,9 @@ import {
   TableCell,
   TableContainer,
   TableRow,
+  IconButton
 } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
+// import IconButton from '@mui/material/IconButton';
 
 import { formatDate, formatTime } from '../helpers/dateTime';
 import { CalendarEvent } from '../types/api';
@@ -34,10 +35,10 @@ interface ProgramActivityDialogProps {
 const sendAPIGetRequest = (
   path: string,
   activityType: string,
-  setCompleted: React.Dispatch<React.SetStateAction<boolean | null>>,
-  setError: React.Dispatch<React.SetStateAction<boolean | null>>,
-  setIsErrorShown: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setCompleted: Dispatch<SetStateAction<boolean | null>>,
+  setError: Dispatch<SetStateAction<boolean | null>>,
+  setIsErrorShown: Dispatch<SetStateAction<boolean>>,
+  setIsLoading: Dispatch<SetStateAction<boolean>>
 ) => {
   setIsLoading(true);
   if (activityType !== 'assignment') return;
@@ -66,10 +67,10 @@ const sendAPIGetRequest = (
 const sendAPIPutRequest = (
   path: string,
   body: { completed: boolean },
-  setCompleted: React.Dispatch<React.SetStateAction<boolean | null>>,
-  setIsUpdateSuccess: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsMessageVisible: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setCompleted: Dispatch<SetStateAction<boolean | null>>,
+  setIsUpdateSuccess: Dispatch<SetStateAction<boolean>>,
+  setIsMessageVisible: Dispatch<SetStateAction<boolean>>,
+  setIsLoading: Dispatch<SetStateAction<boolean>>
 ) => {
   setIsLoading(true);
   if ('completed' in body && body.completed === null) {
