@@ -64,14 +64,12 @@ const sendAPIGetRequest = (
         if (data) {
           setIsErrorShown(false);
           setCompleted(data.completed);
-        } else if (error) {
-          if (error.name === 'AbortError') {
-            return;
-          }
-          setError(error.message);
-          setIsErrorShown(true);
         } else {
-          setError('Trouble encountered communicating with server.');
+          if (error) {
+            setError(error.message);
+          } else {
+            setError('Trouble encountered communicating with server.');
+          }
           setIsErrorShown(true);
         }
       },
@@ -81,6 +79,9 @@ const sendAPIGetRequest = (
       }
     )
     .catch(error => {
+      if (error.name === 'AbortError') {
+        return;
+      }
       setError(error.message);
       setIsErrorShown(true);
     });
@@ -98,7 +99,7 @@ const sendAPIPutRequest = (
   if ('completed' in body && body.completed === null) {
     return;
   }
-  fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
+  return fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
     method: 'PUT',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
@@ -111,9 +112,16 @@ const sendAPIPutRequest = (
         setCompleted(data.completed);
         setIsUpdateSuccess(true);
         setIsMessageVisible(true);
+      } else {
+        setIsLoading(false);
+        setIsUpdateSuccess(false);
+        setIsMessageVisible(true);
       }
     })
     .catch(error => {
+      if (error.name === 'AbortError') {
+        return;
+      }
       setIsLoading(false);
       setIsUpdateSuccess(false);
       setIsMessageVisible(true);
