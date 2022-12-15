@@ -1,10 +1,11 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Grid, IconButton } from '@mui/material';
-import styled from '@emotion/styled';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import HomeIcon from '@mui/icons-material/Home';
 import PeopleIcon from '@mui/icons-material/People';
+import EngineeringIcon from '@mui/icons-material/Engineering';
+import { Button, Grid, IconButton, Tooltip } from '@mui/material';
+import styled from '@emotion/styled';
 
 import MeetingsDrawerContext from './MeetingsDrawerContext';
 
@@ -27,16 +28,34 @@ const Navbar = () => {
           </StyledLogo>
         </Link>
       </Grid>
+
       <Grid item xs="auto">
-        <IconButton sx={{ mr: 1 }} href="/">
-          <HomeIcon />
-        </IconButton>
-        <IconButton sx={{ mr: 1 }} href="/calendar">
-          <CalendarMonthIcon />
-        </IconButton>
-        <IconButton sx={{ mr: 1 }} onClick={openMeetingsDrawer}>
-          <PeopleIcon />
-        </IconButton>
+        <Tooltip title="Home">
+          <Link to="/">
+            <IconButton sx={{ mr: 1 }}>
+              <HomeIcon />
+            </IconButton>
+          </Link>
+        </Tooltip>
+        <Tooltip title="Competencies">
+          <Link to="/competencies">
+            <IconButton sx={{ mr: 1 }}>
+              <EngineeringIcon />
+            </IconButton>
+          </Link>
+        </Tooltip>
+        <Tooltip title="Program Activities">
+          <Link to="/calendar">
+            <IconButton sx={{ mr: 1 }}>
+              <CalendarMonthIcon />
+            </IconButton>
+          </Link>
+        </Tooltip>
+        <Tooltip title="Meetings">
+          <IconButton sx={{ mr: 1 }} onClick={openMeetingsDrawer}>
+            <PeopleIcon />
+          </IconButton>
+        </Tooltip>
         <Button
           component="a"
           href={`${process.env.REACT_APP_API_ORIGIN}/auth/logout`}
