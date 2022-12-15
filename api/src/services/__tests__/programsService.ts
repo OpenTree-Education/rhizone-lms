@@ -469,13 +469,12 @@ describe('programsService', () => {
   });
 
   describe('checkForPrefill', () => {
+    const programsWithActivities: ProgramWithActivities[] = [
+      { ...programsList[0], activities: programActivitiesList[0] },
+      { ...programsList[1], activities: programActivitiesList[1] },
+      { ...programsList[2], activities: programActivitiesList[2] },
+    ];
     it('should insert missing participant activities', async () => {
-      const programsWithActivities: ProgramWithActivities[] = [
-        { ...programsList[0], activities: programActivitiesList[0] },
-        { ...programsList[1], activities: programActivitiesList[1] },
-        { ...programsList[2], activities: programActivitiesList[2] },
-      ];
-
       mockQuery(
         'select `program_id`, `activity_id`, `principal_id`, `completed` from `participant_activities` where `principal_id` = ?',
         [participantActivitiesList[0].principal_id],
@@ -495,6 +494,21 @@ describe('programsService', () => {
           participantActivitiesList[2].program_id,
         ],
         []
+      );
+
+      expect(
+        await checkForPrefill(
+          participantActivitiesList[0].principal_id,
+          programsWithActivities
+        )
+      ).toEqual([]);
+    });
+    
+    it('should do nothing if all assignments in participant_activities have completion status', async () => {
+      mockQuery(
+        'select `program_id`, `activity_id`, `principal_id`, `completed` from `participant_activities` where `principal_id` = ?',
+        [participantActivitiesList[0].principal_id],
+        participantActivitiesList
       );
 
       expect(
