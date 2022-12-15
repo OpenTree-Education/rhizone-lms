@@ -412,16 +412,18 @@ export const getParticipantActivityCompletion = async (
 };
 
 /**
- *  Set/Update the completion status of the specific activity.
- *  Insert a new row and if conflict occurs which means it already has a row matching 'program_id', 'principal_id', 'activity_id',
- *  then .merge({}) to update with 'completed' field to what we received from a user.
+ * Set/update the completion status of the specific activity. Insert a new row
+ * or—if conflict occurs (which means it already has a row matching
+ * (`program_id`, `principal_id`, and `activity_id`)—merge to update the
+ * `completed` field to what we received from the user.
  *
  * @param {number} principalId - the unique id for the user
  * @param {number} programId - the id for the unique program
  * @param {number} activityId - the id for the unique activity
- * @param {boolean} completed - the boolean value that a user wants to set
- *    into the completed field
- * @returns {Object} - return the participantActivityId and the completion status (true or false) of an inserted row in the table
+ * @param {boolean} completed - whether or not the user has completed
+ *   the given assignment
+ * @returns {Object} - the ID of the row that was inserted or updated in the
+ *   `participant_activities` table and the completion status of the activity
  */
 export const setParticipantActivityCompletion = async (
   principalId: number,
@@ -450,5 +452,31 @@ export const setParticipantActivityCompletion = async (
   return {
     participantActivityId: participantActivity.id,
     completed: participantActivity.completed === 1,
+  };
+};
+
+/**
+ * Get the completion status (either true or false) of all activities of type
+ * assignment in a given program.
+ *
+ * @param {number} principalId - the unique id for the user
+ * @param {number} programId - the id for the unique program
+ * @returns {ParticipantActivityForProgram} - the program ID and an array of
+ *   the activity_id of the assignment and a boolean of its completion status
+ */
+export const listParticipantActivitiesCompletionForProgram = async (
+  principalId: number,
+  programId: number
+) => {
+  const participantActivities = await db('participant_activities')
+    .select('activity_id', 'completed')
+    .where({
+      program_id: programId,
+      principal_id: principalId,
+    });
+
+  return {
+    program_id: programId,
+    participant_activities: participantActivities,
   };
 };

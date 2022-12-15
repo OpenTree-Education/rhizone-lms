@@ -6,6 +6,7 @@ import {
   listProgramsWithActivities,
   getParticipantActivityCompletion,
   setParticipantActivityCompletion,
+  listParticipantActivitiesCompletionForProgram,
 } from '../services/programsService';
 
 const programsRouter = Router();
@@ -22,6 +23,32 @@ programsRouter.get('/', async (req, res, next) => {
   res.json(
     collectionEnvelope(programsWithActivities, programsWithActivities.length)
   );
+});
+
+programsRouter.get('/activityStatus/:programId', async (req, res, next) => {
+  const { programId } = req.params;
+  const { principalId } = req.session;
+
+  const programIdNum = Number(programId);
+
+  if (!Number.isInteger(programIdNum) || programIdNum < 1) {
+    next(new BadRequestError(`"${programIdNum}" is not a valid program id.`));
+    return;
+  }
+
+  let participantActivitiesList;
+
+  try {
+    participantActivitiesList =
+      await listParticipantActivitiesCompletionForProgram(
+        principalId,
+        programIdNum
+      );
+  } catch (error) {
+    next(error);
+    return;
+  }
+  res.json(itemEnvelope(participantActivitiesList));
 });
 
 programsRouter.get(
