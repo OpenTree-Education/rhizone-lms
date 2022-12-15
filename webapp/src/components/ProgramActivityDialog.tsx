@@ -1,6 +1,5 @@
 import React, {
   useState,
-  useEffect,
   Dispatch,
   MouseEvent as RMouseEvent,
   SetStateAction,
@@ -47,9 +46,10 @@ const tableHeaderCellStyle = {
 const sendAPIPutRequest = (
   path: string,
   body: { completed: boolean },
-  setIsUpdateSuccess: Dispatch<SetStateAction<boolean>>,
+  setIsUpdateSuccess: Dispatch<SetStateAction<boolean | null>>,
   setIsMessageVisible: Dispatch<SetStateAction<boolean>>,
-  setIsLoading: Dispatch<SetStateAction<boolean>>
+  setIsLoading: Dispatch<SetStateAction<boolean>>,
+  setMessage: Dispatch<SetStateAction<string>>
 ) => {
   let loadingDelay = setTimeout(() => setIsLoading(true), 200);
   if ('completed' in body && body.completed === null) {
@@ -67,13 +67,14 @@ const sendAPIPutRequest = (
       setIsLoading(false);
       let completed = null;
       if (data) {
-        setIsUpdateSuccess(true);
+        setMessage('Assignment status updated successfully.');
         ({ completed } = data);
+        setIsUpdateSuccess(true);
       } else if (error && error.message) {
-        // setError(`"${error.message}"`);
+        setMessage(`"${error.message}"`);
         setIsUpdateSuccess(false);
       } else {
-        // setError('unknown error');
+        setMessage('An unknown error occurred.');
         setIsUpdateSuccess(false);
       }
       setIsMessageVisible(true);
@@ -85,7 +86,7 @@ const sendAPIPutRequest = (
       }
       clearTimeout(loadingDelay);
       setIsLoading(false);
-      // setError(error.name);
+      setMessage(`Encountered a ${error.name} when marking task completed.`);
       setIsUpdateSuccess(false);
       setIsMessageVisible(true);
       return null;
@@ -119,10 +120,9 @@ const ProgramActivityDialog = ({
   setContents,
   handleClose,
 }: ProgramActivityDialogProps) => {
-  const [isUpdateSuccess, setIsUpdateSuccess] = useState<boolean>(false);
+  const [isUpdateSuccess, setIsUpdateSuccess] = useState<boolean | null>(null);
   const [isMessageVisible, setIsMessageVisible] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isErrorShown, setIsErrorShown] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const sendCompletedStatus = async (
@@ -136,15 +136,24 @@ const ProgramActivityDialog = ({
       { completed: completed },
       setIsUpdateSuccess,
       setIsMessageVisible,
-      setIsLoading
+      setIsLoading,
+      setMessage
     );
     setContents({ ...contents });
+  };
+
+  const closeDialog = () => {
+    setIsUpdateSuccess(null);
+    setIsMessageVisible(false);
+    setMessage('');
+    setIsLoading(false);
+    handleClose();
   };
 
   return (
     <Dialog
       open={show}
-      onClose={handleClose}
+      onClose={closeDialog}
       maxWidth="sm"
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
@@ -163,7 +172,7 @@ const ProgramActivityDialog = ({
         {contents.completed && <TaskAlt sx={{ ml: 1 }} />}
         <IconButton
           aria-label="close"
-          onClick={handleClose}
+          onClick={closeDialog}
           sx={{
             position: 'absolute',
             ml: 10,
@@ -254,7 +263,7 @@ const ProgramActivityDialog = ({
                 }
                 loading={isLoading}
                 sx={{ width: '15em' }}
-                disabled={!!error}
+                disabled={isUpdateSuccess === false}
                 startIcon={
                   contents.completed === false ? <TaskAlt /> : <Cancel />
                 }
@@ -274,21 +283,7 @@ const ProgramActivityDialog = ({
                     severity={isUpdateSuccess ? 'success' : 'error'}
                     sx={{ width: '100%' }}
                   >
-                    {isUpdateSuccess
-                      ? 'Assignment status updated successfully.'
-                      : 'There was an error updating the assignment status.'}
-                  </Alert>
-                </Snackbar>
-              )}
-              {isErrorShown && (
-                <Snackbar open={true} onClose={() => setIsErrorShown(false)}>
-                  <Alert
-                    onClose={() => setIsErrorShown(false)}
-                    severity="warning"
-                    sx={{ width: '100%' }}
-                  >
-                    Received {error ? error : 'error'} from server while getting
-                    completion status.
+                    {message}
                   </Alert>
                 </Snackbar>
               )}
