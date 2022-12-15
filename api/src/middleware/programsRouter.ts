@@ -11,9 +11,10 @@ import {
 const programsRouter = Router();
 
 programsRouter.get('/', async (req, res, next) => {
+  const { principalId } = req.session;
   let programsWithActivities;
   try {
-    programsWithActivities = await listProgramsWithActivities();
+    programsWithActivities = await listProgramsWithActivities(principalId);
   } catch (error) {
     next(error);
     return;
