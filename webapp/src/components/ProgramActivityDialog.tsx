@@ -173,8 +173,8 @@ const ProgramActivityDialog = ({
       setCompleted(null);
       if (show) {
         await sendAPIGetRequest(
-          `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
-          contents.activityType,
+          `/programs/activityStatus/${contents.program_id}/${contents.curriculum_activity_id}`,
+          contents.activity_type,
           setCompleted,
           setError,
           setIsErrorShown,
@@ -192,7 +192,7 @@ const ProgramActivityDialog = ({
     if (event.type !== 'click') return;
     event.preventDefault();
     sendAPIPutRequest(
-      `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
+      `/programs/activityStatus/${contents.program_id}/${contents.curriculum_activity_id}`,
       { completed: completed },
       setCompleted,
       setIsUpdateSuccess,
@@ -257,7 +257,7 @@ const ProgramActivityDialog = ({
                     px: { xs: '0rem', sm: '1rem' },
                   }}
                 >
-                  {contents.programTitle}
+                  {contents.program_title}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -274,7 +274,7 @@ const ProgramActivityDialog = ({
                     px: { xs: '0', sm: '1rem' },
                   }}
                 >
-                  {contents.activityType}
+                  {contents.activity_type}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -291,7 +291,7 @@ const ProgramActivityDialog = ({
           </Table>
         </TableContainer>
       </DialogContent>
-      {contents.activityType === 'assignment' && (
+      {contents.activity_type === 'assignment' && (
         <>
           <Divider />
           <DialogActions>

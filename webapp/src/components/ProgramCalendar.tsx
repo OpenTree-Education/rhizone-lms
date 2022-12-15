@@ -45,25 +45,25 @@ const activitiesForCalendar = (
         end: new Date(activity.end_time),
         description: decodeHTML(activity.description_text),
         allDay: !activity.duration,
-        activityType: activity.activity_type,
-        programTitle: correspondingProgramTitle,
+        activity_type: activity.activity_type,
+        program_title: correspondingProgramTitle,
+        program_id: activity.program_id,
+        curriculum_activity_id: activity.curriculum_activity_id,
         completed: activity.completed,
-        programId: activity.program_id,
-        curriculumActivityId: activity.curriculum_activity_id,
       } as CalendarEvent)
   );
 };
 
-const defaultDialogContents = {
+const defaultDialogContents: CalendarEvent = {
   title: '',
   description: '',
   allDay: false,
   start: new Date(0),
   end: new Date(0),
-  activityType: '',
-  programTitle: '',
-  programId: 0,
-  curriculumActivityId: 0,
+  activity_type: '',
+  program_title: '',
+  program_id: 0,
+  curriculum_activity_id: 0,
 };
 
 const ProgramCalendar = ({

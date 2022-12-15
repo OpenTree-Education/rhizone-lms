@@ -119,11 +119,11 @@ export interface CurriculumActivity extends Entity {
 
 export interface CalendarEvent extends RBCEvent {
   description: string;
-  activityType: string;
-  programTitle: string;
+  activity_type: string;
+  program_title: string;
+  program_id: number;
+  curriculum_activity_id: number;
   completed?: boolean | null;
-  programId: number;
-  curriculumActivityId: number;
 }
 
 export interface ParticipantActivityCompletionStatus {
