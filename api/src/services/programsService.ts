@@ -274,7 +274,7 @@ export const findProgramWithActivities = async (programId: number) => {
  * @param {number} principalId - restrict result to programs with which the
  *   user is associated
  */
-const checkForPrefill = async (
+export const checkForPrefill = async (
   principalId?: number,
   programsWithActivities?: ProgramWithActivities[]
 ) => {
@@ -285,6 +285,13 @@ const checkForPrefill = async (
   const allParticipantActivities = await db('participant_activities')
     .select('program_id', 'activity_id', 'principal_id', 'completed')
     .where({ principal_id: principalId });
+
+  const rowsToInsert: {
+    principal_id: number;
+    program_id: number;
+    activity_id: number;
+    completed: boolean;
+  }[] = [];
 
   for (const program of programsWithActivities) {
     const programAssignments: ProgramActivity[] = JSON.parse(
@@ -301,18 +308,20 @@ const checkForPrefill = async (
 
     if (programAssignments.length > programParticipantActivities.length) {
       for (const assignment of programAssignments) {
-        await db('participant_activities')
-          .insert({
-            principal_id: principalId,
-            program_id: program.id,
-            activity_id: assignment.curriculum_activity_id,
-            completed: false,
-          })
-          .onConflict(['program_id', 'principal_id', 'activity_id'])
-          .ignore();
+        rowsToInsert.push({
+          principal_id: principalId,
+          program_id: program.id,
+          activity_id: assignment.curriculum_activity_id,
+          completed: false,
+        });
       }
     }
   }
+
+  return await db('participant_activities')
+    .insert(rowsToInsert)
+    .onConflict(['program_id', 'principal_id', 'activity_id'])
+    .ignore();
 };
 
 /**
