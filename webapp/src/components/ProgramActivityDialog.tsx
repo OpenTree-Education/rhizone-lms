@@ -161,8 +161,8 @@ const ProgramActivityDialog = ({
     event: RMouseEvent<HTMLButtonElement, MouseEvent>,
     completed: boolean
   ) => {
-    event.preventDefault();
     if (event.type !== 'click') return;
+    event.preventDefault();
     sendAPIPutRequest(
       `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
       { completed: completed },
@@ -314,12 +314,8 @@ const ProgramActivityDialog = ({
                 loading={isLoading}
                 sx={{ width: '15em' }}
                 disabled={error ? true : false}
+                startIcon={completed === false ? <TaskAlt /> : <Cancel />}
               >
-                {completed === false ? (
-                  <TaskAlt sx={{ mr: 1 }} />
-                ) : (
-                  <Cancel sx={{ mr: 1 }} />
-                )}
                 {completed === false ? 'Mark Complete' : 'Mark Incomplete'}
               </LoadingButton>
               {isMessageVisible && (
