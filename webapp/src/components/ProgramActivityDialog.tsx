@@ -53,6 +53,7 @@ const sendAPIGetRequest = (
 ) => {
   let loadingDelay = setTimeout(() => setIsLoading(true), 200);
   if (activityType !== 'assignment') return;
+
   return fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
     method: 'GET',
     credentials: 'include',
@@ -64,12 +65,13 @@ const sendAPIGetRequest = (
         setIsLoading(false);
         if (data) {
           setIsErrorShown(false);
+          setError(null);
           setCompleted(data.completed);
         } else {
-          if (error) {
-            setError(error.message);
+          if (error && error.message) {
+            setError(`"${error.message}"`);
           } else {
-            setError('Trouble encountered communicating with server.');
+            setError('unknown error');
           }
           setIsErrorShown(true);
         }
@@ -77,7 +79,7 @@ const sendAPIGetRequest = (
       reason => {
         clearTimeout(loadingDelay);
         setIsLoading(false);
-        setError(`Can't communicate with server because: ${reason}`);
+        setError(reason.name);
         setIsErrorShown(true);
       }
     )
@@ -87,7 +89,7 @@ const sendAPIGetRequest = (
       if (error.name === 'AbortError') {
         return;
       }
-      setError(error.message);
+      setError(error.name);
       setIsErrorShown(true);
     });
 };
@@ -310,7 +312,7 @@ const ProgramActivityDialog = ({
                 variant={completed === false ? 'contained' : 'outlined'}
                 loading={isLoading}
                 sx={{ width: '15em' }}
-                disabled={error ? true : false}
+                disabled={!!error}
                 startIcon={completed === false ? <TaskAlt /> : <Cancel />}
               >
                 {completed === false ? 'Mark Complete' : 'Mark Incomplete'}
@@ -339,8 +341,8 @@ const ProgramActivityDialog = ({
                     severity="warning"
                     sx={{ width: '100%' }}
                   >
-                    Received error from server while getting completion
-                    {error ? `status: ${error}` : 'status.'}
+                    Received {error ? error : 'error'} from server while getting
+                    completion status.
                   </Alert>
                 </Snackbar>
               )}
