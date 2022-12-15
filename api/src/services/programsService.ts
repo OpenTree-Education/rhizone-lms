@@ -273,6 +273,10 @@ export const findProgramWithActivities = async (programId: number) => {
  *
  * @param {number} principalId - restrict result to programs with which the
  *   user is associated
+ * @param {ProgramWithActivities[]} programsWithActivities - list of programs
+ *   with which user is associated, and their associated activities
+ * @returns {Array} - default return value from a database insert; leaving in
+ *   to make function easier to test with Jest
  */
 export const checkForPrefill = async (
   principalId?: number,
