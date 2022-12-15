@@ -322,10 +322,14 @@ export const checkForPrefill = async (
     }
   }
 
-  return await db('participant_activities')
-    .insert(rowsToInsert)
-    .onConflict(['program_id', 'principal_id', 'activity_id'])
-    .ignore();
+  if (rowsToInsert.length > 0) {
+    return await db('participant_activities')
+      .insert(rowsToInsert)
+      .onConflict(['program_id', 'principal_id', 'activity_id'])
+      .ignore();
+  } else {
+    return [];
+  }
 };
 
 /**
