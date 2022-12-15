@@ -32,6 +32,7 @@ import { CalendarEvent } from '../types/api';
 interface ProgramActivityDialogProps {
   show: boolean;
   contents: CalendarEvent;
+  setContents: Dispatch<SetStateAction<CalendarEvent>>;
   handleClose: () => void;
 }
 
@@ -46,7 +47,6 @@ const tableHeaderCellStyle = {
 const sendAPIPutRequest = (
   path: string,
   body: { completed: boolean },
-  setCompleted: Dispatch<SetStateAction<boolean | null>>,
   setIsUpdateSuccess: Dispatch<SetStateAction<boolean>>,
   setIsMessageVisible: Dispatch<SetStateAction<boolean>>,
   setIsLoading: Dispatch<SetStateAction<boolean>>
@@ -62,16 +62,22 @@ const sendAPIPutRequest = (
     body: JSON.stringify(body),
   })
     .then(res => res.json())
-    .then(({ data }) => {
+    .then(({ data, error }) => {
       clearTimeout(loadingDelay);
       setIsLoading(false);
+      let completed = null;
       if (data) {
-        setCompleted(data.completed);
         setIsUpdateSuccess(true);
+        ({ completed } = data);
+      } else if (error && error.message) {
+        // setError(`"${error.message}"`);
+        setIsUpdateSuccess(false);
       } else {
+        // setError('unknown error');
         setIsUpdateSuccess(false);
       }
       setIsMessageVisible(true);
+      return completed;
     })
     .catch(error => {
       if (error.name === 'AbortError') {
@@ -79,8 +85,10 @@ const sendAPIPutRequest = (
       }
       clearTimeout(loadingDelay);
       setIsLoading(false);
+      // setError(error.name);
       setIsUpdateSuccess(false);
       setIsMessageVisible(true);
+      return null;
     });
 };
 
@@ -108,9 +116,9 @@ const timeRange = (start?: Date, end?: Date, allDay?: boolean) => {
 const ProgramActivityDialog = ({
   show,
   contents,
+  setContents,
   handleClose,
 }: ProgramActivityDialogProps) => {
-  const [completed, setCompleted] = useState<boolean | null>(null);
   const [isUpdateSuccess, setIsUpdateSuccess] = useState<boolean>(false);
   const [isMessageVisible, setIsMessageVisible] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -118,24 +126,23 @@ const ProgramActivityDialog = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    setCompleted(contents.completed ?? null);
     setError(null);
   }, [contents, show]);
 
-  const sendCompletedStatus = (
+  const sendCompletedStatus = async (
     event: RMouseEvent<HTMLButtonElement, MouseEvent>,
     completed: boolean
   ) => {
     if (event.type !== 'click') return;
     event.preventDefault();
-    sendAPIPutRequest(
+    contents.completed = await sendAPIPutRequest(
       `/programs/activityStatus/${contents.program_id}/${contents.curriculum_activity_id}`,
       { completed: completed },
-      setCompleted,
       setIsUpdateSuccess,
       setIsMessageVisible,
       setIsLoading
     );
+    setContents(contents);
   };
 
   return (
@@ -157,7 +164,7 @@ const ProgramActivityDialog = ({
         }}
       >
         {contents.title}
-        {completed && <TaskAlt sx={{ ml: 1 }} />}
+        {contents.completed && <TaskAlt sx={{ ml: 1 }} />}
         <IconButton
           aria-label="close"
           onClick={handleClose}
@@ -242,17 +249,23 @@ const ProgramActivityDialog = ({
             >
               <LoadingButton
                 onClick={event => {
-                  sendCompletedStatus(event, !completed);
+                  sendCompletedStatus(event, !contents.completed);
                 }}
                 type="submit"
                 form="form"
-                variant={completed === false ? 'contained' : 'outlined'}
+                variant={
+                  contents.completed === false ? 'contained' : 'outlined'
+                }
                 loading={isLoading}
                 sx={{ width: '15em' }}
                 disabled={!!error}
-                startIcon={completed === false ? <TaskAlt /> : <Cancel />}
+                startIcon={
+                  contents.completed === false ? <TaskAlt /> : <Cancel />
+                }
               >
-                {completed === false ? 'Mark Complete' : 'Mark Incomplete'}
+                {contents.completed === false
+                  ? 'Mark Complete'
+                  : 'Mark Incomplete'}
               </LoadingButton>
               {isMessageVisible && (
                 <Snackbar
