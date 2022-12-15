@@ -51,7 +51,7 @@ const sendAPIGetRequest = (
   setIsErrorShown: Dispatch<SetStateAction<boolean>>,
   setIsLoading: Dispatch<SetStateAction<boolean>>
 ) => {
-  setIsLoading(true);
+  let loadingDelay = setTimeout(() => setIsLoading(true), 200);
   if (activityType !== 'assignment') return;
   return fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
     method: 'GET',
@@ -60,6 +60,7 @@ const sendAPIGetRequest = (
     .then(res => res.json())
     .then(
       ({ data, error }) => {
+        clearTimeout(loadingDelay);
         setIsLoading(false);
         if (data) {
           setIsErrorShown(false);
@@ -74,11 +75,15 @@ const sendAPIGetRequest = (
         }
       },
       reason => {
+        clearTimeout(loadingDelay);
+        setIsLoading(false);
         setError(`Can't communicate with server because: ${reason}`);
         setIsErrorShown(true);
       }
     )
     .catch(error => {
+      clearTimeout(loadingDelay);
+      setIsLoading(false);
       if (error.name === 'AbortError') {
         return;
       }
@@ -95,7 +100,7 @@ const sendAPIPutRequest = (
   setIsMessageVisible: Dispatch<SetStateAction<boolean>>,
   setIsLoading: Dispatch<SetStateAction<boolean>>
 ) => {
-  setIsLoading(true);
+  let loadingDelay = setTimeout(() => setIsLoading(true), 200);
   if ('completed' in body && body.completed === null) {
     return;
   }
@@ -107,21 +112,21 @@ const sendAPIPutRequest = (
   })
     .then(res => res.json())
     .then(({ data }) => {
+      clearTimeout(loadingDelay);
+      setIsLoading(false);
       if (data) {
-        setIsLoading(false);
         setCompleted(data.completed);
         setIsUpdateSuccess(true);
-        setIsMessageVisible(true);
       } else {
-        setIsLoading(false);
         setIsUpdateSuccess(false);
-        setIsMessageVisible(true);
       }
+      setIsMessageVisible(true);
     })
     .catch(error => {
       if (error.name === 'AbortError') {
         return;
       }
+      clearTimeout(loadingDelay);
       setIsLoading(false);
       setIsUpdateSuccess(false);
       setIsMessageVisible(true);
