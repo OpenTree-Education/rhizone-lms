@@ -35,6 +35,14 @@ interface ProgramActivityDialogProps {
   handleClose: () => void;
 }
 
+const tableHeaderCellStyle = {
+  fontWeight: 'bold',
+  border: 'none',
+  verticalAlign: 'top',
+  textAlign: 'right',
+  pr: { xs: '0.375rem', sm: '1rem' },
+};
+
 const sendAPIGetRequest = (
   path: string,
   activityType: string,
@@ -45,8 +53,7 @@ const sendAPIGetRequest = (
 ) => {
   setIsLoading(true);
   if (activityType !== 'assignment') return;
-  // return fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
-  return fetch(`abc.com`, {
+  return fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
     method: 'GET',
     credentials: 'include',
   })
@@ -186,12 +193,7 @@ const ProgramActivityDialog = ({
     timeRangeString += formatTime(contents.end.toString());
     return timeRangeString;
   };
-  const tableHeaderCellStyle = {
-    fontWeight: 'bold',
-    border: 'none',
-    verticalAlign: 'top',
-    textAlign: 'right',
-  };
+
   return (
     <Dialog
       open={show}
@@ -238,17 +240,7 @@ const ProgramActivityDialog = ({
           <Table size="small">
             <TableBody>
               <TableRow>
-                <TableCell
-                  component="th"
-                  scope="row"
-                  sx={{
-                    fontWeight: 'bold',
-                    border: 'none',
-                    verticalAlign: 'top',
-                    textAlign: 'right',
-                    pr: { xs: '0.375rem', sm: '1rem' },
-                  }}
-                >
+                <TableCell component="th" scope="row" sx={tableHeaderCellStyle}>
                   Program:
                 </TableCell>
                 <TableCell
@@ -272,7 +264,7 @@ const ProgramActivityDialog = ({
                     verticalAlign: 'top',
                     textAlign: 'left',
                     textTransform: 'capitalize',
-                    pr: { xs: '0.375rem', sm: '1rem' },
+                    px: { xs: '0', sm: '1rem' },
                   }}
                 >
                   {contents.activityType}
