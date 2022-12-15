@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { decodeHTML } from 'entities';
 import { DateTime } from 'luxon';
 import { Calendar, luxonLocalizer, View } from 'react-big-calendar';
@@ -53,10 +53,25 @@ const activitiesForCalendar = (
         end: new Date(activity.end_time),
         description: decodeHTML(activity.description_text),
         allDay: !activity.duration,
+        activityType: activity.activity_type,
         programTitle: correspondingProgramTitle,
         completed: activity.completed,
+        programId: activity.program_id,
+        curriculumActivityId: activity.curriculum_activity_id,
       } as CalendarEvent)
   );
+};
+
+const defaultDialogContents = {
+  title: '',
+  description: '',
+  allDay: false,
+  start: new Date(0),
+  end: new Date(0),
+  activityType: '',
+  programTitle: '',
+  programId: 0,
+  curriculumActivityId: 0,
 };
 
 const ProgramCalendar = ({
@@ -66,15 +81,10 @@ const ProgramCalendar = ({
   setCurrentView,
   viewOptions,
 }: ProgramCalendarProps) => {
-  const [dialogShow, setDialogShow] = React.useState(false);
-  const [dialogContents, setDialogContents] = React.useState<CalendarEvent>({
-    title: '',
-    description: '',
-    allDay: false,
-    start: new Date(),
-    end: new Date(),
-    programTitle: '',
-  });
+  const [dialogShow, setDialogShow] = useState(false);
+  const [dialogContents, setDialogContents] = useState<CalendarEvent>(
+    defaultDialogContents
+  );
   const [activitiesCompletion, setActivitiesCompletion] =
     React.useState<ProgramParticipantActivitiesList>({
       programId: -1,
@@ -103,7 +113,12 @@ const ProgramCalendar = ({
 
   const TimeGutter = () => <p style={{ textAlign: 'center' }}>All Day</p>;
 
-  const closeDialog = () => setDialogShow(false);
+  const closeDialog = () => {
+    setDialogShow(false);
+    setTimeout(() => {
+      setDialogContents(defaultDialogContents);
+    }, 200);
+  };
 
   const eventStyleGetter = (event: any) => {
     let style;
