@@ -125,10 +125,6 @@ const ProgramActivityDialog = ({
   const [isErrorShown, setIsErrorShown] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    setError(null);
-  }, [contents, show]);
-
   const sendCompletedStatus = async (
     event: RMouseEvent<HTMLButtonElement, MouseEvent>,
     completed: boolean
@@ -142,7 +138,7 @@ const ProgramActivityDialog = ({
       setIsMessageVisible,
       setIsLoading
     );
-    setContents(contents);
+    setContents({ ...contents });
   };
 
   return (
