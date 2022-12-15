@@ -8,6 +8,7 @@ import {
   listActivityTypes,
   findProgramWithActivities,
   listProgramsForCurriculum,
+  checkForPrefill,
   listProgramsWithActivities,
   getParticipantActivityId,
   getParticipantActivityCompletion,
@@ -451,6 +452,44 @@ describe('programsService', () => {
       expect(await findProgramWithActivities(programId)).toEqual(
         programWithActivities
       );
+    });
+  });
+
+  describe('checkForPrefill', () => {
+    it('should insert missing participant activities', async () => {
+      const programsWithActivities: ProgramWithActivities[] = [
+        { ...programsList[0], activities: programActivitiesList[0] },
+        { ...programsList[1], activities: programActivitiesList[1] },
+        { ...programsList[2], activities: programActivitiesList[2] },
+      ];
+
+      mockQuery(
+        'select `program_id`, `activity_id`, `principal_id`, `completed` from `participant_activities` where `principal_id` = ?',
+        [participantActivitiesList[0].principal_id],
+        [participantActivitiesList[0]]
+      );
+
+      mockQuery(
+        'insert ignore into `participant_activities` (`activity_id`, `completed`, `principal_id`, `program_id`) values (?, ?, ?, ?), (?, ?, ?, ?)',
+        [
+          participantActivitiesList[1].activity_id,
+          false,
+          participantActivitiesList[1].principal_id,
+          participantActivitiesList[1].program_id,
+          participantActivitiesList[2].activity_id,
+          false,
+          participantActivitiesList[2].principal_id,
+          participantActivitiesList[2].program_id,
+        ],
+        []
+      );
+
+      expect(
+        await checkForPrefill(
+          participantActivitiesList[0].principal_id,
+          programsWithActivities
+        )
+      ).toEqual([]);
     });
   });
 
