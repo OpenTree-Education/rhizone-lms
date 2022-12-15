@@ -190,6 +190,7 @@ const ProgramCalendar = ({
       <ProgramActivityDialog
         show={dialogShow}
         contents={dialogContents}
+        setContents={setDialogContents}
         handleClose={closeDialog}
       />
     </>
