@@ -174,8 +174,6 @@ INSERT INTO activities (title, description_text, curriculum_week, curriculum_day
   ('Sprint Retrospective', 'Share observations from the sprint, group them into themes, and plan ways to increase quality and effectiveness of future sprints.', 7, 5, '11:00:00', '12:00:00', 60, 8, @curriculumId),
 
 -- Week 8, Day 1:
-  -- Tasks / All-day Activities:
-  ('Mentor Assessments Begin', 'Mentors will compile their observations of the mentees over the course of the program and hand those to the OpenTree team for use in professional references. Mentees will independently share their thoughts about the mentors with the OpenTree team to provide constructive feedback about the mentorship they received during the program.', 8, 1, NULL, NULL, NULL, 1, @curriculumId),
   -- Scheduled Activities:
   ('Sprint Planning', 'Plan the final tasks to be accomplished to deliver the final product to the product team by the end of the sprint, create issues for the tasks, and assign the issues to their owners.', 8, 1, '10:00:00', '10:50:00', 50, 3, @curriculumId),
   ('Bulk Development', 'Work on the assigned tasks independently. As always, make sure to review pull requests when they are filed and use your resources including other mentees and mentors when they are available.', 8, 1, '11:00:00', '14:00:00', 180, 5, @curriculumId),
@@ -184,19 +182,18 @@ INSERT INTO activities (title, description_text, curriculum_week, curriculum_day
   ('Morning Standup', 'Start the day by sharing your progress on this week&#8217;s assigned tasks, sharing what went well from the previous day and any roadblocks that are holding up forward progress on your assigned tasks.', 8, 2, '10:00:00', '10:50:00', 50, 4, @curriculumId),
   ('Bulk Development', 'Work on the assigned tasks independently. As always, make sure to review pull requests when they are filed and use your resources including other mentees and mentors when they are available.', 8, 2, '11:00:00', '14:00:00', 180, 5, @curriculumId),
 -- Week 8, Day 3:
-  -- Tasks / All-day Activities:
-  ('Self-assessment', 'Mentees identify gaps in their knowledge, skills and abilities by performing a self-assessment of their functional, behavioural, strategic, organizational, and operational competencies.', 8, 3, NULL, NULL, NULL, 1, @curriculumId),
   -- Scheduled Activities:
   ('Morning Standup', 'Start the day by sharing your progress on this week&#8217;s assigned tasks, sharing what went well from the previous day and any roadblocks that are holding up forward progress on your assigned tasks.', 8, 3, '10:00:00', '10:50:00', 50, 4, @curriculumId),
   ('Bulk Development', 'Work on the assigned tasks independently. As always, make sure to review pull requests when they are filed and use your resources including other mentees and mentors when they are available.', 8, 3, '11:00:00', '14:00:00', 180, 5, @curriculumId),
   ('Pathways Meeting', 'Mentees are encouraged but not required to join Pathways meetings, sharing their progress in the job search, welcoming new members of the community, and—if desired and Pathways mentors are free—meeting with Pathways mentors for additional one-on-one mentorship.', 8, 3, '16:00:00', '18:00:00', 120, 9, @curriculumId),
 -- Week 8, Day 4:
-  -- Tasks / All-day Activities:
-  ('Mentor Assessments End', '', 8, 4, NULL, NULL, NULL, 1, @curriculumId),
   -- Scheduled Activities:
   ('Morning Standup', 'Start the day by sharing your progress on this week&#8217;s assigned tasks, sharing what went well from the previous day and any roadblocks that are holding up forward progress on your assigned tasks.', 8, 4, '10:00:00', '10:50:00', 50, 4, @curriculumId),
   ('Bulk Development', 'Work on the assigned tasks independently. As always, make sure to review pull requests when they are filed and use your resources including other mentees and mentors when they are available.', 8, 4, '11:00:00', '14:00:00', 180, 5, @curriculumId),
 -- Week 8, Day 5:
+  -- Tasks / All-day Activities:
+  ('Final Self-assessment', 'Mentees observe the growth in their knowledge, skills and abilities by performing a self-assessment of their functional, behavioural, strategic, organizational, and operational competencies and comparing their results to the beginning of the program.', 8, 5, NULL, NULL, NULL, 1, @curriculumId),
+  ('Exit Survey', 'Mentees provide feedback on how the program progressed, and they (optionally) provide suggestions for improvement of the Professional Mentorship Program for the benefit of its future cohorts.', 8, 5, NULL, NULL, NULL, 1, @curriculumId),
   -- Scheduled Activities:
   ('Sprint Review', 'Review the week&#8217;s progress on the final issues, update the product backlog, and wrap up all development of the product feature.', 8, 5, '10:00:00', '10:50:00', 50, 8, @curriculumId),
   ('Program Retrospective', 'Share observations from the program, group them into themes, and share ideas on how to improve the program for future cohorts.', 8, 5, '11:00:00', '11:50:00', 50, 8, @curriculumId),
