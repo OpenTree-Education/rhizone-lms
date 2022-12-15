@@ -139,7 +139,7 @@ const ProgramActivityDialog = ({
       setIsLoading,
       setMessage
     );
-    setContents(contents);
+    setContents({ ...contents });
   };
 
   const closeDialog = () => {

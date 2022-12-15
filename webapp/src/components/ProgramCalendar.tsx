@@ -18,7 +18,6 @@ import {
 
 interface ProgramCalendarProps {
   program: ProgramWithActivities;
-  windowWidth: number;
   currentView: View;
   setCurrentView: (manualView: View) => void;
   viewOptions: View[];
@@ -68,7 +67,6 @@ const defaultDialogContents: CalendarEvent = {
 
 const ProgramCalendar = ({
   program,
-  windowWidth,
   currentView,
   setCurrentView,
   viewOptions,
