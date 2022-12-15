@@ -8,6 +8,7 @@ import {
   listActivityTypes,
   findProgramWithActivities,
   listProgramsForCurriculum,
+  checkForPrefill,
   listProgramsWithActivities,
   getParticipantActivityId,
   getParticipantActivityCompletion,
@@ -20,7 +21,7 @@ import {
   CurriculumActivity,
   ActivityType,
   ProgramWithActivities,
-  ParticipantActivities,
+  ParticipantActivity,
   ParticipantActivityForProgram,
 } from '../../models';
 
@@ -71,7 +72,7 @@ const curriculumActivitiesList: CurriculumActivity[] = [
     start_time: '10:00:00',
     end_time: '11:00:00',
     duration: 60,
-    activity_type_id: 3,
+    activity_type_id: 4,
     curriculum_id: 1,
     created_at: '2022-11-15 01:23:45',
     updated_at: '2022-11-15 01:23:45',
@@ -85,7 +86,7 @@ const curriculumActivitiesList: CurriculumActivity[] = [
     start_time: '11:10:00',
     end_time: '12:00:00',
     duration: 50,
-    activity_type_id: 1,
+    activity_type_id: 9,
     curriculum_id: 1,
     created_at: '2022-11-15 01:23:45',
     updated_at: '2022-11-15 01:23:45',
@@ -99,7 +100,7 @@ const curriculumActivitiesList: CurriculumActivity[] = [
     start_time: null,
     end_time: null,
     duration: null,
-    activity_type_id: 2,
+    activity_type_id: 1,
     curriculum_id: 1,
     created_at: '2022-11-15 01:23:45',
     updated_at: '2022-11-15 01:23:45',
@@ -113,7 +114,7 @@ const curriculumActivitiesList: CurriculumActivity[] = [
     start_time: '10:00:00',
     end_time: '11:00:00',
     duration: 60,
-    activity_type_id: 3,
+    activity_type_id: 4,
     curriculum_id: 2,
     created_at: '2022-11-15 01:23:45',
     updated_at: '2022-11-15 01:23:45',
@@ -127,7 +128,7 @@ const curriculumActivitiesList: CurriculumActivity[] = [
     start_time: '11:10:00',
     end_time: '12:00:00',
     duration: 50,
-    activity_type_id: 1,
+    activity_type_id: 9,
     curriculum_id: 2,
     created_at: '2022-11-15 01:23:45"',
     updated_at: '2022-11-15 01:23:45',
@@ -141,33 +142,33 @@ const curriculumActivitiesList: CurriculumActivity[] = [
     start_time: null,
     end_time: null,
     duration: null,
-    activity_type_id: 2,
+    activity_type_id: 1,
     curriculum_id: 2,
     created_at: '2022-11-15 01:23:45',
     updated_at: '2022-11-15 01:23:45',
   },
 ];
-const participantActivitiesList: ParticipantActivities[] = [
+const participantActivitiesList: ParticipantActivity[] = [
   {
     id: 1,
     program_id: 1,
-    activity_id: 7,
-    principal_id: 3,
+    activity_id: 3,
+    principal_id: 2,
     completed: false,
   },
   {
     id: 2,
-    program_id: 1,
-    activity_id: 8,
-    principal_id: 3,
-    completed: false,
+    program_id: 2,
+    activity_id: 6,
+    principal_id: 2,
+    completed: true,
   },
   {
     id: 3,
-    program_id: 1,
-    activity_id: 10,
-    principal_id: 3,
-    completed: true,
+    program_id: 3,
+    activity_id: 3,
+    principal_id: 2,
+    completed: false,
   },
 ];
 
@@ -198,7 +199,7 @@ const programActivitiesList: ProgramActivity[][] = [
       description_text: 'Get to know each other.',
       program_id: 1,
       curriculum_activity_id: 2,
-      activity_type: 'class',
+      activity_type: 'other meeting',
       start_time: '2022-10-24T18:10:00.000Z',
       end_time: '2022-10-24T19:00:00.000Z',
       duration: 50,
@@ -230,7 +231,7 @@ const programActivitiesList: ProgramActivity[][] = [
       description_text: 'Get to know each other.',
       program_id: 2,
       curriculum_activity_id: 5,
-      activity_type: 'class',
+      activity_type: 'other meeting',
       start_time: '2022-10-24T18:10:00.000Z',
       end_time: '2022-10-24T19:00:00.000Z',
       duration: 50,
@@ -262,7 +263,7 @@ const programActivitiesList: ProgramActivity[][] = [
       description_text: 'Get to know each other.',
       program_id: 3,
       curriculum_activity_id: 2,
-      activity_type: 'class',
+      activity_type: 'other meeting',
       start_time: '2023-01-02T19:10:00.000Z',
       end_time: '2023-01-02T20:00:00.000Z',
       duration: 50,
@@ -282,25 +283,55 @@ const programActivitiesList: ProgramActivity[][] = [
 const activityTypesList: ActivityType[] = [
   {
     id: 1,
-    title: 'class',
-    created_at: '2022-11-15 01:23:45',
-    updated_at: '2022-11-15 01:23:45',
-  },
-  {
-    id: 2,
     title: 'assignment',
     created_at: '2022-11-15 01:23:45',
     updated_at: '2022-11-15 01:23:45',
   },
   {
+    id: 2,
+    title: 'all-day activity',
+    created_at: '2022-11-15 01:23:45',
+    updated_at: '2022-11-15 01:23:45',
+  },
+  {
     id: 3,
-    title: 'standup',
+    title: 'planning',
     created_at: '2022-11-15 01:23:45',
     updated_at: '2022-11-15 01:23:45',
   },
   {
     id: 4,
+    title: 'standup',
+    created_at: '2022-11-15 01:23:45',
+    updated_at: '2022-11-15 01:23:45',
+  },
+  {
+    id: 5,
+    title: 'bulk development',
+    created_at: '2022-11-15 01:23:45',
+    updated_at: '2022-11-15 01:23:45',
+  },
+  {
+    id: 6,
+    title: 'office hours',
+    created_at: '2022-11-15 01:23:45',
+    updated_at: '2022-11-15 01:23:45',
+  },
+  {
+    id: 7,
+    title: 'workshop',
+    created_at: '2022-11-15 01:23:45',
+    updated_at: '2022-11-15 01:23:45',
+  },
+  {
+    id: 8,
     title: 'retrospective',
+    created_at: '2022-11-15 01:23:45',
+    updated_at: '2022-11-15 01:23:45',
+  },
+  {
+    id: 9,
+    title: 'other meeting',
     created_at: '2022-11-15 01:23:45',
     updated_at: '2022-11-15 01:23:45',
   },
@@ -437,6 +468,58 @@ describe('programsService', () => {
     });
   });
 
+  describe('checkForPrefill', () => {
+    const programsWithActivities: ProgramWithActivities[] = [
+      { ...programsList[0], activities: programActivitiesList[0] },
+      { ...programsList[1], activities: programActivitiesList[1] },
+      { ...programsList[2], activities: programActivitiesList[2] },
+    ];
+    it('should insert missing participant activities', async () => {
+      mockQuery(
+        'select `program_id`, `activity_id`, `principal_id`, `completed` from `participant_activities` where `principal_id` = ?',
+        [participantActivitiesList[0].principal_id],
+        [participantActivitiesList[0]]
+      );
+
+      mockQuery(
+        'insert ignore into `participant_activities` (`activity_id`, `completed`, `principal_id`, `program_id`) values (?, ?, ?, ?), (?, ?, ?, ?)',
+        [
+          participantActivitiesList[1].activity_id,
+          false,
+          participantActivitiesList[1].principal_id,
+          participantActivitiesList[1].program_id,
+          participantActivitiesList[2].activity_id,
+          false,
+          participantActivitiesList[2].principal_id,
+          participantActivitiesList[2].program_id,
+        ],
+        []
+      );
+
+      expect(
+        await checkForPrefill(
+          participantActivitiesList[0].principal_id,
+          programsWithActivities
+        )
+      ).toEqual([]);
+    });
+
+    it('should do nothing if all assignments in participant_activities have completion status', async () => {
+      mockQuery(
+        'select `program_id`, `activity_id`, `principal_id`, `completed` from `participant_activities` where `principal_id` = ?',
+        [participantActivitiesList[0].principal_id],
+        participantActivitiesList
+      );
+
+      expect(
+        await checkForPrefill(
+          participantActivitiesList[0].principal_id,
+          programsWithActivities
+        )
+      ).toEqual([]);
+    });
+  });
+
   describe('listProgramsWithActivities', () => {
     it('should list all programs with their activities', async () => {
       const programsWithActivities: ProgramWithActivities[] = [
@@ -467,7 +550,7 @@ describe('programsService', () => {
   });
 
   describe('getParticipantActivityId', () => {
-    const principalId = 3;
+    const principalId = 2;
     const programId = 1;
     const activityId = 7;
     it('should return the ID of an existing row in the table', async () => {
@@ -494,7 +577,7 @@ describe('programsService', () => {
   });
 
   describe('getParticipantActivityCompletion', () => {
-    const principalId = 3;
+    const principalId = 2;
     const programId = 1;
     const activityId = 10;
     it('should return an object of completion status being true for a completed activity by a participant', async () => {
@@ -560,7 +643,7 @@ describe('programsService', () => {
   });
 
   describe('setParticipantActivityCompletion', () => {
-    const principalId = 3;
+    const principalId = 2;
     const programId = 1;
     const activityId = 7;
     const activityId2 = 9;
