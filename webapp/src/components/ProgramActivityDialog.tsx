@@ -43,57 +43,6 @@ const tableHeaderCellStyle = {
   pr: { xs: '0.375rem', sm: '1rem' },
 };
 
-const sendAPIGetRequest = (
-  path: string,
-  activityType: string,
-  setCompleted: Dispatch<SetStateAction<boolean | null>>,
-  setError: Dispatch<SetStateAction<string | null>>,
-  setIsErrorShown: Dispatch<SetStateAction<boolean>>,
-  setIsLoading: Dispatch<SetStateAction<boolean>>
-) => {
-  let loadingDelay = setTimeout(() => setIsLoading(true), 200);
-  if (activityType !== 'assignment') return;
-
-  return fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
-    method: 'GET',
-    credentials: 'include',
-  })
-    .then(res => res.json())
-    .then(
-      ({ data, error }) => {
-        clearTimeout(loadingDelay);
-        setIsLoading(false);
-        if (data) {
-          setIsErrorShown(false);
-          setError(null);
-          setCompleted(data.completed);
-        } else {
-          if (error && error.message) {
-            setError(`"${error.message}"`);
-          } else {
-            setError('unknown error');
-          }
-          setIsErrorShown(true);
-        }
-      },
-      reason => {
-        clearTimeout(loadingDelay);
-        setIsLoading(false);
-        setError(reason.name);
-        setIsErrorShown(true);
-      }
-    )
-    .catch(error => {
-      clearTimeout(loadingDelay);
-      setIsLoading(false);
-      if (error.name === 'AbortError') {
-        return;
-      }
-      setError(error.name);
-      setIsErrorShown(true);
-    });
-};
-
 const sendAPIPutRequest = (
   path: string,
   body: { completed: boolean },
@@ -169,20 +118,8 @@ const ProgramActivityDialog = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    async function fetchData() {
-      setCompleted(null);
-      if (show) {
-        await sendAPIGetRequest(
-          `/programs/activityStatus/${contents.program_id}/${contents.curriculum_activity_id}`,
-          contents.activity_type,
-          setCompleted,
-          setError,
-          setIsErrorShown,
-          setIsLoading
-        );
-      }
-    }
-    fetchData();
+    setCompleted(contents.completed ?? null);
+    setError(null);
   }, [contents, show]);
 
   const sendCompletedStatus = (
@@ -353,4 +290,5 @@ const ProgramActivityDialog = ({
     </Dialog>
   );
 };
+
 export default ProgramActivityDialog;
