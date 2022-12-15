@@ -128,6 +128,27 @@ const sendAPIPutRequest = (
     });
 };
 
+const timeRange = (start?: Date, end?: Date, allDay?: boolean) => {
+  if (!(start && start.getTime() > 0 && end && end.getTime() > 0)) {
+    return;
+  }
+  if (allDay) {
+    return formatDate(start.toDateString());
+  }
+  let timeRangeString = '';
+  timeRangeString += formatDate(start.toString()) + ' ';
+  timeRangeString += formatTime(start.toString());
+  if (start.toString() === end.toString()) {
+    return timeRangeString;
+  }
+  timeRangeString += decodeHTML('&nbsp;&ndash;&nbsp;');
+  if (start.toDateString() !== end.toDateString()) {
+    timeRangeString += formatDate(end.toString()) + ' ';
+  }
+  timeRangeString += formatTime(end.toString());
+  return timeRangeString;
+};
+
 const ProgramActivityDialog = ({
   show,
   contents,
@@ -173,35 +194,6 @@ const ProgramActivityDialog = ({
     );
   };
 
-  const timeRange = () => {
-    if (
-      !(
-        contents.start &&
-        contents.end &&
-        contents.description &&
-        contents.title &&
-        contents.activityType
-      )
-    ) {
-      return;
-    }
-    if (contents.allDay) {
-      return formatDate(contents.start.toDateString());
-    }
-    let timeRangeString = '';
-    timeRangeString += formatDate(contents.start.toString()) + ' ';
-    timeRangeString += formatTime(contents.start.toString());
-    if (contents.start.toString() === contents.end.toString()) {
-      return timeRangeString;
-    }
-    timeRangeString += decodeHTML('&nbsp;&ndash;&nbsp;');
-    if (contents.start.toDateString() !== contents.end.toDateString()) {
-      timeRangeString += formatDate(contents.end.toString()) + ' ';
-    }
-    timeRangeString += formatTime(contents.end.toString());
-    return timeRangeString;
-  };
-
   return (
     <Dialog
       open={show}
@@ -239,7 +231,7 @@ const ProgramActivityDialog = ({
       <Divider />
       <DialogContent sx={{ textAlign: 'center' }}>
         <DialogContentText sx={{ fontSize: { xs: '89%', sm: '100%' } }}>
-          {timeRange()}
+          {timeRange(contents.start, contents.end, contents.allDay)}
         </DialogContentText>
       </DialogContent>
       <Divider />

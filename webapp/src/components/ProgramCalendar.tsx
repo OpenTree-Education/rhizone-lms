@@ -42,6 +42,18 @@ const activitiesForCalendar = (
   );
 };
 
+const defaultDialogContents = {
+  title: '',
+  description: '',
+  allDay: false,
+  start: new Date(0),
+  end: new Date(0),
+  activityType: '',
+  programTitle: '',
+  programId: 0,
+  curriculumActivityId: 0,
+};
+
 const ProgramCalendar = ({
   program,
   windowWidth,
@@ -50,17 +62,9 @@ const ProgramCalendar = ({
   viewOptions,
 }: ProgramCalendarProps) => {
   const [dialogShow, setDialogShow] = useState(false);
-  const [dialogContents, setDialogContents] = useState<CalendarEvent>({
-    title: '',
-    description: '',
-    allDay: false,
-    start: new Date(),
-    end: new Date(),
-    activityType: '',
-    programTitle: '',
-    programId: 0,
-    curriculumActivityId: 0,
-  });
+  const [dialogContents, setDialogContents] = useState<CalendarEvent>(
+    defaultDialogContents
+  );
 
   const handleClickActivity = (activity: CalendarEvent) => {
     setDialogShow(true);
@@ -69,7 +73,12 @@ const ProgramCalendar = ({
 
   const TimeGutter = () => <p style={{ textAlign: 'center' }}>All Day</p>;
 
-  const closeDialog = () => setDialogShow(false);
+  const closeDialog = () => {
+    setDialogShow(false);
+    setTimeout(() => {
+      setDialogContents(defaultDialogContents);
+    }, 200);
+  };
 
   const eventStyleGetter = (event: any) => {
     let style;
