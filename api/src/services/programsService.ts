@@ -5,6 +5,7 @@ import {
   ProgramWithActivities,
   CurriculumActivity,
   ActivityType,
+  ParticipantActivity,
 } from '../models';
 import { DateTime, Duration } from 'luxon';
 
@@ -266,12 +267,76 @@ export const findProgramWithActivities = async (programId: number) => {
 };
 
 /**
+ * Temporary workaround to check if the `participant_activities` table has been
+ * pre-filled with data for each program assignment. If it hasn't, perform some
+ * inserts to fill in the missing data.
+ *
+ * @param {number} principalId - restrict result to programs with which the
+ *   user is associated
+ * @param {ProgramWithActivities[]} programsWithActivities - list of programs
+ *   with which user is associated, and their associated activities
+ * @returns {Array} - default return value from a database insert; leaving in
+ *   to make function easier to test with Jest
+ */
+export const checkForPrefill = async (
+  principalId?: number,
+  programsWithActivities?: ProgramWithActivities[]
+) => {
+  if (!principalId) {
+    return;
+  }
+
+  const allParticipantActivities = await db('participant_activities')
+    .select('program_id', 'activity_id', 'principal_id', 'completed')
+    .where({ principal_id: principalId });
+
+  const rowsToInsert: {
+    principal_id: number;
+    program_id: number;
+    activity_id: number;
+    completed: boolean;
+  }[] = [];
+
+  for (const program of programsWithActivities) {
+    const programAssignments: ProgramActivity[] = JSON.parse(
+      JSON.stringify(program.activities)
+    ).filter((activity: ProgramActivity) => {
+      return activity.activity_type === 'assignment';
+    });
+
+    const programParticipantActivities = JSON.parse(
+      JSON.stringify(allParticipantActivities)
+    ).filter((ppa: ParticipantActivity) => {
+      return ppa.program_id === program.id;
+    });
+
+    if (programAssignments.length > programParticipantActivities.length) {
+      for (const assignment of programAssignments) {
+        rowsToInsert.push({
+          principal_id: principalId,
+          program_id: program.id,
+          activity_id: assignment.curriculum_activity_id,
+          completed: false,
+        });
+      }
+    }
+  }
+
+  return await db('participant_activities')
+    .insert(rowsToInsert)
+    .onConflict(['program_id', 'principal_id', 'activity_id'])
+    .ignore();
+};
+
+/**
  * Retrieve the details for all programs in the database, including all program
  * activities as a member of that program.
  *
+ * @param {number} principalId - optional parameter to restrict result to
+ *   programs with which the user is associated
  * @returns {ProgramWithActivities[]} - all programs with their activities
  */
-export const listProgramsWithActivities = async () => {
+export const listProgramsWithActivities = async (principalId?: number) => {
   const allPrograms = await listPrograms();
   const allCurriculumActivities = await listCurriculumActivities();
   const activityTypes = await listActivityTypes();
@@ -286,6 +351,9 @@ export const listProgramsWithActivities = async () => {
       ),
     })
   );
+
+  // Temporary workaround until we have an admin feature
+  await checkForPrefill(principalId, programsWithActivities);
 
   return programsWithActivities;
 };
