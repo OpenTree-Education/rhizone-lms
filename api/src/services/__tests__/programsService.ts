@@ -503,7 +503,7 @@ describe('programsService', () => {
         )
       ).toEqual([]);
     });
-    
+
     it('should do nothing if all assignments in participant_activities have completion status', async () => {
       mockQuery(
         'select `program_id`, `activity_id`, `principal_id`, `completed` from `participant_activities` where `principal_id` = ?',
