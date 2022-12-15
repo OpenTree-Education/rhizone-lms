@@ -55,7 +55,7 @@ export interface ActivityType {
   updated_at?: string;
 }
 
-export interface ParticipantActivities {
+export interface ParticipantActivity {
   id: number;
   program_id: number;
   activity_id: number;
