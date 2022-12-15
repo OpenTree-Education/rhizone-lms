@@ -128,9 +128,10 @@ export interface CalendarEvent extends RBCEvent {
 
 export interface ParticipantActivityCompletionStatus {
   activity_id: number;
-  completed: number;
+  completed: boolean;
 }
-export interface ProgramParticipantActivitiesList {
-  programId: number;
-  participantActivities: ParticipantActivityCompletionStatus[];
+
+export interface ParticipantActivityForProgram {
+  program_id: number;
+  participant_activities: ParticipantActivityCompletionStatus[];
 }

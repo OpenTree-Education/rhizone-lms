@@ -13,7 +13,7 @@ import {
   CalendarEvent,
   ProgramWithActivities,
   ProgramActivity,
-  ProgramParticipantActivitiesList,
+  ParticipantActivityForProgram,
 } from '../types/api';
 
 interface ProgramCalendarProps {
@@ -28,20 +28,12 @@ let correspondingProgramTitle = '';
 
 const activitiesForCalendar = (
   activities: ProgramActivity[],
-  activitiesCompletion: ProgramParticipantActivitiesList
+  activitiesCompletion: ParticipantActivityForProgram
 ): CalendarEvent[] => {
-  for (var i = 0; i < activities.length; i++) {
-    for (
-      var j = 0;
-      j < activitiesCompletion.participantActivities.length;
-      j++
-    ) {
-      if (
-        activities[i].curriculum_activity_id ===
-        activitiesCompletion.participantActivities[j].activity_id
-      ) {
-        activities[i].completed =
-          activitiesCompletion.participantActivities[j].completed === 1;
+  for (const completionStatus of activitiesCompletion.participant_activities) {
+    for (const activity of activities) {
+      if (activity.curriculum_activity_id === completionStatus.activity_id) {
+        activity.completed = completionStatus.completed;
       }
     }
   }
@@ -86,25 +78,26 @@ const ProgramCalendar = ({
     defaultDialogContents
   );
   const [activitiesCompletion, setActivitiesCompletion] =
-    React.useState<ProgramParticipantActivitiesList>({
-      programId: -1,
-      participantActivities: [],
+    React.useState<ParticipantActivityForProgram>({
+      program_id: 0,
+      participant_activities: [],
     });
 
-  const {
-    data: participantActivitiesCompletionList,
-    error,
-    isLoading,
-  } = useApiData<ProgramParticipantActivitiesList>({
-    deps: [program],
-    path: `/programs/activityStatus/${Number(program.id || 0)}`,
-    sendCredentials: true,
-  });
+  const { data: participantActivitiesCompletionList, error } =
+    useApiData<ParticipantActivityForProgram>({
+      deps: [program],
+      path: `/programs/activityStatus/${Number(program.id || 0)}`,
+      sendCredentials: true,
+    });
   useEffect(() => {
     if (participantActivitiesCompletionList) {
       setActivitiesCompletion(participantActivitiesCompletionList);
     }
   }, [participantActivitiesCompletionList]);
+
+  if (error) {
+    return <div>There was an error loading part of the calendar.</div>;
+  }
 
   const handleClickActivity = (activity: CalendarEvent) => {
     setDialogShow(true);
