@@ -477,6 +477,12 @@ export const listParticipantActivitiesCompletionForProgram = async (
     .where({
       program_id: programId,
       principal_id: principalId,
+    })
+    .then(rows => {
+      return rows.map(row => ({
+        activity_id: row.activity_id,
+        completed: row.completed === 1,
+      }));
     });
 
   return {

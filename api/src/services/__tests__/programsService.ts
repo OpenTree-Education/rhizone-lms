@@ -503,7 +503,7 @@ describe('programsService', () => {
         )
       ).toEqual([]);
     });
-    
+
     it('should do nothing if all assignments in participant_activities have completion status', async () => {
       mockQuery(
         'select `program_id`, `activity_id`, `principal_id`, `completed` from `participant_activities` where `principal_id` = ?',
@@ -712,10 +712,20 @@ describe('programsService', () => {
     it('should return a list of participant activities with their completion statuses', async () => {
       const programId = 1;
       const principalId = 3;
+      const exampleParticipantActivities: {
+        activity_id: number;
+        completed: number;
+      }[] = participantActivitiesForProgram.participant_activities.map(
+        participantActivity => ({
+          activity_id: participantActivity.activity_id,
+          completed: participantActivity.completed ? 1 : 0,
+        })
+      );
+
       mockQuery(
         'select `activity_id`, `completed` from `participant_activities` where `program_id` = ? and `principal_id` = ?',
         [programId, principalId],
-        participantActivitiesForProgram.participant_activities
+        exampleParticipantActivities
       );
       expect(
         await listParticipantActivitiesCompletionForProgram(
