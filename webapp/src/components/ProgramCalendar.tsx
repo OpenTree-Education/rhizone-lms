@@ -76,7 +76,7 @@ const ProgramCalendar = ({
     defaultDialogContents
   );
   const [activitiesCompletion, setActivitiesCompletion] =
-    React.useState<ParticipantActivityForProgram>({
+    useState<ParticipantActivityForProgram>({
       program_id: 0,
       participant_activities: [],
     });
