@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import {
   Select,
   SelectChangeEvent,
@@ -13,7 +13,7 @@ import { ProgramWithActivities } from '../types/api';
 interface ProgramPickerProps {
   programs: ProgramWithActivities[];
   selectedProgram: number;
-  setSelectedProgram: React.Dispatch<React.SetStateAction<number>>;
+  setSelectedProgram: Dispatch<SetStateAction<number>>;
 }
 
 const ProgramPicker = ({
