@@ -1,6 +1,5 @@
 import React, {
   useState,
-  useEffect,
   Dispatch,
   MouseEvent as RMouseEvent,
   SetStateAction,
@@ -32,6 +31,7 @@ import { CalendarEvent } from '../types/api';
 interface ProgramActivityDialogProps {
   show: boolean;
   contents: CalendarEvent;
+  updateContents: (updatedActivity: CalendarEvent) => void;
   handleClose: () => void;
 }
 
@@ -43,64 +43,13 @@ const tableHeaderCellStyle = {
   pr: { xs: '0.375rem', sm: '1rem' },
 };
 
-const sendAPIGetRequest = (
-  path: string,
-  activityType: string,
-  setCompleted: Dispatch<SetStateAction<boolean | null>>,
-  setError: Dispatch<SetStateAction<string | null>>,
-  setIsErrorShown: Dispatch<SetStateAction<boolean>>,
-  setIsLoading: Dispatch<SetStateAction<boolean>>
-) => {
-  let loadingDelay = setTimeout(() => setIsLoading(true), 200);
-  if (activityType !== 'assignment') return;
-
-  return fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
-    method: 'GET',
-    credentials: 'include',
-  })
-    .then(res => res.json())
-    .then(
-      ({ data, error }) => {
-        clearTimeout(loadingDelay);
-        setIsLoading(false);
-        if (data) {
-          setIsErrorShown(false);
-          setError(null);
-          setCompleted(data.completed);
-        } else {
-          if (error && error.message) {
-            setError(`"${error.message}"`);
-          } else {
-            setError('unknown error');
-          }
-          setIsErrorShown(true);
-        }
-      },
-      reason => {
-        clearTimeout(loadingDelay);
-        setIsLoading(false);
-        setError(reason.name);
-        setIsErrorShown(true);
-      }
-    )
-    .catch(error => {
-      clearTimeout(loadingDelay);
-      setIsLoading(false);
-      if (error.name === 'AbortError') {
-        return;
-      }
-      setError(error.name);
-      setIsErrorShown(true);
-    });
-};
-
 const sendAPIPutRequest = (
   path: string,
   body: { completed: boolean },
-  setCompleted: Dispatch<SetStateAction<boolean | null>>,
-  setIsUpdateSuccess: Dispatch<SetStateAction<boolean>>,
+  setIsUpdateSuccess: Dispatch<SetStateAction<boolean | null>>,
   setIsMessageVisible: Dispatch<SetStateAction<boolean>>,
-  setIsLoading: Dispatch<SetStateAction<boolean>>
+  setIsLoading: Dispatch<SetStateAction<boolean>>,
+  setMessage: Dispatch<SetStateAction<string>>
 ) => {
   let loadingDelay = setTimeout(() => setIsLoading(true), 200);
   if ('completed' in body && body.completed === null) {
@@ -113,16 +62,23 @@ const sendAPIPutRequest = (
     body: JSON.stringify(body),
   })
     .then(res => res.json())
-    .then(({ data }) => {
+    .then(({ data, error }) => {
       clearTimeout(loadingDelay);
       setIsLoading(false);
+      let completed = null;
       if (data) {
-        setCompleted(data.completed);
+        setMessage('Assignment status updated successfully.');
+        ({ completed } = data);
         setIsUpdateSuccess(true);
+      } else if (error && error.message) {
+        setMessage(`"${error.message}"`);
+        setIsUpdateSuccess(false);
       } else {
+        setMessage('An unknown error occurred.');
         setIsUpdateSuccess(false);
       }
       setIsMessageVisible(true);
+      return completed;
     })
     .catch(error => {
       if (error.name === 'AbortError') {
@@ -130,8 +86,10 @@ const sendAPIPutRequest = (
       }
       clearTimeout(loadingDelay);
       setIsLoading(false);
+      setMessage(`Encountered a ${error.name} when marking task completed.`);
       setIsUpdateSuccess(false);
       setIsMessageVisible(true);
+      return null;
     });
 };
 
@@ -159,52 +117,45 @@ const timeRange = (start?: Date, end?: Date, allDay?: boolean) => {
 const ProgramActivityDialog = ({
   show,
   contents,
+  updateContents,
   handleClose,
 }: ProgramActivityDialogProps) => {
-  const [completed, setCompleted] = useState<boolean | null>(null);
-  const [isUpdateSuccess, setIsUpdateSuccess] = useState<boolean>(false);
+  const [isUpdateSuccess, setIsUpdateSuccess] = useState<boolean | null>(null);
   const [isMessageVisible, setIsMessageVisible] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isErrorShown, setIsErrorShown] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    async function fetchData() {
-      setCompleted(null);
-      if (show) {
-        await sendAPIGetRequest(
-          `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
-          contents.activityType,
-          setCompleted,
-          setError,
-          setIsErrorShown,
-          setIsLoading
-        );
-      }
-    }
-    fetchData();
-  }, [contents, show]);
-
-  const sendCompletedStatus = (
+  const sendCompletedStatus = async (
     event: RMouseEvent<HTMLButtonElement, MouseEvent>,
     completed: boolean
   ) => {
     if (event.type !== 'click') return;
     event.preventDefault();
-    sendAPIPutRequest(
-      `/programs/activityStatus/${contents.programId}/${contents.curriculumActivityId}`,
+    contents.completed = await sendAPIPutRequest(
+      `/programs/activityStatus/${contents.program_id}/${contents.curriculum_activity_id}`,
       { completed: completed },
-      setCompleted,
       setIsUpdateSuccess,
       setIsMessageVisible,
-      setIsLoading
+      setIsLoading,
+      setMessage
     );
+    const updatedContents = { ...contents };
+    updateContents(updatedContents);
+    contents = updatedContents;
+  };
+
+  const closeDialog = () => {
+    setIsUpdateSuccess(null);
+    setIsMessageVisible(false);
+    setMessage('');
+    setIsLoading(false);
+    handleClose();
   };
 
   return (
     <Dialog
       open={show}
-      onClose={handleClose}
+      onClose={closeDialog}
       maxWidth="sm"
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
@@ -220,10 +171,10 @@ const ProgramActivityDialog = ({
         }}
       >
         {contents.title}
-        {completed && <TaskAlt sx={{ ml: 1 }} />}
+        {contents.completed === true && <TaskAlt sx={{ ml: 1 }} />}
         <IconButton
           aria-label="close"
-          onClick={handleClose}
+          onClick={closeDialog}
           sx={{
             position: 'absolute',
             ml: 10,
@@ -257,7 +208,7 @@ const ProgramActivityDialog = ({
                     px: { xs: '0rem', sm: '1rem' },
                   }}
                 >
-                  {contents.programTitle}
+                  {contents.program_title}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -274,7 +225,7 @@ const ProgramActivityDialog = ({
                     px: { xs: '0', sm: '1rem' },
                   }}
                 >
-                  {contents.activityType}
+                  {contents.activity_type}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -291,7 +242,7 @@ const ProgramActivityDialog = ({
           </Table>
         </TableContainer>
       </DialogContent>
-      {contents.activityType === 'assignment' && (
+      {contents.activity_type === 'assignment' && (
         <>
           <Divider />
           <DialogActions>
@@ -305,17 +256,23 @@ const ProgramActivityDialog = ({
             >
               <LoadingButton
                 onClick={event => {
-                  sendCompletedStatus(event, !completed);
+                  sendCompletedStatus(event, !contents.completed);
                 }}
                 type="submit"
                 form="form"
-                variant={completed === false ? 'contained' : 'outlined'}
+                variant={
+                  contents.completed === false ? 'contained' : 'outlined'
+                }
                 loading={isLoading}
                 sx={{ width: '15em' }}
-                disabled={!!error}
-                startIcon={completed === false ? <TaskAlt /> : <Cancel />}
+                disabled={isUpdateSuccess === false}
+                startIcon={
+                  contents.completed === false ? <TaskAlt /> : <Cancel />
+                }
               >
-                {completed === false ? 'Mark Complete' : 'Mark Incomplete'}
+                {contents.completed === false
+                  ? 'Mark Complete'
+                  : 'Mark Incomplete'}
               </LoadingButton>
               {isMessageVisible && (
                 <Snackbar
@@ -328,21 +285,7 @@ const ProgramActivityDialog = ({
                     severity={isUpdateSuccess ? 'success' : 'error'}
                     sx={{ width: '100%' }}
                   >
-                    {isUpdateSuccess
-                      ? 'Assignment status updated successfully.'
-                      : 'There was an error updating the assignment status.'}
-                  </Alert>
-                </Snackbar>
-              )}
-              {isErrorShown && (
-                <Snackbar open={true} onClose={() => setIsErrorShown(false)}>
-                  <Alert
-                    onClose={() => setIsErrorShown(false)}
-                    severity="warning"
-                    sx={{ width: '100%' }}
-                  >
-                    Received {error ? error : 'error'} from server while getting
-                    completion status.
+                    {message}
                   </Alert>
                 </Snackbar>
               )}
@@ -353,4 +296,5 @@ const ProgramActivityDialog = ({
     </Dialog>
   );
 };
+
 export default ProgramActivityDialog;

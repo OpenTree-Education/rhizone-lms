@@ -110,7 +110,6 @@ const ProgramsPage = () => {
       </Stack>
       <ProgramCalendar
         program={programsList[selectedProgram]}
-        windowWidth={windowWidth}
         currentView={currentView}
         setCurrentView={handleViewChange}
         viewOptions={viewOptions}

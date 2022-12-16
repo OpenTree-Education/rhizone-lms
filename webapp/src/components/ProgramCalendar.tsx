@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { decodeHTML } from 'entities';
 import { DateTime } from 'luxon';
 import { Calendar, luxonLocalizer, View } from 'react-big-calendar';
@@ -7,15 +7,17 @@ import { Box } from '@mui/material';
 
 import ProgramActivityDialog from './ProgramActivityDialog';
 
+import useApiData from '../helpers/useApiData';
+
 import {
   CalendarEvent,
   ProgramWithActivities,
   ProgramActivity,
+  ParticipantActivityForProgram,
 } from '../types/api';
 
 interface ProgramCalendarProps {
   program: ProgramWithActivities;
-  windowWidth: number;
   currentView: View;
   setCurrentView: (manualView: View) => void;
   viewOptions: View[];
@@ -24,8 +26,16 @@ interface ProgramCalendarProps {
 let correspondingProgramTitle = '';
 
 const activitiesForCalendar = (
-  activities: ProgramActivity[]
+  activities: ProgramActivity[],
+  activitiesCompletion: ParticipantActivityForProgram
 ): CalendarEvent[] => {
+  for (const completionStatus of activitiesCompletion.participant_activities) {
+    for (const activity of activities) {
+      if (activity.curriculum_activity_id === completionStatus.activity_id) {
+        activity.completed = completionStatus.completed;
+      }
+    }
+  }
   return activities.map(
     activity =>
       ({
@@ -34,29 +44,29 @@ const activitiesForCalendar = (
         end: new Date(activity.end_time),
         description: decodeHTML(activity.description_text),
         allDay: !activity.duration,
-        activityType: activity.activity_type,
-        programTitle: correspondingProgramTitle,
-        programId: activity.program_id,
-        curriculumActivityId: activity.curriculum_activity_id,
+        activity_type: activity.activity_type,
+        program_title: correspondingProgramTitle,
+        program_id: activity.program_id,
+        curriculum_activity_id: activity.curriculum_activity_id,
+        completed: activity.completed,
       } as CalendarEvent)
   );
 };
 
-const defaultDialogContents = {
+const defaultDialogContents: CalendarEvent = {
   title: '',
   description: '',
   allDay: false,
   start: new Date(0),
   end: new Date(0),
-  activityType: '',
-  programTitle: '',
-  programId: 0,
-  curriculumActivityId: 0,
+  activity_type: '',
+  program_title: '',
+  program_id: 0,
+  curriculum_activity_id: 0,
 };
 
 const ProgramCalendar = ({
   program,
-  windowWidth,
   currentView,
   setCurrentView,
   viewOptions,
@@ -65,6 +75,54 @@ const ProgramCalendar = ({
   const [dialogContents, setDialogContents] = useState<CalendarEvent>(
     defaultDialogContents
   );
+  const [activitiesCompletion, setActivitiesCompletion] =
+    useState<ParticipantActivityForProgram>({
+      program_id: 0,
+      participant_activities: [],
+    });
+
+  const updateActivity = (updatedActivity: CalendarEvent) => {
+    const updatedCalendarActivities = calendarActivities.map(
+      calendarActivity => {
+        if (
+          calendarActivity.curriculum_activity_id ===
+          updatedActivity.curriculum_activity_id
+        ) {
+          return updatedActivity;
+        } else {
+          return calendarActivity;
+        }
+      }
+    );
+    setCalendarActivities(updatedCalendarActivities);
+  };
+
+  const { data: participantActivitiesCompletionList, error } =
+    useApiData<ParticipantActivityForProgram>({
+      deps: [program],
+      path: `/programs/activityStatus/${Number(program.id || 0)}`,
+      sendCredentials: true,
+    });
+
+  const [calendarActivities, setCalendarActivities] = useState<CalendarEvent[]>(
+    activitiesForCalendar(program.activities, activitiesCompletion)
+  );
+
+  useEffect(() => {
+    if (participantActivitiesCompletionList) {
+      setActivitiesCompletion(participantActivitiesCompletionList);
+      setCalendarActivities(
+        activitiesForCalendar(
+          program.activities,
+          participantActivitiesCompletionList
+        )
+      );
+    }
+  }, [participantActivitiesCompletionList, program.activities]);
+
+  if (error) {
+    return <div>There was an error loading part of the calendar.</div>;
+  }
 
   const handleClickActivity = (activity: CalendarEvent) => {
     setDialogShow(true);
@@ -133,7 +191,7 @@ const ProgramCalendar = ({
   return (
     <>
       <Calendar
-        events={activitiesForCalendar(program.activities)}
+        events={calendarActivities}
         onSelectEvent={handleClickActivity}
         localizer={luxonLocalizer(DateTime)}
         defaultView={currentView}
@@ -157,6 +215,7 @@ const ProgramCalendar = ({
       <ProgramActivityDialog
         show={dialogShow}
         contents={dialogContents}
+        updateContents={updateActivity}
         handleClose={closeDialog}
       />
     </>
