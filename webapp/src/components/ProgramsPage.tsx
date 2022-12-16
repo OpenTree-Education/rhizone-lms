@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { CircularProgress, Container, Stack } from '@mui/material';
 import { View, Views } from 'react-big-calendar';
 
@@ -9,13 +9,13 @@ import useApiData from '../helpers/useApiData';
 import { ProgramWithActivities } from '../types/api';
 
 const ProgramsPage = () => {
-  const [selectedProgram, setSelectedProgram] = React.useState(0);
-  const [windowWidth, setWindowWidth] = React.useState(720);
-  const [currentView, setCurrentView] = React.useState<View>(Views.WEEK);
-  const [manuallyChosenView, setManuallyChosenView] = React.useState<View>(
+  const [selectedProgram, setSelectedProgram] = useState(0);
+  const [windowWidth, setWindowWidth] = useState(720);
+  const [currentView, setCurrentView] = useState<View>(Views.WEEK);
+  const [manuallyChosenView, setManuallyChosenView] = useState<View>(
     Views.WEEK
   );
-  const [viewOptions, setViewOptions] = React.useState<View[]>([
+  const [viewOptions, setViewOptions] = useState<View[]>([
     Views.MONTH,
     Views.WEEK,
     Views.DAY,
@@ -54,14 +54,14 @@ const ProgramsPage = () => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.addEventListener('resize', setWidth);
     return () => {
       window.removeEventListener('resize', setWidth);
     };
   });
 
-  React.useEffect(handleResize, [manuallyChosenView, windowWidth]);
+  useEffect(handleResize, [manuallyChosenView, windowWidth]);
 
   const {
     data: programsList,
