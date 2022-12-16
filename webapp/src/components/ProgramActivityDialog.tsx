@@ -31,7 +31,7 @@ import { CalendarEvent } from '../types/api';
 interface ProgramActivityDialogProps {
   show: boolean;
   contents: CalendarEvent;
-  setContents: Dispatch<SetStateAction<CalendarEvent>>;
+  updateContents: (updatedActivity: CalendarEvent) => void;
   handleClose: () => void;
 }
 
@@ -117,7 +117,7 @@ const timeRange = (start?: Date, end?: Date, allDay?: boolean) => {
 const ProgramActivityDialog = ({
   show,
   contents,
-  setContents,
+  updateContents,
   handleClose,
 }: ProgramActivityDialogProps) => {
   const [isUpdateSuccess, setIsUpdateSuccess] = useState<boolean | null>(null);
@@ -139,7 +139,9 @@ const ProgramActivityDialog = ({
       setIsLoading,
       setMessage
     );
-    setContents({ ...contents });
+    const updatedContents = { ...contents };
+    updateContents(updatedContents);
+    contents = updatedContents;
   };
 
   const closeDialog = () => {
@@ -169,7 +171,7 @@ const ProgramActivityDialog = ({
         }}
       >
         {contents.title}
-        {contents.completed && <TaskAlt sx={{ ml: 1 }} />}
+        {contents.completed === true && <TaskAlt sx={{ ml: 1 }} />}
         <IconButton
           aria-label="close"
           onClick={closeDialog}

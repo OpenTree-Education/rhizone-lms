@@ -81,17 +81,44 @@ const ProgramCalendar = ({
       participant_activities: [],
     });
 
+  const updateActivity = (updatedActivity: CalendarEvent) => {
+    const updatedCalendarActivities = calendarActivities.map(
+      calendarActivity => {
+        if (
+          calendarActivity.curriculum_activity_id ===
+          updatedActivity.curriculum_activity_id
+        ) {
+          return updatedActivity;
+        } else {
+          return calendarActivity;
+        }
+      }
+    );
+    setCalendarActivities(updatedCalendarActivities);
+  };
+
   const { data: participantActivitiesCompletionList, error } =
     useApiData<ParticipantActivityForProgram>({
       deps: [program],
       path: `/programs/activityStatus/${Number(program.id || 0)}`,
       sendCredentials: true,
     });
+
+  const [calendarActivities, setCalendarActivities] = useState<CalendarEvent[]>(
+    activitiesForCalendar(program.activities, activitiesCompletion)
+  );
+
   useEffect(() => {
     if (participantActivitiesCompletionList) {
       setActivitiesCompletion(participantActivitiesCompletionList);
+      setCalendarActivities(
+        activitiesForCalendar(
+          program.activities,
+          participantActivitiesCompletionList
+        )
+      );
     }
-  }, [participantActivitiesCompletionList]);
+  }, [participantActivitiesCompletionList, program.activities]);
 
   if (error) {
     return <div>There was an error loading part of the calendar.</div>;
@@ -164,7 +191,7 @@ const ProgramCalendar = ({
   return (
     <>
       <Calendar
-        events={activitiesForCalendar(program.activities, activitiesCompletion)}
+        events={calendarActivities}
         onSelectEvent={handleClickActivity}
         localizer={luxonLocalizer(DateTime)}
         defaultView={currentView}
@@ -188,7 +215,7 @@ const ProgramCalendar = ({
       <ProgramActivityDialog
         show={dialogShow}
         contents={dialogContents}
-        setContents={setDialogContents}
+        updateContents={updateActivity}
         handleClose={closeDialog}
       />
     </>
