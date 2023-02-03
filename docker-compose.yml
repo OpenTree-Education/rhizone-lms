@@ -24,7 +24,6 @@ services:
       - MYSQL_RANDOM_ROOT_PASSWORD=true
       - MYSQL_USER
     image: mysql:8.0
-    platform: linux/x86_64
     ports:
       - "3306:3306"
     healthcheck:
