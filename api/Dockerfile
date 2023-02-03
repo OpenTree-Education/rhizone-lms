@@ -1,10 +1,10 @@
-FROM node:16.13-alpine AS build
+FROM node:18.14-alpine AS build
 WORKDIR /app/
 COPY ./ ./
 RUN yarn install --ignore-platform --frozen-lockfile --network-timeout 600000
 RUN yarn build
 
-FROM node:16.13-alpine
+FROM node:18.14-alpine
 WORKDIR /app/
 COPY --from=build /app/dist/ ./dist/
 COPY --from=build /app/package.json /app/yarn.lock ./
