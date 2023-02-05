@@ -14,13 +14,14 @@ jobs:
         working-directory: ./api/
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           cache: yarn
           cache-dependency-path: ./api/yarn.lock
           node-version-file: ./api/.nvmrc
+          check-latest: true
       - name: Install API dependencies
         if: always()
         run: yarn install
@@ -42,13 +43,14 @@ jobs:
         working-directory: ./webapp/
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           cache: yarn
           cache-dependency-path: ./webapp/yarn.lock
           node-version-file: ./webapp/.nvmrc
+          check-latest: true
       - name: Install webapp dependencies
         if: always()
         run: yarn install
