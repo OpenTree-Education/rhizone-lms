@@ -3,6 +3,8 @@
 This monorepo contains the applications and services that constitute the Rhizone
 Learning Management System.
 
+This is a test change to the README.
+
 ## Getting started
 
 ### A. Clone the repository to your development machine
