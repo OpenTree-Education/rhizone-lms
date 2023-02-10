@@ -8,6 +8,7 @@ import { Button, Grid, IconButton, Tooltip } from '@mui/material';
 import styled from '@emotion/styled';
 
 import MeetingsDrawerContext from './MeetingsDrawerContext';
+import SessionContext from './SessionContext';
 
 const StyledLogo = styled.span`
   cursor: auto;
@@ -19,10 +20,11 @@ const StyledLogo = styled.span`
 
 const Navbar = () => {
   const { open: openMeetingsDrawer } = useContext(MeetingsDrawerContext);
+  const { darkMode } = useContext(SessionContext);
   return (
     <Grid alignItems="center" container px={3}>
       <Grid item xs>
-        <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>
+        <Link to="/" style={{ textDecoration: 'none', color: darkMode ? 'white' : 'black' }}>
           <StyledLogo>
             <h1 style={{ height: '50px', width: '125px' }}>Rhizone</h1>
           </StyledLogo>

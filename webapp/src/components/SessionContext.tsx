@@ -7,9 +7,11 @@ import useApiData from '../helpers/useApiData';
 const SessionContext = createContext<{
   isAuthenticated: boolean;
   principalId: EntityId;
+  darkMode: boolean;
 }>({
   isAuthenticated: false,
   principalId: null,
+  darkMode: false
 });
 
 export const SessionProvider = ({ children }: PropsWithChildren<{}>) => {
@@ -43,11 +45,15 @@ export const SessionProvider = ({ children }: PropsWithChildren<{}>) => {
   if (!session) {
     return null;
   }
+  if (session.dark_mode) {
+    document.getElementById("root")?.classList.add("darkMode");
+  }
   return (
     <SessionContext.Provider
       value={{
         isAuthenticated: !!session.principal_id,
         principalId: session.principal_id,
+        darkMode: session.dark_mode
       }}
     >
       {children}

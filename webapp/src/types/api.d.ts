@@ -73,6 +73,7 @@ export interface MeetingNote extends Entity {
 
 export interface SessionData extends Entity {
   principal_id: EntityId;
+  dark_mode: boolean;
 }
 
 export interface Settings extends Entity {

@@ -12,6 +12,10 @@ code {
     monospace;
 }
 
+.darkMode {
+  color-scheme: dark;
+}
+
 .rbc-agenda-event-cell {
   cursor: pointer;
 }
