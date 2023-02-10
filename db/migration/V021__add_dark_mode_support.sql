@@ -1,0 +1,2 @@
+ALTER TABLE `principals`
+  ADD COLUMN `dark_mode` BOOLEAN DEFAULT FALSE;
