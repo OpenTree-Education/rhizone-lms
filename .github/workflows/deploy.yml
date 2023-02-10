@@ -45,7 +45,7 @@ jobs:
           echo "$GITHUB_TOKEN" | ssh ${{ github.event.inputs.environment }} 'docker login ghcr.io --username ${{ github.actor }} --password-stdin'
       - name: Run database schema migrations
         run: |
-          ssh ${{ github.event.inputs.environment }} 'echo "$FLYWAY_URL $FLYWAY_USER $SSH_HOST ${{ github.event.inputs.environment }}" > ~/.flyway.conf'
+          ssh ${{ github.event.inputs.environment }} 'echo "${{ secrets.FLYWAY_URL }} ${{ secrets.FLYWAY_USER }} ${{ secrets.SSH_HOST }} ${{ github.event.inputs.environment }}" > ~/.flyway.conf'
           ssh ${{ github.event.inputs.environment }} 'docker run --rm --interactive --pull always -e FLYWAY_PASSWORD=$FLYWAY_PASSWORD -e FLYWAY_URL=$FLYWAY_URL -e FLYWAY_USER=$FLYWAY_USER ghcr.io/opentree-education/rhizone-lms_flyway:latest  migrate'
       - name: Renew TLS certificates
         if: ${{ github.event.inputs.renew_tls_certs == 'true' }}
