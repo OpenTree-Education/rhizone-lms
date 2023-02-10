@@ -6,6 +6,7 @@ import {
   findGithubUserByGithubId,
 } from '../services/githubUsersService';
 import { findConfig } from '../services/configService';
+import { getDarkMode } from '../services/darkModeService';
 import {
   getGithubAccessToken,
   getGithubUser,
@@ -14,12 +15,21 @@ import { itemEnvelope } from './responseEnvelope';
 
 const authRouter = Router();
 
-authRouter.get('/auth/session', (req, res) => {
+authRouter.get('/auth/session', async (req, res, next) => {
   const { principalId } = req.session;
-  res.json(itemEnvelope({ principal_id: principalId || null }));
+  let { darkMode } = req.session;
+  if (typeof darkMode === "undefined") {
+    try {
+      darkMode = await getDarkMode(principalId);
+    } catch (e) {
+      next(e);
+      return;
+    }
+  }
+  res.json(itemEnvelope({ principal_id: principalId || null, dark_mode: darkMode || null }));
 });
 
-authRouter.get('/auth/logout', (req, res) => {
+authRouter.get('/auth/logout', async (req, res) => {
   req.session.destroy(() => {
     res.redirect(findConfig('WEBAPP_ORIGIN', ''));
   });
@@ -69,6 +79,7 @@ authRouter.get(`/auth/github/callback`, async (req, res, next) => {
     }
   }
   req.session.principalId = githubUser.principal_id;
+  req.session.darkMode = githubUser.dark_mode;
   res.redirect(findConfig('WEBAPP_ORIGIN', ''));
 });
 

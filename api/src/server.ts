@@ -30,6 +30,7 @@ import { findConfig } from './services/configService';
 declare module 'express-session' {
   interface Session {
     principalId: number;
+    darkMode: boolean;
   }
 }
 
