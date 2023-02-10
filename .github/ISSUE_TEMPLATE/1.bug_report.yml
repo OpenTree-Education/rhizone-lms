@@ -32,12 +32,6 @@ body:
       description: Provide as much detail about this proposed change as you can, including links to lines of code, issues, PRs, and external resources where possible.
   - type: checkboxes
     attributes:
-      label: Bug is affecting `main`
-      description: Select this checkbox if the bug being reported currently affects the code in the `main` branch.
-      options:
-        - label: Main is affected
-  - type: checkboxes
-    attributes:
       label: Correct Project Selected
       description: Make sure to select the appropriate project for this bug report before submitting this issue.
       options:
