@@ -59,7 +59,7 @@ const logger =
     : console;
 
 const start = async () => {
-  const host = findConfig('API_HOST', 'localhost');
+  const host = findConfig('API_HOST', '0.0.0.0');
   const port = findConfig('API_PORT', '8491');
   const secure = findConfig('SECURE', 'false') === 'true';
   const app = express();
