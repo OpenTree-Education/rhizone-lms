@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'webapp/**'
+      - "webapp/**"
 
 jobs:
   build_and_push_webapp:
@@ -17,9 +17,9 @@ jobs:
       packages: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Log in to the container registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -33,7 +33,7 @@ jobs:
             type=sha
             type=raw,value=latest
       - name: Build and push webapp image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           context: ./webapp/
           build-args: |

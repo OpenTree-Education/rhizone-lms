@@ -13,6 +13,7 @@ services:
       - MYSQL_HOST=mysql
       - MYSQL_PASSWORD
       - MYSQL_USER
+      - NODE_ENV=development
       - REDIS_HOST=redis
       - SESSION_SECRET
       - WEBAPP_ORIGIN
