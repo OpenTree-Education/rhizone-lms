@@ -11,25 +11,25 @@ body:
   - type: textarea
     attributes:
       label: Expected Behaviour
-      description: Describe what you expect the code to do...
+      description: Describe what you expect the code to do.
     validations:
       required: true
   - type: textarea
     attributes:
       label: Actual Behaviour
-      description: Describe what the code currently does...
+      description: Describe what the code currently does.
     validations:
       required: true
   - type: textarea
     attributes:
       label: Steps to Reproduce
-      description: List steps that someone can perform to see the actual behaviour...
+      description: List steps that someone can perform to see the actual behaviour.
     validations:
       required: true
   - type: textarea
     attributes:
       label: Additional Details and Resources
-      description: Provide as much detail about this proposed change as you can, including links to lines of code, issues, PRs, and external resources where possible...
+      description: Provide as much detail about this proposed change as you can, including links to lines of code, issues, PRs, and external resources where possible.
   - type: checkboxes
     attributes:
       label: Bug is affecting `main`
