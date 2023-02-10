@@ -1,0 +1,28 @@
+name: Feature Suggestion
+description: Suggest a new feature for the Rhizone LMS.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    attributes:
+      label: Describe the Feature / Enhancement
+      description: A clear and concise description of the feature to be added.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional Details and Resources
+      description: Provide as much detail about this proposed change as you can, including links to lines of code, issues, PRs, and external resources where possible.
+  - type: checkboxes
+    attributes:
+      label: Correct Project Selected
+      description: Make sure to select the appropriate project for this bug report before submitting this issue.
+      options:
+        - label: This issue is linked to the appropriate project
+          required: true
+  - type: checkboxes
+    attributes:
+      label: Labels
+      description: Make sure to select the appropriate labels for this bug report before submitting this issue.
+      options:
+        - label: This issue has appropriate labels.
+          required: true
