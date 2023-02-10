@@ -12,6 +12,7 @@ import { Server } from 'socket.io';
 
 import authRouter from './middleware/authRouter';
 import competenciesRouter from './middleware/competenciesRouter';
+import darkModeRouter from './middleware/darkModeRouter';
 import docsRouter from './middleware/docsRouter';
 import {
   handleErrors,
@@ -125,6 +126,7 @@ const start = async () => {
   });
   app.use(withCors, authRouter);
   app.use('/competencies', withCors, loggedIn, competenciesRouter);
+  app.use('/darkMode', withCors, loggedIn, darkModeRouter);
   app.use('/docs', withCors, docsRouter);
   app.use('/meetings', withCors, loggedIn, meetingsRouter);
   app.use('/programs', withCors, loggedIn, programsRouter);
