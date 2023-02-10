@@ -1,10 +1,9 @@
 ---
 name: Issue template
 about: Describe how the app needs to change to meet expectations
-title: ''
-labels: ''
-assignees: ''
-
+title: ""
+labels: ""
+assignees: ""
 ---
 
 ## Expected behaviour
