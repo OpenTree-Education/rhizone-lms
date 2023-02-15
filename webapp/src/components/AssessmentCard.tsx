@@ -9,8 +9,8 @@ import { useState } from 'react';
 import { Box } from '@mui/system';
 
 
-export default function AssesmentCard() {
-    const assesments = [
+export default function AssessmentCard() {
+    const assessments = [
   {
     "id": 1,
     "title": "Introduction to HTML",
@@ -37,8 +37,8 @@ export default function AssesmentCard() {
 
   return (
     <Box>  
-        {assesments.length === 0 && <p>There are no upcomming assesments for you.</p>}
-        {assesments.map(({id, title, description, score,timestamp })=>(
+        {assessments.length === 0 && <p>There are no upcomming assesments for you.</p>}
+        {assessments.map(({id, title, description, score,timestamp })=>(
 
          <Paper key={id}
       sx={{
@@ -75,7 +75,7 @@ export default function AssesmentCard() {
                 </Typography>
               </Grid>
             </Grid>
-          </Grid><Button variant="contained">Start</Button> </Paper>))};
+          </Grid><Button variant="contained">Start</Button> </Paper>))}
    
     </Box>
     
