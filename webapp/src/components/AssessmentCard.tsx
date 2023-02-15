@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
@@ -7,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import { Button } from '@mui/material';
 import { blue } from '@mui/material/colors';
 import { useState } from 'react';
+import { Box } from '@mui/system';
 
 
 export default function AssesmentCard() {
@@ -36,10 +36,15 @@ export default function AssesmentCard() {
 
 
   return (
-     <Paper
+    <Box>  
+        {assesments.length === 0 && <p>There are no upcomming assesments for you.</p>}
+        {assesments.map(({id, title, description, score,timestamp })=>(
+
+         <Paper key={id}
       sx={{
         p: 2,
         margin: 'auto',
+        marginBottom: 4,
         width: '100%',
         flexGrow: 1,
         border: blue,
@@ -47,35 +52,33 @@ export default function AssesmentCard() {
           theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
       }}
     >
-        {assesments.length === 0 && <p>There are no assesments for you.</p>}
-        {assesments.map ()=> (<Grid container spacing={2}>
-        <Grid item xs={12} sm container>
-          <Grid item xs container direction="column" spacing={2}>
-            <Grid item xs>
-              <Typography gutterBottom variant="subtitle1" component="div">
-                Title
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Date/Time
-              </Typography>
+        <Grid container spacing={2}>
+            <Grid item xs={12} sm container>
+              <Grid item xs container direction="column" spacing={2}>
+                <Grid item xs>
+                  <Typography gutterBottom variant="subtitle1" component="div">
+                    {title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Date/Time
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography sx={{ cursor: 'pointer' }} variant="body2">
+                    {description}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Grid item>
+                <Typography variant="subtitle1" component="div">
+                  {score} %
+                </Typography>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Typography sx={{ cursor: 'pointer' }} variant="body2">
-                Description
-              </Typography>
-            </Grid>
-          </Grid>
-          <Grid item>
-            <Typography variant="subtitle1" component="div">
-             Extra info
-            </Typography>
-          </Grid>
-        </Grid>
-      
-      </Grid>
-       <Button variant="contained">Start</Button>)}
-      
-    </Paper>
+          </Grid><Button variant="contained">Start</Button> </Paper>))};
+   
+    </Box>
+    
    
   );
 }
