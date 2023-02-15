@@ -53,7 +53,7 @@ const Navbar = () => {
           </Link>
         </Tooltip>
         <Tooltip title="Graded Assessments">
-          <Link to= "/dashboard">
+          <Link to= "/assessment">
             <IconButton sx={{ mr: 1 }}>
               <AssignmentIcon />
             </IconButton>
