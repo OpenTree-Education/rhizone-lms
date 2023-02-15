@@ -4,6 +4,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import HomeIcon from '@mui/icons-material/Home';
 import PeopleIcon from '@mui/icons-material/People';
 import EngineeringIcon from '@mui/icons-material/Engineering';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import { Button, Grid, IconButton, Tooltip } from '@mui/material';
 import styled from '@emotion/styled';
 
@@ -48,6 +49,13 @@ const Navbar = () => {
           <Link to="/calendar">
             <IconButton sx={{ mr: 1 }}>
               <CalendarMonthIcon />
+            </IconButton>
+          </Link>
+        </Tooltip>
+        <Tooltip title="Graded Assessments">
+          <Link to= "/dashboard">
+            <IconButton sx={{ mr: 1 }}>
+              <AssignmentIcon />
             </IconButton>
           </Link>
         </Tooltip>
