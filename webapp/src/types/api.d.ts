@@ -135,3 +135,7 @@ export interface ParticipantActivityForProgram {
   program_id: number;
   participant_activities: ParticipantActivityCompletionStatus[];
 }
+
+export interface CurrentUserPageInfo extends Entity {
+  page_number: number;
+}
