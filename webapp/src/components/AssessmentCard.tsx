@@ -50,18 +50,18 @@ export default function AssessmentCard({
                   {title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {}
+                  {newDate.toLocaleDateString('en-US')}
                 </Typography>
               </Grid>
               <Grid item>
-                <Typography sx={{ cursor: 'pointer' }} variant="body2">
+                <Typography sx={{ cursor: 'pointer' }} variant="body2" mt={3}>
                   {description}
                 </Typography>
               </Grid>
             </Grid>
             <Grid item>
               <Typography variant="subtitle1" component="div">
-                {newDate.toLocaleDateString('en-US')}
+                {score} %
               </Typography>
             </Grid>
           </Grid>
