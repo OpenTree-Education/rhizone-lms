@@ -6,7 +6,7 @@ const Footer = () => (
   <Box sx={{ py: 12 }}>
     <Typography align="center">
       <small>
-        © OpenTree Education Inc. | <Link to="/terms-of-use">Terms of Use</Link>{' '}
+        © <a href="https://opentree.education">OpenTree Education Inc.</a> | <Link to="/terms-of-use">Terms of Use</Link>{' '}
         | <Link to="privacy-policy">Privacy Policy</Link>
       </small>
     </Typography>

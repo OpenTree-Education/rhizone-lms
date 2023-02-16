@@ -6,6 +6,7 @@ import DocPage from './DocPage';
 import Footer from './Footer';
 import MeetingPage from './MeetingPage';
 import { MeetingsDrawerProvider } from './MeetingsDrawerContext';
+import MyCoolFeaturePage from './MyCoolFeaturePage';
 import Navbar from './Navbar';
 import ReflectionsPage from './ReflectionsPage';
 import RequireAuth from './RequireAuth';
@@ -56,6 +57,14 @@ const App = () => {
             element={
               <RequireAuth>
                 <ProgramsPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/my-cool-feature"
+            element={
+              <RequireAuth>
+                <MyCoolFeaturePage />
               </RequireAuth>
             }
           />
