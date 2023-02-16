@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Stack } from '@mui/material';
-import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
 
 const AssessmentMentorPage = () => {
   return (
@@ -10,10 +10,8 @@ const AssessmentMentorPage = () => {
         justifyContent="space-between"
         alignItems={{ xs: 'flex-start', md: 'center' }}
       >
-        <h1>Assessment Management</h1>
-        <Button variant="outlined" href="/assessment" >
-          Mentee mode
-        </Button>        
+        <h1>Assessment Management</h1> 
+        <Link href="/assessment">Switch to Mentee mode</Link>
       </Stack>
     </Container>
   );
