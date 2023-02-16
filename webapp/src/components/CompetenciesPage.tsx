@@ -24,8 +24,8 @@ const CompetenciesPage = () => {
   return (
     <Container fixed>
       <h1>Competencies</h1>
-      <Grid container justifyContent="center">
-        <Grid item xs={12} md={8}>
+      <Grid container justifyContent="center" >
+        <Grid >
           <Box>
             <CreateOrUpdateCompetencyForm
               onCompetencyChanged={id =>
