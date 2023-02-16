@@ -7,52 +7,26 @@ import { Button } from '@mui/material';
 import { blue } from '@mui/material/colors';
 import { useState } from 'react';
 import { Box } from '@mui/system';
-import { Margin } from '@mui/icons-material';
 
 interface AssessmentCardProps {
-  id: string;
+  id: number;
   title: string;
   description: string;
+  score: number;
+  timestamp: string;
 }
 
 export default function AssessmentCard({
   id,
   title,
   description,
+  score,
+  timestamp,
 }: AssessmentCardProps) {
-  const assessments = [
-    {
-      id: 1,
-      title: 'Introduction to HTML',
-      description:
-        'Learn the basics of HTML, the markup language used to create web pages.',
-      score: 92,
-      timestamp: '2023-02-15T13:30:00Z',
-    },
-    {
-      id: 2,
-      title: 'CSS Layouts',
-      description:
-        'Explore different techniques for laying out web pages using CSS.',
-      score: 85,
-      timestamp: '2023-02-14T10:15:00Z',
-    },
-    {
-      id: 3,
-      title: 'JavaScript Fundamentals',
-      description:
-        'Learn the basics of JavaScript, the programming language used to add interactivity to web pages.',
-      score: 97,
-      timestamp: '2023-02-12T16:45:00Z',
-    },
-  ];
+  const newDate = new Date(timestamp);
 
   return (
     <Box>
-      {/* {assessments.length === 0 && (
-        <p>There are no upcomming assesments for you.</p>
-      )}
-      {assessments.map(({ id, title, description, score, timestamp }) => ( */}
       <Paper
         key={id}
         sx={{
@@ -76,7 +50,7 @@ export default function AssessmentCard({
                   {title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Date/Time
+                  {}
                 </Typography>
               </Grid>
               <Grid item>
@@ -87,7 +61,7 @@ export default function AssessmentCard({
             </Grid>
             <Grid item>
               <Typography variant="subtitle1" component="div">
-                {/* {score} % */}
+                {newDate.toLocaleDateString('en-US')}
               </Typography>
             </Grid>
           </Grid>
