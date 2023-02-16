@@ -1,18 +1,15 @@
 import * as React from 'react';
-import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { Button } from '@mui/material';
-import { blue } from '@mui/material/colors';
-import { useState } from 'react';
 import { Box } from '@mui/system';
 
 interface AssessmentCardProps {
   id: number;
   title: string;
   description: string;
-  score: number;
+  score?: number;
   timestamp: string;
 }
 

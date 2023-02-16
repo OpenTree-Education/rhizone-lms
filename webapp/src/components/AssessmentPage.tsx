@@ -2,8 +2,17 @@ import { Typography, Box } from '@mui/material';
 import React from 'react';
 import AssessmentCard from './AssessmentCard';
 
+type Assessment = {
+  id: number;
+  title: string;
+  description: string;
+  score: number;
+  timestamp: string;
+  remark: boolean;
+};
+
 const AssessmentPage = () => {
-  const assessments = [
+  const assessments: Assessment[] = [
     {
       id: 1,
       title: 'Introduction to HTML',
@@ -33,6 +42,19 @@ const AssessmentPage = () => {
     },
   ];
 
+  const partition = (array: Array<Assessment>) => {
+    const matches: Array<Assessment> = [];
+    const nonMatches: Array<Assessment> = [];
+
+    array.forEach(element =>
+      (element.remark ? matches : nonMatches).push(element)
+    );
+
+    return [matches, nonMatches];
+  };
+
+  const t = partition(assessments);
+
   return (
     <Box ml={10} mr={10}>
       {' '}
@@ -57,14 +79,14 @@ const AssessmentPage = () => {
           {' '}
           Upcoming assessments
         </Typography>
-        {assessments.map(({ id, title, description, score, timestamp }) => (
+        {t[1].map(({ id, title, description, score, timestamp }) => (
           <AssessmentCard
             id={id}
             key={id}
             title={title}
             description={description}
             timestamp={timestamp}
-            score={score}
+            // score={score}
           />
         ))}
       </Box>
@@ -73,7 +95,7 @@ const AssessmentPage = () => {
           {' '}
           Completed assessments
         </Typography>
-        {assessments.map(({ id, title, description, score, timestamp }) => (
+        {t[0].map(({ id, title, description, score, timestamp }) => (
           <AssessmentCard
             id={id}
             key={id}
