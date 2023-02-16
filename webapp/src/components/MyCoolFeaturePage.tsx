@@ -6,16 +6,15 @@ import { CurrentUserPageInfo } from '../types/api';
 
 const updateCurrentPage = (currentPageNumber: number) => {
   const body = {
-    currentPage: currentPageNumber
-  }
+    currentPage: currentPageNumber,
+  };
   return fetch(`${process.env.REACT_APP_API_ORIGIN}/my-cool-feature`, {
     method: 'PATCH',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
-  })
-    .then(res => res.json());
-}
+  }).then(res => res.json());
+};
 
 const MyCoolFeaturePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
