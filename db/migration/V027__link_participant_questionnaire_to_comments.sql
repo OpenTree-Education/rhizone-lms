@@ -1,0 +1,5 @@
+-- --link the relationship from participants_questionnaire to comment table
+-- ALTER TABLE participants_questionnaire
+-- ADD FOREIGN KEY (comment_id)
+-- REFERENCES comments(id)
+-- ON DELETE CASCADE;
