@@ -19,6 +19,7 @@ import {
 } from './middleware/errorHandlingMiddleware';
 import { loggedIn } from './middleware/authMiddleware';
 import meetingsRouter from './middleware/meetingsRouter';
+import myCoolFeatureRouter from './middleware/myCoolFeatureRouter';
 import { participantExists } from './services/meetingsService';
 import programsRouter from './middleware/programsRouter';
 import questionnairesRouter from './middleware/questionnairesRouter';
@@ -127,6 +128,7 @@ const start = async () => {
   app.use('/competencies', withCors, loggedIn, competenciesRouter);
   app.use('/docs', withCors, docsRouter);
   app.use('/meetings', withCors, loggedIn, meetingsRouter);
+  app.use('/my-cool-feature', withCors, loggedIn, myCoolFeatureRouter)
   app.use('/programs', withCors, loggedIn, programsRouter);
   app.use('/questionnaires', withCors, loggedIn, questionnairesRouter);
   app.use('/reflections', withCors, loggedIn, reflectionsRouter);
