@@ -14,6 +14,7 @@ import ProgramsPage from './ProgramsPage';
 import Assessment  from './Assessment/Assessment';
 import Form from './Assessment/Form';
 import TakeAssessment from './Assessment/TakeAssessment';
+import AsssessmentList from './Assessment/AsssessmentList'
 
 const App = () => {
   const { isAuthenticated } = useContext(SessionContext);
@@ -83,7 +84,7 @@ const App = () => {
             path="/quiz"
             element={
               <RequireAuth>
-               <TakeAssessment/>
+               <AsssessmentList />
               </RequireAuth>
             }
           />

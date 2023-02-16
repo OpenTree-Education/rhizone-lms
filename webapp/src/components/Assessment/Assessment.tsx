@@ -23,51 +23,10 @@ const  StyledDiv= styled.div`
     const [image, setImage] = useState([]);
     const [imageCheck, setImageCheck] = useState(false);
     const uploadImage = () => {}
-    // const uploadImage = () => {
-    //   const data = new FormData();
-    //   data.append("file", image);
-    //   data.append("upload_preset", "");
-    //   data.append("cloud_name", "");
-      
-    //     .post("https://api.cloudinary.com/v1_1/dj8arn33b/image/upload", data)
-    //     .then((response) => {
-    //       setImageCheck(true);
-          
-  
-    //       setUrl(response.data.url);
-    //     });
-    // };
+    
     const onSubmit: FormEventHandler = event => {
     }
-  // const onSubmit: FormEventHandler = event => {
-  //   event.preventDefault();
-  //   setIsSavingReflection(true);
-  //   fetch(`${process.env.REACT_APP_API_ORIGIN}/reflections`, {
-  //     method: 'POST',
-  //     credentials: 'include',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({
-  //       raw_text: journalEntryText,
-  //       // selected_option_ids: Array.from(selectedOptionIds.values()),
-  //     }),
-  //   })
-  //     .then(res => res.json())
-  //     .then(({ data, error }) => {
-  //       setIsSavingReflection(false);
-  //       if (error) {
-  //         setSaveReflectionError(error);
-  //       }
-  //       if (data) {
-  //         setIsSuccessMessageVisible(true);
-  //         setJournalEntryText('');
-         
-  //       }
-  //     })
-  //     .catch(error => {
-  //       setIsSavingReflection(false);
-  //       setSaveReflectionError(error);
-  //     });
-  // };
+  
   
   return (
     <form onSubmit={onSubmit} >
@@ -155,7 +114,7 @@ const  StyledDiv= styled.div`
       </div>
       <div style={{display:"flex"}}>
       <p style={{padding:"10px"}} 
-      // onChange={(e) => setImage(e.target.files[0])}
+     
       >upload an image </p>
       <Button variant="contained" component="label">Upload
       <input hidden accept="image/*" multiple type="file" onClick={uploadImage} /> 

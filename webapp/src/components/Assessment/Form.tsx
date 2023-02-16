@@ -7,10 +7,10 @@ import { Container } from '@mui/system';
  const Form = () => {
   const [question, setQuestion] = useState('');
   const [description, setDescription] = useState('');
-  const [age, setAge] = React.useState('');
+
   
   const handleChange = (event: SelectChangeEvent) => {
-    setAge(event.target.value);
+  
   };
   let navigate = useNavigate(); 
   const routeChange = () =>{ 
@@ -59,7 +59,7 @@ import { Container } from '@mui/system';
     id="demo-simple-select"
     sx={{marginLeft:"28ch"}}
     label="Subject"
-    value={age}
+   
     onChange={handleChange}
   >
     <MenuItem value="">
