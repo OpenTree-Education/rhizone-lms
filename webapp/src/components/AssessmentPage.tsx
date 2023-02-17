@@ -8,7 +8,7 @@ type Assessment = {
   description: string;
   score: number;
   timestamp: string;
-  remark: boolean;
+  complited: boolean;
 };
 
 const AssessmentPage = () => {
@@ -20,7 +20,7 @@ const AssessmentPage = () => {
         'Learn the basics of HTML, the markup language used to create web pages.',
       score: 92,
       timestamp: '2023-02-15T13:30:00Z',
-      remark: true,
+      complited: true,
     },
     {
       id: 2,
@@ -29,16 +29,34 @@ const AssessmentPage = () => {
         'Explore different techniques for laying out web pages using CSS.',
       score: 85,
       timestamp: '2023-02-14T10:15:00Z',
-      remark: false,
+      complited: true,
     },
     {
       id: 3,
       title: 'JavaScript Fundamentals',
       description:
         'Learn the basics of JavaScript, the programming language used to add interactivity to web pages.',
+      score: 0,
+      timestamp: '2023-02-12T16:45:00Z',
+      complited: false,
+    },
+    {
+      id: 4,
+      title: 'CSS Layouts',
+      description:
+        'Explore different techniques for laying out web pages using CSS.',
+      score: 0,
+      timestamp: '2023-02-14T10:15:00Z',
+      complited: false,
+    },
+    {
+      id: 5,
+      title: 'JavaScript Fundamentals',
+      description:
+        'Learn the basics of JavaScript, the programming language used to add interactivity to web pages.',
       score: 97,
       timestamp: '2023-02-12T16:45:00Z',
-      remark: true,
+      complited: true,
     },
   ];
 
@@ -47,7 +65,7 @@ const AssessmentPage = () => {
     const nonMatches: Array<Assessment> = [];
 
     array.forEach(element =>
-      (element.remark ? matches : nonMatches).push(element)
+      (element.complited ? matches : nonMatches).push(element)
     );
 
     return [matches, nonMatches];
@@ -79,14 +97,14 @@ const AssessmentPage = () => {
           {' '}
           Upcoming assessments
         </Typography>
-        {t[1].map(({ id, title, description, score, timestamp }) => (
+        {t[1].map(({ id, title, description, timestamp, complited }) => (
           <AssessmentCard
             id={id}
             key={id}
             title={title}
             description={description}
             timestamp={timestamp}
-            // score={score}
+            complited={complited}
           />
         ))}
       </Box>
@@ -95,7 +113,7 @@ const AssessmentPage = () => {
           {' '}
           Completed assessments
         </Typography>
-        {t[0].map(({ id, title, description, score, timestamp }) => (
+        {t[0].map(({ id, title, description, score, timestamp, complited }) => (
           <AssessmentCard
             id={id}
             key={id}
@@ -103,6 +121,7 @@ const AssessmentPage = () => {
             description={description}
             timestamp={timestamp}
             score={score}
+            complited={complited}
           />
         ))}
       </Box>

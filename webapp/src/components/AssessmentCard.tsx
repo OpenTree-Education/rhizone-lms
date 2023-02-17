@@ -11,6 +11,7 @@ interface AssessmentCardProps {
   description: string;
   score?: number;
   timestamp: string;
+  complited?: boolean;
 }
 
 export default function AssessmentCard({
@@ -19,9 +20,9 @@ export default function AssessmentCard({
   description,
   score,
   timestamp,
+  complited,
 }: AssessmentCardProps) {
   const newDate = new Date(timestamp);
-
   return (
     <Box>
       <Paper
@@ -30,20 +31,23 @@ export default function AssessmentCard({
           p: 2,
           margin: 'auto',
           marginBottom: 4,
-          width: '100%',
+          width: '98%',
           borderRadius: '10px',
           flexGrow: 1,
           boxShadow: 'none',
           border: '1.5px solid #2196f3',
           backgroundColor: theme =>
-            theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+            complited === false ? '#ffffff' : '#F5F5F5',
+          '&:hover': {
+            scale: '1.02',
+          },
         }}
       >
         <Grid container spacing={2}>
           <Grid item xs={12} sm container>
             <Grid item xs container direction="column" spacing={2}>
               <Grid item xs>
-                <Typography gutterBottom variant="subtitle1" component="div">
+                <Typography gutterBottom component="div" variant="h5">
                   {title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -57,14 +61,16 @@ export default function AssessmentCard({
               </Grid>
             </Grid>
             <Grid item>
-              <Typography variant="subtitle1" component="div">
-                {score} %
+              <Typography variant="h6" component="div" mr={5} fontWeight={600}>
+                {score}
               </Typography>
             </Grid>
           </Grid>
         </Grid>
         <Box m={1} display="flex" justifyContent="flex-end" alignItems="center">
-          <Button variant="contained">Start</Button>
+          <Button variant="contained">
+            {complited === false ? 'Start' : 'Review'}
+          </Button>
         </Box>
       </Paper>
       {/* ))} */}
