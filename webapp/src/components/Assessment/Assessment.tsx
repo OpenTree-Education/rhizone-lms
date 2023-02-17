@@ -116,7 +116,7 @@ const  StyledDiv= styled.div`
       <p style={{padding:"10px"}} 
      
       >upload an image </p>
-      <Button variant="contained" component="label">Upload
+      <Button  component="label">Upload
       <input hidden accept="image/*" multiple type="file" onClick={uploadImage} /> 
       </Button>
       <Button>Add</Button>

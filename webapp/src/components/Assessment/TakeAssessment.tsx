@@ -12,28 +12,32 @@ const data = {
     answers:[
       "Asia","Africa","Eorupe"
     ],
-    type:<Radio />
+    type:<Radio />,
+    correct:"Asia"
   },
   {id:2,
     question:
-    "what is the biggist anmail in the world?",answers:[
-      "whale","shark"
+    "what is the biggist animal  in the world?",answers:[
+      "Blue whale","shark","Elephant"
     ],
-    type:<Checkbox  />
+    type:<Radio  />,
+    correct:"Bule whale"
   },
   {id:3,
     question:
-    "what team win in the world cup ?",answers:[
-      "argintina","Brizel","German"
+    "what team won in the world cup 2022 ?",answers:[
+      "Argentina","France","German"
     ],
-    type:<Checkbox  />
+    type:<Checkbox  />,
+    correct:"Argentina"
   },
   {id:4,
     question:
-    "what conteries involved in world war 2 ?",answers:[
-      "argintina","Brizel","German"
+    "what countries not involved in world war 2",answers:[
+      "France","Russia","Swissland"
     ],
-    type:<Checkbox  />
+    type:<Checkbox  />,
+    correct:["France","Russia"]
   },
   {id:5,
     question:
@@ -42,15 +46,17 @@ const data = {
       "Egypt","Syria","Jordan"
     ],
     image:true,
-    type:<Checkbox  />
+    type:<Checkbox  />,
+    correct:"Jordan"
   },
   {id:6,
     question:
     "What is the World oldest City ? ",
     answers:[
-     "damascus","Cairo","Baghdad"
+     "damascus","Cairo","Jericho"
     ],
-    type:<Radio />
+    type:<Radio />,
+    correct:"Jericho",
   }
 
 ]
@@ -63,32 +69,22 @@ const data = {
     let path = `\answers`; 
     navigate(path);
   }
-  const [question,setQuestion] = useState();
-  const [answer,setAnswer]=useState<File[]>([])
-  const [list,setList]=useState<File[]>([])
-  // const [selectOption,setSelectOption]=useState()
+
+  const [answer,setAnswer]=useState("");
+ 
   const [isCheckeded , setIsChecked] = useState(false);
+  const [score,setScore]=useState(0)
  
     const onSubmit :FormEventHandler = event=>{
     event.preventDefault();
   
-    console.log("list of answers" ,answer)
-    localStorage.setItem("answer", JSON.stringify(answer));
+   
     
     const answers = {
       
     };
     
-            // fetch('/answer', {
-            //     method: 'POST',
-            //     headers: {"Content-Type" : "application/json" },
-            //     body: JSON.stringify({
-                 
-            //       answer:answer
-            //       })
-            // }).then(() => {
-            //     alert('done');
-            // })
+          
             
 
   }
@@ -112,28 +108,56 @@ const data = {
   //   return <ul>{answerObjects}</ul>;
   // };
   let arr :any[]= [];
+  let count = 0
+  console.log("answer",answer)
+  const handleSaving =(id:Number)=>{
+   
+
+    
+    data.questions.filter(item=> item.id === id ).map(val=>{
+      
+      
+     if( val.correct === answer){
+      console.log(val.correct === answer)
+       count = score +  100;
+
+      
+      return setScore(count)
+
+        
+        
+     }
+  
+ 
+    })
+  
+ 
+      setAnswer("")         
+  }
+  useEffect(() => {
+    // storing input name
+    localStorage.setItem("answer", JSON.stringify(score));
+  }, [score]);
   const handleChange = (e:any) => {
    
     const checkedValue = e.target.value;
+      setAnswer(checkedValue)
 
-
-    setIsChecked(!isCheckeded)
-    if(isCheckeded){
-      arr.push(checkedValue)
+    // setIsChecked(!isCheckeded)
+    // if(isCheckeded){
+    //   arr.push(checkedValue)
     
-      setAnswer(preState=>[...preState,...arr])
-    }
+      // setAnswer(preState=>[...preState,...arr])
+    
   
     
    
     
       
-    
-      localStorage.setItem("answer", JSON.stringify(answer));
  
     
     
-    console.log("cc",isCheckeded,answer)
+
   };
  
 
@@ -167,20 +191,18 @@ const data = {
               {question.answers.map((answer,idx)=>{
                  return(
                   <FormControlLabel 
-                  
-                  
                   value={answer}
                  control={question.type} 
-                  onChange={handleChange}
+                   onChange={handleChange}
                   key={idx} label={answer}></FormControlLabel>
                 )
                 })
             
               }
                </RadioGroup>   
-               <Button onClick={()=>{
-             
-               }}>Save</Button>
+               <Button 
+               onClick={()=>handleSaving(question.id)}
+               >Save</Button>
                </CardContent>
                 </>
               

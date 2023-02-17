@@ -85,12 +85,21 @@ const App = () => {
             path="/quiz"
             element={
               <RequireAuth>
-               <TakeAssessment />
+                 <AsssessmentList />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/quiz/assessment"
+            element={
+              <RequireAuth>
+                <TakeAssessment />
+             
               </RequireAuth>
             }
           />
            <Route
-            path="/quiz/answers"
+            path="/quiz/assessment/answers"
             element={
               <RequireAuth>
                <Answers />

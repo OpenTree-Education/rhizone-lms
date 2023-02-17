@@ -63,9 +63,9 @@ import { Container } from '@mui/system';
     onChange={handleChange}
   >
     <MenuItem value="">
-            <em>None</em>
+            
           </MenuItem>
-    <MenuItem value={10}>Math</MenuItem>
+    <MenuItem value={10} defaultChecked>Math</MenuItem>
     <MenuItem value={20}>History</MenuItem>
     <MenuItem value={30}>Scince</MenuItem>
   </Select>
