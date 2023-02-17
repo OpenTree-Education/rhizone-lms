@@ -35,3 +35,25 @@ export const findQuestionnaire = async (questionnaireId: number) => {
     prompts: Array.from(promptsById.values()),
   };
 };
+
+
+
+
+export const findQuestionnaires = async () => {
+  const questionnaires = await db('questionnaires').select('*');
+  return Array.isArray(questionnaires) ? questionnaires : [];
+};
+
+
+
+export const createQuestionnaire = async (principalId: number, title: string) => {
+  let questionnaireId: number;
+  await db.transaction(async trx => {
+    [questionnaireId] = await trx('questionnaires').insert({
+      title: title,
+      mentor_id: principalId,
+    });
+
+  });
+  return questionnaireId;
+};
