@@ -6,9 +6,12 @@ interface MyCoolComponentProps {
 }
 
 const MyCoolComponent = ({ pageId }: MyCoolComponentProps) => {
-  const message1 = 'I am a banana!';
-  const message2 = 'I am not a banana';
-  return <p>{pageId === 2 ? message1 : message2}</p>;
+  const messages = [
+    'I am a banana!',
+    'I am not a banana.',
+    'What even *is* a banana anyway?',
+  ];
+  return <p>{messages[pageId - 1]}</p>;
 };
 
 export default MyCoolComponent;

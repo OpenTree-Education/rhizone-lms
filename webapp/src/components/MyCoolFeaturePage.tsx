@@ -51,8 +51,12 @@ const MyCoolFeaturePage = () => {
     <Container>
       <h1>My cool feature</h1>
       <MyCoolComponent pageId={currentPage} />
-      <button onClick={previousPage}>Previous Page</button>
-      <button onClick={nextPage}>Next Page</button>
+      <button onClick={previousPage} disabled={currentPage === 1}>
+        Previous Page
+      </button>
+      <button onClick={nextPage} disabled={currentPage === 3}>
+        Next Page
+      </button>
     </Container>
   );
 };
