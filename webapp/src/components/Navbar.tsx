@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
+import QuizIcon from '@mui/icons-material/Quiz';
 import HomeIcon from '@mui/icons-material/Home';
 import PeopleIcon from '@mui/icons-material/People';
 import EngineeringIcon from '@mui/icons-material/Engineering';
@@ -56,6 +57,13 @@ const Navbar = () => {
           <Link to="/my-cool-feature">
             <IconButton sx={{ mr: 1 }}>
               <EmojiEmotionsIcon />
+            </IconButton>
+          </Link>
+        </Tooltip>
+        <Tooltip title="Quiz">
+          <Link to="/quiz-page">
+            <IconButton sx={{ mr: 1 }}>
+              <QuizIcon />
             </IconButton>
           </Link>
         </Tooltip>

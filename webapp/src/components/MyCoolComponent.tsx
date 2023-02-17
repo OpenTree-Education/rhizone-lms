@@ -8,6 +8,8 @@ interface MyCoolComponentProps {
 const MyCoolComponent = ({pageId}: MyCoolComponentProps) => {
   const question1 = "What is a boolean?";
   const question2 = "What is Katy's favorite fruit?";
+
+  
   return <p>{pageId % 2 == 0 ? question1 : question2}</p>;
 };
 
