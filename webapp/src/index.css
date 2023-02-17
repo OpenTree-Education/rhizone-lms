@@ -35,3 +35,24 @@ code {
     font-size: 0.75rem;
   }
 }
+
+.inline {
+  display: inline;
+}
+
+.right{
+  float: right;
+  text-align: right;
+  padding-left: 10px;
+}
+
+.left{
+  float: left;
+  text-align: left;
+  padding-right: 10px;
+}
+
+.center{
+  float:center;
+  text-align:center;
+}
