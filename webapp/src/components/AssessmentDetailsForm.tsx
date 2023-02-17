@@ -25,7 +25,7 @@ export default function AssessmentDetailsForm() {
   };
   return (
     <React.Fragment>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h5" gutterBottom>
         Assessment details
       </Typography>
       <Grid container spacing={3}>

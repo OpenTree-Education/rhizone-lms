@@ -3,6 +3,7 @@ import { Container, Stack } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import DoneAllOutlinedIcon from '@mui/icons-material/DoneAllOutlined';
 import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined';
@@ -39,6 +40,8 @@ const AssessmentMentorPage = () => {
       <Box
       sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex'}}
       >
+                <Grid item xs={2}>
+
         <Tabs
           orientation="vertical"
           variant="scrollable"
@@ -47,15 +50,18 @@ const AssessmentMentorPage = () => {
           sx={{ borderRight: 1, borderColor: 'divider' }}
         >
           <Tab icon={<AddCircleOutlineOutlinedIcon/>} {...a11yProps(-1)} />
-          <Tab icon={<AlarmOnOutlinedIcon/>} iconPosition="end" label="Item Two" {...a11yProps(1)} />
-          <Tab icon={<ScheduleOutlinedIcon/>} iconPosition="end" label="Item Three" {...a11yProps(2)} />
-          <Tab icon={<ScheduleOutlinedIcon/>} iconPosition="end" label="Item Four" {...a11yProps(3)} />
-          <Tab icon={<DoneAllOutlinedIcon/>} iconPosition="end" label="Item One"  {...a11yProps(0)} />
+          <Tab icon={<AlarmOnOutlinedIcon/>} iconPosition="end" label="Jean Shorts 1.3" {...a11yProps(1)} />
+          <Tab icon={<ScheduleOutlinedIcon/>} iconPosition="end" label="Gastropub 3.7" {...a11yProps(2)} />
+          <Tab icon={<ScheduleOutlinedIcon/>} iconPosition="end" label="Unit 1" {...a11yProps(3)} />
+          <Tab icon={<DoneAllOutlinedIcon/>} iconPosition="end" label="Unit 2"  {...a11yProps(0)} />
         </Tabs>
+        </Grid>
+        <Grid item xs={10}>
         {value === 0
           ? <AssessmentAddNew/>
           : <AssesmentGrading index = {value} />
         }
+        </Grid>
       </Box>
     </Container>
   );

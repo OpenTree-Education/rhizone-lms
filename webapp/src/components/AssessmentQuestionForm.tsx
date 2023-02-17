@@ -14,7 +14,7 @@ import Button from '@mui/material/Button';
 export default function AssessmentQuestionForm() {
   return (
     <React.Fragment>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h5" gutterBottom>
         Quesions
       </Typography>
       <Grid container spacing={3}>

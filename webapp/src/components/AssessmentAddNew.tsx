@@ -42,7 +42,7 @@ const handleReset = () => {
       <Container maxWidth="md" sx={{ mb: 4 }}>
         <Paper elevation={0} sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
           <Typography variant="h5" align="center">
-            Add New Assessment
+            Add a New Assessment
           </Typography>
           <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
             {steps.map((label) => (
