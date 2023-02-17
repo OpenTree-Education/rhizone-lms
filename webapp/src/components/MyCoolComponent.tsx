@@ -6,9 +6,9 @@ interface MyCoolComponentProps {
 }
 
 const MyCoolComponent = ({pageId}: MyCoolComponentProps) => {
-  const message1 = "I am a banana!";
-  const message2 = "I am not a banana";
-  return <p>{pageId === 2 ? message1 : message2}</p>;
+  const question1 = "What is a boolean?";
+  const question2 = "What is Katy's favorite fruit?";
+  return <p>{pageId % 2 == 0 ? question1 : question2}</p>;
 };
 
 export default MyCoolComponent;

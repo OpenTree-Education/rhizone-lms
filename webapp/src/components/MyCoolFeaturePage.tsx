@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import MyCoolComponent from './MyCoolComponent';
-import { Container } from '@mui/material';
+import { Container, Grid } from '@mui/material';
 
 const MyCoolFeaturePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -12,11 +12,19 @@ const MyCoolFeaturePage = () => {
   };
   return (
     <Container>
-      <h1>My cool feature</h1>
+      <Grid container justifyContent="center">
+      <h1>Assessment Questions</h1>
+      </Grid>
+      <Grid container justifyContent="center">
       <MyCoolComponent pageId={currentPage} />
+      </Grid>
+      <Grid container justifyContent="center">
       <button onClick={previousPage}>Previous Page</button>
       <button onClick={nextPage}>Next Page</button>
+      </Grid>
     </Container>
+
+
   );
 };
 
