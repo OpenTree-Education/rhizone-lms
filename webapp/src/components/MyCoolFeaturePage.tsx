@@ -16,7 +16,7 @@ const MyCoolFeaturePage = () => {
       <h1>Assessment Questions</h1>
       </Grid>
       <Grid container justifyContent="center">
-      <MyCoolComponent pageId={currentPage} />
+      <MyCoolComponent questionNumber={currentPage} />
       </Grid>
       <Grid container justifyContent="center">
       <button onClick={previousPage}>Previous Page</button>

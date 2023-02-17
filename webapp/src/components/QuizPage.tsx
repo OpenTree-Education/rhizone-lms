@@ -8,12 +8,21 @@ import FormLabel from '@mui/material/FormLabel';
 import Button from '@mui/material/Button';
 import { Container, Grid } from '@mui/material';
 import Box from '@mui/material/Box';
+import MyCoolComponent from './MyCoolComponent';
 
 import { containerClasses } from '@mui/system';
 
 export default function ErrorRadios() {
+    const [currentQuestion, setCurrentQuestion] = React.useState(0);
+    const nextQuestion = () => {
+        setCurrentQuestion(currentQuestion + 1);
+    };
+    const previousQuestion = () => {
+    setCurrentQuestion(currentQuestion - 1);
+  };
   const [value, setValue] = React.useState('');
   const [error, setError] = React.useState(false);
+
   const [helperText, setHelperText] = React.useState('Choose wisely');
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +51,8 @@ export default function ErrorRadios() {
         <Box component="span" sx={{ p: 2, border: '1px dashed grey' }}>
         <form onSubmit={handleSubmit}>
         <FormControl sx={{ m: 3 }} error={error} variant="standard">
-            <FormLabel id="demo-error-radios">Pop quiz: MUI is...</FormLabel>
+            <MyCoolComponent questionNumber={currentQuestion} />
+
             <RadioGroup
             aria-labelledby="demo-error-radios"
             name="quiz"
