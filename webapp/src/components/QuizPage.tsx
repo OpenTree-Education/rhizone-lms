@@ -99,8 +99,12 @@ export default function ErrorRadios() {
             <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined">
             Check Answer
             </Button>
-            <button onClick={previousQuestion}>Previous Page</button>
-            <button onClick={nextQuestion}>Next Page</button>
+            <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined" color="secondary" onClick={previousQuestion}>
+            Previous Question
+            </Button>
+            <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined" color="secondary" onClick={nextQuestion}>
+            Next Question
+            </Button>
         </FormControl>
         </form>
         </Box>
