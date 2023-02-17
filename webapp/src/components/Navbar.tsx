@@ -5,6 +5,7 @@ import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import QuizIcon from '@mui/icons-material/Quiz';
 import HomeIcon from '@mui/icons-material/Home';
 import PeopleIcon from '@mui/icons-material/People';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import EngineeringIcon from '@mui/icons-material/Engineering';
 import { Button, Grid, IconButton, Tooltip } from '@mui/material';
 import styled from '@emotion/styled';
@@ -53,20 +54,6 @@ const Navbar = () => {
             </IconButton>
           </Link>
         </Tooltip>
-        <Tooltip title="My Cool Feature">
-          <Link to="/my-cool-feature">
-            <IconButton sx={{ mr: 1 }}>
-              <EmojiEmotionsIcon />
-            </IconButton>
-          </Link>
-        </Tooltip>
-        <Tooltip title="Quiz">
-          <Link to="/quiz-page">
-            <IconButton sx={{ mr: 1 }}>
-              <QuizIcon />
-            </IconButton>
-          </Link>
-        </Tooltip>
         <Tooltip title="Meetings">
           <IconButton sx={{ mr: 1 }} onClick={openMeetingsDrawer}>
             <PeopleIcon />
@@ -84,3 +71,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
