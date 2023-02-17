@@ -1,139 +1,202 @@
-import React, { useState ,FormEventHandler} from 'react';
+import React, { useState ,FormEventHandler, useEffect} from 'react';
 import {Card,CardContent,RadioGroup,FormControlLabel,Radio,FormGroup, Checkbox, Button } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 import TextField from '@mui/material/TextField';
 
 
 const data = {
-  
+  questions:[
+    {id:1,
+    question:
+    "what is the biggest continent ?",
+    answers:[
+      "Asia","Africa","Eorupe"
+    ],
+    type:<Radio />
+  },
+  {id:2,
+    question:
+    "what is the biggist anmail in the world?",answers:[
+      "whale","shark"
+    ],
+    type:<Checkbox  />
+  },
+  {id:3,
+    question:
+    "what team win in the world cup ?",answers:[
+      "argintina","Brizel","German"
+    ],
+    type:<Checkbox  />
+  },
+  {id:4,
+    question:
+    "what conteries involved in world war 2 ?",answers:[
+      "argintina","Brizel","German"
+    ],
+    type:<Checkbox  />
+  },
+  {id:5,
+    question:
+    "In which contery is this historical city ? ",
+    answers:[
+      "Egypt","Syria","Jordan"
+    ],
+    image:true,
+    type:<Checkbox  />
+  },
+  {id:6,
+    question:
+    "What is the World oldest City ? ",
+    answers:[
+     "damascus","Cairo","Baghdad"
+    ],
+    type:<Radio />
+  }
+
+]
 }
 
  const TakeAssessment = () => {
+  
+  let navigate = useNavigate(); 
+  const routeChange = () =>{ 
+    let path = `\answers`; 
+    navigate(path);
+  }
   const [question,setQuestion] = useState();
-  const onSubmit :FormEventHandler = event=>{
+  const [answer,setAnswer]=useState<File[]>([])
+  const [list,setList]=useState<File[]>([])
+  // const [selectOption,setSelectOption]=useState()
+  const [isCheckeded , setIsChecked] = useState(false);
+ 
+    const onSubmit :FormEventHandler = event=>{
     event.preventDefault();
+  
+    console.log("list of answers" ,answer)
+    localStorage.setItem("answer", JSON.stringify(answer));
+    
+    const answers = {
+      
+    };
+    
+            // fetch('/answer', {
+            //     method: 'POST',
+            //     headers: {"Content-Type" : "application/json" },
+            //     body: JSON.stringify({
+                 
+            //       answer:answer
+            //       })
+            // }).then(() => {
+            //     alert('done');
+            // })
+            
+
   }
   
+
+  // const answerList = (answers: string[]) => {
+  //   const answerObjects: any[] = [];
+    
+  //   answers.forEach((answer) => {
+  //     answerObjects.push(
+
+  //      <RadioGroup
+  //     //  {answer ? answer : ""}
+  //       aria-labelledby="demo-radio-buttons-group-label"
+  //       name="radio-buttons-group"
+  //     > 
+  //       {/* <FormControlLabel value={answer} control={data.questions.type} label={answer} />  */}
+  //     </RadioGroup>
+  //     );
+  //   });
+  //   return <ul>{answerObjects}</ul>;
+  // };
+  let arr :any[]= [];
+  const handleChange = (e:any) => {
+   
+    const checkedValue = e.target.value;
+
+
+    setIsChecked(!isCheckeded)
+    if(isCheckeded){
+      arr.push(checkedValue)
+    
+      setAnswer(preState=>[...preState,...arr])
+    }
+  
+    
+   
+    
+      
+    
+      localStorage.setItem("answer", JSON.stringify(answer));
+ 
+    
+    
+    console.log("cc",isCheckeded,answer)
+  };
+ 
+
   return (
     <form onSubmit={onSubmit} >
        <Card >
-       <CardContent  >
-      <h1>Create Assessment</h1>
+       <CardContent sx={{display:"flex",flexDirection:"column",margin:"2px",
+         alignItems:"center" }} >
+      <h1>Take an  Assessment</h1>
       </CardContent>
-       
-       <CardContent  sx={{display:"flex",flexDirection:"column",margin:"2px",
-         alignItems:"center",border: 1}} >
-        
-        <div style={{display:"flex"
-        }}>
-       <p style={{padding:"10px"}}>Question #1: </p>
-       <p style={{padding:"10px"}}>what is the biggest continent ?</p>
-       </div>
-      
-       <RadioGroup
-        aria-labelledby="demo-radio-buttons-group-label"
-        name="radio-buttons-group"
-      > 
-        <FormControlLabel value="answer1" control={<Radio />} label="answer1" />
-        <FormControlLabel value="answer2" control={<Radio />} label="answer2" />
-   
-        
-      </RadioGroup>
-      <Button>Save</Button>
 
-      </CardContent>
-      <CardContent sx={{display:"flex",flexDirection:"column",margin:"2px",
+               {
+            data.questions.map((question,idx)=>{
+              return <>
+         <CardContent  key={idx} sx={{display:"flex",flexDirection:"column",margin:"2px",
          alignItems:"center",border: 1}}>
-      <div style={{display:"flex"}}>
-      {/* <p style={{padding:"10px"}}>Answer: </p> */}
-      {/* <TextField id="outlined-basic" label="Outlined" variant="outlined" /> */}
-      </div>
-      
-      <div style={{display:"flex",flexDirection:"column" ,alignItems:"center"
+          <div style={{display:"flex"
         }}>
-      <div style={{display:"flex"}}>
-       <p style={{padding:"10px"}}>Question #2: </p>
-       <p style={{padding:"10px"}}>what conteries involved in world war 2 ?</p>
-       </div>
-  
-       
-       <FormGroup>
-      <FormControlLabel control={<Checkbox  />} label="answer1" />
-      <FormControlLabel  control={<Checkbox />} label="answer2" />
-      <FormControlLabel  control={<Checkbox />} label="answer3" />
-      
-    </FormGroup>
-    <Button>Save</Button>
-   
-      {/* <div style={{display:"flex"}}> */}
-      {/* <p style={{padding:"10px"}}>Answer: </p>
-      <TextField id="outlined-basic" label="Outlined" variant="outlined" /> */}
-      {/* </div> */}
-      </div>
-      </CardContent>
-      <CardContent sx={{display:"flex",flexDirection:"column",margin:"2px",
-         alignItems:"center",border: 1}}>
-      
-        <div style={{display:"flex"
+             <p style={{padding:"10px"}}>#{question.id}: </p>
+             <p style={{padding:"10px"}}
+              > {question.question}</p> 
+             </div>  
+             <div style={{display:"flex",flexDirection:"column"
         }}>
-        <p style={{padding:"10px"}}>Question #3: </p>
-       <p style={{padding:"10px"}}>What is the World oldest City ? </p>
-       {/* <TextField id="outlined-basic" label="Outlined" variant="outlined" /> */}
-       </div>
-       <div style={{margin:"10px"}}>
-      
-      </div>
-      <div style={{display:"flex"}}>
-      <p style={{padding:"10px"}}>please enter you answer: </p>
-      <TextField id="outlined-basic" label="Your Answer" variant="outlined" />
-     
-      </div>
-      <div> <Button>Save</Button></div>
-    
-      <div style={{display:"flex"}}>
-      {/* <p style={{padding:"10px"}}>Answer: </p>
-      <TextField id="outlined-basic" label="Outlined" variant="outlined" /> */}
-      </div>
-      </CardContent>
-      <CardContent sx={{display:"flex",flexDirection:"column",margin:"2px",
-         alignItems:"center",border: 1}}>
-     
-        <div style={{display:"flex"
-        }}>
-          
-       <p style={{padding:"10px"}}>Question #4: </p>
-       <div style={{display:"flex",flexDirection:"column"}}>
-       <p style={{padding:"10px"}}>In which contery is this historical city  ? </p>
-       
-       <img alt="history" src='https://upload.wikimedia.org/wikipedia/commons/a/af/Urn_Tomb%2C_Petra_01.jpg' style={{width:"200px"}}></img>
-       <RadioGroup
-        aria-labelledby="demo-radio-buttons-group-label"
-        name="radio-buttons-group"
-      >
+             {question.image && 
+             <img alt="history" src='https://upload.wikimedia.org/wikipedia/commons/a/af/Urn_Tomb%2C_Petra_01.jpg' style={{width:"200px"}}/>
+             }
+             
+             </div>  
+             <RadioGroup >
+              {question.answers.map((answer,idx)=>{
+                 return(
+                  <FormControlLabel 
+                  
+                  
+                  value={answer}
+                 control={question.type} 
+                  onChange={handleChange}
+                  key={idx} label={answer}></FormControlLabel>
+                )
+                })
             
-        <FormControlLabel value="answer1" control={<Radio />} label="Egypt" />
-        <FormControlLabel value="answer2" control={<Radio />} label="Jordan" />
-        <FormControlLabel value="answer3" control={<Radio />} label="Syria" />
-
-        
-      </RadioGroup>
-      </div>
-       </div>
-       <div style={{margin:"10px"}}>
-       <Button>Save</Button>
-      </div>
-       
-    
-      <div style={{display:"flex"}}>
-      {/* <p style={{padding:"10px"}}>Answer: </p>
-      <TextField id="outlined-basic" label="Outlined" variant="outlined" /> */}
-      </div>
-   
-      </CardContent>
+              }
+               </RadioGroup>   
+               <Button onClick={()=>{
+             
+               }}>Save</Button>
+               </CardContent>
+                </>
+              
+            })
+            
+ }        
+  
+  
       <CardContent sx={{display:"flex",flexDirection:"column",margin:"2px",
          alignItems:"center",border: 1}}>
        
-        <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined">
+        <Button sx={{ mt: 1, mr: 1 }} type="button" 
+        onClick={routeChange}
+        variant="outlined">
           Submit
+          
         </Button>
         </CardContent>
     </Card>
