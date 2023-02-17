@@ -73,7 +73,7 @@ const AssessmentPage = () => {
         justifyContent="space-between"
         alignItems={{ xs: 'flex-start', md: 'center' }}
       >
-        <h1>Assessment</h1>
+        <h1>Assessments</h1>
         <Link href="/assessment/mentor">Switch to Mentor mode</Link>
       </Stack>
       <Box
@@ -108,7 +108,7 @@ const AssessmentPage = () => {
               <Grid item xs={11}>
                 <h3>1. (3pts) Umami kickstarter godard fixie slow-carb enamel pin mlkshk ethical squid everyday carry live-edge air plant la croix letterpress?  </h3>
               </Grid>
-              <Grid item xs={1}>;
+              <Grid item xs={1}>
                 <h4 style={{color:'green'}}>Correct</h4>
               </Grid>
               <FormGroup>
@@ -123,7 +123,7 @@ const AssessmentPage = () => {
                 <h4 style={{color:'red'}} >Incorrect</h4>
               </Grid>
               <Grid item xs={8}>
-                <h4 style={{color:'red'}}>Incorrect Answer: B</h4>
+                <h4 style={{color:'red'}}>Answer: B</h4>
               </Grid>
               <FormGroup>
                 <FormControlLabel control={<Checkbox disabled checked/>} label="A. Cold-pressed vegan vape" />
@@ -268,7 +268,7 @@ const AssessmentPage = () => {
               <Grid item xs={11}>
                 <h3>1. (xpts) Umami kickstarter godard fixie slow-carb enamel pin mlkshk ethical squid everyday carry live-edge air plant la croix letterpress?  </h3>
               </Grid>
-              <Grid item xs={1}>;
+              <Grid item xs={1}>
                 <h4>Correct</h4>
               </Grid>
               <FormGroup>
