@@ -4,6 +4,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { Button } from '@mui/material';
 import { Box } from '@mui/system';
+import { Link } from 'react-router-dom';
 
 interface AssessmentCardProps {
   id: number;
@@ -68,9 +69,11 @@ export default function AssessmentCard({
           </Grid>
         </Grid>
         <Box m={1} display="flex" justifyContent="flex-end" alignItems="center">
-          <Button variant="contained">
-            {complited === false ? 'Start' : 'Review'}
-          </Button>
+          <Link to="/quiz" color="none">
+            <Button variant="contained">
+              {complited === false ? 'Start' : 'Review'}
+            </Button>{' '}
+          </Link>
         </Box>
       </Paper>
       {/* ))} */}
