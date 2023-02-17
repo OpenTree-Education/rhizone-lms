@@ -2,7 +2,6 @@
 CREATE TABLE participants_questionnaire (
   id BIGINT PRIMARY KEY AUTO_INCREMENT NOT NULL,
   questionnaire_id BIGINT NOT NULL,
-  option_answer_id BIGINT NOT NULL,
   participants_id BIGINT NOT NULL,
   prompt_text VARCHAR(255),
   score BIGINT,
