@@ -45,10 +45,12 @@ const Questions: { text: string, answer_correct: string, answer2: string, answer
 export default function ErrorRadios() {
     const [currentQuestion, setCurrentQuestion] = React.useState(0);
     const nextQuestion = () => {
-        setCurrentQuestion(currentQuestion + 1);
+      if (currentQuestion >= 0 && currentQuestion <= Questions.length-2){
+        setCurrentQuestion(currentQuestion +1);};
     };
     const previousQuestion = () => {
-    setCurrentQuestion(currentQuestion - 1);
+      if (currentQuestion > 0 && currentQuestion <= Questions.length-1){
+        setCurrentQuestion(currentQuestion -1);};
   };
   const [value, setValue] = React.useState('');
   const [error, setError] = React.useState(false);
@@ -97,6 +99,8 @@ export default function ErrorRadios() {
             <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined">
             Check Answer
             </Button>
+            <button onClick={previousQuestion}>Previous Page</button>
+            <button onClick={nextQuestion}>Next Page</button>
         </FormControl>
         </form>
         </Box>
