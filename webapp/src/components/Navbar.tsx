@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import HomeIcon from '@mui/icons-material/Home';
 import PeopleIcon from '@mui/icons-material/People';
+import QuizIcon from '@mui/icons-material/Quiz';
 import EngineeringIcon from '@mui/icons-material/Engineering';
 import { Button, Grid, IconButton, Tooltip } from '@mui/material';
 import styled from '@emotion/styled';
@@ -50,6 +51,11 @@ const Navbar = () => {
               <CalendarMonthIcon />
             </IconButton>
           </Link>
+        </Tooltip>
+        <Tooltip title="Assessments">
+          <IconButton sx={{ mr: 1 }}>
+            <QuizIcon />
+          </IconButton>
         </Tooltip>
         <Tooltip title="Meetings">
           <IconButton sx={{ mr: 1 }} onClick={openMeetingsDrawer}>
