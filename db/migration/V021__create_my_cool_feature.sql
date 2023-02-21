@@ -1,4 +1,4 @@
-CREATE TABLE `my_cool_feature` (
+CREATE TABLE `my_cool_feature_v1` (
   `id` BIGINT,
   `principal_id` BIGINT,
   `page_number` INT,
@@ -7,4 +7,4 @@ CREATE TABLE `my_cool_feature` (
   PRIMARY KEY (`id`)
 );
 
-INSERT INTO `my_cool_feature` (`id`, `principal_id`, `page_number`) VALUES (1, 3, 1);
+INSERT INTO `my_cool_feature_v1` (`id`, `principal_id`, `page_number`) VALUES (1, 3, 1);
