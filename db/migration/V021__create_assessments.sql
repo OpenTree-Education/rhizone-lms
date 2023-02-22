@@ -1,3 +1,22 @@
+
+CREATE TABLE question_types (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  title TEXT NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE assessment_submission_states (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  title TEXT NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE program_participant_roles (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  title TEXT NOT NULL,
+  PRIMARY KEY (id)
+);
+
 CREATE TABLE curriculum_assessments (
   id BIGINT NOT NULL AUTO_INCREMENT,
   title TEXT NOT NULL,
@@ -115,21 +134,5 @@ CREATE TABLE assessment_responses (
   FOREIGN KEY (question_id) REFERENCES assessment_questions(id),
   INDEX assessment_responses_answer_id (answer_id),
   FOREIGN KEY (answer_id) REFERENCES assessment_answers(id),
-  PRIMARY KEY (id)
-);
-
-CREATE TABLE question_types (
-  id BIGINT NOT NULL AUTO_INCREMENT,
-  title TEXT NOT NULL,
-  PRIMARY KEY (id)
-);
-
-CREATE TABLE assessment_submission_states (
-  id BIGINT NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (id)
-);
-
-CREATE TABLE program_participant_roles (
-  id BIGINT NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (id)
 );
