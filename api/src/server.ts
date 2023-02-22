@@ -10,6 +10,7 @@ import helmet from 'helmet';
 import Rollbar from 'rollbar';
 import { Server } from 'socket.io';
 
+import assessmentsRouter from './middleware/assessmentsRouter';
 import authRouter from './middleware/authRouter';
 import competenciesRouter from './middleware/competenciesRouter';
 import docsRouter from './middleware/docsRouter';
@@ -124,6 +125,7 @@ const start = async () => {
     origin: findConfig('WEBAPP_ORIGIN', ''),
   });
   app.use(withCors, authRouter);
+  app.use('/assessments', withCors, loggedIn, assessmentsRouter);
   app.use('/competencies', withCors, loggedIn, competenciesRouter);
   app.use('/docs', withCors, docsRouter);
   app.use('/meetings', withCors, loggedIn, meetingsRouter);
