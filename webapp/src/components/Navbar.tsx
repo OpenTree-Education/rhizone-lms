@@ -5,7 +5,6 @@ import HomeIcon from '@mui/icons-material/Home';
 import PeopleIcon from '@mui/icons-material/People';
 import EngineeringIcon from '@mui/icons-material/Engineering';
 import AssessmentIcon from '@mui/icons-material/Assessment';
-import QuizIcon from '@mui/icons-material/Quiz';
 import { Button, Grid, IconButton, Tooltip } from '@mui/material';
 import styled from '@emotion/styled';
 
@@ -60,15 +59,6 @@ const Navbar = () => {
             </IconButton>
           </Link>
         </Tooltip>
-
-        <Tooltip title="Quiz">
-          <Link to="/quiz">
-            <IconButton sx={{ mr: 1 }}>
-              <QuizIcon />
-            </IconButton>
-          </Link>
-        </Tooltip>
-        
         <Tooltip title="Meetings">
           <IconButton sx={{ mr: 1 }} onClick={openMeetingsDrawer}>
             <PeopleIcon />
