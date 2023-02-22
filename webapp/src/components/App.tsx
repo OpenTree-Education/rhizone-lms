@@ -59,6 +59,14 @@ const App = () => {
               </RequireAuth>
             }
           />
+           <Route
+            path="/assessment"
+            element={
+              <RequireAuth>
+              <></>
+              </RequireAuth>
+            }
+          />
         </Routes>
         <Footer />
       </MeetingsDrawerProvider>
