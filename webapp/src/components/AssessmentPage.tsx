@@ -34,18 +34,98 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
 function createData(
-  name: string,
-  date:string,
-  grade:string
+  Title: string,
+  dueDate: string,
+  Type: string,
+  submittedDate: string,
+  Status: string,
+  availableDate: string,
+  Score: number,
+  testDuration: number
 ) {
-  return { date, name, grade };
+  return {
+    dueDate,
+    Title,
+    Type,
+    submittedDate,
+    Status,
+    availableDate,
+    Score,
+    testDuration,
+  };
 }
 
 const rows = [
-  createData("Assessment 1","25-2-2023","yes"),
-  createData("Assessment 2","26-2-2023","no"),
-  
-
+  createData(
+    '25-3-2023',
+    'Assessment 1',
+    'Assignment',
+    '',
+    'Active',
+    '25-2-2023',
+    30,
+    60
+  ),
+  createData(
+    '25-3-2023',
+    'Assessment 1',
+    'Assignment',
+    '',
+    'Active',
+    '25-2-2023',
+    30,
+    60
+  ),
+  createData(
+    '25-3-2023',
+    'Assessment 1',
+    'Assignment',
+    '',
+    'Active',
+    '25-2-2023',
+    30,
+    60
+  ),
+  createData(
+    '25-3-2023',
+    'Assessment 1',
+    'Assignment',
+    '',
+    'Active',
+    '25-2-2023',
+    30,
+    60
+  ),
+  createData(
+    '25-3-2023',
+    'Assessment 1',
+    'Assignment',
+    '',
+    'Active',
+    '25-2-2023',
+    30,
+    60
+  ),
+  createData(
+    '25-3-2023',
+    'Assessment 1',
+    'Assignment',
+    '',
+    'Active',
+    '25-2-2023',
+    30,
+    60
+  ),
+  createData(
+    '25-3-2023',
+    'Assessment 1',
+    'Assignment',
+    '',
+    'Active',
+    '25-2-2023',
+    30,
+    60
+  ),
 ];
 
 function a11yProps(index: number) {
@@ -63,13 +143,12 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
 }));
 
 const AssessmentPage = () => {
-
   const [expanded, setExpanded] = React.useState<string | false>('panel1');
 
   const handleChange =
-  (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
-    setExpanded(newExpanded ? panel : false);
-  };
+    (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
+      setExpanded(newExpanded ? panel : false);
+    };
   const [value, setValue] = React.useState(0);
 
   const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
@@ -83,10 +162,10 @@ const AssessmentPage = () => {
         justifyContent="space-between"
         alignItems={{ xs: 'flex-start', md: 'center' }}
       >
-        <h1>Assessment</h1> 
+        <h1>Assessment</h1>
       </Stack>
 
-          {/* <Accordion>
+      {/* <Accordion>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
@@ -151,15 +230,31 @@ const AssessmentPage = () => {
         </AccordionSummary>
       </Accordion> */}
 
-      <Box sx={{ width: '100%', bgcolor: 'background.paper'}}>
-        <Tabs value={value} onChange={handleChangeTab} >
-          <Tab icon={<StyledBadge badgeContent={4} color="primary"><ScheduleOutlinedIcon /></StyledBadge>} iconPosition="start" label="Active" />
-          <Tab icon={<ArchiveOutlinedIcon/>} iconPosition="start" label="Past"  />
-          <Tab icon={<UpcomingOutlinedIcon/>} iconPosition="start" label="Upcoming"  />
+      <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+        <Tabs value={value} onChange={handleChangeTab}>
+          <Tab
+            icon={
+              <StyledBadge badgeContent={4} color="primary">
+                <ScheduleOutlinedIcon />
+              </StyledBadge>
+            }
+            iconPosition="start"
+            label="Active"
+          />
+          <Tab
+            icon={<ArchiveOutlinedIcon />}
+            iconPosition="start"
+            label="Past"
+          />
+          <Tab
+            icon={<UpcomingOutlinedIcon />}
+            iconPosition="start"
+            label="Upcoming"
+          />
         </Tabs>
       </Box>
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 600 }}  aria-label="a dense table">
+        <Table sx={{ minWidth: 600 }} aria-label="a dense table">
           <TableHead>
             <TableRow>
               <TableCell>Status</TableCell>
@@ -170,23 +265,27 @@ const AssessmentPage = () => {
               <TableCell>Submit Date</TableCell>
               <TableCell>Score</TableCell>
               <TableCell>Available Date</TableCell>
-              <TableCell>Action</TableCell>              
+              <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {rows.map(row => (
               <TableRow
-                key={row.name}  
+                key={row.Title}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-              
-                <TableCell >{row.date}</TableCell>
-                <TableCell >
-                
-                  {row.name}
-                  </TableCell>
-                <TableCell >{row.grade}</TableCell>
-                
+                <TableCell>{row.Status}</TableCell>
+                <TableCell>{row.Title}</TableCell>
+                <TableCell>{row.Type}</TableCell>
+
+                <TableCell>{row.dueDate}</TableCell>
+                <TableCell>{row.testDuration}</TableCell>
+                <TableCell>{row.submittedDate}</TableCell>
+                <TableCell>{row.Score}</TableCell>
+                <TableCell>{row.availableDate}</TableCell>
+                <TableCell>
+                  <button>Action</button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

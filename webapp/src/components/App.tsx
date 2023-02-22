@@ -60,7 +60,7 @@ const App = () => {
               </RequireAuth>
             }
           />
-           <Route
+          <Route
             path="/assessment"
             element={
               <RequireAuth>
