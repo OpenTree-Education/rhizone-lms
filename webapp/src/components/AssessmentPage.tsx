@@ -1,4 +1,4 @@
-import { Box, Container, Grid, Stack } from '@mui/material';
+import { Box, Container, Grid, Stack, Button } from '@mui/material';
 import React, { useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -91,7 +91,7 @@ const rows = [
     'Assessment 1',
     'Assignment',
     '',
-    'Active',
+    'Submitted',
     '25-2-2023',
     30,
     60
@@ -101,7 +101,7 @@ const rows = [
     'Assessment 1',
     'Assignment',
     '',
-    'Active',
+    'Graded',
     '25-2-2023',
     30,
     60
@@ -111,7 +111,7 @@ const rows = [
     'Assessment 1',
     'Assignment',
     '',
-    'Active',
+    'Upcoming',
     '25-2-2023',
     30,
     60
@@ -121,12 +121,45 @@ const rows = [
     'Assessment 1',
     'Assignment',
     '',
-    'Active',
+    'Unsubmitted',
     '25-2-2023',
     30,
     60
   ),
 ];
+interface TableCellWrapperProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+function TableCellWrapper(props: TableCellWrapperProps) {
+  const { children, value, index, ...other } = props;
+  return index === -1 || index === value? 
+  <TableCell>{children}</TableCell> 
+  : null;
+}
+
+function renderIconByStatus(status : string) {
+  switch(status) {
+    case 'Active':
+      return <ScheduleOutlinedIcon />;
+      break;
+    case 'Submitted':
+      return <DoneOutlinedIcon />;
+      break;
+    case 'Graded':
+      return <DoneAllOutlinedIcon />;
+      break;
+    case 'Upcoming':
+      return <LockClockOutlinedIcon />;
+      break;
+    case 'Unsubmitted':
+      return <CancelOutlinedIcon />;
+      break;
+    default:
+    return null;
+  }
+}
 
 function a11yProps(index: number) {
   return {
@@ -257,15 +290,15 @@ const AssessmentPage = () => {
         <Table sx={{ minWidth: 600 }} aria-label="a dense table">
           <TableHead>
             <TableRow>
-              <TableCell>Status</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Due Date</TableCell>
-              <TableCell>Test Duration</TableCell>
-              <TableCell>Submit Date</TableCell>
-              <TableCell>Score</TableCell>
-              <TableCell>Available Date</TableCell>
-              <TableCell>Action</TableCell>
+              <TableCellWrapper value={value} index={-1}>Status</TableCellWrapper>
+              <TableCellWrapper value={value} index={-1}>Title</TableCellWrapper>
+              <TableCellWrapper value={value} index={-1}>Type</TableCellWrapper>
+              <TableCellWrapper value={value} index={0}>Due Date</TableCellWrapper>
+              <TableCellWrapper value={value} index={0}>Test Duration</TableCellWrapper>
+              <TableCellWrapper value={value} index={1}>Submit Date</TableCellWrapper>
+              <TableCellWrapper value={value} index={1}>Score</TableCellWrapper>
+              <TableCellWrapper value={value} index={2}>Available Date</TableCellWrapper>
+              <TableCellWrapper value={value} index={0}></TableCellWrapper>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -274,18 +307,29 @@ const AssessmentPage = () => {
                 key={row.Title}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <TableCell>{row.Status}</TableCell>
-                <TableCell>{row.Title}</TableCell>
-                <TableCell>{row.Type}</TableCell>
+                <TableCellWrapper value={value} index={-1}>
+                  <Stack
+                    direction={{ xs: 'column', md: 'row' }}
+                    justifyContent="flex-start"
+                    alignItems={{ xs: 'flex-start', md: 'center' }}
+                  >
+                    {renderIconByStatus(row.Status)}
+                    <Typography variant="body2">{row.Status}</Typography>
+                  </Stack>
+                </TableCellWrapper>
+                <TableCellWrapper value={value} index={-1}>{row.Title}</TableCellWrapper>
+                <TableCellWrapper value={value} index={-1}>{row.Type}</TableCellWrapper>
 
-                <TableCell>{row.dueDate}</TableCell>
-                <TableCell>{row.testDuration}</TableCell>
-                <TableCell>{row.submittedDate}</TableCell>
-                <TableCell>{row.Score}</TableCell>
-                <TableCell>{row.availableDate}</TableCell>
-                <TableCell>
-                  <button>Action</button>
-                </TableCell>
+                <TableCellWrapper value={value} index={0}>{row.dueDate}</TableCellWrapper>
+                <TableCellWrapper value={value} index={0}>{row.testDuration}</TableCellWrapper>
+                <TableCellWrapper value={value} index={1}>{row.submittedDate}</TableCellWrapper>
+                <TableCellWrapper value={value} index={1}>{row.Score}</TableCellWrapper>
+                <TableCellWrapper value={value} index={2}>{row.availableDate}</TableCellWrapper>
+                <TableCellWrapper value={value} index={0}>
+                  <Button variant="contained" size="small">
+                    Open
+                  </Button>
+                </TableCellWrapper>
               </TableRow>
             ))}
           </TableBody>
