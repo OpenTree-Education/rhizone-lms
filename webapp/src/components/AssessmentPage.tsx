@@ -132,6 +132,12 @@ interface TableCellWrapperProps {
   index: number;
   value: number;
 }
+interface TableRowWrapperProps {
+  children?: React.ReactNode;
+  value: number;
+  status: string;
+}
+
 function TableCellWrapper(props: TableCellWrapperProps) {
   const { children, value, index, ...other } = props;
   return index === -1 || index === value? 
@@ -139,33 +145,36 @@ function TableCellWrapper(props: TableCellWrapperProps) {
   : null;
 }
 
+function TableRowWrapper(props: TableRowWrapperProps) {
+  const { children, status, value, ...other } = props;
+  switch(status) {
+    case 'Active':
+      return value === 0?<TableRow>{children}</TableRow>:null;
+    case 'Upcoming':
+      return value === 2?<TableRow>{children}</TableRow>:null;    
+    case 'Submitted':
+    case 'Graded':
+    case 'Unsubmitted':
+    default:
+    return value === 1?<TableRow>{children}</TableRow>:null;
+  }
+}
+
 function renderIconByStatus(status : string) {
   switch(status) {
     case 'Active':
       return <ScheduleOutlinedIcon />;
-      break;
     case 'Submitted':
       return <DoneOutlinedIcon />;
-      break;
     case 'Graded':
       return <DoneAllOutlinedIcon />;
-      break;
     case 'Upcoming':
       return <LockClockOutlinedIcon />;
-      break;
     case 'Unsubmitted':
       return <CancelOutlinedIcon />;
-      break;
     default:
     return null;
   }
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `vertical-tab-${index}`,
-    'aria-controls': `vertical-tabpanel-${index}`,
-  };
 }
 
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
@@ -303,9 +312,10 @@ const AssessmentPage = () => {
           </TableHead>
           <TableBody>
             {rows.map(row => (
-              <TableRow
+              <TableRowWrapper
+                value={value}
+                status={row.Status}
                 key={row.Title}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCellWrapper value={value} index={-1}>
                   <Stack
@@ -330,7 +340,7 @@ const AssessmentPage = () => {
                     Open
                   </Button>
                 </TableCellWrapper>
-              </TableRow>
+              </TableRowWrapper>
             ))}
           </TableBody>
         </Table>
