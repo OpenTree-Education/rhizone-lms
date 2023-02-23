@@ -1,4 +1,4 @@
-import { Box, Container, Grid, Stack } from '@mui/material';
+import { Box, Container, Grid, Stack, Button} from '@mui/material';
 import React, { useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -37,7 +37,7 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 function createData(
   Status: string,
   Title: string,
-  /*Type: string,*/
+  Type: string,
   Grade: string,
   Score: string,
   dueDate: string,
@@ -48,7 +48,7 @@ function createData(
   return {
     Status,
     Title,
-    /*Type,*/
+    Type,
     Grade,
     Score,
     dueDate,
@@ -62,6 +62,7 @@ const rows = [
   createData(
     'Active',
     'Assigment 4',
+    'Assignment',
     '',
     '',
     '25-2-2023',
@@ -69,12 +70,13 @@ const rows = [
     '18-2-2023',
     ''
   ),
-  createData('Upcoming', 'Assigment 5', '', '', '10-3-2023', '-', '', ''),
-  createData('Upcoming', 'Assigment 6', '', '', '17-3-2023', '-', '', ''),
-  createData('Upcoming', 'Assigment 7', '', '', '29-3-2023', '-', '', ''),
+  createData('Upcoming', 'Assigment 5', 'Assignment', '', '', '10-3-2023', '-', '', ''),
+  createData('Upcoming', 'Assigment 6', 'Assignment', '', '', '17-3-2023', '-', '', ''),
+  createData('Upcoming', 'Assigment 7', 'Assignment', '', '', '29-3-2023', '-', '', ''),
   createData(
-    'Past',
+    'Submitted',
     'Assigment 3',
+    'Assignment',
     '100',
     '60/60',
     '15-2-2023',
@@ -83,8 +85,9 @@ const rows = [
     '15-2-2023 23:59'
   ),
   createData(
-    'Past',
+    'Unsubmitted',
     'Assigment 2',
+    'Assignment',
     '85',
     '60/70',
     '25-1-2023',
@@ -93,8 +96,9 @@ const rows = [
     '25-1-2023 13:15'
   ),
   createData(
-    'Past',
+    'Graded',
     'Assigment 1',
+    'Assignment',
     '70',
     '70/100',
     '18-1-2023',
@@ -116,23 +120,26 @@ interface TableRowWrapperProps {
 
 function TableCellWrapper(props: TableCellWrapperProps) {
   const { children, value, index, ...other } = props;
-  return index === -1 || index === value? 
+  return index === -1 || index === value || value === 0? 
   <TableCell>{children}</TableCell> 
   : null;
 }
 
 function TableRowWrapper(props: TableRowWrapperProps) {
   const { children, status, value, ...other } = props;
+  if(value === 0){
+    return <TableRow>{children}</TableRow>
+  }
   switch(status) {
     case 'Active':
-      return value === 0?<TableRow>{children}</TableRow>:null;
+      return value === 1?<TableRow>{children}</TableRow>:null;
     case 'Upcoming':
-      return value === 2?<TableRow>{children}</TableRow>:null;    
+      return value === 3?<TableRow>{children}</TableRow>:null;    
     case 'Submitted':
     case 'Graded':
     case 'Unsubmitted':
     default:
-    return value === 1?<TableRow>{children}</TableRow>:null;
+    return value === 2?<TableRow>{children}</TableRow>:null;
   }
 }
 
@@ -183,71 +190,6 @@ const AssessmentPage = () => {
         <h1>Program Assessments</h1>
       </Stack>
 
-      {/* <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          <Typography>Active</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-        <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 600 }} size="small" aria-label="a dense table">
-        <TableHead>
-          <TableRow>
-            <TableCell align="right"  >date</TableCell>
-            <TableCell align="right">name</TableCell>
-            <TableCell align="right">Grade/Ungrade</TableCell>
-            
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow
-              key={row.name}  
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-             
-              <TableCell align="right">{row.date}</TableCell>
-              <TableCell align="right">
-               
-                {row.name}
-                </TableCell>
-              <TableCell align="right">{row.grade}</TableCell>
-              
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel2a-content"
-          id="panel2a-header"
-        >
-          <Typography>Past</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel3a-content"
-          id="panel3a-header"
-        >
-          <Typography>Upcoming</Typography>
-        </AccordionSummary>
-      </Accordion> */}
-
       <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
         <Tabs value={value} onChange={handleChangeTab}>
           <Tab
@@ -292,15 +234,15 @@ const AssessmentPage = () => {
         <Table sx={{ minWidth: 600 }} aria-label="a dense table">
           <TableHead>
             <TableRow>
-              <TableCell>Status</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>Grade</TableCell>
-              <TableCell>Score</TableCell>
-              <TableCell>Due Date</TableCell>
-              <TableCell>Test Duration</TableCell>
-              <TableCell>Available Date</TableCell>
-              <TableCell>Submit Date</TableCell>
-              <TableCell>Action</TableCell>
+              <TableCellWrapper value={value} index={-1}>Status</TableCellWrapper>
+              <TableCellWrapper value={value} index={-1}>Title</TableCellWrapper>
+              <TableCellWrapper value={value} index={-1}>Type</TableCellWrapper>
+              <TableCellWrapper value={value} index={1}>Due Date</TableCellWrapper>
+              <TableCellWrapper value={value} index={1}>Test Duration</TableCellWrapper>
+              <TableCellWrapper value={value} index={2}>Submit Date</TableCellWrapper>
+              <TableCellWrapper value={value} index={2}>Score</TableCellWrapper>
+              <TableCellWrapper value={value} index={3}>Available Date</TableCellWrapper>
+              {(value !== 3) && <TableCell>Action</TableCell>}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -326,11 +268,17 @@ const AssessmentPage = () => {
                 <TableCellWrapper value={value} index={0}>{row.dueDate}</TableCellWrapper>
                 <TableCellWrapper value={value} index={0}>{row.testDuration}</TableCellWrapper>
                 <TableCellWrapper value={value} index={1}>{row.submittedDate}</TableCellWrapper>
-                <TableCellWrapper value={value} index={1}>{row.Score}</TableCellWrapper>
+                <TableCellWrapper value={value} index={2}>{row.Score}</TableCellWrapper>
                 <TableCellWrapper value={value} index={2}>{row.availableDate}</TableCellWrapper>
                 <TableCellWrapper value={value} index={0}>
+                  {/* {row.Status == action && 
                   <Button variant="contained" size="small">
-                    Open
+                    Start
+                  </Button>} */}
+                </TableCellWrapper>
+                <TableCellWrapper value={value} index={1}>
+                  <Button variant="contained" size="small">
+                    View
                   </Button>
                 </TableCellWrapper>
               </TableRowWrapper>
