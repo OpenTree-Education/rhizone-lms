@@ -103,12 +103,54 @@ const rows = [
     '11-1-2023 10:00'
   ),
 ];
+interface TableCellWrapperProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+interface TableRowWrapperProps {
+  children?: React.ReactNode;
+  value: number;
+  status: string;
+}
 
-function a11yProps(index: number) {
-  return {
-    id: `vertical-tab-${index}`,
-    'aria-controls': `vertical-tabpanel-${index}`,
-  };
+function TableCellWrapper(props: TableCellWrapperProps) {
+  const { children, value, index, ...other } = props;
+  return index === -1 || index === value? 
+  <TableCell>{children}</TableCell> 
+  : null;
+}
+
+function TableRowWrapper(props: TableRowWrapperProps) {
+  const { children, status, value, ...other } = props;
+  switch(status) {
+    case 'Active':
+      return value === 0?<TableRow>{children}</TableRow>:null;
+    case 'Upcoming':
+      return value === 2?<TableRow>{children}</TableRow>:null;    
+    case 'Submitted':
+    case 'Graded':
+    case 'Unsubmitted':
+    default:
+    return value === 1?<TableRow>{children}</TableRow>:null;
+  }
+}
+
+function renderIconByStatus(status : string) {
+  switch(status) {
+    case 'Active':
+      return <ScheduleOutlinedIcon />;
+    case 'Submitted':
+      return <DoneOutlinedIcon />;
+    case 'Graded':
+      return <DoneAllOutlinedIcon />;
+    case 'Upcoming':
+      return <LockClockOutlinedIcon />;
+    case 'Unsubmitted':
+      return <CancelOutlinedIcon />;
+    default:
+    return null;
+  }
 }
 
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
@@ -263,22 +305,35 @@ const AssessmentPage = () => {
           </TableHead>
           <TableBody>
             {rows.map(row => (
-              <TableRow
+              <TableRowWrapper
+                value={value}
+                status={row.Status}
                 key={row.Title}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <TableCell>{row.Status}</TableCell>
-                <TableCell>{row.Title}</TableCell>
-                <TableCell>{row.Grade}</TableCell>
-                <TableCell>{row.Score}</TableCell>
-                <TableCell>{row.dueDate}</TableCell>
-                <TableCell>{row.testDuration}</TableCell>
-                <TableCell>{row.availableDate}</TableCell>
-                <TableCell>{row.submittedDate}</TableCell>
-                <TableCell>
-                  <button>Action</button>
-                </TableCell>
-              </TableRow>
+                <TableCellWrapper value={value} index={-1}>
+                  <Stack
+                    direction={{ xs: 'column', md: 'row' }}
+                    justifyContent="flex-start"
+                    alignItems={{ xs: 'flex-start', md: 'center' }}
+                  >
+                    {renderIconByStatus(row.Status)}
+                    <Typography variant="body2">{row.Status}</Typography>
+                  </Stack>
+                </TableCellWrapper>
+                <TableCellWrapper value={value} index={-1}>{row.Title}</TableCellWrapper>
+                <TableCellWrapper value={value} index={-1}>{row.Type}</TableCellWrapper>
+
+                <TableCellWrapper value={value} index={0}>{row.dueDate}</TableCellWrapper>
+                <TableCellWrapper value={value} index={0}>{row.testDuration}</TableCellWrapper>
+                <TableCellWrapper value={value} index={1}>{row.submittedDate}</TableCellWrapper>
+                <TableCellWrapper value={value} index={1}>{row.Score}</TableCellWrapper>
+                <TableCellWrapper value={value} index={2}>{row.availableDate}</TableCellWrapper>
+                <TableCellWrapper value={value} index={0}>
+                  <Button variant="contained" size="small">
+                    Open
+                  </Button>
+                </TableCellWrapper>
+              </TableRowWrapper>
             ))}
           </TableBody>
         </Table>
