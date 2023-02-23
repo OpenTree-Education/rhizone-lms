@@ -131,4 +131,9 @@ programsRouter.put(
   }
 );
 
+programsRouter.get('programs/:id/certificate/:principal_id', (req, res) => {
+  const response = { behaviour: 'brings up certificate' };
+  res.status(200).json(itemEnvelope(response));
+});
+
 export default programsRouter;

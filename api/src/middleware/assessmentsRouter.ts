@@ -11,7 +11,7 @@ assessmentsRouter.post('/', (req, res) => {
     const response = { behaviour: 'create new assessment' };
     res.status(200).json(itemEnvelope(response));
   });
-  
+
 assessmentsRouter.get('/:id', (req, res) => {
     const response = { behaviour: 'view a single assessment' };
     res.status(200).json(itemEnvelope(response));
@@ -42,8 +42,4 @@ assessmentsRouter.get('/:id/submissions/new', (req, res) => {
     res.status(200).json(itemEnvelope(response));
 });
 
-assessmentsRouter.get('programs/:id/certificate/:principal_id', (req, res) => {
-    const response = { behaviour: 'brings up certificate' };
-    res.status(200).json(itemEnvelope(response));
-});
 export default assessmentsRouter;
