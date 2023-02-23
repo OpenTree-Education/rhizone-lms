@@ -32,99 +32,75 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 
 function createData(
-  Title: string,
-  dueDate: string,
-  Type: string,
-  submittedDate: string,
   Status: string,
+  Title: string,
+  /*Type: string,*/
+  Grade: string,
+  Score: string,
+  dueDate: string,
+  testDuration: string,
   availableDate: string,
-  Score: number,
-  testDuration: number
+  submittedDate: string
 ) {
   return {
-    dueDate,
-    Title,
-    Type,
-    submittedDate,
     Status,
-    availableDate,
+    Title,
+    /*Type,*/
+    Grade,
     Score,
+    dueDate,
     testDuration,
+    availableDate,
+    submittedDate,
   };
 }
 
 const rows = [
   createData(
-    '25-3-2023',
-    'Assessment 1',
-    'Assignment',
-    '',
     'Active',
+    'Assigment 4',
+    '',
+    '',
     '25-2-2023',
-    30,
-    60
+    '1h',
+    '18-2-2023',
+    ''
+  ),
+  createData('Upcoming', 'Assigment 5', '', '', '10-3-2023', '-', '', ''),
+  createData('Upcoming', 'Assigment 6', '', '', '17-3-2023', '-', '', ''),
+  createData('Upcoming', 'Assigment 7', '', '', '29-3-2023', '-', '', ''),
+  createData(
+    'Past',
+    'Assigment 3',
+    '100',
+    '60/60',
+    '15-2-2023',
+    '30m',
+    '8-2-2023',
+    '15-2-2023 23:59'
   ),
   createData(
-    '25-3-2023',
-    'Assessment 1',
-    'Assignment',
-    '',
-    'Active',
-    '25-2-2023',
-    30,
-    60
+    'Past',
+    'Assigment 2',
+    '85',
+    '60/70',
+    '25-1-2023',
+    '45m',
+    '25-1-2023',
+    '25-1-2023 13:15'
   ),
   createData(
-    '25-3-2023',
-    'Assessment 1',
-    'Assignment',
-    '',
-    'Active',
-    '25-2-2023',
-    30,
-    60
-  ),
-  createData(
-    '25-3-2023',
-    'Assessment 1',
-    'Assignment',
-    '',
-    'Active',
-    '25-2-2023',
-    30,
-    60
-  ),
-  createData(
-    '25-3-2023',
-    'Assessment 1',
-    'Assignment',
-    '',
-    'Active',
-    '25-2-2023',
-    30,
-    60
-  ),
-  createData(
-    '25-3-2023',
-    'Assessment 1',
-    'Assignment',
-    '',
-    'Active',
-    '25-2-2023',
-    30,
-    60
-  ),
-  createData(
-    '25-3-2023',
-    'Assessment 1',
-    'Assignment',
-    '',
-    'Active',
-    '25-2-2023',
-    30,
-    60
+    'Past',
+    'Assigment 1',
+    '70',
+    '70/100',
+    '18-1-2023',
+    '1h',
+    '10-1-2023',
+    '11-1-2023 10:00'
   ),
 ];
 
@@ -162,7 +138,7 @@ const AssessmentPage = () => {
         justifyContent="space-between"
         alignItems={{ xs: 'flex-start', md: 'center' }}
       >
-        <h1>Assessment</h1>
+        <h1>Program Assessments</h1>
       </Stack>
 
       {/* <Accordion>
@@ -234,7 +210,16 @@ const AssessmentPage = () => {
         <Tabs value={value} onChange={handleChangeTab}>
           <Tab
             icon={
-              <StyledBadge badgeContent={4} color="primary">
+              <StyledBadge badgeContent={7} color="primary">
+                <AssessmentIcon />
+              </StyledBadge>
+            }
+            iconPosition="start"
+            label="All"
+          />
+          <Tab
+            icon={
+              <StyledBadge badgeContent={1} color="primary">
                 <ScheduleOutlinedIcon />
               </StyledBadge>
             }
@@ -242,12 +227,20 @@ const AssessmentPage = () => {
             label="Active"
           />
           <Tab
-            icon={<ArchiveOutlinedIcon />}
+            icon={
+              <StyledBadge badgeContent={3} color="primary">
+                <ArchiveOutlinedIcon />
+              </StyledBadge>
+            }
             iconPosition="start"
             label="Past"
           />
           <Tab
-            icon={<UpcomingOutlinedIcon />}
+            icon={
+              <StyledBadge badgeContent={3} color="primary">
+                <UpcomingOutlinedIcon />
+              </StyledBadge>
+            }
             iconPosition="start"
             label="Upcoming"
           />
@@ -259,12 +252,12 @@ const AssessmentPage = () => {
             <TableRow>
               <TableCell>Status</TableCell>
               <TableCell>Title</TableCell>
-              <TableCell>Type</TableCell>
+              <TableCell>Grade</TableCell>
+              <TableCell>Score</TableCell>
               <TableCell>Due Date</TableCell>
               <TableCell>Test Duration</TableCell>
-              <TableCell>Submit Date</TableCell>
-              <TableCell>Score</TableCell>
               <TableCell>Available Date</TableCell>
+              <TableCell>Submit Date</TableCell>
               <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
@@ -276,13 +269,12 @@ const AssessmentPage = () => {
               >
                 <TableCell>{row.Status}</TableCell>
                 <TableCell>{row.Title}</TableCell>
-                <TableCell>{row.Type}</TableCell>
-
+                <TableCell>{row.Grade}</TableCell>
+                <TableCell>{row.Score}</TableCell>
                 <TableCell>{row.dueDate}</TableCell>
                 <TableCell>{row.testDuration}</TableCell>
-                <TableCell>{row.submittedDate}</TableCell>
-                <TableCell>{row.Score}</TableCell>
                 <TableCell>{row.availableDate}</TableCell>
+                <TableCell>{row.submittedDate}</TableCell>
                 <TableCell>
                   <button>Action</button>
                 </TableCell>
