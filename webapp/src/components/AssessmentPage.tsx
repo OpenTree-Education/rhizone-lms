@@ -282,7 +282,12 @@ const AssessmentPage = () => {
           />
           <Tab
             icon={
-              <StyledBadge badgeContent={assessmentList.filter(x => x.status === "Active").length} color="primary">
+              <StyledBadge
+                badgeContent={
+                  assessmentList.filter(x => x.status === 'Active').length
+                }
+                color="primary"
+              >
                 <ScheduleOutlinedIcon />
               </StyledBadge>
             }
@@ -429,7 +434,8 @@ const AssessmentPage = () => {
                   statusTab={currentStatusTab}
                   index={[StatusTab.Past]}
                 >
-                  {(assessment.status === 'Submitted' || assessment.status === 'Graded') &&
+                  {(assessment.status === 'Submitted' ||
+                    assessment.status === 'Graded') &&
                     formatDateTime(assessment.submittedDate)}
                 </TableCellWrapper>
                 <TableCellWrapper
