@@ -38,7 +38,7 @@ interface AssessmentRow {
   status: string;
 }
 
-const rows: AssessmentRow[] = [
+const assessmentList: AssessmentRow[] = [
   {
     id: 1,
     title: 'Debugging and Testing',
@@ -282,7 +282,7 @@ const AssessmentPage = () => {
           />
           <Tab
             icon={
-              <StyledBadge badgeContent={4} color="primary">
+              <StyledBadge badgeContent={assessmentList.filter(x => x.status === "Active").length} color="primary">
                 <ScheduleOutlinedIcon />
               </StyledBadge>
             }
@@ -385,11 +385,11 @@ const AssessmentPage = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map(row => (
+            {assessmentList.map(assessment => (
               <TableRowWrapper
                 statusTab={currentStatusTab}
-                status={row.status}
-                key={row.id}
+                status={assessment.status}
+                key={assessment.id}
               >
                 <TableCellWrapper
                   statusTab={currentStatusTab}
@@ -400,7 +400,7 @@ const AssessmentPage = () => {
                     StatusTab.Upcoming,
                   ]}
                 >
-                  {row.title}
+                  {assessment.title}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
@@ -411,38 +411,38 @@ const AssessmentPage = () => {
                     StatusTab.Upcoming,
                   ]}
                 >
-                  {row.type}
+                  {assessment.type}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
                   index={[StatusTab.All, StatusTab.Active]}
                 >
-                  {formatDateTime(row.dueDate)}
+                  {formatDateTime(assessment.dueDate)}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
                   index={[StatusTab.Active]}
                 >
-                  {row.type === 'Test' && row.testDuration}
+                  {assessment.type === 'Test' && assessment.testDuration}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
                   index={[StatusTab.Past]}
                 >
-                  {(row.status === 'Submitted' || row.status === 'Graded') &&
-                    formatDateTime(row.submittedDate)}
+                  {(assessment.status === 'Submitted' || assessment.status === 'Graded') &&
+                    formatDateTime(assessment.submittedDate)}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
                   index={[StatusTab.All, StatusTab.Past]}
                 >
-                  {row.score !== -1 && row.score}
+                  {assessment.score !== -1 && assessment.score}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
                   index={[StatusTab.Upcoming]}
                 >
-                  {formatDateTime(row.availableDate)}
+                  {formatDateTime(assessment.availableDate)}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
@@ -453,13 +453,13 @@ const AssessmentPage = () => {
                     StatusTab.Upcoming,
                   ]}
                 >
-                  {renderChipByStatus(row.status)}
+                  {renderChipByStatus(assessment.status)}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
                   index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}
                 >
-                  {renderButtonByStatus(row.status)}
+                  {renderButtonByStatus(assessment.status)}
                 </TableCellWrapper>
               </TableRowWrapper>
             ))}
