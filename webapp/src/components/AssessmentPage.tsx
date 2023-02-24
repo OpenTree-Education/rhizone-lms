@@ -321,11 +321,29 @@ const AssessmentPage = () => {
                     Start
                   </Button>} */}
                 </TableCellWrapper>
-                <TableCellWrapper value={value} index={-1}>
-                  <Button variant="contained" size="small">
-                    View
-                  </Button>
-                </TableCellWrapper>
+                {row.Status === 'Active' && (
+                  <TableCellWrapper value={value} index={1}>
+                    <Button variant="contained" size="small">
+                      Start
+                    </Button>
+                  </TableCellWrapper>
+                )}
+                {row.Status === 'Upcoming' && (
+                  <TableCellWrapper value={value} index={3}>
+                    <Button disabled variant="contained" size="small">
+                      Inactive
+                    </Button>
+                  </TableCellWrapper>
+                )}
+                {(row.Status === 'Graded' ||
+                  row.Status === 'Unsubmitted' ||
+                  row.Status === 'Submitted') && (
+                  <TableCellWrapper value={value} index={2}>
+                    <Button variant="contained" size="small">
+                      View
+                    </Button>
+                  </TableCellWrapper>
+                )}
               </TableRowWrapper>
             ))}
           </TableBody>
