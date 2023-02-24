@@ -75,7 +75,7 @@ CREATE TABLE assessment_questions (
   assessment_id BIGINT NOT NULL,
   title TEXT NOT NULL,
   description TEXT,
-  assessment_question_type_id BIGINT NOT NULL,
+  question_type_id BIGINT NOT NULL,
   correct_answer_id BIGINT,
   max_score INT,
   sort_order INT NOT NULL,
@@ -83,8 +83,8 @@ CREATE TABLE assessment_questions (
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX assessment_answers_assessment_question_id (assessment_id),
   FOREIGN KEY (assessment_id) REFERENCES curriculum_assessments(id) ON DELETE CASCADE,
-  INDEX assessment_questions_assessment_question_type_id (assessment_question_type_id),
-  FOREIGN KEY (assessment_question_type_id) REFERENCES assessment_question_types(id),
+  INDEX assessment_questions_question_type_id (question_type_id),
+  FOREIGN KEY (question_type_id) REFERENCES assessment_question_types(id),
   PRIMARY KEY (id),
   UNIQUE KEY `assessment_and_question_number` (`assessment_id`,`sort_order`)
 );
