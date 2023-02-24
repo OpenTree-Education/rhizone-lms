@@ -1,4 +1,4 @@
-import { Box, Container, Grid, Stack } from '@mui/material';
+import { Box, Container, Grid, Stack, Button,} from '@mui/material';
 import React, { useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -18,9 +18,10 @@ import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import UpcomingOutlinedIcon from '@mui/icons-material/UpcomingOutlined';
 import LockClockOutlinedIcon from '@mui/icons-material/LockClockOutlined';
-
+import AssessmentIcon from'@mui/icons-material/Assessment';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -32,7 +33,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
+
 
 function createData(
   id: number,
@@ -145,12 +146,57 @@ const rows = [
     ''
   ),
 ];
+interface TableCellWrapperProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+interface TableRowWrapperProps {
+  children?: React.ReactNode;
+  value: number;
+  status: string;
+}
 
-function a11yProps(index: number) {
-  return {
-    id: `vertical-tab-${index}`,
-    'aria-controls': `vertical-tabpanel-${index}`,
-  };
+function TableCellWrapper(props: TableCellWrapperProps) {
+  const { children, value, index, ...other } = props;
+  return index === -1 || index === value || value === 0? 
+  <TableCell>{children}</TableCell> 
+  : null;
+}
+
+function TableRowWrapper(props: TableRowWrapperProps) {
+  const { children, status, value, ...other } = props;
+  if(value === 0){
+    return <TableRow>{children}</TableRow>
+  }
+  switch(status) {
+    case 'Active':
+      return value === 1?<TableRow>{children}</TableRow>:null;
+    case 'Upcoming':
+      return value === 3?<TableRow>{children}</TableRow>:null;    
+    case 'Submitted':
+    case 'Graded':
+    case 'Unsubmitted':
+    default:
+    return value === 2?<TableRow>{children}</TableRow>:null;
+  }
+}
+
+function renderIconByStatus(status : string) {
+  switch(status) {
+    case 'Active':
+      return <ScheduleOutlinedIcon />;
+    case 'Submitted':
+      return <DoneOutlinedIcon />;
+    case 'Graded':
+      return <DoneAllOutlinedIcon />;
+    case 'Upcoming':
+      return <LockClockOutlinedIcon />;
+    case 'Unsubmitted':
+      return <CancelOutlinedIcon />;
+    default:
+    return null;
+  }
 }
 
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
@@ -207,14 +253,23 @@ const AssessmentPage = () => {
         justifyContent="space-between"
         alignItems={{ xs: 'flex-start', md: 'center' }}
       >
-        <h1>Assessment</h1>
+        <h1>Program Assessments</h1>
       </Stack>
 
       <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
         <Tabs value={currentTab as number} onChange={handleChangeTab}>
           <Tab
             icon={
-              <StyledBadge badgeContent={4} color="primary">
+              <StyledBadge badgeContent={7} color="primary">
+                <AssessmentIcon />
+              </StyledBadge>
+            }
+            iconPosition="start"
+            label="All"
+          />
+          <Tab
+            icon={
+              <StyledBadge badgeContent={1} color="primary">
                 <ScheduleOutlinedIcon />
               </StyledBadge>
             }
@@ -223,14 +278,22 @@ const AssessmentPage = () => {
             label="Active"
           />
           <Tab
-            icon={<ArchiveOutlinedIcon />}
+            icon={
+              <StyledBadge badgeContent={3} color="primary">
+                <ArchiveOutlinedIcon />
+              </StyledBadge>
+            }
             iconPosition="start"
             // value="pastTab"
 
             label="Past"
           />
           <Tab
-            icon={<UpcomingOutlinedIcon />}
+            icon={
+              <StyledBadge badgeContent={3} color="primary">
+                <UpcomingOutlinedIcon />
+              </StyledBadge>
+            }
             iconPosition="start"
             label="Upcoming"
           />
@@ -240,109 +303,55 @@ const AssessmentPage = () => {
         <Table sx={{ minWidth: 600 }} aria-label="a dense table">
           <TableHead>
             <TableRow>
-              <TableCell>Title</TableCell>
-              <TableCell>Status</TableCell>
-
-              <TableCell>Type</TableCell>
-              {active && (
-                <>
-                  <TableCell>Due Date</TableCell>
-                  <TableCell>Test Duration</TableCell>
-                </>
-              )}
-
-              {past && (
-                <>
-                  {' '}
-                  <TableCell>Submitted Date</TableCell>
-                  <TableCell>Score</TableCell>
-                </>
-              )}
-              {upcoming && <TableCell>Available Date</TableCell>}
-
-              <TableCell>Action</TableCell>
+              <TableCellWrapper value={value} index={-1}>Status</TableCellWrapper>
+              <TableCellWrapper value={value} index={-1}>Title</TableCellWrapper>
+              <TableCellWrapper value={value} index={-1}>Type</TableCellWrapper>
+              <TableCellWrapper value={value} index={1}>Due Date</TableCellWrapper>
+              <TableCellWrapper value={value} index={1}>Test Duration</TableCellWrapper>
+              <TableCellWrapper value={value} index={2}>Submit Date</TableCellWrapper>
+              <TableCellWrapper value={value} index={2}>Score</TableCellWrapper>
+              <TableCellWrapper value={value} index={3}>Available Date</TableCellWrapper>
+              {(value !== 3) && <TableCell>Action</TableCell>}
             </TableRow>
           </TableHead>
           <TableBody>
-            {/* { active && rows.filter(row => row.Status ==='Active').map(row =>( */}
-            {/* { rows.map((row)=>( */}
+            {rows.map(row => (
+              <TableRowWrapper
+                value={value}
+                status={row.Status}
+                key={row.Title}
+              >
+                <TableCellWrapper value={value} index={-1}>
+                  <Stack
+                    direction={{ xs: 'column', md: 'row' }}
+                    justifyContent="flex-start"
+                    alignItems={{ xs: 'flex-start', md: 'center' }}
+                  >
+                    {renderIconByStatus(row.Status)}
+                    <Typography variant="body2">{row.Status}</Typography>
+                  </Stack>
+                </TableCellWrapper>
+                <TableCellWrapper value={value} index={-1}>{row.Title}</TableCellWrapper>
+                <TableCellWrapper value={value} index={-1}>{row.Type}</TableCellWrapper>
 
-            {/* <TableRow
-              key={row.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              > */}
-            {active &&
-              rows
-                .filter(item => item.Status === 'Active')
-                .map(row => (
-                  <>
-                    <TableRow
-                      key={row.id}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
-                      <TableCell>{row.Title}</TableCell>
-                      <TableCell>{row.Status}</TableCell>
-                      <TableCell>{row.Type}</TableCell>
-                      <TableCell>{row.dueDate}</TableCell>
-                      <TableCell>{row.testDuration}</TableCell>
-                      <TableCell>
-                        <Stack direction="row" spacing={2}>
-                          <Button href="#text-buttons">Start</Button>
-                        </Stack>
-                      </TableCell>
-                    </TableRow>
-                  </>
-                ))}
-            {past &&
-              rows
-                .filter(row => row.Status === 'Past')
-                .map(row => (
-                  <>
-                    <TableRow
-                      key={row.id}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
-                      <TableCell>{row.Title}</TableCell>
-                      <TableCell>{row.Status}</TableCell>
-                      <TableCell>{row.Type}</TableCell>
-                      <TableCell>{row.submittedDate}</TableCell>
-                      <TableCell>{row.Score}</TableCell>
-                      <TableCell>
-                        <Stack direction="row" spacing={2}>
-                          <Button href="#text-buttons" disabled>
-                            Review
-                          </Button>
-                        </Stack>
-                      </TableCell>
-                    </TableRow>
-                  </>
-                ))}
-            {upcoming &&
-              rows
-                .filter(item => item.Status === 'Upcoming')
-                .map(row => (
-                  <>
-                    <TableRow
-                      key={row.id}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
-                      <TableCell>{row.Title}</TableCell>
-                      <TableCell>{row.Status}</TableCell>
-                      <TableCell>{row.Type}</TableCell>
-                      <TableCell>{row.availableDate}</TableCell>
-                      <TableCell>
-                        <Stack direction="row" spacing={2}>
-                          <Button href="#text-buttons" disabled>
-                            Not Active
-                          </Button>
-                        </Stack>
-                      </TableCell>
-                    </TableRow>
-                  </>
-                ))}
-
-            {/* </TableRow> */}
-            {/* ) )} */}
+                <TableCellWrapper value={value} index={0}>{row.dueDate}</TableCellWrapper>
+                <TableCellWrapper value={value} index={0}>{row.testDuration}</TableCellWrapper>
+                <TableCellWrapper value={value} index={1}>{row.submittedDate}</TableCellWrapper>
+                <TableCellWrapper value={value} index={2}>{row.Score}</TableCellWrapper>
+                <TableCellWrapper value={value} index={2}>{row.availableDate}</TableCellWrapper>
+                <TableCellWrapper value={value} index={0}>
+                  {/* {row.Status == action && 
+                  <Button variant="contained" size="small">
+                    Start
+                  </Button>} */}
+                </TableCellWrapper>
+                <TableCellWrapper value={value} index={1}>
+                  <Button variant="contained" size="small">
+                    View
+                  </Button>
+                </TableCellWrapper>
+              </TableRowWrapper>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
