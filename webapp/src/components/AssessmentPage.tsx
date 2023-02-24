@@ -127,7 +127,7 @@ enum StatusTab{
 
 interface TableCellWrapperProps {
   children?: React.ReactNode;
-  index: number;
+  index: number[];
   statusTab: number;
 }
 interface TableRowWrapperProps {
@@ -138,8 +138,7 @@ interface TableRowWrapperProps {
 
 function TableCellWrapper(props: TableCellWrapperProps) {
   const { children, statusTab, index} = props;
-  return index === StatusTab.All || index === statusTab || statusTab === StatusTab.All ? (
-
+  return index.includes(statusTab) ? (
     <TableCell>{children}</TableCell>   
   ) : null;
 }
@@ -260,31 +259,31 @@ const AssessmentPage = () => {
         <Table sx={{ minWidth: 600 }} aria-label="a dense table">
           <TableHead>
             <TableRow>
-              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.All ||StatusTab.Active}>
+              <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.All, StatusTab.Active, StatusTab.Past, StatusTab.Upcoming]}>
                 Title
               </TableCellWrapper>
-              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.All}>
+              <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.All, StatusTab.Active, StatusTab.Past, StatusTab.Upcoming]}>
                 Type
               </TableCellWrapper>
-              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Active }>
+              <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.All, StatusTab.Active]}>
                 Due Date
               </TableCellWrapper>
-              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Active }>
+              <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.Active]}>
                 Test Time Limit
               </TableCellWrapper>
-              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Past}>
+              <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.Past]}>
                 Submitted Date
               </TableCellWrapper>
-              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Past}>
+              <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.All, StatusTab.Past]}>
                 Score
               </TableCellWrapper>
-              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Upcoming}>
+              <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.Upcoming]}>
                 Available Date
               </TableCellWrapper>
-              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.All}>
+              <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.All, StatusTab.Active, StatusTab.Past, StatusTab.Upcoming]}>
                 Status
               </TableCellWrapper>
-              <TableCellWrapper statusTab={currentStatusTab} index={currentStatusTab !== StatusTab.Upcoming? currentStatusTab : StatusTab.Active}>
+              <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}>
                 Action
               </TableCellWrapper>
             </TableRow>
@@ -292,31 +291,31 @@ const AssessmentPage = () => {
           <TableBody>
             {rows.map(row => (
               <TableRowWrapper statusTab={currentStatusTab} status={row.status} key={row.id}>
-                <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.All}>
+                <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.All, StatusTab.Active, StatusTab.Past, StatusTab.Upcoming]}>
                   {row.title}
                 </TableCellWrapper>
-                <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.All}>
+                <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.All, StatusTab.Active, StatusTab.Past, StatusTab.Upcoming]}>
                   {row.type}
                 </TableCellWrapper>
-                <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Active}>
+                <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.All, StatusTab.Active]}>
                   {formatDateTime (row.dueDate)}
                 </TableCellWrapper>
-                <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Active}>
+                <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.Active]}>
                   {row.type === "Test" && row.testDuration}
                 </TableCellWrapper>
-                <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Past}>
+                <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.Past]}>
                   {(row.status === "Submitted" || row.status === "Graded") && formatDateTime (row.submittedDate)}
                 </TableCellWrapper>
-                <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Past}>
+                <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.All, StatusTab.Past]}>
                   {row.score !== -1 && row.score}
                 </TableCellWrapper>
-                <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Upcoming}>
+                <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.Upcoming]}>
                   {formatDateTime (row.availableDate)}
                 </TableCellWrapper>
-                <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.All}>
+                <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.All, StatusTab.Active, StatusTab.Past, StatusTab.Upcoming]}>
                     {renderChipByStatus(row.status)}
                 </TableCellWrapper>
-                <TableCellWrapper statusTab={currentStatusTab} index={currentStatusTab !== StatusTab.Upcoming? currentStatusTab : StatusTab.Active}>
+                <TableCellWrapper statusTab={currentStatusTab} index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}>
                     {renderButtonByStatus(row.status)}
                 </TableCellWrapper>
               </TableRowWrapper>
