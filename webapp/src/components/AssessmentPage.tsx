@@ -1,5 +1,6 @@
 import {
   Box,
+  Chip,
   Container,
   Stack,
   Button,
@@ -16,167 +17,176 @@ import {
 import React, { useState } from 'react';
 import Badge, { BadgeProps } from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
+import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 import DoneAllOutlinedIcon from '@mui/icons-material/DoneAllOutlined';
 import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import UpcomingOutlinedIcon from '@mui/icons-material/UpcomingOutlined';
 import LockClockOutlinedIcon from '@mui/icons-material/LockClockOutlined';
-import PlayCircleFilledWhiteOutlinedIcon from '@mui/icons-material/PlayCircleFilledWhiteOutlined';
-import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 
-function createData(
-  id: number,
-  title: string,
-  type: string,
-  dueDate: string,
-  testDuration: number,
-  submittedDate: string,
-  score: number,
-  availableDate: string,
-  status: string
-) {
-  return {
-    id,
-    title,
-    type,
-    dueDate,
-    testDuration,
-    submittedDate,
-    score,
-    availableDate,
-    status,
-  };
+interface AssessmentRow {
+  id: number;
+  title: string;
+  type: string;
+  dueDate: string;
+  testDuration: number;
+  submittedDate: string;
+  score: number;
+  availableDate: string;
+  status: string;
 }
 
-const rows = [
-  createData(
-    1,
-    'Debugging and Testing',
-    'Assignment',
-    '2023-03-25',
-    0,
-    '-',
-    -1,
-    '2023-02-25',
-    'Active'
-  ),
-  createData(
-    2,
-    'Communication and Documentation',
-    'Test',
-    '2023-03-24',
-    60,
-    '-',
-    -1,
-    '2023-04-11',
-    'Active'
-  ),
-  createData(
-    3,
-    'Accessibility in Design',
-    'Practice Quiz',
-    '2023-06-22',
-    0,
-    '2023-02-22',
-    90,
-    '2023-01-22',
-    'Graded'
-  ),
-  createData(
-    4,
-    'Product-Minded Professional',
-    'Assignment',
-    '2023-05-23',
-    0,
-    '-',
-    0,
-    '2023-01-11',
-    'Unsubmitted'
-  ),
-  createData(
-    5,
-    'Finalize the Product Specification',
-    'Test',
-    '2023-01-11',
-    60,
-    '2023-02-22',
-    -1,
-    '2023-09-08',
-    'Submitted'
-  ),
-  createData(
-    6,
-    'Leadership and Teamwork',
-    'Assignment',
-    '2023-03-27',
-    0,
-    '-',
-    -1,
-    '2023-02-27',
-    'Upcoming'
-  ),
-  createData(
-    7,
-    'Intermediate Git + GitHub ',
-    'Assignment',
-    '2023-01-25',
-    60,
-    '-',
-    0,
-    '-',
-    'Unsubmitted'
-  ),
+const rows: AssessmentRow[] = [
+  {
+    id: 1,
+    title: 'Debugging and Testing',
+    type: 'Assignment',
+    dueDate: '2023-03-25',
+    testDuration: 0,
+    submittedDate: '-',
+    score: -1,
+    availableDate: '2023-02-25',
+    status: 'Active'
+  },
+  {     
+    id: 2,
+    title:'Communication and Documentation',
+    type: 'Test',
+    dueDate: '2023-03-24',
+    testDuration:60,
+    submittedDate: '-',
+    score:-1,
+    availableDate: '2023-04-11',
+    status: 'Active'
+  },
+  {
+    id: 3,
+    title:'Accessibility in Design',
+    type: 'Practice Quiz',
+    dueDate: '2023-06-22',
+    testDuration:0,
+    submittedDate: '2023-02-22',
+    score:90,
+    availableDate: '2023-01-22',
+    status: 'Graded'
+  },
+  {
+    id: 4,
+    title:'Product-Minded Professional',
+    type: 'Assignment',
+    dueDate: '2023-05-23',
+    testDuration:0,
+    submittedDate: '-',
+    score:0,
+    availableDate: '2023-01-11',
+    status: 'Unsubmitted'
+  },
+  {
+    id: 5,
+    title:'Finalize the Product Specification',
+    type: 'Test',
+    dueDate: '2023-01-11',
+    testDuration:60,
+    submittedDate: '2023-02-22',
+    score:-1,
+    availableDate: '2023-09-08',
+    status: 'Submitted'
+  },
+  {
+    id: 6,
+    title:'Leadership and Teamwork',
+    type: 'Assignment',
+    dueDate: '2023-03-27',
+    testDuration:0,
+    submittedDate: '-',
+    score:-1,
+    availableDate: '2023-02-27',
+    status: 'Upcoming'
+  },
+  {
+    id: 7,
+    title:'Intermediate Git + GitHub ',
+    type: 'Assignment',
+    dueDate: '2023-01-25',
+    testDuration:60,
+    submittedDate: '-',
+    score:0,
+    availableDate: '2023-01-15',
+    status: 'Unsubmitted'
+  },
 ];
+
+enum StatusTab{
+  All,
+  Active,
+  Past,
+  Upcoming,
+}
+
 interface TableCellWrapperProps {
   children?: React.ReactNode;
   index: number;
-  value: number;
+  statusTab: number;
 }
 interface TableRowWrapperProps {
   children?: React.ReactNode;
-  value: number;
+  statusTab: number;
   status: string;
 }
 
 function TableCellWrapper(props: TableCellWrapperProps) {
-  const { children, value, index, ...other } = props;
-  return index === -1 || index === value || value === 0 ? (
-    <TableCell>{children}</TableCell>
+  const { children, statusTab, index} = props;
+  return index === StatusTab.All || index === statusTab || statusTab === StatusTab.All ? (
+    <TableCell>{children}</TableCell>   
   ) : null;
 }
 
 function TableRowWrapper(props: TableRowWrapperProps) {
-  const { children, status, value, ...other } = props;
-  if (value === 0) {
+  const { children, status, statusTab} = props;
+  if (statusTab === StatusTab.All) {
     return <TableRow>{children}</TableRow>;
   }
   switch (status) {
     case 'Active':
-      return value === 1 ? <TableRow>{children}</TableRow> : null;
+      return statusTab === StatusTab.Active ? <TableRow>{children}</TableRow> : null;
     case 'Upcoming':
-      return value === 3 ? <TableRow>{children}</TableRow> : null;
+      return statusTab === StatusTab.Upcoming ? <TableRow>{children}</TableRow> : null;
     case 'Submitted':
     case 'Graded':
     case 'Unsubmitted':
     default:
-      return value === 2 ? <TableRow>{children}</TableRow> : null;
+      return statusTab === StatusTab.Past ? <TableRow>{children}</TableRow> : null;
   }
 }
 
-function renderIconButtonByStatus(status: string) {
+function renderButtonByStatus(status: string) {
   switch (status) {
     case 'Active':
-      return <Button variant="contained" size="small" endIcon={<PlayCircleFilledWhiteOutlinedIcon/>}>Start</Button>;
+      return <Button variant="contained" size="small">Start</Button>;
     case 'Submitted':
-      return <Button variant="contained" size="small" startIcon={<RemoveRedEyeOutlinedIcon/>}>Submitted</Button>;
     case 'Graded':
-      return <Button variant="contained" size="small" startIcon={<DoneAllOutlinedIcon/>}>Graded</Button>;
+      return <Button variant="contained" size="small">View</Button>;
     case 'Upcoming':
-      return <Button variant="contained" size="small" disabled startIcon={<LockClockOutlinedIcon/>}>Upcoming</Button>;
     case 'Unsubmitted':
-      return <Button variant="contained" size="small" disabled startIcon={<CancelOutlinedIcon/>}>Unsubmitted</Button>;
+    default:
+      return null;
+  }
+}
+
+function renderChipByStatus(status: string) {
+  switch (status) {
+    case 'Active':
+      return <Chip variant="outlined" color="primary" size="small" icon={<ScheduleOutlinedIcon />} label = "Active"/>
+    case 'Submitted':
+      return <Chip variant="outlined" color="primary" size="small" icon={<CheckOutlinedIcon />} label = "Submitted"/>
+    case 'Graded':
+      return <Chip variant="outlined" color="success" size="small" icon={<DoneAllOutlinedIcon />} label = "Graded"/>
+    case 'Upcoming':
+      return <Chip variant="outlined" size="small" icon={<LockClockOutlinedIcon />} label = "Upcoming"/>
+    case 'Unsubmitted':
+      return <Chip variant="outlined" color="error" size="small" icon={<CancelOutlinedIcon />} label = "Unsubmitted"/>
     default:
       return null;
   }
@@ -190,9 +200,9 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
 }));
 
 const AssessmentPage = () => {
-  const [value, setValue] = useState(0);
-  const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  const [currentStatusTab, setCurrentStatusTab] = useState(StatusTab.Active);
+  const handleChangeTab = (event: React.SyntheticEvent, newCurrentStatusTab: number) => {
+    setCurrentStatusTab(newCurrentStatusTab);
   };
 
   return (
@@ -206,7 +216,7 @@ const AssessmentPage = () => {
       </Stack>
 
       <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
-        <Tabs value={value} onChange={handleChangeTab}>
+        <Tabs value={currentStatusTab} onChange={handleChangeTab}>
           <Tab
             icon={
               <StyledBadge color="primary">
@@ -249,58 +259,64 @@ const AssessmentPage = () => {
         <Table sx={{ minWidth: 600 }} aria-label="a dense table">
           <TableHead>
             <TableRow>
-              <TableCellWrapper value={value} index={-1}>
+              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.All}>
                 Title
               </TableCellWrapper>
-              <TableCellWrapper value={value} index={-1}>
+              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.All}>
                 Type
               </TableCellWrapper>
-              <TableCellWrapper value={value} index={1}>
+              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Active}>
                 Due Date
               </TableCellWrapper>
-              <TableCellWrapper value={value} index={1}>
+              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Active}>
                 Test Time Limit
               </TableCellWrapper>
-              <TableCellWrapper value={value} index={2}>
+              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Past}>
                 Submitted Date
               </TableCellWrapper>
-              <TableCellWrapper value={value} index={2}>
+              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Past}>
                 Score
               </TableCellWrapper>
-              <TableCellWrapper value={value} index={3}>
+              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Upcoming}>
                 Available Date
               </TableCellWrapper>
-              <TableCellWrapper value={value} index={value !== 3? value : 0}>
+              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.All}>
+                Status
+              </TableCellWrapper>
+              <TableCellWrapper statusTab={currentStatusTab} index={currentStatusTab !== StatusTab.Upcoming? currentStatusTab : StatusTab.Active}>
                 Action
               </TableCellWrapper>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map(row => (
-              <TableRowWrapper value={value} status={row.status} key={row.id}>
-                <TableCellWrapper value={value} index={-1}>
+              <TableRowWrapper statusTab={currentStatusTab} status={row.status} key={row.id}>
+                <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.All}>
                   {row.title}
                 </TableCellWrapper>
-                <TableCellWrapper value={value} index={-1}>
+                <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.All}>
                   {row.type}
                 </TableCellWrapper>
-                <TableCellWrapper value={value} index={1}>
+                <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Active}>
                   {row.dueDate}
                 </TableCellWrapper>
-                <TableCellWrapper value={value} index={1}>
+                <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Active}>
                   {row.type === "Test" && row.testDuration}
                 </TableCellWrapper>
-                <TableCellWrapper value={value} index={2}>
+                <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Past}>
                   {(row.status === "Submitted" || row.status === "Graded") && row.submittedDate}
                 </TableCellWrapper>
-                <TableCellWrapper value={value} index={2}>
+                <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Past}>
                   {row.score !== -1 && row.score}
                 </TableCellWrapper>
-                <TableCellWrapper value={value} index={3}>
+                <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Upcoming}>
                   {row.availableDate}
                 </TableCellWrapper>
-                <TableCellWrapper value={value} index={value !== 3? value : 0}>
-                    {renderIconButtonByStatus(row.status)}
+                <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.All}>
+                    {renderChipByStatus(row.status)}
+                </TableCellWrapper>
+                <TableCellWrapper statusTab={currentStatusTab} index={currentStatusTab !== StatusTab.Upcoming? currentStatusTab : StatusTab.Active}>
+                    {renderButtonByStatus(row.status)}
                 </TableCellWrapper>
               </TableRowWrapper>
             ))}
