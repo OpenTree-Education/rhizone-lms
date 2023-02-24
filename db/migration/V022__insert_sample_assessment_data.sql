@@ -73,7 +73,7 @@ VALUES
   (1, "How does React differ from other JavaScript frameworks?", NULL, 2, NULL, 1, 9),
   (1, "What are some of the benefits of using React?", NULL, 2, NULL, 1, 10),
   (2, "A JOIN clause is used to combine rows from two or more tables, based on a related column between them. Which command is not a JOIN type in SQL?", NULL, 1, 30, 1, 1),
-  (2, "Which statement is wrong?", NULL, 1, 32, 1, 2),
+  (2, "Which statement is wrong?", NULL, 1, 32, 2, 2),
   (2, "How can we add a column to a table?", NULL, 1, 39, 1, 3),
   (2, "Each table can contain more than one primary key.", NULL, 1, 41, 1, 4),
   (3, "What is MySQL?", NULL, 1, 42, 1, 1),
@@ -81,11 +81,11 @@ VALUES
   (3, "Which command is used to create a new database in MySQL?", NULL, 1, 50, 1, 3),
   (3, "COUNT, SUM, and INSERT INTO are some common MySQL aggregate functions.", NULL, 1, 53, 1, 4),
   (3, "Which command is used to insert new data into a MySQL table?", NULL, 1, 57, 1, 5),
-  (3, "Which command is used to delete a table from a MySQL database?", NULL, 1, 59, 11, 6),
+  (3, "Which command is used to delete a table from a MySQL database?", NULL, 1, 59, 1, 6),
   (3, "Which builtin MySQL function can be used to add every value from a column together in a query?", NULL, 1, 65, 1, 7),
-  (3, "Which command is used to retrieve data from a MySQL table?", NULL, 2, NULL, 1, 8),
-  (3, "Which function is used to count the number of rows in a MySQL table?", NULL, 2, NULL, 1, 9),
-  (3, "Which keyword is used to specify the condition for a MySQL query?", NULL, 2, NULL, 1, 10);
+  (3, "Which command is used to retrieve data from a MySQL table?", NULL, 2, NULL, 9, 8),
+  (3, "Which function is used to count the number of rows in a MySQL table?", NULL, 2, NULL, 9, 9),
+  (3, "Which keyword is used to specify the condition for a MySQL query?", NULL, 2, NULL, 10, 10);
 
 INSERT INTO `assessment_answers`
   (`question_id`, `title`, `description`, `sort_order`)
