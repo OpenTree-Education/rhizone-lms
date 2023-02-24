@@ -132,7 +132,9 @@ programsRouter.put(
 );
 
 programsRouter.get('/:programId/certificate/:principal_id', (req, res) => {
-  const response = { behaviour: 'Retrieves program completion information of a participant.' };
+  const response = {
+    behaviour: 'Retrieves program completion information of a participant.',
+  };
   res.status(200).json(itemEnvelope(response));
 });
 
