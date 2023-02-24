@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - "features/**"
 
 jobs:
   check_api:
