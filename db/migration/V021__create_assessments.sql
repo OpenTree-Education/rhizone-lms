@@ -29,7 +29,7 @@ CREATE TABLE program_participants (
   INDEX program_participants_program_id (program_id),
   FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE CASCADE,
   INDEX program_participants_role_id (role_id),
-  FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL,
+  FOREIGN KEY (role_id) REFERENCES program_participant_roles(id) ON DELETE SET NULL,
   PRIMARY KEY (id),
   UNIQUE KEY `principals_and_programs` (`principal_id`,`program_id`)
 );
@@ -81,13 +81,11 @@ CREATE TABLE assessment_questions (
   max_score INT,
   sort_order INT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ON DELETE CASCADE,
-  INDEX assessment_questions_assessment_id (assessment_id),
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX assessment_answers_assessment_question_id (assessment_id),
   FOREIGN KEY (assessment_id) REFERENCES curriculum_assessments(id) ON DELETE CASCADE,
   INDEX assessment_questions_assessment_question_type_id (assessment_question_type_id),
   FOREIGN KEY (assessment_question_type_id) REFERENCES assessment_question_types(id),
-  INDEX assessment_questions_correct_answer_id (correct_answer_id),
-  FOREIGN KEY (correct_answer_id) REFERENCES correct_answers(id) ON DELETE SET NULL,
   PRIMARY KEY (id),
   UNIQUE KEY `assessment_and_question_number` (`assessment_id`,`sort_order`)
 );
