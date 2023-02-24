@@ -39,7 +39,7 @@ VALUES
   ("SQL Quiz", "A check on your SQL learning.", 7, 5, NULL, NULL, NULL, 10, 3),
   ("Final Exam", "The final exam for the course.", 8, 5, NULL, NULL, NULL, 11, 3);
 
-INSERT INTO `question_types`
+INSERT INTO `assessment_question_types`
   (`title`)
 VALUES
   ("single choice"),
