@@ -222,7 +222,56 @@ VALUES (1, "What is React?", NULL, 1, 4, 1, 1),
         1,
         10
     ),
+    
     --QUIZ 
+
+    
+    --quiz 1
+    (
+        2,
+        "A JOIN clause is used to combine rows from two or more tables, based on a related column between them. Which command is not a Join type in SQL?",
+        NULL,
+        1,
+        30,
+        1,
+        1
+    ),
+
+    --quiz 2
+
+    (
+        2,
+        "Which statement is wrong?" , 
+        NULL,
+        1,
+        32,
+        1,
+        2
+    ),
+
+    --quiz 3
+
+        (
+        2,
+        "How can we add a column to a table?" , 
+        NULL,
+        1,
+        36,
+        1,
+        3
+    ),
+
+    --quiz 4
+
+        (
+        2,
+        "Each table can contain more than one primary key." ,
+        NULL,
+        1,
+        38,
+        1,
+        4
+    ),
 
 
     --TEST 
@@ -445,6 +494,102 @@ VALUES (1, "A relational database management system", NULL, 1),
     --question 8 (row 26)
     (9, "React differs from other JavaScript frameworks because it uses a component-based architecture, a virtual DOM, JSX syntax, unidirectional data flow, and is primarily focused on building UIs rather than providing a complete application framework. These features make it faster, more efficient, and more flexible than other frameworks.", NULL, 1),
     (10, "Benefits of using React include its modular and reusable components, efficient updates with virtual DOM, JSX syntax, and active community.", NULL, 1),
+
+
+--quiz
+
+--quiz 1 (row 28-31)
+    (
+        11,
+        "Self Join",
+        NULL,
+        1
+    ),
+    (
+        11,
+        "Full Join",
+        NULL,
+        2
+    ),
+    (
+        11,
+        "Half Join",
+        NULL,
+        3
+    ),
+    (
+        11,
+        "Inner Join",
+        NULL,
+        4
+    ),
+
+
+--quiz 2  (row 32-35)
+    (
+        12,
+        "TypeScript is known as Dynamically-typed language",
+        NULL,
+        1
+    ),
+    (
+        12,
+        "JavaScript is both a functional as well as object-oriented programming language",
+        NULL,
+        2
+    ),
+    (
+        12,
+        "TypeScript takes a long time to compile the code",
+        NULL,
+        3
+    ),
+    (
+        12,
+        "During compile time, the source code is translated to a byte code",
+        NULL,
+        4
+    ),
+
+--quiz 3  (row 36-39)
+    (
+        13,
+        "CREATE TABLE",
+        NULL,
+        1
+    ),
+    (
+        13,
+        "ADD DATA",
+        NULL,
+        2
+    ),
+    (
+        13,
+        "INSERT DATA",
+        NULL,
+        3
+    ),
+    (
+        13,
+        "ALTER TABLE",
+        NULL,
+        4
+    ),
+
+--quiz 4  (row 37-38)
+    (
+        14,
+        "True",
+        NULL,
+        1
+    ),
+    (
+        14,
+        "False",
+        NULL,
+        2
+    ),
 
 
 
