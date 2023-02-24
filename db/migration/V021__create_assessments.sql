@@ -1,4 +1,3 @@
-
 CREATE TABLE assessment_question_types (
   id BIGINT NOT NULL AUTO_INCREMENT,
   title TEXT NOT NULL,
