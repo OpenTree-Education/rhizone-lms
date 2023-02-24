@@ -27,35 +27,35 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 
 function createData(
   id: number,
-  Title: string,
-  Type: string,
+  title: string,
+  type: string,
   dueDate: string,
   testDuration: number,
   submittedDate: string,
-  Score: number,
+  score: number,
   availableDate: string,
-  Status: string
+  status: string
 ) {
   return {
     id,
-    Title,
-    Type,
+    title,
+    type,
     dueDate,
     testDuration,
     submittedDate,
-    Score,
+    score,
     availableDate,
-    Status,
+    status,
   };
 }
 
 const rows = [
   createData(
     1,
-    'Assessment 1',
+    'Debugging and Testing',
     'Assignment',
     '2023-03-25',
-    60,
+    0,
     '-',
     0,
     '2023-02-25',
@@ -63,8 +63,8 @@ const rows = [
   ),
   createData(
     2,
-    'Assessment 2',
-    'Assignment',
+    'Communication and Documentation',
+    'Test',
     '2023-03-24',
     60,
     '-',
@@ -74,21 +74,21 @@ const rows = [
   ),
   createData(
     3,
-    'Assessment 3',
-    'Assignment',
+    'Accessibility in Design',
+    'Practice Quiz',
     '2023-06-22',
-    60,
-    '-',
     0,
-    '2023-12-22',
+    '2023-02-22',
+    90,
+    '2023-01-22',
     'Graded'
   ),
   createData(
     4,
-    'Assessment 4',
+    'Product-Minded Professional',
     'Assignment',
     '2023-05-23',
-    60,
+    0,
     '-',
     0,
     '2023-01-11',
@@ -96,34 +96,34 @@ const rows = [
   ),
   createData(
     5,
-    'Assessment 5',
-    'Assignment',
-    '25-3-2023-01-11',
+    'Finalize the Product Specification',
+    'Test',
+    '2023-01-11',
     60,
-    '-',
-    0,
+    '2023-02-22',
+    -1,
     '2023-09-08',
     'Submitted'
   ),
   createData(
     6,
-    'Assessment 6',
+    'Leadership and Teamwork',
     'Assignment',
-    '-',
+    '2023-03-27',
     0,
     '-',
     0,
-    '2023-11-11',
+    '2023-02-27',
     'Upcoming'
   ),
   createData(
     7,
-    'Assessment 7',
+    'Intermediate Git + GitHub ',
     'Assignment',
-    '-',
+    '2023-01-25',
     60,
-    '2023-01-29',
-    40,
+    '-',
+    0,
     '-',
     'Unsubmitted'
   ),
@@ -267,7 +267,7 @@ const AssessmentPage = () => {
                 Due Date
               </TableCellWrapper>
               <TableCellWrapper value={value} index={1}>
-                Test Duration
+                Test Time Limit
               </TableCellWrapper>
               <TableCellWrapper value={value} index={2}>
                 Submitted Date
@@ -286,24 +286,24 @@ const AssessmentPage = () => {
           </TableHead>
           <TableBody>
             {rows.map(row => (
-              <TableRowWrapper value={value} status={row.Status} key={row.id}>
+              <TableRowWrapper value={value} status={row.status} key={row.id}>
                 <TableCellWrapper value={value} index={-1}>
-                  {row.Title}
+                  {row.title}
                 </TableCellWrapper>
                 <TableCellWrapper value={value} index={-1}>
-                  {row.Type}
+                  {row.type}
                 </TableCellWrapper>
                 <TableCellWrapper value={value} index={1}>
                   {row.dueDate}
                 </TableCellWrapper>
                 <TableCellWrapper value={value} index={1}>
-                  {row.testDuration}
+                  {row.type === "Test" && row.testDuration}
                 </TableCellWrapper>
                 <TableCellWrapper value={value} index={2}>
                   {row.submittedDate}
                 </TableCellWrapper>
                 <TableCellWrapper value={value} index={2}>
-                  {row.Score}
+                  {row.score !== -1 && row.score}
                 </TableCellWrapper>
                 <TableCellWrapper value={value} index={3}>
                   {row.availableDate}
@@ -314,30 +314,26 @@ const AssessmentPage = () => {
                     justifyContent="flex-start"
                     alignItems={{ xs: 'flex-start', md: 'center' }}
                   >
-                    {renderIconByStatus(row.Status)}
+                    {renderIconByStatus(row.status)}
                   </Stack>
-                  {/* {row.Status == action && 
-                  <Button variant="contained" size="small">
-                    Start
-                  </Button>} */}
                 </TableCellWrapper>
-                {row.Status === 'Active' && (
+                {row.status === 'Active' && (
                   <TableCellWrapper value={value} index={1}>
                     <Button variant="contained" size="small">
                       Start
                     </Button>
                   </TableCellWrapper>
                 )}
-                {row.Status === 'Upcoming' && (
+                {row.status === 'Upcoming' && (
                   <TableCellWrapper value={value} index={3}>
                     <Button disabled variant="contained" size="small">
                       Inactive
                     </Button>
                   </TableCellWrapper>
                 )}
-                {(row.Status === 'Graded' ||
-                  row.Status === 'Unsubmitted' ||
-                  row.Status === 'Submitted') && (
+                {(row.status === 'Graded' ||
+                  row.status === 'Unsubmitted' ||
+                  row.status === 'Submitted') && (
                   <TableCellWrapper value={value} index={2}>
                     <Button variant="contained" size="small">
                       View
