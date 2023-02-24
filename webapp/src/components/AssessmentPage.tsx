@@ -17,12 +17,13 @@ import React, { useState } from 'react';
 import Badge, { BadgeProps } from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
 import DoneAllOutlinedIcon from '@mui/icons-material/DoneAllOutlined';
-import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
 import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import UpcomingOutlinedIcon from '@mui/icons-material/UpcomingOutlined';
 import LockClockOutlinedIcon from '@mui/icons-material/LockClockOutlined';
+import PlayCircleFilledWhiteOutlinedIcon from '@mui/icons-material/PlayCircleFilledWhiteOutlined';
+import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 
 function createData(
@@ -57,7 +58,7 @@ const rows = [
     '2023-03-25',
     0,
     '-',
-    0,
+    -1,
     '2023-02-25',
     'Active'
   ),
@@ -68,7 +69,7 @@ const rows = [
     '2023-03-24',
     60,
     '-',
-    0,
+    -1,
     '2023-04-11',
     'Active'
   ),
@@ -112,7 +113,7 @@ const rows = [
     '2023-03-27',
     0,
     '-',
-    0,
+    -1,
     '2023-02-27',
     'Upcoming'
   ),
@@ -164,20 +165,18 @@ function TableRowWrapper(props: TableRowWrapperProps) {
   }
 }
 
-function renderIconByStatus(status: string) {
+function renderIconButtonByStatus(status: string) {
   switch (status) {
     case 'Active':
-      return <ScheduleOutlinedIcon />;
+      return <Button variant="contained" size="small" endIcon={<PlayCircleFilledWhiteOutlinedIcon/>}>Start</Button>;
     case 'Submitted':
-      return <DoneOutlinedIcon />;
+      return <Button variant="contained" size="small" startIcon={<RemoveRedEyeOutlinedIcon/>}>Submitted</Button>;
     case 'Graded':
-      return <DoneAllOutlinedIcon />;
+      return <Button variant="contained" size="small" startIcon={<DoneAllOutlinedIcon/>}>Graded</Button>;
     case 'Upcoming':
-      return <LockClockOutlinedIcon />;
+      return <Button variant="contained" size="small" disabled startIcon={<LockClockOutlinedIcon/>}>Upcoming</Button>;
     case 'Unsubmitted':
-      return <CancelOutlinedIcon />;
-    case 'Past':
-      return;
+      return <Button variant="contained" size="small" disabled startIcon={<CancelOutlinedIcon/>}>Unsubmitted</Button>;
     default:
       return null;
   }
@@ -191,14 +190,7 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
 }));
 
 const AssessmentPage = () => {
-  const [expanded, setExpanded] = useState<string | false>('panel1');
   const [value, setValue] = useState(0);
-
-  const handleChange =
-    (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
-      setExpanded(newExpanded ? panel : false);
-    };
-
   const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
@@ -278,10 +270,9 @@ const AssessmentPage = () => {
               <TableCellWrapper value={value} index={3}>
                 Available Date
               </TableCellWrapper>
-              <TableCellWrapper value={value} index={-1}>
-                Status
+              <TableCellWrapper value={value} index={value !== 3? value : 0}>
+                Action
               </TableCellWrapper>
-              <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -300,7 +291,7 @@ const AssessmentPage = () => {
                   {row.type === "Test" && row.testDuration}
                 </TableCellWrapper>
                 <TableCellWrapper value={value} index={2}>
-                  {row.submittedDate}
+                  {(row.status === "Submitted" || row.status === "Graded") && row.submittedDate}
                 </TableCellWrapper>
                 <TableCellWrapper value={value} index={2}>
                   {row.score !== -1 && row.score}
@@ -308,38 +299,9 @@ const AssessmentPage = () => {
                 <TableCellWrapper value={value} index={3}>
                   {row.availableDate}
                 </TableCellWrapper>
-                <TableCellWrapper value={value} index={-1}>
-                  <Stack
-                    direction={{ xs: 'column', md: 'row' }}
-                    justifyContent="flex-start"
-                    alignItems={{ xs: 'flex-start', md: 'center' }}
-                  >
-                    {renderIconByStatus(row.status)}
-                  </Stack>
+                <TableCellWrapper value={value} index={value !== 3? value : 0}>
+                    {renderIconButtonByStatus(row.status)}
                 </TableCellWrapper>
-                {row.status === 'Active' && (
-                  <TableCellWrapper value={value} index={1}>
-                    <Button variant="contained" size="small">
-                      Start
-                    </Button>
-                  </TableCellWrapper>
-                )}
-                {row.status === 'Upcoming' && (
-                  <TableCellWrapper value={value} index={3}>
-                    <Button disabled variant="contained" size="small">
-                      Inactive
-                    </Button>
-                  </TableCellWrapper>
-                )}
-                {(row.status === 'Graded' ||
-                  row.status === 'Unsubmitted' ||
-                  row.status === 'Submitted') && (
-                  <TableCellWrapper value={value} index={2}>
-                    <Button variant="contained" size="small">
-                      View
-                    </Button>
-                  </TableCellWrapper>
-                )}
               </TableRowWrapper>
             ))}
           </TableBody>
