@@ -2,45 +2,52 @@ import { Router } from 'express';
 import { itemEnvelope } from './responseEnvelope';
 
 const assessmentsRouter = Router();
+
 assessmentsRouter.get('/', (req, res) => {
-  const response = { behaviour: 'list of assessments' };
+  const response = { behaviour: 'Shows a list of all assessments' };
   res.status(200).json(itemEnvelope(response));
 });
 
 assessmentsRouter.post('/', (req, res) => {
-  const response = { behaviour: 'create new assessment' };
+  const response = { behaviour: 'Creates a new assessment' };
   res.status(200).json(itemEnvelope(response));
 });
 
-assessmentsRouter.get('/:id', (req, res) => {
-  const response = { behaviour: 'view a single assessment' };
+assessmentsRouter.get('/:assessmentId', (req, res) => {
+  const response = { behaviour: 'Shows a single assessment' };
   res.status(200).json(itemEnvelope(response));
 });
 
-assessmentsRouter.put('/:id', (req, res) => {
+assessmentsRouter.put('/:assessmentId', (req, res) => {
   const response = { behaviour: 'Edits an assessment in the system' };
   res.status(200).json(itemEnvelope(response));
 });
 
-assessmentsRouter.delete('/:id', (req, res) => {
+assessmentsRouter.delete('/:assessmentId', (req, res) => {
   const response = { behaviour: '“Deletes” an assessment in the system' };
   res.status(200).json(itemEnvelope(response));
 });
 
-assessmentsRouter.get('/:id/submissions/:id', (req, res) => {
-  const response = {
-    behaviour: 'Returns the submission information (metadata, answers, etc)',
-  };
-  res.status(200).json(itemEnvelope(response));
-});
+assessmentsRouter.get(
+  '/:assessmentId/submissions/:submissionId',
+  (req, res) => {
+    const response = {
+      behaviour: 'Returns the submission information (metadata, answers, etc)',
+    };
+    res.status(200).json(itemEnvelope(response));
+  }
+);
 
-assessmentsRouter.put('/:id/submissions/:id', (req, res) => {
-  const response = { behaviour: 'submits their answer for assessment' };
-  res.status(200).json(itemEnvelope(response));
-});
+assessmentsRouter.put(
+  '/:assessmentId/submissions/:submissionId',
+  (req, res) => {
+    const response = { behaviour: 'Updates the state of a submission' };
+    res.status(200).json(itemEnvelope(response));
+  }
+);
 
-assessmentsRouter.get('/:id/submissions/new', (req, res) => {
-  const response = { behaviour: 'creates a new draft submission' };
+assessmentsRouter.get('/:assessmentId/submissions/new', (req, res) => {
+  const response = { behaviour: 'Creates a new draft submission' };
   res.status(200).json(itemEnvelope(response));
 });
 
