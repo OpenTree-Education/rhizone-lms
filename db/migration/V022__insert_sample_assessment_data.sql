@@ -3,9 +3,7 @@ VALUES (`quiz`),
     (`test`);
 INSERT INTO `curriculums` (`title`, `principal_id`)
 VALUES ("Beginner Web Development", 2);
-INSERT INTO `programs` (
-        `title`,
-        `start_date`,
+INSERT INTO `programs` (`title`,`start_date`,
         `end_date`,
         `time_zone`,
         `principal_id`,
@@ -89,7 +87,7 @@ VALUES (
     ) (
         "Quiz 1: SQL",
         "Your Quiz for week 1 learning.",
-        10,
+        4,
         1,
         NULL,
         3,
@@ -223,8 +221,6 @@ VALUES (1, "What is React?", NULL, 1, 4, 1, 1),
         10
     ),
     --QUIZ 
-
-
     --TEST 
     (
         3,
@@ -328,7 +324,12 @@ INSERT INTO `assessment_answers` (
         `description`,
         `sort_order`
     )
-VALUES (1, "A relational database management system", NULL, 1),
+VALUES (
+        1,
+        "A relational database management system",
+        NULL,
+        1
+    ),
     (1, "A database management system", NULL, 2),
     (1, "A web server software", NULL, 3),
     (1, "A front-end JavaScript library", NULL, 4),
@@ -439,18 +440,29 @@ VALUES (1, "A relational database management system", NULL, 1),
     (7, "True", NULL, 1),
     (7, "False", NULL, 2),
     --question 8 (row 25)
-    (8, "const HelloWorld = () => {
+    (
+        8,
+        "const HelloWorld = () => {
   return <h1>Hello, World!</h1>;
-}; export default HelloWorld;", NULL, 1),
+}; export default HelloWorld;",
+        NULL,
+        1
+    ),
     --question 8 (row 26)
-    (9, "React differs from other JavaScript frameworks because it uses a component-based architecture, a virtual DOM, JSX syntax, unidirectional data flow, and is primarily focused on building UIs rather than providing a complete application framework. These features make it faster, more efficient, and more flexible than other frameworks.", NULL, 1),
-    (10, "Benefits of using React include its modular and reusable components, efficient updates with virtual DOM, JSX syntax, and active community.", NULL, 1),
-
-
-
--- TEST 
-
-(15, "A back-end programming language", NULL, 1),
+    (
+        9,
+        "React differs from other JavaScript frameworks because it uses a component-based architecture, a virtual DOM, JSX syntax, unidirectional data flow, and is primarily focused on building UIs rather than providing a complete application framework. These features make it faster, more efficient, and more flexible than other frameworks.",
+        NULL,
+        1
+    ),
+    (
+        10,
+        "Benefits of using React include its modular and reusable components, efficient updates with virtual DOM, JSX syntax, and active community.",
+        NULL,
+        1
+    ),
+    -- TEST 
+    (15, "A back-end programming language", NULL, 1),
     (15, "A programming language", NULL, 2),
     (15, "An operating system", NULL, 3),
     (15, "A web server", NULL, 4),
@@ -554,11 +566,13 @@ VALUES (1, "A relational database management system", NULL, 1),
     (21, "MIN", NULL, 5),
     (21, "SUMTOTAL", NULL, 6),
     (21, "SUMTOTAL", NULL, 7),
-
     --question 22 (row)
-    (22, "The SELECT command is used to retrieve data from a MySQL table.", NULL, 1),
+    (
+        22,
+        "The SELECT command is used to retrieve data from a MySQL table.",
+        NULL,
+        1
+    ),
     --question 23 (row)
     (23, "COUNT()", NULL, 1),
     (24, "WHERE", NULL, 1),
-
-
