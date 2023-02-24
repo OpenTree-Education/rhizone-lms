@@ -25,7 +25,7 @@ import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import UpcomingOutlinedIcon from '@mui/icons-material/UpcomingOutlined';
 import LockClockOutlinedIcon from '@mui/icons-material/LockClockOutlined';
 import AssessmentIcon from '@mui/icons-material/Assessment';
-
+import { formatDateTime } from '../helpers/dateTime';
 interface AssessmentRow {
   id: number;
   title: string;
@@ -139,6 +139,7 @@ interface TableRowWrapperProps {
 function TableCellWrapper(props: TableCellWrapperProps) {
   const { children, statusTab, index} = props;
   return index === StatusTab.All || index === statusTab || statusTab === StatusTab.All ? (
+
     <TableCell>{children}</TableCell>   
   ) : null;
 }
@@ -259,16 +260,16 @@ const AssessmentPage = () => {
         <Table sx={{ minWidth: 600 }} aria-label="a dense table">
           <TableHead>
             <TableRow>
-              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.All}>
+              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.All ||StatusTab.Active}>
                 Title
               </TableCellWrapper>
               <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.All}>
                 Type
               </TableCellWrapper>
-              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Active}>
+              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Active }>
                 Due Date
               </TableCellWrapper>
-              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Active}>
+              <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Active }>
                 Test Time Limit
               </TableCellWrapper>
               <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Past}>
@@ -298,19 +299,19 @@ const AssessmentPage = () => {
                   {row.type}
                 </TableCellWrapper>
                 <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Active}>
-                  {row.dueDate}
+                  {formatDateTime (row.dueDate)}
                 </TableCellWrapper>
                 <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Active}>
                   {row.type === "Test" && row.testDuration}
                 </TableCellWrapper>
                 <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Past}>
-                  {(row.status === "Submitted" || row.status === "Graded") && row.submittedDate}
+                  {(row.status === "Submitted" || row.status === "Graded") && formatDateTime (row.submittedDate)}
                 </TableCellWrapper>
                 <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Past}>
                   {row.score !== -1 && row.score}
                 </TableCellWrapper>
                 <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.Upcoming}>
-                  {row.availableDate}
+                  {formatDateTime (row.availableDate)}
                 </TableCellWrapper>
                 <TableCellWrapper statusTab={currentStatusTab} index={StatusTab.All}>
                     {renderChipByStatus(row.status)}
