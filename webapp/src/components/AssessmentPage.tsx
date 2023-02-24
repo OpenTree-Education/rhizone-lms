@@ -32,99 +32,117 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
 
 function createData(
+  id: number,
   Title: string,
-  dueDate: string,
-  Type: string,
-  submittedDate: string,
   Status: string,
-  availableDate: string,
+
+  Type: string,
+  dueDate: string,
+  testDuration: number,
+  submittedDate: string,
   Score: number,
-  testDuration: number
+  availableDate: string
 ) {
   return {
-    dueDate,
+    id,
     Title,
-    Type,
-    submittedDate,
     Status,
-    availableDate,
-    Score,
+    Type,
+    dueDate,
     testDuration,
+    submittedDate,
+    Score,
+    availableDate,
   };
 }
 
 const rows = [
   createData(
-    '25-3-2023',
+    1,
     'Assessment 1',
-    'Assignment',
-    '',
     'Active',
-    '25-2-2023',
-    30,
-    60
+
+    'Assignment',
+    '25-3-2023',
+    60,
+    '',
+    0,
+    '25-2-2023'
   ),
   createData(
-    '25-3-2023',
-    'Assessment 1',
-    'Assignment',
-    '',
+    2,
+    'Assessment 2',
     'Active',
-    '25-2-2023',
-    30,
-    60
+
+    'Assignment',
+    '25-3-2023',
+    60,
+    '',
+    0,
+    '25-2-2023'
   ),
   createData(
-    '25-3-2023',
-    'Assessment 1',
-    'Assignment',
-    '',
+    3,
+    'Assessment 3',
     'Active',
-    '25-2-2023',
-    30,
-    60
+
+    'Assignment',
+    '25-3-2023',
+    60,
+    '',
+    0,
+    '25-2-2023'
   ),
   createData(
-    '25-3-2023',
-    'Assessment 1',
-    'Assignment',
-    '',
+    4,
+    'Assessment 4',
     'Active',
-    '25-2-2023',
-    30,
-    60
+
+    'Assignment',
+    '25-3-2023',
+    60,
+    '',
+    0,
+    '25-2-2023'
   ),
   createData(
-    '25-3-2023',
-    'Assessment 1',
-    'Assignment',
-    '',
+    5,
+    'Assessment 5',
     'Active',
-    '25-2-2023',
-    30,
-    60
+
+    'Assignment',
+    '25-3-2023',
+    60,
+    '',
+    0,
+    '25-2-2023'
   ),
   createData(
-    '25-3-2023',
-    'Assessment 1',
+    6,
+    'Assessment 6',
+    'Upcoming',
+
     'Assignment',
     '',
-    'Active',
-    '25-2-2023',
-    30,
-    60
+    0,
+    '',
+    0,
+    '25-2-2023'
   ),
   createData(
-    '25-3-2023',
-    'Assessment 1',
+    7,
+    'Assessment 7',
+    'Past',
+
     'Assignment',
     '',
-    'Active',
-    '25-2-2023',
-    30,
-    60
+    60,
+    '25-3-2023',
+    40,
+    ''
   ),
 ];
 
@@ -142,17 +160,44 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   },
 }));
 
+enum AssessmentTabs {
+  All,
+  Current,
+  Past,
+  Upcoming,
+}
+
 const AssessmentPage = () => {
-  const [expanded, setExpanded] = React.useState<string | false>('panel1');
+  const [expanded, setExpanded] = useState<string | false>('panel1');
+  const [past, setPast] = useState(false);
+  const [active, setActive] = useState(false);
+  const [upcoming, setUpcoming] = useState(false);
+  const [value, setValue] = useState(0);
+  const [currentTab, setCurrentTab] = useState(AssessmentTabs.All);
 
   const handleChange =
     (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
       setExpanded(newExpanded ? panel : false);
     };
-  const [value, setValue] = React.useState(0);
 
   const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
+    // console.log("the value",value)
+    // if(value === 1){
+    //   setActive(true);
+    //   setPast(false);
+    //   setUpcoming(false);
+    //   console.log("active",active)
+    // }else if (value ===2){
+    //   setPast(true)
+    //   setActive(false);
+    //   setUpcoming(false);
+    // }else if (value === 0){
+    //   setUpcoming(true);
+    //   setActive(false);
+    //   setPast(false);
+    // }
+    setCurrentTab(newValue as AssessmentTabs);
   };
 
   return (
@@ -165,73 +210,8 @@ const AssessmentPage = () => {
         <h1>Assessment</h1>
       </Stack>
 
-      {/* <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          <Typography>Active</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-        <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 600 }} size="small" aria-label="a dense table">
-        <TableHead>
-          <TableRow>
-            <TableCell align="right"  >date</TableCell>
-            <TableCell align="right">name</TableCell>
-            <TableCell align="right">Grade/Ungrade</TableCell>
-            
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow
-              key={row.name}  
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-             
-              <TableCell align="right">{row.date}</TableCell>
-              <TableCell align="right">
-               
-                {row.name}
-                </TableCell>
-              <TableCell align="right">{row.grade}</TableCell>
-              
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel2a-content"
-          id="panel2a-header"
-        >
-          <Typography>Past</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel3a-content"
-          id="panel3a-header"
-        >
-          <Typography>Upcoming</Typography>
-        </AccordionSummary>
-      </Accordion> */}
-
       <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
-        <Tabs value={value} onChange={handleChangeTab}>
+        <Tabs value={currentTab as number} onChange={handleChangeTab}>
           <Tab
             icon={
               <StyledBadge badgeContent={4} color="primary">
@@ -239,11 +219,14 @@ const AssessmentPage = () => {
               </StyledBadge>
             }
             iconPosition="start"
+            // value="activeTab"
             label="Active"
           />
           <Tab
             icon={<ArchiveOutlinedIcon />}
             iconPosition="start"
+            // value="pastTab"
+
             label="Past"
           />
           <Tab
@@ -257,37 +240,109 @@ const AssessmentPage = () => {
         <Table sx={{ minWidth: 600 }} aria-label="a dense table">
           <TableHead>
             <TableRow>
-              <TableCell>Status</TableCell>
               <TableCell>Title</TableCell>
+              <TableCell>Status</TableCell>
+
               <TableCell>Type</TableCell>
-              <TableCell>Due Date</TableCell>
-              <TableCell>Test Duration</TableCell>
-              <TableCell>Submit Date</TableCell>
-              <TableCell>Score</TableCell>
-              <TableCell>Available Date</TableCell>
+              {active && (
+                <>
+                  <TableCell>Due Date</TableCell>
+                  <TableCell>Test Duration</TableCell>
+                </>
+              )}
+
+              {past && (
+                <>
+                  {' '}
+                  <TableCell>Submitted Date</TableCell>
+                  <TableCell>Score</TableCell>
+                </>
+              )}
+              {upcoming && <TableCell>Available Date</TableCell>}
+
               <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map(row => (
-              <TableRow
-                key={row.Title}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell>{row.Status}</TableCell>
-                <TableCell>{row.Title}</TableCell>
-                <TableCell>{row.Type}</TableCell>
+            {/* { active && rows.filter(row => row.Status ==='Active').map(row =>( */}
+            {/* { rows.map((row)=>( */}
 
-                <TableCell>{row.dueDate}</TableCell>
-                <TableCell>{row.testDuration}</TableCell>
-                <TableCell>{row.submittedDate}</TableCell>
-                <TableCell>{row.Score}</TableCell>
-                <TableCell>{row.availableDate}</TableCell>
-                <TableCell>
-                  <button>Action</button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {/* <TableRow
+              key={row.id}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              > */}
+            {active &&
+              rows
+                .filter(item => item.Status === 'Active')
+                .map(row => (
+                  <>
+                    <TableRow
+                      key={row.id}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      <TableCell>{row.Title}</TableCell>
+                      <TableCell>{row.Status}</TableCell>
+                      <TableCell>{row.Type}</TableCell>
+                      <TableCell>{row.dueDate}</TableCell>
+                      <TableCell>{row.testDuration}</TableCell>
+                      <TableCell>
+                        <Stack direction="row" spacing={2}>
+                          <Button href="#text-buttons">Start</Button>
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  </>
+                ))}
+            {past &&
+              rows
+                .filter(row => row.Status === 'Past')
+                .map(row => (
+                  <>
+                    <TableRow
+                      key={row.id}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      <TableCell>{row.Title}</TableCell>
+                      <TableCell>{row.Status}</TableCell>
+                      <TableCell>{row.Type}</TableCell>
+                      <TableCell>{row.submittedDate}</TableCell>
+                      <TableCell>{row.Score}</TableCell>
+                      <TableCell>
+                        <Stack direction="row" spacing={2}>
+                          <Button href="#text-buttons" disabled>
+                            Review
+                          </Button>
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  </>
+                ))}
+            {upcoming &&
+              rows
+                .filter(item => item.Status === 'Upcoming')
+                .map(row => (
+                  <>
+                    <TableRow
+                      key={row.id}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      <TableCell>{row.Title}</TableCell>
+                      <TableCell>{row.Status}</TableCell>
+                      <TableCell>{row.Type}</TableCell>
+                      <TableCell>{row.availableDate}</TableCell>
+                      <TableCell>
+                        <Stack direction="row" spacing={2}>
+                          <Button href="#text-buttons" disabled>
+                            Not Active
+                          </Button>
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  </>
+                ))}
+
+            {/* </TableRow> */}
+            {/* ) )} */}
           </TableBody>
         </Table>
       </TableContainer>
