@@ -11,7 +11,7 @@ import ReflectionsPage from './ReflectionsPage';
 import RequireAuth from './RequireAuth';
 import SessionContext from './SessionContext';
 import ProgramsPage from './ProgramsPage';
-import AssessmentPage from './AssessmentPage';
+import AssessmentsPage from './AssessmentsPage';
 
 const App = () => {
   const { isAuthenticated } = useContext(SessionContext);
@@ -61,10 +61,10 @@ const App = () => {
             }
           />
           <Route
-            path="/assessment"
+            path="/assessments"
             element={
               <RequireAuth>
-                <AssessmentPage />
+                <AssessmentsPage />
               </RequireAuth>
             }
           />
