@@ -365,8 +365,9 @@ const AssessmentsPage = () => {
                   statusTab={currentStatusTab}
                   index={[StatusTab.Past]}
                 >
-                  {(assessment.status === 'Submitted' ||
-                    assessment.status === 'Graded') &&
+                  {((assessment.status === 'Submitted' ||
+                    assessment.status === 'Graded') && 
+                    assessment.submittedDate) &&
                     formatDateTime(assessment.submittedDate)}
                 </TableCellWrapper>
                 <TableCellWrapper
