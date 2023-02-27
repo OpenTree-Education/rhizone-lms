@@ -88,13 +88,13 @@ function renderButtonByStatus(status: string) {
       );
     case 'Submitted':
     case 'Graded':
+    case 'Unsubmitted':
       return (
         <Button variant="contained" size="small">
           View
         </Button>
       );
     case 'Upcoming':
-    case 'Unsubmitted':
     default:
       return null;
   }
@@ -172,6 +172,24 @@ const AssessmentsPage = () => {
     setCurrentStatusTab(newCurrentStatusTab);
   };
 
+  if (assessmentList.length === 0) {
+    return (
+      <Container>
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          justifyContent="space-between"
+          alignItems={{ xs: 'flex-start', md: 'center' }}
+        >
+          <h1>Assessments</h1>
+        </Stack>
+
+        <div style={{ padding: '20px' }}>
+          You have no available assessments at this time.
+        </div>
+      </Container>
+    );
+  }
+
   return (
     <Container>
       <Stack
@@ -232,11 +250,12 @@ const AssessmentsPage = () => {
           <TableHead>
             <TableRow
               sx={{
-                backgroundColor: 'black',
+                backgroundColor: '#333',
                 borderBottom: '2px solid black',
                 '& th': {
                   fontSize: '1rem',
                   color: 'white',
+                  fontWeight: 'bold',
                 },
               }}
             >
@@ -249,7 +268,7 @@ const AssessmentsPage = () => {
                   StatusTab.Upcoming,
                 ]}
               >
-                Title
+                Assessment Name
               </TableCellWrapper>
               <TableCellWrapper
                 statusTab={currentStatusTab}
@@ -267,12 +286,6 @@ const AssessmentsPage = () => {
                 index={[StatusTab.All, StatusTab.Active]}
               >
                 Due Date
-              </TableCellWrapper>
-              <TableCellWrapper
-                statusTab={currentStatusTab}
-                index={[StatusTab.Active]}
-              >
-                Test Time Limit
               </TableCellWrapper>
               <TableCellWrapper
                 statusTab={currentStatusTab}
@@ -312,91 +325,81 @@ const AssessmentsPage = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {assessmentList.length > 0 ? (
-              assessmentList.map(assessment => (
-                <TableRowWrapper
+            {assessmentList.map(assessment => (
+              <TableRowWrapper
+                statusTab={currentStatusTab}
+                status={assessment.status}
+                key={assessment.id}
+              >
+                <TableCellWrapper
                   statusTab={currentStatusTab}
-                  status={assessment.status}
-                  key={assessment.id}
+                  index={[
+                    StatusTab.All,
+                    StatusTab.Active,
+                    StatusTab.Past,
+                    StatusTab.Upcoming,
+                  ]}
                 >
-                  <TableCellWrapper
-                    statusTab={currentStatusTab}
-                    index={[
-                      StatusTab.All,
-                      StatusTab.Active,
-                      StatusTab.Past,
-                      StatusTab.Upcoming,
-                    ]}
-                  >
-                    {assessment.title}
-                  </TableCellWrapper>
-                  <TableCellWrapper
-                    statusTab={currentStatusTab}
-                    index={[
-                      StatusTab.All,
-                      StatusTab.Active,
-                      StatusTab.Past,
-                      StatusTab.Upcoming,
-                    ]}
-                  >
-                    {assessment.type}
-                  </TableCellWrapper>
-                  <TableCellWrapper
-                    statusTab={currentStatusTab}
-                    index={[StatusTab.All, StatusTab.Active]}
-                  >
-                    {formatDateTime(assessment.dueDate)}
-                  </TableCellWrapper>
-                  <TableCellWrapper
-                    statusTab={currentStatusTab}
-                    index={[StatusTab.Active]}
-                  >
-                    {assessment.type === 'Test' && assessment.testDuration}
-                  </TableCellWrapper>
-                  <TableCellWrapper
-                    statusTab={currentStatusTab}
-                    index={[StatusTab.Past]}
-                  >
-                    {(assessment.status === 'Submitted' ||
-                      assessment.status === 'Graded') &&
-                      formatDateTime(assessment.submittedDate)}
-                  </TableCellWrapper>
-                  <TableCellWrapper
-                    statusTab={currentStatusTab}
-                    index={[StatusTab.All, StatusTab.Past]}
-                  >
-                    {assessment.score !== -1 && assessment.score}
-                  </TableCellWrapper>
-                  <TableCellWrapper
-                    statusTab={currentStatusTab}
-                    index={[StatusTab.Upcoming]}
-                  >
-                    {formatDateTime(assessment.availableDate)}
-                  </TableCellWrapper>
-                  <TableCellWrapper
-                    statusTab={currentStatusTab}
-                    index={[
-                      StatusTab.All,
-                      StatusTab.Active,
-                      StatusTab.Past,
-                      StatusTab.Upcoming,
-                    ]}
-                  >
-                    {renderChipByStatus(assessment.status)}
-                  </TableCellWrapper>
-                  <TableCellWrapper
-                    statusTab={currentStatusTab}
-                    index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}
-                  >
-                    {renderButtonByStatus(assessment.status)}
-                  </TableCellWrapper>
-                </TableRowWrapper>
-              ))
-            ) : (
-              <div style={{ padding: '20px' }}>
-                You have no available assessments at this time.
-              </div>
-            )}
+                  <strong>{assessment.title}</strong>
+                  <br />
+                  {assessment.description}
+                </TableCellWrapper>
+                <TableCellWrapper
+                  statusTab={currentStatusTab}
+                  index={[
+                    StatusTab.All,
+                    StatusTab.Active,
+                    StatusTab.Past,
+                    StatusTab.Upcoming,
+                  ]}
+                >
+                  {assessment.type}
+                </TableCellWrapper>
+                <TableCellWrapper
+                  statusTab={currentStatusTab}
+                  index={[StatusTab.All, StatusTab.Active]}
+                >
+                  {formatDateTime(assessment.dueDate)}
+                </TableCellWrapper>
+                <TableCellWrapper
+                  statusTab={currentStatusTab}
+                  index={[StatusTab.Past]}
+                >
+                  {(assessment.status === 'Submitted' ||
+                    assessment.status === 'Graded') &&
+                    formatDateTime(assessment.submittedDate)}
+                </TableCellWrapper>
+                <TableCellWrapper
+                  statusTab={currentStatusTab}
+                  index={[StatusTab.All, StatusTab.Past]}
+                >
+                  {assessment.score !== -1 && assessment.score}
+                </TableCellWrapper>
+                <TableCellWrapper
+                  statusTab={currentStatusTab}
+                  index={[StatusTab.Upcoming]}
+                >
+                  {formatDateTime(assessment.availableDate)}
+                </TableCellWrapper>
+                <TableCellWrapper
+                  statusTab={currentStatusTab}
+                  index={[
+                    StatusTab.All,
+                    StatusTab.Active,
+                    StatusTab.Past,
+                    StatusTab.Upcoming,
+                  ]}
+                >
+                  {renderChipByStatus(assessment.status)}
+                </TableCellWrapper>
+                <TableCellWrapper
+                  statusTab={currentStatusTab}
+                  index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}
+                >
+                  {renderButtonByStatus(assessment.status)}
+                </TableCellWrapper>
+              </TableRowWrapper>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
