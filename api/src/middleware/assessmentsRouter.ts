@@ -28,6 +28,11 @@ assessmentsRouter.delete('/:assessmentId', (req, res) => {
   res.status(200).json(itemEnvelope(response));
 });
 
+assessmentsRouter.get('/:assessmentId/submissions/new', (req, res) => {
+  const response = { behaviour: 'Creates a new draft submission' };
+  res.status(200).json(itemEnvelope(response));
+});
+
 assessmentsRouter.get(
   '/:assessmentId/submissions/:submissionId',
   (req, res) => {
@@ -45,10 +50,5 @@ assessmentsRouter.put(
     res.status(200).json(itemEnvelope(response));
   }
 );
-
-assessmentsRouter.get('/:assessmentId/submissions/new', (req, res) => {
-  const response = { behaviour: 'Creates a new draft submission' };
-  res.status(200).json(itemEnvelope(response));
-});
 
 export default assessmentsRouter;
