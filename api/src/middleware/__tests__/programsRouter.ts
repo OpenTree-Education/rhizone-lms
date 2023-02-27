@@ -255,4 +255,20 @@ describe('programsRouter', () => {
         .expect(500, done);
     });
   });
+
+  describe('GET /:programId/certificate/:principal_id', () => {
+    it('should retrieve program completion information of a participant.', done => {
+      const programId = 1;
+      const principalId = 3;
+
+      const response = {
+        behaviour: 'Retrieves program completion information of a participant.',
+      };
+      appAgent
+        .get(`/${programId}/certificate/${principalId}`)
+        .expect(200, itemEnvelope(response), err => {
+          done(err);
+        });
+    });
+  });
 });
