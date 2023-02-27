@@ -246,7 +246,7 @@ const AssessmentsPage = () => {
         </Tabs>
       </Box>
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 600 }} aria-label="a dense table">
+        <Table sx={{ minWidth: 600 }} aria-label="List of assessments">
           <TableHead>
             <TableRow
               sx={{
