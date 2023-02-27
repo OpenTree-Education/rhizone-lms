@@ -49,12 +49,12 @@ interface TableRowWrapperProps {
   status: string;
 }
 
-function TableCellWrapper(props: TableCellWrapperProps) {
+const TableCellWrapper = (props: TableCellWrapperProps) => {
   const { children, statusTab, index } = props;
   return index.includes(statusTab) ? <TableCell>{children}</TableCell> : null;
-}
+};
 
-function TableRowWrapper(props: TableRowWrapperProps) {
+const TableRowWrapper = (props: TableRowWrapperProps) => {
   const { children, status, statusTab } = props;
   if (statusTab === StatusTab.All) {
     return <TableRow>{children}</TableRow>;
@@ -76,9 +76,9 @@ function TableRowWrapper(props: TableRowWrapperProps) {
         <TableRow>{children}</TableRow>
       ) : null;
   }
-}
+};
 
-function renderButtonByStatus(status: string) {
+const renderButtonByStatus = (status: string) => {
   switch (status) {
     case 'Active':
       return (
@@ -98,9 +98,9 @@ function renderButtonByStatus(status: string) {
     default:
       return null;
   }
-}
+};
 
-function renderChipByStatus(status: string) {
+const renderChipByStatus = (status: string) => {
   switch (status) {
     case 'Active':
       return (
@@ -154,7 +154,7 @@ function renderChipByStatus(status: string) {
     default:
       return null;
   }
-}
+};
 
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   '& .MuiBadge-badge': {
