@@ -327,7 +327,11 @@ const AssessmentsPage = () => {
                       StatusTab.Upcoming,
                     ]}
                   >
-                    {assessment.title}
+                    <span style={{ fontWeight: 'bold' }}>
+                      {assessment.title}
+                    </span>
+                    <br />
+                    {assessment.description}
                   </TableCellWrapper>
                   <TableCellWrapper
                     statusTab={currentStatusTab}

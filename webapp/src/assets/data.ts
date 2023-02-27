@@ -1,6 +1,7 @@
 export interface AssessmentRow {
   id: number;
   title: string;
+  description: string;
   type: string;
   dueDate: string;
   testDuration: number;
@@ -14,6 +15,7 @@ export const assessmentList: AssessmentRow[] = [
   {
     id: 1,
     title: 'Debugging and Testing',
+    description: 'Debugging in Visual Studio and Unit Test',
     type: 'Assignment',
     dueDate: '2023-03-25',
     testDuration: 0,
@@ -25,6 +27,8 @@ export const assessmentList: AssessmentRow[] = [
   {
     id: 2,
     title: 'Communication and Documentation',
+    description:
+      'Git and GitHub. Informal and formal documentation JSDoc, JavaDoc, PyDoc, PerlDoc ',
     type: 'Test',
     dueDate: '2023-03-24',
     testDuration: 60,
@@ -36,6 +40,8 @@ export const assessmentList: AssessmentRow[] = [
   {
     id: 3,
     title: 'Accessibility in Design',
+    description:
+      'Differents standars and Method related to averyone can access to webpages',
     type: 'Practice Quiz',
     dueDate: '2023-06-22',
     testDuration: 0,
@@ -47,6 +53,8 @@ export const assessmentList: AssessmentRow[] = [
   {
     id: 4,
     title: 'Product-Minded Professional',
+    description:
+      'Develop and techniques to grow-up proficiency. Books Product-Minded Professional',
     type: 'Assignment',
     dueDate: '2023-05-23',
     testDuration: 0,
@@ -57,7 +65,9 @@ export const assessmentList: AssessmentRow[] = [
   },
   {
     id: 5,
-    title: 'Finalize the Product Specification',
+    title: 'Evaluation Product Specification',
+    description:
+      'Steps to get a product specification, vocabulary and who are involved',
     type: 'Test',
     dueDate: '2023-01-11',
     testDuration: 60,
@@ -69,6 +79,7 @@ export const assessmentList: AssessmentRow[] = [
   {
     id: 6,
     title: 'Leadership and Teamwork',
+    description: 'Unit 1 and 2 book: "Modern Leadership". Teamwork in GitHub',
     type: 'Assignment',
     dueDate: '2023-03-27',
     testDuration: 0,
@@ -79,7 +90,9 @@ export const assessmentList: AssessmentRow[] = [
   },
   {
     id: 7,
-    title: 'Intermediate Git + GitHub ',
+    title: 'Git + GitHub ',
+    description:
+      'Concepts, commands and relation between Git + GitHub and practices exercises',
     type: 'Assignment',
     dueDate: '2023-01-25',
     testDuration: 60,
