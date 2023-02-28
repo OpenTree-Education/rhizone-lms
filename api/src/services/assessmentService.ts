@@ -1,24 +1,24 @@
 import db from './db';
 
-import {listAssessments } from '../models';
+import {ListAssessments} from '../models';
 // import { DateTime, Duration } from 'luxon';
 
 /**
  * Returns list of assessments in the database.
  *
- * @returns {listAssessments[]} - list of assessments in the db
+ * @returns {ListAssessments[]} - list of assessments in the db
  * @param {number} principalId - the unique id for the user
  */
 
 export const listAssessmentsByParticipant = async (principalId: number) => {
   ///1. Select program_id from program_prticipants by principal_id and store it in variable
-  const programIDs = await db('program_participants')
+  const programIds = await db('program_participants')
     .select('program_id')
     .where({
       principal_id: principalId,
     });
   ///2.
-  const assessmentsList = await db<listAssessments>('assessments')
+  const assessmentsList = await db<ListAssessments>('assessments')
     .select(
       'id',
       'program_id',
@@ -28,6 +28,6 @@ export const listAssessmentsByParticipant = async (principalId: number) => {
       'created_at',
       'updated_at'
     )
-    .whereIn('program_id', programIDs); //array of program ids);
+    .whereIn('program_id', programIds); //array of program ids);
   return assessmentsList;
 };
