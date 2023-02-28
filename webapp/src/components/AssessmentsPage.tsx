@@ -82,7 +82,7 @@ const renderButtonByStatus = (status: string, id: number) => {
   switch (status) {
     case 'Active':
       return (
-        <Button variant="contained" size="small" href={`/assessments/${id}`} >
+        <Button variant="contained" size="small" href={`/assessments/${id}`}>
           Start
         </Button>
       );
@@ -90,7 +90,7 @@ const renderButtonByStatus = (status: string, id: number) => {
     case 'Graded':
     case 'Unsubmitted':
       return (
-        <Button variant="contained" size="small" href={`/assessments/${id}`} >
+        <Button variant="contained" size="small" href={`/assessments/${id}`}>
           View
         </Button>
       );
@@ -365,9 +365,9 @@ const AssessmentsPage = () => {
                   statusTab={currentStatusTab}
                   index={[StatusTab.Past]}
                 >
-                  {((assessment.status === 'Submitted' ||
-                    assessment.status === 'Graded') && 
-                    assessment.submittedDate) &&
+                  {(assessment.status === 'Submitted' ||
+                    assessment.status === 'Graded') &&
+                    assessment.submittedDate &&
                     formatDateTime(assessment.submittedDate)}
                 </TableCellWrapper>
                 <TableCellWrapper
