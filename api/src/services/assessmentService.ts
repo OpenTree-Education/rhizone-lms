@@ -1,48 +1,33 @@
 import db from './db';
 
-// import {
-//     Program,
-//     ProgramActivity,
-//     ProgramWithActivities,
-//     CurriculumActivity,
-//     ActivityType,
-//     ParticipantActivity,
-//   } from '../models';
-//   import { DateTime, Duration } from 'luxon';
-
-  /**
-   * Returns list of assessments in the database.
-   *
-   * @returns {listAssessments[]} - list of assessments in the db
-   */
-
-  export const listAssessments = async () => {
-    const assessmentsList = await db('assessments').select(
-        'id',
-        'assessment_id',
-        'available_after',
-        'due_date'
-    );
-    return assessmentsList;
-  };
-
+import {listAssessments } from '../models';
+// import { DateTime, Duration } from 'luxon';
 
 /**
- * Returns the programs associated with a specified curriculum ID.
+ * Returns list of assessments in the database.
  *
- * @param {number} curriculumId - ID for a specified curriculum
- * @returns {Program[]} - all matching programs
+ * @returns {listAssessments[]} - list of assessments in the db
+ * @param {number} principalId - the unique id for the user
  */
-export const listProgramsForCurriculum = async (curriculumId: number) => {
-    const programsList = await db<Program>('programs')
-      .select(
-        'id',
-        'title',
-        'start_date',
-        'end_date',
-        'time_zone',
-        'curriculum_id'
-      )
-      .where({ curriculum_id: curriculumId });
-    return programsList;
-  };
+
+export const listAssessmentsByParticipant = async (principalId: number) => {
+  ///1. Select program_id from program_prticipants by principal_id and store it in variable
+  const programIDs = await db('program_participants')
+    .select('program_id')
+    .where({
+      principal_id: principalId,
+    });
+  ///2.
+  const assessmentsList = await db<listAssessments>('assessments')
+    .select(
+      'id',
+      'program_id',
+      'assessment_id',
+      'available_after',
+      'due_date',
+      'created_at',
+      'updated_at'
+    )
+    .whereIn('program_id', programIDs); //array of program ids);
+  return assessmentsList;
+};

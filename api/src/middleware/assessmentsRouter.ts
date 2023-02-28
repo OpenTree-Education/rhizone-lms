@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
-import {listAssessments} from '../services/assessmentService'
+import { listAssessments } from '../services/assessmentService';
 
 const assessmentsRouter = Router();
 
@@ -12,9 +12,7 @@ assessmentsRouter.get('/', async (req, res, next) => {
     next(error);
     return;
   }
-  res.json(
-    collectionEnvelope(assessments, assessments.length)
-  );
+  res.json(collectionEnvelope(assessments, assessments.length));
 });
 
 assessmentsRouter.post('/', (req, res) => {

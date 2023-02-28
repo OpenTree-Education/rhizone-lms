@@ -73,7 +73,7 @@ export interface ParticipantActivityForProgram {
   participant_activities: ParticipantActivityCompletionStatus[];
 }
 
-export interface Assessment {
+export interface listAssessments {
   id: number;
   program_id: number;
   assessment_id: number;
