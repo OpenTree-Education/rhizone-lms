@@ -72,3 +72,13 @@ export interface ParticipantActivityForProgram {
   program_id: number;
   participant_activities: ParticipantActivityCompletionStatus[];
 }
+
+export interface Assessment {
+  id: number;
+  program_id: number;
+  assessment_id: number;
+  available_after: string;
+  due_date: string;
+  created_at: string;
+  updated_at: string;
+}

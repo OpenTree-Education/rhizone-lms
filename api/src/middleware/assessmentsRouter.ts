@@ -1,11 +1,20 @@
 import { Router } from 'express';
-import { itemEnvelope } from './responseEnvelope';
+import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
+import {listAssessments} from '../services/assessmentService'
 
 const assessmentsRouter = Router();
 
-assessmentsRouter.get('/', (req, res) => {
-  const response = { behaviour: 'Shows a list of all assessments' };
-  res.status(200).json(itemEnvelope(response));
+assessmentsRouter.get('/', async (req, res, next) => {
+  let assessments;
+  try {
+    assessments = await listAssessments();
+  } catch (error) {
+    next(error);
+    return;
+  }
+  res.json(
+    collectionEnvelope(assessments, assessments.length)
+  );
 });
 
 assessmentsRouter.post('/', (req, res) => {
