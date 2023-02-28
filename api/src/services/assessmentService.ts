@@ -18,7 +18,7 @@ export const listAssessmentsByParticipant = async (principalId: number) => {
       principal_id: principalId,
     });
   ///2.
-  const assessmentsList = await db<ListAssessments>('assessments')
+  const assessmentsList = await db<ListAssessments>('program_assessments')
     .select(
       'id',
       'program_id',
