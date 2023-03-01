@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
-import {listAssessmentsByParticipant} from '../services/assessmentService'
+import { listAssessmentsByParticipant } from '../services/assessmentService';
 
 const assessmentsRouter = Router();
 
@@ -13,17 +13,13 @@ assessmentsRouter.get('/', async (req, res, next) => {
     next(error);
     return;
   }
-  res.json(
-    collectionEnvelope(assessments, assessments.length)
-  );
+  res.json(collectionEnvelope(assessments, assessments.length));
 });
 
 assessmentsRouter.post('/', (req, res) => {
   const response = { behaviour: 'Creates a new assessment' };
   res.status(200).json(itemEnvelope(response));
 });
-
-
 
 // assessmentsRouter.post('/', async (req, res, next) => {
 //   const { principalId } = req.session;
@@ -55,8 +51,6 @@ assessmentsRouter.post('/', (req, res) => {
 //   }
 //   res.status(201).json(itemEnvelope(reflection));
 // });
-
-
 
 assessmentsRouter.get('/:assessmentId', (req, res) => {
   const response = { behaviour: 'Shows a single assessment' };

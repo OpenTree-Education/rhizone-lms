@@ -1,6 +1,6 @@
 import db from './db';
 
-import {ListAssessments} from '../models';
+import { ListAssessments } from '../models';
 // import { DateTime, Duration } from 'luxon';
 
 /**
@@ -42,8 +42,15 @@ export const listAssessmentsByParticipant = async (principalId: number) => {
  * of submissions
  * - the available_after date has passed
  * - the due_date has not passed
- *
+ * @param {number} principalId - the unique id for the user
+ * @param {number} programId - the id for the unique program
+ * @param {number} activityId - the id for the unique activity
+ * @param {boolean} completed - whether or not the user has completed
+ *   the given assignment
+ * @return {Object} - The Id of of the assessment added in the _____ table
  */
+
+
 
 /**
  * (DELETE /assessments/:id) ERR 403/
