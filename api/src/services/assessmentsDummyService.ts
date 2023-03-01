@@ -6,7 +6,7 @@ import db from './db';
  *
  * @returns {} - An array of matching curriculum activities
  */
-export const insertToProgramParticipants = async (
+export const insertToProgramParticipants = async(
   principalId: number,
   programId: number,
   roleId: number
@@ -61,7 +61,7 @@ export const insertToAssessmentSubmissions = async (
   //   assessment_submission_state_id:status
   // })
 
-  const AssessmentSubmissionsWithMatchedId = await db
+  const AssessmentSubmissionsWithMatchedId = await db('assessment_submissions')
     .select(
       'assessment_id',
       'principal_id',
