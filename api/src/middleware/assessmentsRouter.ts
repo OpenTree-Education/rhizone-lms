@@ -38,7 +38,7 @@ assessmentsRouter.get('/', async (req, res, next) => {
 assessmentsRouter.post('/', async (req, res, next) => {
   const { title, description, maxScore, maxNumSubmissions, timeLimit} = req.body;
   const { principalId } = req.session;
-  // const { curriculumId, activityId } = req.session --> not sure about this
+  const { curriculumId, activityId } = req.body;
   if (typeof title !== 'string') {
     next(new ValidationError('title must be a string!'));
     return;
