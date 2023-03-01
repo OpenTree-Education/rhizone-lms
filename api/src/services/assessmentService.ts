@@ -42,13 +42,9 @@ import {ProgramAssessments, CurriculumAssessments} from '../models';
  * @returns {CurriculumAssessments[]} - list of assessments in the db
  */
 
-<<<<<<< HEAD
-export const listAssessments = async () => {
-  
-=======
-export const listAssessmentsByParticipant = async () => {
 
->>>>>>> f05768b3f7efd15d76b83c1498a7f461da5098bd
+export const listAssessments = async () => {
+
   const assessmentsList = await db<CurriculumAssessments>('curriculum_assessments')
     .select(
       'id',
