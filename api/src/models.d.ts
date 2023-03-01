@@ -85,13 +85,13 @@ export interface ProgramAssessments {
 
 export interface CurriculumAssessments {
   id: number;
-  title: string,
-  max_score: number,
-  max_num_submissions: number,
-  time_limit?: number,
-  curriculum_id: number,
-  activity_id?: number,
-  principal_id: number,
+  title: string;
+  max_score: number;
+  max_num_submissions: number;
+  time_limit?: number;
+  curriculum_id: number;
+  activity_id?: number;
+  principal_id: number;
   created_at: string;
   updated_at: string;
 }

@@ -1,6 +1,6 @@
 import db from './db';
 
-import {ProgramAssessments, CurriculumAssessments} from '../models';
+import { ProgramAssessments, CurriculumAssessments } from '../models';
 // import { DateTime, Duration } from 'luxon';
 
 // /**
@@ -43,8 +43,9 @@ import {ProgramAssessments, CurriculumAssessments} from '../models';
  */
 
 export const listAssessmentsByParticipant = async () => {
-
-  const assessmentsList = await db<CurriculumAssessments>('curriculum_assessments')
+  const assessmentsList = await db<CurriculumAssessments>(
+    'curriculum_assessments'
+  )
     .select(
       'id',
       'title',
@@ -71,14 +72,38 @@ export const listAssessmentsByParticipant = async () => {
  * of submissions
  * - the available_after date has passed
  * - the due_date has not passed
- * @param {number} principalId - the unique id for the user
- * @param {number} programId - the id for the unique program
- * @param {number} activityId - the id for the unique activity
- * @param {boolean} completed - whether or not the user has completed
- *   the given assignment
- * @return {Object} - The Id of of the assessment added in the _____ table
  */
-
+export const createAssessment = async (
+  title: string,
+  description: string,
+  maxScore: number,
+  maxNumSubmissions: number,
+  timeLimit: number,
+  curriculumId: number,
+  activityId: number,
+  principalId: number
+) => {
+  let assessmentId: number;
+  await db.transaction(async trx => {
+    [assessmentId] = await trx('assessments').insert({
+      title: title,
+      description: description,
+      max_score: maxScore,
+      max_num_submissions: maxNumSubmissions,
+      time_limit: timeLimit,
+      curriculum_id: curriculumId,
+      activity_id: activityId,
+      principal_id: principalId
+    });
+    await trx('curriculum_assessments').insert({
+      assessment_id: assessmentId,
+      curriculum_id: curriculumId,
+      activity_id: activityId,
+      principal_id: principalId,
+    });
+  });
+  return { id: assessmentId };
+};
 
 
 /**
@@ -109,8 +134,6 @@ export const listAssessmentsByParticipant = async () => {
  *
  *
  */
-
-
 
 /**
  * (PUT /assessments/:id/submission/:id) Submits their answers
