@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
-import {listAssessmentsByParticipant} from '../services/assessmentService'
-
+// import {listAssessmentsByParticipant} from '../services/assessmentService'
+import {listAssessments, assessmentById} from '../services/assessmentService'
+import { BadRequestError } from './httpErrors';
 const assessmentsRouter = Router();
 
 // assessmentsRouter.get('/', async (req, res, next) => {
@@ -21,7 +22,7 @@ const assessmentsRouter = Router();
 assessmentsRouter.get('/', async (req, res, next) => {
   let assessments;
   try {
-    assessments = await listAssessmentsByParticipant();
+    assessments = await listAssessments();
   } catch (error) {
     next(error);
     return;
@@ -71,9 +72,29 @@ assessmentsRouter.post('/', (req, res) => {
 
 
 
-assessmentsRouter.get('/:assessmentId', (req, res) => {
-  const response = { behaviour: 'Shows a single assessment' };
-  res.status(200).json(itemEnvelope(response));
+// assessmentsRouter.get('/:assessmentId', (req, res) => {
+//   const response = { behaviour: 'Shows a single assessment' };
+//   res.status(200).json(itemEnvelope(response));
+// });
+
+assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
+   const { assessmentId } = req.params;
+   const assessmentIdNum = Number(assessmentId);
+
+  if (!Number.isInteger(assessmentIdNum) || assessmentIdNum < 1) {
+    next(new BadRequestError(`"${assessmentIdNum}" is not a valid program id.`));
+    return;
+  }
+  let neededAssessmentId;
+  try {
+    neededAssessmentId = await assessmentById(assessmentIdNum);
+  } catch (error) {
+    next(error);
+    return;
+  }
+  res.json(
+    collectionEnvelope(neededAssessmentId, neededAssessmentId.length)
+  );
 });
 
 assessmentsRouter.put('/:assessmentId', (req, res) => {

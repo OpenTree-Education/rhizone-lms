@@ -42,7 +42,7 @@ import {ProgramAssessments, CurriculumAssessments} from '../models';
  * @returns {CurriculumAssessments[]} - list of assessments in the db
  */
 
-export const listAssessmentsByParticipant = async () => {
+export const listAssessments = async () => {
   
   const assessmentsList = await db<CurriculumAssessments>('curriculum_assessments')
     .select(
@@ -120,3 +120,30 @@ export const listAssessmentsByParticipant = async () => {
  * returns the questions and possible answers
  *
  */
+
+
+/**
+ * Get the assessment associated with the specified assessment ID.
+ *
+ * (GET /assessments/:id)
+ * @param {number} assessmentId - The assessment ID for the specified assessment
+ * @returns {CurriculumAssessments[]} - list of assessments in the db
+ */
+
+export const assessmentById = async (assessmentId: number) => {
+  const findAssessmentId = await db<CurriculumAssessments>('curriculum_assessments')
+    .select(
+      'id',
+      'title',
+      'max_score',
+      'max_num_submissions',
+      'time_limit',
+      'curriculum_id',
+      'activity_id',
+      'principal_id',
+      'created_at',
+      'updated_at'
+    )
+    .where({ id: assessmentId}); 
+  return findAssessmentId;
+};
