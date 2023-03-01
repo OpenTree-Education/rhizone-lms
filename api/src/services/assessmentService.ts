@@ -85,7 +85,7 @@ export const createAssessment = async (
 ) => {
   let assessmentId: number;
   await db.transaction(async trx => {
-    [assessmentId] = await trx('assessments').insert({
+    [assessmentId] = await trx('curriculum_assessments').insert({
       title: title,
       description: description,
       max_score: maxScore,
@@ -93,18 +93,17 @@ export const createAssessment = async (
       time_limit: timeLimit,
       curriculum_id: curriculumId,
       activity_id: activityId,
-      principal_id: principalId
-    });
-    await trx('curriculum_assessments').insert({
-      assessment_id: assessmentId,
-      curriculum_id: curriculumId,
-      activity_id: activityId,
       principal_id: principalId,
     });
+    // await trx('program_assessments').insert({
+    //   assessment_id: assessmentId,
+    //   program_id: programId,
+    //   available_after: availableAfter,
+    //   due_date: dueDate,
+    // });
   });
   return { id: assessmentId };
 };
-
 
 /**
  * (DELETE /assessments/:id) ERR 403/

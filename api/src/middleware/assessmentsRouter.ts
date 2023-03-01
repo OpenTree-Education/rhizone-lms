@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
 import {
   listAssessmentsByParticipant,
-  createAssessment
+  createAssessment,
 } from '../services/assessmentService';
 import { ValidationError } from './httpErrors';
 
@@ -33,16 +33,13 @@ assessmentsRouter.get('/', async (req, res, next) => {
   res.json(collectionEnvelope(assessments, assessments.length));
 });
 
-
 // createAssessment POST route ***
 assessmentsRouter.post('/', async (req, res, next) => {
   // const response = { behaviour: 'Creates a new assessment' };
-  const { title, description, maxScore, maxNumSubmissions, timeLimit} = req.body;
+  const { title, description, max_score: maxScore, max_num_submissions: maxNumSubmissions, time_limit: timeLimit } =
+    req.body;
   const { principalId } = req.session;
-  const {
-    curriculum_id: curriculumId,
-    activity_id: activityId,
-  } = req.body;
+  const { curriculum_id: curriculumId, activity_id: activityId } = req.body;
   // const assessmentId = Number(id);
   // if (!Number.isInteger(assessmentId) || assessmentId < 1) {
   //   next(new BadRequestError(`"${id}" is not a valid meeting id.`));
@@ -57,21 +54,30 @@ assessmentsRouter.post('/', async (req, res, next) => {
     return;
   }
   if (typeof maxScore !== 'number') {
-    next(new ValidationError('maxScore must be a number!'))
+    next(new ValidationError('maxScore must be a number!'));
   }
   if (typeof maxNumSubmissions !== 'number') {
-    next(new ValidationError('maxNumSubmissions must be a number!'))
+    next(new ValidationError('maxNumSubmissions must be a number!'));
   }
   if (typeof timeLimit !== 'number') {
-    next(new ValidationError('timeLimit must be a number!'))
+    next(new ValidationError('timeLimit must be a number!'));
   }
   let assessment;
   try {
-    assessment = await createAssessment(title, description, maxScore, maxNumSubmissions, timeLimit, curriculumId, activityId, principalId);
-    } catch (error) {
-      next(error);
-      return;
-    }
+    assessment = await createAssessment(
+      title,
+      description,
+      maxScore,
+      maxNumSubmissions,
+      timeLimit,
+      curriculumId,
+      activityId,
+      principalId
+    );
+  } catch (error) {
+    next(error);
+    return;
+  }
   res.status(200).json(itemEnvelope(assessment));
 });
 
