@@ -1,10 +1,9 @@
 import { Router } from 'express';
 import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
-import {
-  listAssessmentsByParticipant,
-  createAssessment,
-} from '../services/assessmentService';
+import { BadRequestError } from './httpErrors';
 import { ValidationError } from './httpErrors';
+// import {listAssessmentsByParticipant} from '../services/assessmentService'
+import { createAssessment, assessmentById } from '../services/assessmentService';
 
 const assessmentsRouter = Router();
 
@@ -25,12 +24,14 @@ const assessmentsRouter = Router();
 assessmentsRouter.get('/', async (req, res, next) => {
   let assessments;
   try {
-    assessments = await listAssessmentsByParticipant();
+    assessments = await listAssessments();
   } catch (error) {
     next(error);
     return;
   }
-  res.json(collectionEnvelope(assessments, assessments.length));
+  res.json(
+    collectionEnvelope(assessments, assessments.length)
+  );
 });
 
 // createAssessment POST route ***
@@ -81,9 +82,31 @@ assessmentsRouter.post('/', async (req, res, next) => {
   res.status(200).json(itemEnvelope(assessment));
 });
 
-assessmentsRouter.get('/:assessmentId', (req, res) => {
-  const response = { behaviour: 'Shows a single assessment' };
-  res.status(200).json(itemEnvelope(response));
+
+
+// assessmentsRouter.get('/:assessmentId', (req, res) => {
+//   const response = { behaviour: 'Shows a single assessment' };
+//   res.status(200).json(itemEnvelope(response));
+// });
+
+assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
+   const { assessmentId } = req.params;
+   const assessmentIdNum = Number(assessmentId);
+
+  if (!Number.isInteger(assessmentIdNum) || assessmentIdNum < 1) {
+    next(new BadRequestError(`"${assessmentIdNum}" is not a valid assessment id.`));
+    return;
+  }
+  let neededAssessmentId;
+  try {
+    neededAssessmentId = await assessmentById(assessmentIdNum);
+  } catch (error) {
+    next(error);
+    return;
+  }
+  res.json(
+    collectionEnvelope(neededAssessmentId, neededAssessmentId.length)
+  );
 });
 
 assessmentsRouter.put('/:assessmentId', (req, res) => {
