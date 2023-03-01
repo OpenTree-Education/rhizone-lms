@@ -73,12 +73,25 @@ export interface ParticipantActivityForProgram {
   participant_activities: ParticipantActivityCompletionStatus[];
 }
 
-export interface ListAssessments {
+export interface ProgramAssessments {
   id: number;
   program_id: number;
   assessment_id: number;
   available_after: string;
   due_date: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CurriculumAssessments {
+  id: number;
+  title: string,
+  max_score: number,
+  max_num_submissions: number,
+  time_limit?: number,
+  curriculum_id: number,
+  activity_id?: number,
+  principal_id: number,
   created_at: string;
   updated_at: string;
 }

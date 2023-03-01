@@ -4,11 +4,24 @@ import {listAssessmentsByParticipant} from '../services/assessmentService'
 
 const assessmentsRouter = Router();
 
+// assessmentsRouter.get('/', async (req, res, next) => {
+//   const { principalId } = req.session;
+//   let assessments;
+//   try {
+//     assessments = await listAssessmentsByParticipant(principalId);
+//   } catch (error) {
+//     next(error);
+//     return;
+//   }
+//   res.json(
+//     collectionEnvelope(assessments, assessments.length)
+//   );
+// });
+
 assessmentsRouter.get('/', async (req, res, next) => {
-  const { principalId } = req.session;
   let assessments;
   try {
-    assessments = await listAssessmentsByParticipant(principalId);
+    assessments = await listAssessmentsByParticipant();
   } catch (error) {
     next(error);
     return;

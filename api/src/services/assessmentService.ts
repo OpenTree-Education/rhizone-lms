@@ -1,34 +1,63 @@
 import db from './db';
 
-import {ListAssessments} from '../models';
+import {ProgramAssessments, CurriculumAssessments} from '../models';
 // import { DateTime, Duration } from 'luxon';
+
+// /**
+//  * (GET /assessments) Returns list of assessments in the database.
+//  *
+//  * @returns {ProgramAssessments[]} - list of assessments in the db
+//  * @param {number} principalId - the unique id for the user
+//  */
+
+// export const listAssessmentsByParticipant = async (principalId: number) => {
+//   ///1. Select program_id from program_prticipants by principal_id and store it in variable
+//   const programIds = await db('programs')
+//     .select('id')
+//     .where(
+//       'principal_id', principalId
+//     );
+
+//     console.log(programIds);
+//   const programId = programIds.map(({ id }) => id);
+//   console.log(t);
+//   ///2.
+//   const assessmentsList = await db<ProgramAssessments>('program_assessments')
+//     .select(
+//       'id',
+//       'program_id',
+//       'assessment_id',
+//       'available_after',
+//       'due_date',
+//       'created_at',
+//       'updated_at'
+//     )
+//     .whereIn('program_id', programId); //array of program ids);
+//   return assessmentsList;
+// };
 
 /**
  * (GET /assessments) Returns list of assessments in the database.
  *
- * @returns {ListAssessments[]} - list of assessments in the db
- * @param {number} principalId - the unique id for the user
+ * @returns {CurriculumAssessments[]} - list of assessments in the db
  */
 
-export const listAssessmentsByParticipant = async (principalId: number) => {
-  ///1. Select program_id from program_prticipants by principal_id and store it in variable
-  const programIds = await db('program_participants')
-    .select('program_id')
-    .where({
-      principal_id: principalId,
-    });
-  ///2.
-  const assessmentsList = await db<ListAssessments>('program_assessments')
+export const listAssessmentsByParticipant = async () => {
+  
+  const assessmentsList = await db<CurriculumAssessments>('curriculum_assessments')
     .select(
       'id',
-      'program_id',
-      'assessment_id',
-      'available_after',
-      'due_date',
+      'title',
+      'max_score',
+      'max_num_submissions',
+      'time_limit',
+      'curriculum_id',
+      'activity_id',
+      'principal_id',
       'created_at',
       'updated_at'
     )
-    .whereIn('program_id', programIds); //array of program ids);
+    .where('title', 'Final Exam'); // we can use it as a filter
   return assessmentsList;
 };
 
@@ -65,7 +94,7 @@ export const listAssessmentsByParticipant = async (principalId: number) => {
  */
 
 /**
- * (PUT /assessments/:id) Get the meta information about the
+ * (GET /assessments/:id) Get the meta information about the
  * assessment (title, list of submission ids, due date, etc)/
  * Get the meta information about the assessment (title, list
  * of mentees that have submissions and their submission
@@ -73,6 +102,8 @@ export const listAssessmentsByParticipant = async (principalId: number) => {
  *
  *
  */
+
+
 
 /**
  * (PUT /assessments/:id/submission/:id) Submits their answers
