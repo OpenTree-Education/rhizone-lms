@@ -42,8 +42,13 @@ import {ProgramAssessments, CurriculumAssessments} from '../models';
  * @returns {CurriculumAssessments[]} - list of assessments in the db
  */
 
+<<<<<<< HEAD
 export const listAssessments = async () => {
   
+=======
+export const listAssessmentsByParticipant = async () => {
+
+>>>>>>> f05768b3f7efd15d76b83c1498a7f461da5098bd
   const assessmentsList = await db<CurriculumAssessments>('curriculum_assessments')
     .select(
       'id',
@@ -71,8 +76,15 @@ export const listAssessments = async () => {
  * of submissions
  * - the available_after date has passed
  * - the due_date has not passed
- *
+ * @param {number} principalId - the unique id for the user
+ * @param {number} programId - the id for the unique program
+ * @param {number} activityId - the id for the unique activity
+ * @param {boolean} completed - whether or not the user has completed
+ *   the given assignment
+ * @return {Object} - The Id of of the assessment added in the _____ table
  */
+
+
 
 /**
  * (DELETE /assessments/:id) ERR 403/

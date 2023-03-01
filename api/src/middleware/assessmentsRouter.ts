@@ -1,8 +1,13 @@
 import { Router } from 'express';
 import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
+<<<<<<< HEAD
 // import {listAssessmentsByParticipant} from '../services/assessmentService'
 import {listAssessments, assessmentById} from '../services/assessmentService'
 import { BadRequestError } from './httpErrors';
+=======
+import { listAssessmentsByParticipant } from '../services/assessmentService';
+
+>>>>>>> f05768b3f7efd15d76b83c1498a7f461da5098bd
 const assessmentsRouter = Router();
 
 // assessmentsRouter.get('/', async (req, res, next) => {
@@ -27,17 +32,13 @@ assessmentsRouter.get('/', async (req, res, next) => {
     next(error);
     return;
   }
-  res.json(
-    collectionEnvelope(assessments, assessments.length)
-  );
+  res.json(collectionEnvelope(assessments, assessments.length));
 });
 
 assessmentsRouter.post('/', (req, res) => {
   const response = { behaviour: 'Creates a new assessment' };
   res.status(200).json(itemEnvelope(response));
 });
-
-
 
 // assessmentsRouter.post('/', async (req, res, next) => {
 //   const { principalId } = req.session;
@@ -70,6 +71,7 @@ assessmentsRouter.post('/', (req, res) => {
 //   res.status(201).json(itemEnvelope(reflection));
 // });
 
+<<<<<<< HEAD
 
 
 // assessmentsRouter.get('/:assessmentId', (req, res) => {
@@ -95,6 +97,11 @@ assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
   res.json(
     collectionEnvelope(neededAssessmentId, neededAssessmentId.length)
   );
+=======
+assessmentsRouter.get('/:assessmentId', (req, res) => {
+  const response = { behaviour: 'Shows a single assessment' };
+  res.status(200).json(itemEnvelope(response));
+>>>>>>> f05768b3f7efd15d76b83c1498a7f461da5098bd
 });
 
 assessmentsRouter.put('/:assessmentId', (req, res) => {
