@@ -44,6 +44,14 @@ import LinearProgress, {
 } from '@mui/material/LinearProgress';
 import PendingOutlinedIcon from '@mui/icons-material/PendingOutlined';
 import PendingIcon from '@mui/icons-material/Pending';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+
+import QuestionCard from './QuestionCard';
 
 function CircularProgressWithLabel(
   props: CircularProgressProps & { value: number }
@@ -114,6 +122,12 @@ const AssessmentsDetail = () => {
     setChecked(value);
   };
 
+  const [age, setAge] = React.useState('');
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setAge(event.target.value as string);
+  };
+
   return (
     <Container>
       <Stack
@@ -176,59 +190,91 @@ const AssessmentsDetail = () => {
             </ListItem>
           </List>
         </Grid>
-        <Grid item xs={9}>
-          <Stack
-            direction="column"
-            justifyContent="flex-start"
-            alignItems="center"
-            spacing={1}
-          >
-            <Card sx={{ maxWidth: 500 }}>
+        <Grid container xs={9} spacing={2}>
+          {exampleTestQuestionsList.map(q => (
+            <>
+              <Grid item xs={1.5} />
+              <Grid item xs={9}>
+                <QuestionCard question={q} />
+              </Grid>
+              <Grid item xs={1.5} />
+            </>
+          ))}
+          <Grid item xs={1.5} />
+          <Grid item xs={9}>
+            <Card>
               <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  Lizard
+                <Typography gutterBottom variant="h6" component="div">
+                  {exampleTestQuestionsList[0].title}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Lizards are a widespread group of squamate reptiles, with over
-                  6,000 species, ranging across all continents except Antarctica
-                </Typography>
+                <FormControl>
+                  <RadioGroup>
+                    <FormControlLabel
+                      value="female"
+                      control={<Radio />}
+                      label="Female"
+                    />
+                    <FormControlLabel
+                      value="male"
+                      control={<Radio />}
+                      label="Male"
+                    />
+                    <FormControlLabel
+                      value="other"
+                      control={<Radio />}
+                      label="Other"
+                    />
+                  </RadioGroup>
+                </FormControl>
               </CardContent>
-              <CardActions>
-                <Button size="small">Share</Button>
-                <Button size="small">Learn More</Button>
-              </CardActions>
             </Card>
-            <Card sx={{ maxWidth: 500 }}>
+          </Grid>
+          <Grid item xs={1.5} />
+          <Grid item xs={1.5} />
+          <Grid item xs={9}>
+            <Card>
               <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  Lizard
+                <Typography gutterBottom variant="h6" component="div">
+                  {exampleTestQuestionsList[0].title}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Lizards are a widespread group of squamate reptiles, with over
-                  6,000 species, ranging across all continents except Antarctica
-                </Typography>
+                <TextField
+                  required
+                  id="address1"
+                  name="address1"
+                  label="Answer"
+                  multiline
+                  style={{ width: '50%' }}
+                />
               </CardContent>
-              <CardActions>
-                <Button size="small">Share</Button>
-                <Button size="small">Learn More</Button>
-              </CardActions>
             </Card>
-            <Card sx={{ maxWidth: 500 }}>
+          </Grid>
+          <Grid item xs={1.5} />
+          <Grid item xs={1.5} />
+          <Grid item xs={9}>
+            <Card>
               <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  Lizard
+                <Typography gutterBottom variant="h6" component="div">
+                  {exampleTestQuestionsList[0].title}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Lizards are a widespread group of squamate reptiles, with over
-                  6,000 species, ranging across all continents except Antarctica
-                </Typography>
+                <FormControl style={{ width: '50%' }}>
+                  <InputLabel id="demo-simple-select-label">Select</InputLabel>
+                  <Select
+                    required
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={age}
+                    label="Select"
+                    onChange={handleChange}
+                  >
+                    <MenuItem value={10}>Ten</MenuItem>
+                    <MenuItem value={20}>Twenty</MenuItem>
+                    <MenuItem value={30}>Thirty</MenuItem>
+                  </Select>
+                </FormControl>
               </CardContent>
-              <CardActions>
-                <Button size="small">Share</Button>
-                <Button size="small">Learn More</Button>
-              </CardActions>
             </Card>
-          </Stack>
+          </Grid>
+          <Grid item xs={1.5} />
         </Grid>
       </Grid>
     </Container>
