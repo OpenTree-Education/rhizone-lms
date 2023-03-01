@@ -105,12 +105,21 @@ export const createAssessment = async (
   return { id: assessmentId };
 };
 
+
+
 /**
  * (DELETE /assessments/:id) ERR 403/
  * “Deletes” an assessment in the system
  *
- *
  */
+export const deleteAssessmentById = async (assessmentId: number) => {
+  return await db.transaction(async trx => {
+    return await trx('curriculum_assessments')
+    .where({ id: assessmentId })
+    .del();
+  });
+};
+
 
 /**
  * (PUT /assessments/:id) ERR 403/
@@ -176,4 +185,3 @@ export const assessmentById = async (assessmentId: number) => {
     .where({ id: assessmentId});
   return findAssessmentId;
 };
-

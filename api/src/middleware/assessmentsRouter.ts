@@ -3,11 +3,9 @@ import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
 import { BadRequestError } from './httpErrors';
 import { ValidationError } from './httpErrors';
 // import {listAssessmentsByParticipant} from '../services/assessmentService'
-import { listAssessmentsByParticipant, createAssessment, assessmentById } from '../services/assessmentService';
+import { listAssessmentsByParticipant, createAssessment, assessmentById, deleteAssessmentById } from '../services/assessmentService';
 
 const assessmentsRouter = Router();
-
-//testing if changes are visible to natalia
 
 // assessmentsRouter.get('/', async (req, res, next) => {
 //   const { principalId } = req.session;
@@ -78,7 +76,7 @@ assessmentsRouter.post('/', async (req, res, next) => {
       curriculumId,
       activityId,
       principalId
-    );
+      );
   } catch (error) {
     next(error);
     return;
@@ -87,9 +85,25 @@ assessmentsRouter.post('/', async (req, res, next) => {
 });
 
 
+assessmentsRouter.delete('/:assessmentId', async(req, res, next) => {
+  const { assessmentId } = req.params;
+  const assessmentIdNum = Number(assessmentId);
+
+  if (!Number.isInteger(assessmentIdNum) || assessmentIdNum < 1) {
+    next(new BadRequestError(`"${assessmentIdNum}" is not a valid assessment id.`));
+    return;
+  }
+  try {
+    await deleteAssessmentById(assessmentIdNum);
+  } catch (error) {
+    next(error);
+    return;
+  }
+  res.status(204).send();
+});
 
 // assessmentsRouter.get('/:assessmentId', (req, res) => {
-//   const response = { behaviour: 'Shows a single assessment' };
+  //   const response = { behaviour: 'Shows a single assessment' };
 //   res.status(200).json(itemEnvelope(response));
 // });
 
@@ -118,10 +132,6 @@ assessmentsRouter.put('/:assessmentId', (req, res) => {
   res.status(200).json(itemEnvelope(response));
 });
 
-assessmentsRouter.delete('/:assessmentId', (req, res) => {
-  const response = { behaviour: '“Deletes” an assessment in the system' };
-  res.status(200).json(itemEnvelope(response));
-});
 
 assessmentsRouter.get('/:assessmentId/submissions/new', (req, res) => {
   const response = { behaviour: 'Creates a new draft submission' };
