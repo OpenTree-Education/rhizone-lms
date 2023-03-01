@@ -131,12 +131,7 @@ const start = async () => {
   app.use('/docs', withCors, docsRouter);
   app.use('/meetings', withCors, loggedIn, meetingsRouter);
   app.use('/programs', withCors, loggedIn, programsRouter);
-  app.use(
-    '/assessmentsDummyRouter',
-    withCors,
-    loggedIn,
-    assessmentsDummyRouter
-  );
+  app.use('/assessmentsDummy', withCors, loggedIn, assessmentsDummyRouter);
   app.use('/questionnaires', withCors, loggedIn, questionnairesRouter);
   app.use('/reflections', withCors, loggedIn, reflectionsRouter);
   app.use('/settings', withCors, settingsRouter);
