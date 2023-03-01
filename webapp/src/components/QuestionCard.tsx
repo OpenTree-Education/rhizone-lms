@@ -51,24 +51,67 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
+const TableRowWrapper = (question: Question) => {
+  if (
+    question.questionType === 'single choice' &&
+    question.answers?.length &&
+    question.answers?.length < 5
+  ) {
+    return (
+      <FormControl>
+        {question.answers?.map(a => (
+          <FormControlLabel
+            value={a.id}
+            key={a.id}
+            control={<Radio />}
+            label={a.title}
+          />
+        ))}
+      </FormControl>
+    );
+  } else if (question.questionType === 'single choice') {
+    return (
+      <FormControl style={{ width: '50%' }}>
+        {/* <InputLabel id={question.id}>Select</InputLabel> */}
+        <Select
+          required
+          // labelId="demo-simple-select-label"
+          // id="demo-simple-select"
+          // value={age}
+          // label="Select"
+          // onChange={handleChange}
+        >
+          {question.answers?.map(a => (
+            <MenuItem value={a.id} key={a.id}>
+              {a.title}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    );
+  } else {
+    return (
+      <TextField
+        required
+        // id=${question.id?}
+        // name="address1"
+        label="Answer"
+        multiline
+        style={{ width: '50%' }} //how to turn full width when screen width is smaller
+      />
+    );
+  }
+};
+
 const QuestionCard = (props: { question: Question }) => {
+  //why (props: { question: Question })  not (question: Question)
   return (
     <Card>
       <CardContent>
         <Typography gutterBottom variant="h6" component="div">
-          {props.question.title}
+          {props.question.sortOrder}. {props.question.title}
         </Typography>
-        <FormControl>
-          <RadioGroup>
-            <FormControlLabel
-              value="female"
-              control={<Radio />}
-              label="Female"
-            />
-            <FormControlLabel value="male" control={<Radio />} label="Male" />
-            <FormControlLabel value="other" control={<Radio />} label="Other" />
-          </RadioGroup>
-        </FormControl>
+        {TableRowWrapper(props.question)}
       </CardContent>
     </Card>
   );

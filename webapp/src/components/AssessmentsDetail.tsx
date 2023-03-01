@@ -13,6 +13,7 @@ import {
   Radio,
   Grid,
   FormGroup,
+  IconButton,
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -50,6 +51,22 @@ import FormLabel from '@mui/material/FormLabel';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { formatDateTime } from '../helpers/dateTime';
+import {
+  green,
+  pink,
+  blue,
+  yellow,
+  orange,
+  amber,
+  indigo,
+} from '@mui/material/colors';
+
+import TimerIcon from '@mui/icons-material/Timer';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import PublishIcon from '@mui/icons-material/Publish';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ArchiveIcon from '@mui/icons-material/Archive';
 
 import QuestionCard from './QuestionCard';
 
@@ -148,14 +165,21 @@ const AssessmentsDetail = () => {
             }}
           >
             <ListItem>
+              <ListItemText
+                primary={`${assessment?.type}: ${assessment?.title}`}
+                secondary={assessment?.description}
+              />
+            </ListItem>
+            <Divider variant="middle" />
+            <ListItem>
               <ListItemAvatar>
                 <Avatar>
                   <PendingIcon />
                 </Avatar>
               </ListItemAvatar>
               <ListItemText
-                primary="Progress"
-                secondary={<LinearProgressWithLabel value={progress} />}
+                secondary="Progress"
+                primary={<LinearProgressWithLabel value={progress} />}
               />
             </ListItem>
             <Divider variant="middle" />
@@ -165,11 +189,15 @@ const AssessmentsDetail = () => {
                   <CircularProgressWithLabel value={progress} />
                 ) : (
                   <Avatar>
-                    <PendingIcon />
+                    {/* <Avatar sx={{ bgcolor: amber[500] }}> */}
+                    <TimerIcon />
                   </Avatar>
                 )}
               </ListItemAvatar>
-              <ListItemText primary="Timer" secondary="120min total" />
+              <ListItemText
+                secondary="Time Limit"
+                primary={`${assessment?.testDuration} minutes`}
+              />
               <Switch
                 edge="end"
                 onChange={handleToggle(-checked)}
@@ -182,15 +210,88 @@ const AssessmentsDetail = () => {
             <Divider variant="middle" component="li" />
             <ListItem>
               <ListItemAvatar>
+                {/* <Avatar  sx={{ bgcolor: orange[500] }}> */}
                 <Avatar>
-                  <BeachAccessIcon />
+                  <CalendarMonthIcon />
                 </Avatar>
               </ListItemAvatar>
-              <ListItemText primary="Vacation" secondary="July 20, 2014" />
+              <ListItemText
+                secondary="Due Date"
+                primary={formatDateTime(
+                  assessment?.dueDate ? assessment?.dueDate : ''
+                )}
+              />
+            </ListItem>
+            <Divider variant="middle" />
+            <ListItem>
+              <ListItemAvatar>
+                {/* <Avatar sx={{ bgcolor: indigo[500] }}> */}
+                <Avatar>
+                  <ArchiveIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                secondary="Submissions"
+                primary={`0 out of ${assessment?.maxNumSubmissions}`}
+              />
+            </ListItem>
+            {/* <Divider variant="middle" component="li" /> */}
+            <ListItem>
+              <ListItemAvatar>
+                {/* <Avatar>
+                  <BeachAccessIcon />
+                </Avatar> */}
+              </ListItemAvatar>
+              <ListItemText
+                secondary="Last Submission Date"
+                primary={formatDateTime(
+                  assessment?.submittedDate
+                    ? assessment?.submittedDate
+                    : '2023-03-31'
+                )}
+              />
+            </ListItem>
+            <Divider variant="middle" component="li" />
+            <ListItem>
+              <ListItemAvatar>
+                {/* <Avatar sx={{ bgcolor: green[500] }}> */}
+                <Avatar>
+                  <CheckCircleIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText secondary="Score" primary="90" />
+            </ListItem>
+            <Divider variant="middle" />
+            <ListItem>
+              <ListItemAvatar>
+                {/* <Avatar sx={{ bgcolor: blue[500] }}> */}
+                <Avatar>
+                  <PublishIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText>
+                <Button variant="contained" size="medium">
+                  Submit
+                </Button>
+              </ListItemText>
             </ListItem>
           </List>
         </Grid>
         <Grid container xs={9} spacing={2}>
+          <Grid item xs={1.5} />
+          <Grid item xs={9}>
+            <Card>
+              <CardContent>
+                <Typography gutterBottom variant="h4" component="div">
+                  {assessment?.type}: {assessment?.title}
+                </Typography>
+                <Typography gutterBottom variant="body1" component="div">
+                  {assessment?.description}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={1.5} />
           {exampleTestQuestionsList.map(q => (
             <>
               <Grid item xs={1.5} />
@@ -243,7 +344,7 @@ const AssessmentsDetail = () => {
                   name="address1"
                   label="Answer"
                   multiline
-                  style={{ width: '50%' }}
+                  style={{ width: '50%' }} //how to turn full width when screen width is smaller
                 />
               </CardContent>
             </Card>
@@ -273,6 +374,13 @@ const AssessmentsDetail = () => {
                 </FormControl>
               </CardContent>
             </Card>
+          </Grid>
+          <Grid item xs={1.5} />
+          <Grid item xs={1.5} />
+          <Grid item xs={9}>
+            <Button variant="contained" size="large">
+              Submit
+            </Button>
           </Grid>
           <Grid item xs={1.5} />
         </Grid>
