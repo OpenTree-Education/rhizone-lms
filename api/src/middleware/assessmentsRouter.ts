@@ -36,9 +36,18 @@ assessmentsRouter.get('/', async (req, res, next) => {
 
 // createAssessment POST route ***
 assessmentsRouter.post('/', async (req, res, next) => {
+  // const response = { behaviour: 'Creates a new assessment' };
   const { title, description, maxScore, maxNumSubmissions, timeLimit} = req.body;
   const { principalId } = req.session;
-  const { curriculumId, activityId } = req.body;
+  const {
+    curriculum_id: curriculumId,
+    activity_id: activityId,
+  } = req.body;
+  // const assessmentId = Number(id);
+  // if (!Number.isInteger(assessmentId) || assessmentId < 1) {
+  //   next(new BadRequestError(`"${id}" is not a valid meeting id.`));
+  //  return;
+  // }
   if (typeof title !== 'string') {
     next(new ValidationError('title must be a string!'));
     return;
@@ -63,7 +72,6 @@ assessmentsRouter.post('/', async (req, res, next) => {
       next(error);
       return;
     }
-  // const response = { behaviour: 'Creates a new assessment' }; --> not sure about this
   res.status(200).json(itemEnvelope(assessment));
 });
 
