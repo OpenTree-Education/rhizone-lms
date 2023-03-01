@@ -176,3 +176,4 @@ export const assessmentById = async (assessmentId: number) => {
     .where({ id: assessmentId});
   return findAssessmentId;
 };
+

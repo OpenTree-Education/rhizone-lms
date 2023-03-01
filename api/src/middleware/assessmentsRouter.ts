@@ -3,7 +3,7 @@ import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
 import { BadRequestError } from './httpErrors';
 import { ValidationError } from './httpErrors';
 // import {listAssessmentsByParticipant} from '../services/assessmentService'
-import { createAssessment, assessmentById } from '../services/assessmentService';
+import { listAssessmentsByParticipant, createAssessment, assessmentById } from '../services/assessmentService';
 
 const assessmentsRouter = Router();
 
@@ -24,7 +24,7 @@ const assessmentsRouter = Router();
 assessmentsRouter.get('/', async (req, res, next) => {
   let assessments;
   try {
-    assessments = await listAssessments();
+    assessments = await listAssessmentsByParticipant();
   } catch (error) {
     next(error);
     return;
