@@ -7,6 +7,8 @@ import { listAssessmentsByParticipant, createAssessment, assessmentById } from '
 
 const assessmentsRouter = Router();
 
+//testing if changes are visible to natalia
+
 // assessmentsRouter.get('/', async (req, res, next) => {
 //   const { principalId } = req.session;
 //   let assessments;
