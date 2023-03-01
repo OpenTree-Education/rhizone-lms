@@ -1,11 +1,10 @@
 import { Router } from 'express';
 
-import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
+import { itemEnvelope } from './responseEnvelope';
 import { BadRequestError } from './httpErrors';
 import {
   insertToProgramParticipants,
   insertToAssessmentSubmissions,
-  insertToAssessmentResponses,
 } from '../services/assessmentsDummyService';
 const assessmentsDummyRouter = Router();
 
@@ -23,8 +22,14 @@ assessmentsDummyRouter.get(
     const { programId, participantId } = req.params;
     // a role ID of 1 corresponds to a participant
     const roleId = 1;
-    const programIdParsed = Number(programId);
-    const participantIdParsed = Number(participantId);
+    let programIdParsed, participantIdParsed;
+    try {
+      programIdParsed = Number(programId);
+      participantIdParsed = Number(participantId);
+    } catch (err) {
+      next(new BadRequestError(err));
+      return;
+    }
 
     let insertedProgramParticipantsRow: ProgramParticipantsRow[];
     try {
