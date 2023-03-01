@@ -58,7 +58,7 @@ describe('reflectionsService', () => {
         journalEntries
       );
       mockQuery(
-        'select `responses`.`id` as `id`, `reflection_id` as `reflection_id`, `option_id` as `option_id`, `options`.`label` as `option_label`, `prompt_id` as `prompt_id`, `prompts`.`label` as `prompt_label` from `responses` inner join `options` on `responses`.`option_id` = `options`.`id` inner join `prompts` on `options`.`prompt_id` = `prompts`.`id` where `reflection_id` in (?) order by `prompts`.`sort_order` asc',
+        'select `responses`.`id` as `id`, `reflection_id` as `reflection_id`, `option_id` as `option_id`, `survey_answers`.`label` as `option_label`, `prompt_id` as `prompt_id`, `survey_questions`.`label` as `prompt_label` from `responses` inner join `survey_answers` on `responses`.`option_id` = `survey_answers`.`id` inner join `survey_questions` on `survey_answers`.`prompt_id` = `survey_questions`.`id` where `reflection_id` in (?) order by `survey_questions`.`sort_order` asc',
         [reflectionId],
         responses
       );
