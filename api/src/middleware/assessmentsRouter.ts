@@ -3,11 +3,18 @@ import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
 import { BadRequestError } from './httpErrors';
 import { ValidationError } from './httpErrors';
 // import {listAssessmentsByParticipant} from '../services/assessmentService'
+<<<<<<< HEAD
 import { listAssessmentsByParticipant, createAssessment, assessmentById, updateAssessmentById, deleteAssessmentById } from '../services/assessmentService';
 
 const assessmentsRouter = Router();
 
 
+=======
+import { listAssessmentsByParticipant, createAssessment, assessmentById, deleteAssessmentById } from '../services/assessmentService';
+
+const assessmentsRouter = Router();
+
+>>>>>>> 61ca0682ff0a204ef9ece92a981107d4173a931f
 // assessmentsRouter.get('/', async (req, res, next) => {
 //   const { principalId } = req.session;
 //   let assessments;
@@ -101,11 +108,14 @@ assessmentsRouter.delete('/:assessmentId', async(req, res, next) => {
   }
   res.status(204).send();
 });
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 61ca0682ff0a204ef9ece92a981107d4173a931f
 
 // assessmentsRouter.get('/:assessmentId', (req, res) => {
-//   const response = { behaviour: 'Shows a single assessment' };
+  //   const response = { behaviour: 'Shows a single assessment' };
 //   res.status(200).json(itemEnvelope(response));
 // });
 
@@ -184,10 +194,6 @@ assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
 //   res.json(itemEnvelope({ id: assessmentId }));
 // });
 
-assessmentsRouter.delete('/:assessmentId', (req, res) => {
-  const response = { behaviour: '“Deletes” an assessment in the system' };
-  res.status(200).json(itemEnvelope(response));
-});
 
 assessmentsRouter.get('/:assessmentId/submissions/new', (req, res) => {
   const response = { behaviour: 'Creates a new draft submission' };
