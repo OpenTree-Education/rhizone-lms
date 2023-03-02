@@ -97,12 +97,12 @@ export interface CurriculumAssessments {
 }
 
 export interface Submissions {
-  assessment_id: number; 
-principal_id: number, 
-assessment_submisson_state_id: number, 
-score: number,
-opened_at: string,
-submitted_at: string,
-created_at: string,
-updated_at: string,
+  assessment_id: number;
+  principal_id: number;
+  assessment_submisson_state_id: number;
+  score: number;
+  opened_at: string;
+  submitted_at: string;
+  created_at: string;
+  updated_at: string;
 }
