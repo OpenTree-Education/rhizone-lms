@@ -3,11 +3,10 @@ import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
 import { BadRequestError } from './httpErrors';
 import { ValidationError } from './httpErrors';
 // import {listAssessmentsByParticipant} from '../services/assessmentService'
-import { listAssessmentsByParticipant, createAssessment, assessmentById } from '../services/assessmentService';
+import { listAssessmentsByParticipant, createAssessment, assessmentById, updateAssessmentById, deleteAssessmentById } from '../services/assessmentService';
 
 const assessmentsRouter = Router();
 
-//testing if changes are visible to natalia
 
 // assessmentsRouter.get('/', async (req, res, next) => {
 //   const { principalId } = req.session;
@@ -24,9 +23,11 @@ const assessmentsRouter = Router();
 // });
 
 assessmentsRouter.get('/', async (req, res, next) => {
+const {principalId} = req.session;
+const principalIdNum = Number(principalId)
   let assessments;
   try {
-    assessments = await listAssessmentsByParticipant();
+    assessments = await listAssessmentsByParticipant(principalIdNum);
   } catch (error) {
     next(error);
     return;
@@ -35,9 +36,6 @@ assessmentsRouter.get('/', async (req, res, next) => {
     collectionEnvelope(assessments, assessments.length)
   );
 });
-
-
-
 // createAssessment POST route ***
 assessmentsRouter.post('/', async (req, res, next) => {
   // const response = { behaviour: 'Creates a new assessment' };
@@ -78,12 +76,30 @@ assessmentsRouter.post('/', async (req, res, next) => {
       curriculumId,
       activityId,
       principalId
-    );
+      );
   } catch (error) {
     next(error);
     return;
   }
   res.status(200).json(itemEnvelope(assessment));
+});
+
+
+assessmentsRouter.delete('/:assessmentId', async(req, res, next) => {
+  const { assessmentId } = req.params;
+  const assessmentIdNum = Number(assessmentId);
+
+  if (!Number.isInteger(assessmentIdNum) || assessmentIdNum < 1) {
+    next(new BadRequestError(`"${assessmentIdNum}" is not a valid assessment id.`));
+    return;
+  }
+  try {
+    await deleteAssessmentById(assessmentIdNum);
+  } catch (error) {
+    next(error);
+    return;
+  }
+  res.status(204).send();
 });
 
 
@@ -94,6 +110,7 @@ assessmentsRouter.post('/', async (req, res, next) => {
 // });
 
 assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
+  
    const { assessmentId } = req.params;
    const assessmentIdNum = Number(assessmentId);
 
@@ -113,10 +130,59 @@ assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
   );
 });
 
-assessmentsRouter.put('/:assessmentId', (req, res) => {
-  const response = { behaviour: 'Edits an assessment in the system' };
-  res.status(200).json(itemEnvelope(response));
-});
+
+
+// assessmentsRouter.put('/assessment/:id', async (req, res, next) => {
+//   const { assessmentId } = req.params;
+//   const assessmentIdNum = Number(assessmentId);
+//   const {principalId} = req.session;
+//   const principalIdNum = Number(principalId)
+//   const {
+//     title,
+//     description,
+//     maxScore,
+//     maxNumSubmissions,
+//     timeLimit,
+//     principalIdNum,
+//   } = req.body;
+//   if (!Number.isInteger(assessmentIdNum) || assessmentIdNum < 1) {
+//     next(new BadRequestError(`"${assessmentIdNum}" is not a valid assessment id.`));
+//     return;
+//   }
+//   if (!Number.isInteger(principalIdNum === 1)) {
+//     next(new BadRequestError(`"${principalIdNum}" is not a valid id for updating.`));
+//     return;
+//   }
+//   if (typeof title !== 'string') {
+//     next(new ValidationError('title must be a string!'));
+//     return;
+//   }
+//   if (typeof description !== 'string') {
+//     next(new ValidationError('description must be a string!'));
+//     return;
+//   }
+//   if (typeof maxScore !== 'number') {
+//     next(new ValidationError('maxScore must be a number!'));
+//   }
+//   if (typeof maxNumSubmissions !== 'number') {
+//     next(new ValidationError('maxNumSubmissions must be a number!'));
+//   }
+//   if (typeof timeLimit !== 'number') {
+//     next(new ValidationError('timeLimit must be a number!'));
+//   }
+//   try { await updateAssessmentById(
+//       title,
+//       description,
+//       maxScore,
+//       maxNumSubmissions,
+//       timeLimit,
+//     );
+//   } catch (error) {
+//     next(error);
+//     return;
+//   }
+//   res.json(itemEnvelope({ id: assessmentId }));
+// });
 
 assessmentsRouter.delete('/:assessmentId', (req, res) => {
   const response = { behaviour: '“Deletes” an assessment in the system' };

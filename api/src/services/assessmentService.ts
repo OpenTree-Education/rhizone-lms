@@ -1,48 +1,24 @@
 import db from './db';
 
-import { ProgramAssessments, CurriculumAssessments } from '../models';
+import { ProgramAssessments, CurriculumAssessments, Submissions } from '../models';
 // import { DateTime, Duration } from 'luxon';
 
 // /**
 //  * (GET /assessments) Returns list of assessments in the database.
-//  *
+//  * @param {number} programId
 //  * @returns {ProgramAssessments[]} - list of assessments in the db
 //  * @param {number} principalId - the unique id for the user
 //  */
 
-// export const listAssessmentsByParticipant = async (principalId: number) => {
-//   ///1. Select program_id from program_prticipants by principal_id and store it in variable
-//   const programIds = await db('programs')
-//     .select('id')
-//     .where(
-//       'principal_id', principalId
-//     );
 
-//     console.log(programIds);
-//   const programId = programIds.map(({ id }) => id);
-//   console.log(t);
-//   ///2.
-//   const assessmentsList = await db<ProgramAssessments>('program_assessments')
-//     .select(
-//       'id',
-//       'program_id',
-//       'assessment_id',
-//       'available_after',
-//       'due_date',
-//       'created_at',
-//       'updated_at'
-//     )
-//     .whereIn('program_id', programId); //array of program ids);
-//   return assessmentsList;
-// };
 
 /**
  * (GET /assessments) Returns list of assessments in the database.
- *
+ * @param {number} principalId - the unique id for the user
  * @returns {CurriculumAssessments[]} - list of assessments in the db
  */
 
-export const listAssessmentsByParticipant = async () => {
+export const listAssessmentsByParticipant = async (principalId: number) => {
   const assessmentsList = await db<CurriculumAssessments>(
     'curriculum_assessments'
   )
@@ -58,7 +34,7 @@ export const listAssessmentsByParticipant = async () => {
       'created_at',
       'updated_at'
     )
-    .where('title', 'Final Exam'); // we can use it as a filter
+    .where('principal_id', principalId); // we can use it as a filter
   return assessmentsList;
 };
 
@@ -124,15 +100,6 @@ export const createAssessment = async (
  *
  */
 
-/**
- * (GET /assessments/:id) Get the meta information about the
- * assessment (title, list of submission ids, due date, etc)/
- * Get the meta information about the assessment (title, list
- * of mentees that have submissions and their submission
- * ids, due date, etc)
- *
- *
- */
 
 /**
  * (PUT /assessments/:id/submission/:id) Submits their answers
@@ -145,11 +112,15 @@ export const createAssessment = async (
 /** (GET /assessments/:id/submission/new) Creates a new (draft)
  * submission (which starts the timer) and returns the questions
  * and possible answers and the submission ID number/
- * Creates a new (draft) submission (which starts the timer) and
- * returns the questions and possible answers
- *
+ * 
  */
-
+export const deleteAssessmentById = async (assessmentId: number) => {
+  return await db.transaction(async trx => {
+    return await trx('curriculum_assessments')
+    .where({ id: assessmentId })
+    .del();
+  });
+};
 
 /**
  * Get the assessment associated with the specified assessment ID.
@@ -159,7 +130,7 @@ export const createAssessment = async (
  * @returns {CurriculumAssessments[]} - list of assessments in the db
  */
 
-export const assessmentById = async (assessmentId: number) => {
+export const assessmentById = async (assessmentId: number) => { 
   const findAssessmentId = await db<CurriculumAssessments>('curriculum_assessments')
     .select(
       'id',
@@ -175,5 +146,158 @@ export const assessmentById = async (assessmentId: number) => {
     )
     .where({ id: assessmentId});
   return findAssessmentId;
+};
+
+
+
+/**
+ * 
+ *
+ * (PUT /assessments/:id)
+ * @param {number} assessmentId - The assessment ID for the specified assessment
+ * 
+ */
+
+
+export const updateAssessmentById = async (
+  title: string,
+  description: string,
+  maxScore: number,
+  maxNumSubmissions: number,
+  timeLimit: number,
+  curriculumId: number,
+  activityId: number,
+  principalId: number,
+  availableAfter: number,
+  dueDate: number,
+  assessmentId: number,
+) => {
+  
+  let findAssessmentId: number;
+  if (findAssessmentId === assessmentId)
+  await db.transaction(async trx => {
+    [assessmentId] = await trx('curriculum_assessments').insert({
+      title: title,
+      description: description,
+      max_score: maxScore,
+      max_num_submissions: maxNumSubmissions,
+      time_limit: timeLimit,
+      curriculum_id: curriculumId,
+      activity_id: activityId,
+      principal_id: principalId,
+    });
+    await trx('program_assessments').insert({
+      available_after: availableAfter,
+      due_date: dueDate,
+    });
+  });
+  return { id: assessmentId };
+};
+
+
+/**
+ * Find the role of user.
+ *
+ * @param {number} programId 
+ * @param {number} principalId 
+ * 
+ */
+
+
+export const findRoleParticipant  = async (principalId: number,programId: number ) => { 
+const [role_name] = await db('program_participants')
+  .select({role_id: 'program_participant_roles.title'})
+  .join('program_participant_roles', 'program_participant_roles.id', 'program_participants.role_id')
+  .where({principal_id: principalId, program_id: programId});
+return [role_name]
+}
+
+
+
+/**
+ * 
+ * @param {number} assessmentId - The assessment ID for the specified submission
+ * @returns {Assessment} - The assessment data for the specified assessment ID
+ */
+export const findAssessment = async (assessmentId: number) => {
+  const [matchingAssessment] = await db<CurriculumAssessments>('curriculum_assessment')
+    .select(
+      'id',
+      'title',
+      'start_date',
+      'end_date',
+      'time_zone',
+      'curriculum_id'
+    )
+    .where({ id: assessmentId });
+  return matchingAssessment;
+};
+
+
+
+/**
+ * @param {number} programId 
+ * @param {number} principalId 
+ * @param {number} assessmentId - The submission ID for the specified assesment
+ * @returns {Submissions} - The assessment data for the specified assessment ID
+ */
+export const findSubmissionByAssessmentId = async (assessmentId: number, programId: number, principalId: number) => {
+  const [role_name] = await db('program_participants')
+  .select({role_id: 'program_participant_roles.title'})
+  .join('program_participant_roles', 'program_participant_roles.id', 'program_participants.role_id')
+  .where({principal_id: principalId, program_id: programId});
+  const [matchingAssessmentForFacilitator] = await db<Submissions>('assessment_submissions')
+    .select(
+      'assessment_id',
+      'principal_id',
+      'assessment_submisson_state_id',
+      'score',
+      'opened_at',
+      'submitted_at',
+      'created_at',
+      'updated_at'
+    )
+    .where({ assessment_id: assessmentId });
+
+    if (role_name.role_id === 1)
+  return matchingAssessmentForFacilitator
+  const [matchingAssessmentForStudent] = await db<Submissions>('assessment_submissions')
+    .select(
+      'assessment_id',
+      'principal_id',
+      'assessment_submisson_state_id',
+      'score',
+      'opened_at',
+      'submitted_at',
+      'created_at',
+      'updated_at'
+    )
+    .where({ assessment_id: assessmentId });
+
+    if (role_name.role_id === 1)
+  return matchingAssessmentForFacilitator
+  else matchingAssessmentForStudent
+  ;
+};
+
+/**
+ * 
+ * @param {number} assessmentId - The submission ID for the specified assesment
+ * @returns {Submissions} - The assessment data for the specified assessment ID
+ */
+export const listSubmissions = async (assessmentId: number) => {
+  const [matchingAssessment] = await db<Submissions>('curriculum_assessment')
+    .select(
+      'assessment_id',
+      'principal_id',
+      'assessment_submisson_state_id',
+      'score',
+      'opened_at',
+      'submitted_at',
+      'created_at',
+      'updated_at'
+    )
+    .where({ assessment_id: assessmentId });
+  return matchingAssessment;
 };
 
