@@ -38,10 +38,14 @@ export const exampleTestQuestionsList: Question[] = [
     maxScore: 1,
     sortOrder: 1,
     answers: [
-      { title: 'A relational database management system', sortOrder: 1 },
-      { title: 'A programming language', sortOrder: 2 },
-      { title: 'An operating system', sortOrder: 3 },
-      { title: 'A web server', sortOrder: 4 },
+      {
+        id: 42,
+        title: 'A relational database management system',
+        sortOrder: 1,
+      },
+      { id: 43, title: 'A programming language', sortOrder: 2 },
+      { id: 44, title: 'An operating system', sortOrder: 3 },
+      { id: 45, title: 'A web server', sortOrder: 4 },
     ],
   },
   {
@@ -51,8 +55,8 @@ export const exampleTestQuestionsList: Question[] = [
     maxScore: 1,
     sortOrder: 2,
     answers: [
-      { title: 'True', sortOrder: 1 },
-      { title: 'False', sortOrder: 2 },
+      { id: 46, title: 'True', sortOrder: 1 },
+      { id: 47, title: 'False', sortOrder: 2 },
     ],
   },
   {
@@ -62,10 +66,10 @@ export const exampleTestQuestionsList: Question[] = [
     maxScore: 1,
     sortOrder: 3,
     answers: [
-      { title: 'CREATE TABLE', sortOrder: 1 },
-      { title: 'CREATE INDEX', sortOrder: 2 },
-      { title: 'CREATE DATABASE', sortOrder: 3 },
-      { title: 'CREATE SCHEMA', sortOrder: 4 },
+      { id: 48, title: 'CREATE TABLE', sortOrder: 1 },
+      { id: 49, title: 'CREATE INDEX', sortOrder: 2 },
+      { id: 50, title: 'CREATE DATABASE', sortOrder: 3 },
+      { id: 51, title: 'CREATE SCHEMA', sortOrder: 4 },
     ],
   },
   {
@@ -76,8 +80,8 @@ export const exampleTestQuestionsList: Question[] = [
     maxScore: 1,
     sortOrder: 4,
     answers: [
-      { title: 'True', sortOrder: 1 },
-      { title: 'False', sortOrder: 2 },
+      { id: 52, title: 'True', sortOrder: 1 },
+      { id: 53, title: 'False', sortOrder: 2 },
     ],
   },
   {
@@ -87,10 +91,10 @@ export const exampleTestQuestionsList: Question[] = [
     maxScore: 1,
     sortOrder: 5,
     answers: [
-      { title: 'ADD DATA', sortOrder: 1 },
-      { title: 'INSERT DATA', sortOrder: 2 },
-      { title: 'INSERT ROW', sortOrder: 3 },
-      { title: 'INSERT INTO', sortOrder: 4 },
+      { id: 54, title: 'ADD DATA', sortOrder: 1 },
+      { id: 55, title: 'INSERT DATA', sortOrder: 2 },
+      { id: 56, title: 'INSERT ROW', sortOrder: 3 },
+      { id: 57, title: 'INSERT INTO', sortOrder: 4 },
     ],
   },
   {
@@ -100,10 +104,10 @@ export const exampleTestQuestionsList: Question[] = [
     maxScore: 1,
     sortOrder: 6,
     answers: [
-      { title: 'DELETE TABLE', sortOrder: 1 },
-      { title: 'DROP TABLE', sortOrder: 2 },
-      { title: 'REMOVE TABLE', sortOrder: 3 },
-      { title: 'ERASE TABLE', sortOrder: 4 },
+      { id: 58, title: 'DELETE TABLE', sortOrder: 1 },
+      { id: 59, title: 'DROP TABLE', sortOrder: 2 },
+      { id: 60, title: 'REMOVE TABLE', sortOrder: 3 },
+      { id: 61, title: 'ERASE TABLE', sortOrder: 4 },
     ],
   },
   {
@@ -114,13 +118,13 @@ export const exampleTestQuestionsList: Question[] = [
     maxScore: 1,
     sortOrder: 7,
     answers: [
-      { title: 'MAX', sortOrder: 1 },
-      { title: 'TOGETHER', sortOrder: 2 },
-      { title: 'TOTAL', sortOrder: 3 },
-      { title: 'SUM', sortOrder: 4 },
-      { title: 'MIN', sortOrder: 5 },
-      { title: 'SUMTOTAL', sortOrder: 6 },
-      { title: 'TOTALSUM', sortOrder: 7 },
+      { id: 62, title: 'MAX', sortOrder: 1 },
+      { id: 63, title: 'TOGETHER', sortOrder: 2 },
+      { id: 64, title: 'TOTAL', sortOrder: 3 },
+      { id: 65, title: 'SUM', sortOrder: 4 },
+      { id: 66, title: 'MIN', sortOrder: 5 },
+      { id: 67, title: 'SUMTOTAL', sortOrder: 6 },
+      { id: 68, title: 'TOTALSUM', sortOrder: 7 },
     ],
   },
   {

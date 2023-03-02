@@ -28,10 +28,12 @@ import Typography from '@mui/material/Typography';
 
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import ImageIcon from '@mui/icons-material/Image';
+import InventoryIcon from '@mui/icons-material/Inventory';
 import WorkIcon from '@mui/icons-material/Work';
 import BeachAccessIcon from '@mui/icons-material/BeachAccess';
 import Divider from '@mui/material/Divider';
@@ -115,6 +117,8 @@ function LinearProgressWithLabel(
   );
 }
 
+// arrow = arrow function. You name the function and then the curly brackets defines what the function does.
+// our conventions say that we should be following the const with arrow function format
 const AssessmentsDetail = () => {
   const id = useParams();
   const assessment = assessmentList.find(
@@ -227,7 +231,7 @@ const AssessmentsDetail = () => {
               <ListItemAvatar>
                 {/* <Avatar sx={{ bgcolor: indigo[500] }}> */}
                 <Avatar>
-                  <ArchiveIcon />
+                  <InventoryIcon />
                 </Avatar>
               </ListItemAvatar>
               <ListItemText
@@ -266,7 +270,7 @@ const AssessmentsDetail = () => {
               <ListItemAvatar>
                 {/* <Avatar sx={{ bgcolor: blue[500] }}> */}
                 <Avatar>
-                  <PublishIcon />
+                  <AssignmentTurnedInIcon />
                 </Avatar>
               </ListItemAvatar>
               <ListItemText>
