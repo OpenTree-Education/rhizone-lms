@@ -71,6 +71,11 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ArchiveIcon from '@mui/icons-material/Archive';
 
 import QuestionCard from './QuestionCard';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 function CircularProgressWithLabel(
   props: CircularProgressProps & { value: number }
@@ -147,6 +152,16 @@ const AssessmentsDetail = () => {
 
   const handleChange = (event: SelectChangeEvent) => {
     setAge(event.target.value as string);
+  };
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   return (
@@ -274,7 +289,11 @@ const AssessmentsDetail = () => {
                 </Avatar>
               </ListItemAvatar>
               <ListItemText>
-                <Button variant="contained" size="medium">
+                <Button
+                  variant="contained"
+                  size="medium"
+                  onClick={handleClickOpen}
+                >
                   Submit
                 </Button>
               </ListItemText>
@@ -382,9 +401,31 @@ const AssessmentsDetail = () => {
           <Grid item xs={1.5} />
           <Grid item xs={1.5} />
           <Grid item xs={9}>
-            <Button variant="contained" size="large">
+            <Button variant="contained" size="large" onClick={handleClickOpen}>
               Submit
             </Button>
+            <Dialog
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">
+                {"Use Google's location service?"}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                You have filled (javascript questions answered.length) out of (total question length). 
+                Are you sure you would like to submit your assessmnet? 
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose}>Disagree</Button>
+                <Button onClick={handleClose} >
+                  Agree
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Grid>
           <Grid item xs={1.5} />
         </Grid>
