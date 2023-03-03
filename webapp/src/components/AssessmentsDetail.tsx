@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import {
@@ -37,7 +37,6 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import WorkIcon from '@mui/icons-material/Work';
 import BeachAccessIcon from '@mui/icons-material/BeachAccess';
 import Divider from '@mui/material/Divider';
-import { assessmentList, exampleTestQuestionsList } from '../assets/data';
 import CircularProgress, {
   CircularProgressProps,
 } from '@mui/material/CircularProgress';
@@ -53,7 +52,6 @@ import FormLabel from '@mui/material/FormLabel';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { formatDateTime } from '../helpers/dateTime';
 import {
   green,
   pink,
@@ -70,12 +68,19 @@ import PublishIcon from '@mui/icons-material/Publish';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ArchiveIcon from '@mui/icons-material/Archive';
 
-import QuestionCard from './QuestionCard';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+
+import {
+  assessmentList,
+  exampleTestQuestionsList,
+  Question,
+} from '../assets/data';
+import { formatDateTime } from '../helpers/dateTime';
+import QuestionCard from './QuestionCard';
 
 function CircularProgressWithLabel(
   props: CircularProgressProps & { value: number }
@@ -105,31 +110,110 @@ function CircularProgressWithLabel(
   );
 }
 
-function LinearProgressWithLabel(
-  props: LinearProgressProps & { value: number }
-) {
+const LinearProgressWithLabel = (
+  numOfAnsweredQuestion: number,
+  numOfTotalQuestion: number
+) => {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
       <Box sx={{ width: '100%', mr: 1 }}>
-        <LinearProgress variant="determinate" {...props} />
+        <LinearProgress
+          variant="determinate"
+          value={Math.round((numOfAnsweredQuestion * 100) / numOfTotalQuestion)}
+        />
       </Box>
       <Box sx={{ minWidth: 35 }}>
-        <Typography variant="body2" color="text.secondary">{`${Math.round(
-          props.value
-        )}%`}</Typography>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+        >{`${numOfAnsweredQuestion}/${numOfTotalQuestion}`}</Typography>
       </Box>
     </Box>
   );
+};
+
+export interface AssessmentChosenAnswer {
+  chosenAnswerId?: number;
+  responseText?: string;
 }
 
-// arrow = arrow function. You name the function and then the curly brackets defines what the function does.
-// our conventions say that we should be following the const with arrow function format
 const AssessmentsDetail = () => {
   const id = useParams();
   const assessment = assessmentList.find(
     assessment => assessment.id === parseInt(id.id ? id.id : '')
   );
   const [progress, setProgress] = React.useState(10);
+
+  let assessmentAnswersArr = new Array<AssessmentChosenAnswer>(exampleTestQuestionsList.length);
+  for (var i = 0; i < exampleTestQuestionsList.length; i++) {
+    assessmentAnswersArr[i] = {
+      chosenAnswerId: undefined,
+      responseText: undefined,
+    };
+  }
+  const [assessmentAnswers, setAssessmentAnswers] = useState(assessmentAnswersArr);
+  const [numOfAnsweredQuestion, setNumOfAnsweredQuestion] = useState(0);
+
+  // console.log(assessmentAnswers);
+  const handleNewAnswer = (
+    question: Question,
+    chosenAnswerId?: number,
+    responseText?: string
+  ) => {
+    assessmentAnswers[question.sortOrder - 1].chosenAnswerId = chosenAnswerId;
+    assessmentAnswers[question.sortOrder - 1].responseText = responseText;
+    setAssessmentAnswers(assessmentAnswers);
+    setNumOfAnsweredQuestion(
+      assessmentAnswers.filter(a => a.chosenAnswerId || a.responseText).length
+    );
+  };
+
+  // define a state variable whose value is exampleTestQuestionsList
+  const [assessmentQuestions, setAssessmentQuestions] = useState(
+    exampleTestQuestionsList
+  );
+
+  // TODO: (task b) before we start answering questions, update the
+  // [task a]
+  // with an array of the correct number of all of those objects
+
+  // TODO: (task c) define a function that takes as parameters the question id and the updated answer choice / updated text response for an answer
+
+  // TODO: update ending time with the logic we talked about in Discord:
+  // - if there's a time limit
+  //   - if (start time + time limit) > due date
+  //     - due date
+  //   - else
+  //     - (start time + time limit)
+  // - else
+  //   - due date
+
+  const [endingTime, setEndingTime] = useState(new Date());
+  const [secondsRemaining, setSecondsRemaining] = useState(
+    (endingTime.getTime() - new Date().getTime()) / 1000
+  );
+
+  const requestRef = useRef<number>();
+  const previousTimeRef = useRef<number>();
+
+  const animate = (time: number) => {
+    if (previousTimeRef.current !== undefined) {
+      // TODO: check if time remaining would be less than zero, then set to 0 instead
+      setSecondsRemaining(
+        Math.round((endingTime.getTime() - new Date().getTime()) / 1000)
+      );
+    }
+    previousTimeRef.current = time;
+    // TODO: if time remaining is not zero, then execute the next line
+    requestRef.current = requestAnimationFrame(animate);
+  };
+
+  useEffect(() => {
+    requestRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
+  });
 
   React.useEffect(() => {
     const timer = setInterval(() => {
@@ -146,12 +230,6 @@ const AssessmentsDetail = () => {
 
   const handleToggle = (value: number) => () => {
     setChecked(value);
-  };
-
-  const [age, setAge] = React.useState('');
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setAge(event.target.value as string);
   };
 
   const [open, setOpen] = React.useState(false);
@@ -172,7 +250,6 @@ const AssessmentsDetail = () => {
         alignItems={{ xs: 'flex-start', md: 'center' }}
       >
         <h1>Assessments</h1>
-        {/* <Link href="/assessment/">back</Link> */}
       </Stack>
       <Grid container spacing={2}>
         <Grid item xs={3}>
@@ -198,7 +275,10 @@ const AssessmentsDetail = () => {
               </ListItemAvatar>
               <ListItemText
                 secondary="Progress"
-                primary={<LinearProgressWithLabel value={progress} />}
+                primary={LinearProgressWithLabel(
+                  numOfAnsweredQuestion,
+                  assessmentQuestions.length
+                )}
               />
             </ListItem>
             <Divider variant="middle" />
@@ -254,13 +334,8 @@ const AssessmentsDetail = () => {
                 primary={`0 out of ${assessment?.maxNumSubmissions}`}
               />
             </ListItem>
-            {/* <Divider variant="middle" component="li" /> */}
             <ListItem>
-              <ListItemAvatar>
-                {/* <Avatar>
-                  <BeachAccessIcon />
-                </Avatar> */}
-              </ListItemAvatar>
+              <ListItemAvatar />
               <ListItemText
                 secondary="Last Submission Date"
                 primary={formatDateTime(
@@ -300,6 +375,8 @@ const AssessmentsDetail = () => {
             </ListItem>
           </List>
         </Grid>
+        {/* <Paper elevation={3} style={{height:500}}> */}
+
         <Grid container xs={9} spacing={2}>
           <Grid item xs={1.5} />
           <Grid item xs={9}>
@@ -319,117 +396,46 @@ const AssessmentsDetail = () => {
             <>
               <Grid item xs={1.5} />
               <Grid item xs={9}>
-                <QuestionCard question={q} />
+                {/* {assessmentAnswers[q.sortOrder - 1] &&
+                  assessmentAnswers[q.sortOrder - 1].chosenAnswerId}
+                {assessmentAnswers[q.sortOrder - 1] &&
+                  assessmentAnswers[q.sortOrder - 1].responseText} */}
+                <QuestionCard
+                  question={q}
+                  assessmentAnswers={assessmentAnswers}
+                  handleNewAnswer={handleNewAnswer}
+                />
               </Grid>
               <Grid item xs={1.5} />
             </>
           ))}
           <Grid item xs={1.5} />
           <Grid item xs={9}>
-            <Card>
-              <CardContent>
-                <Typography gutterBottom variant="h6" component="div">
-                  {exampleTestQuestionsList[0].title}
-                </Typography>
-                <FormControl>
-                  <RadioGroup>
-                    <FormControlLabel
-                      value="female"
-                      control={<Radio />}
-                      label="Female"
-                    />
-                    <FormControlLabel
-                      value="male"
-                      control={<Radio />}
-                      label="Male"
-                    />
-                    <FormControlLabel
-                      value="other"
-                      control={<Radio />}
-                      label="Other"
-                    />
-                  </RadioGroup>
-                </FormControl>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={1.5} />
-          <Grid item xs={1.5} />
-          <Grid item xs={9}>
-            <Card>
-              <CardContent>
-                <Typography gutterBottom variant="h6" component="div">
-                  {exampleTestQuestionsList[0].title}
-                </Typography>
-                <TextField
-                  required
-                  id="address1"
-                  name="address1"
-                  label="Answer"
-                  multiline
-                  style={{ width: '50%' }} //how to turn full width when screen width is smaller
-                />
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={1.5} />
-          <Grid item xs={1.5} />
-          <Grid item xs={9}>
-            <Card>
-              <CardContent>
-                <Typography gutterBottom variant="h6" component="div">
-                  {exampleTestQuestionsList[0].title}
-                </Typography>
-                <FormControl style={{ width: '50%' }}>
-                  <InputLabel id="demo-simple-select-label">Select</InputLabel>
-                  <Select
-                    required
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={age}
-                    label="Select"
-                    onChange={handleChange}
-                  >
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
-                  </Select>
-                </FormControl>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={1.5} />
-          <Grid item xs={1.5} />
-          <Grid item xs={9}>
             <Button variant="contained" size="large" onClick={handleClickOpen}>
               Submit
             </Button>
-            <Dialog
-              open={open}
-              onClose={handleClose}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <DialogTitle id="alert-dialog-title">
-                {"Use Google's location service?"}
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                You have filled (javascript questions answered.length) out of (total question length). 
-                Are you sure you would like to submit your assessmnet? 
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleClose}>Disagree</Button>
-                <Button onClick={handleClose} >
-                  Agree
-                </Button>
-              </DialogActions>
-            </Dialog>
           </Grid>
           <Grid item xs={1.5} />
         </Grid>
+        {/* </Paper> */}
       </Grid>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle id="alert-dialog-title">
+          Are you sure you would like to submit this assessmnet?
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            You have filled {numOfAnsweredQuestion} out of{' '}
+            {assessmentQuestions.length}.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleClose} variant="contained">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

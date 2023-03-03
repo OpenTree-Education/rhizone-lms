@@ -180,7 +180,7 @@ export const assessmentList: Assessment[] = [
     title: 'Final Exam',
     description: 'The final exam for the course.',
     type: 'Test',
-    dueDate: '2023-03-31',
+    dueDate: '2023-03-31 22:00',
     testDuration: 120,
     score: 50,
     availableDate: '2023-03-20',
