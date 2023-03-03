@@ -10,24 +10,25 @@ interface ProgramParticipantsRow {
 /**
  * Return  program_participants table for any rows matching this principalId and this programId.
  *
- * @param {number} principalId - The given principalId id
+ * @param {number} principalId - The given principalId
+ * @param {number} programId - The given programId
  *
- * @returns {} - An array of matching curriculum activities
+ * @returns {ProgramParticipantsRow}
  */
-export const insertToProgramParticipants = async(
+export const insertToProgramParticipants = async (
   principalId: number,
   programId: number,
   roleId: number
 ): Promise<ProgramParticipantsRow[]> => {
   // select from the program_participants table for any rows matching this principalId and this programId
+
   let matchingProgramParticipantsRows: ProgramParticipantsRow[] =
     await db<ProgramParticipantsRow>('program_participants')
-      .select('principal_id', 'program_id', 'id', 'role_id')
+      .select('id', 'principal_id', 'program_id', 'role_id')
       .where({ principal_id: principalId, program_id: programId });
 
-  // console.debug(`matchingProgramParticipantsRows value is: ${JSON.stringify(matchingProgramParticipantsRows, null, 2)}`);
-
   // - if a row exists, update the roleId to the roleId that's being passed in, using the id of the row returned from that table as the key for updating
+
   if (matchingProgramParticipantsRows.length) {
     await db('program_participants')
       .update({
@@ -46,12 +47,10 @@ export const insertToProgramParticipants = async(
     });
   }
 
-  // console.debug(`programParticipantsRow value is: ${JSON.stringify(programParticipantsRow, null, 2)}`);
-
   matchingProgramParticipantsRows = await db<ProgramParticipantsRow>(
     'program_participants'
   )
-    .select('principal_id', 'program_id', 'id', 'role_id')
+    .select('id', 'principal_id', 'program_id', 'role_id')
     .where({ principal_id: principalId, program_id: programId });
 
   return matchingProgramParticipantsRows;
@@ -139,7 +138,7 @@ export const insertToAssessmentResponses = async (
   score?: number,
   graderResponse?: string
 ) => {
-  const assessmentResponsesWithMatchredId = await db
+  const assessmentResponsesWithMatchredId = await db(`assessment_responses`)
     .select('assessment_id', 'assessment_submission_state_id', 'submitted_at')
     .where({ assessment_id: assessmentId });
   await db(`assessment_responses`).insert({
