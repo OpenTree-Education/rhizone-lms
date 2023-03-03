@@ -1,10 +1,6 @@
 import db from './db';
 
-import {
-  ProgramAssessments,
-  CurriculumAssessments,
-  Submissions,
-} from '../models';
+import { CurriculumAssessments, AssessmentSubmissions } from '../models';
 // import { DateTime, Duration } from 'luxon';
 
 // /**
@@ -146,7 +142,7 @@ export const assessmentById = async (assessmentId: number) => {
       'created_at',
       'updated_at'
     )
-    .where({ id: assessmentId });
+    .where({ assessment_id: assessmentId });
   return findAssessmentId;
 };
 
@@ -176,23 +172,25 @@ export const updateAssessmentById = async (
   programId: number,
   assessmentId: number
 ) => {
-  await db('curriculum_assessments').where({ id: assessmentId }).update({
-    title,
-    description,
-    maxScore,
-    maxNumSubmissions,
-    timeLimit,
-    curiculumId,
-    activityId,
-    principalId,
-  });
+  await db('curriculum_assessments')
+    .where({ assessment_id: assessmentId })
+    .update({
+      title,
+      description,
+      maxScore,
+      maxNumSubmissions,
+      timeLimit,
+      curiculumId,
+      activityId,
+      principalId,
+    });
   await db('program_assessments')
     .where({ curiculum_id: curiculumId })
     .update({ availableAfter, dueDate, programId });
   await db('assessment_questions')
     .where({ assessment_id: assessmentId })
     .update({ title: questions, description: description });
-  return { id: assessmentId };
+  return { assessment_id: assessmentId };
 };
 
 /**
@@ -234,7 +232,7 @@ export const findAssessment = async (assessmentId: number) => {
       'time_zone',
       'curriculum_id'
     )
-    .where({ id: assessmentId });
+    .where({ assessment_id: assessmentId });
   return matchingAssessment;
 };
 
@@ -242,7 +240,7 @@ export const findAssessment = async (assessmentId: number) => {
  * @param {number} programId
  * @param {number} principalId
  * @param {number} assessmentId - The submission ID for the specified assesment
- * @returns {Submissions} - The assessment data for the specified assessment ID
+ * @returns {AssessmentSubmissions} - The assessment data for the specified assessment ID
  */
 export const findSubmissionByAssessmentId = async (
   assessmentId: number,
@@ -258,7 +256,7 @@ export const findSubmissionByAssessmentId = async (
     )
     .where({ principal_id: principalId, program_id: programId });
 
-  const [matchingAssessmentForFacilitator] = await db<Submissions>(
+  const [matchingAssessmentForFacilitator] = await db<AssessmentSubmissions>(
     'assessment_submissions'
   )
     .select(
@@ -272,7 +270,7 @@ export const findSubmissionByAssessmentId = async (
       'updated_at'
     )
     .where({ assessment_id: assessmentId });
-  const [matchingAssessmentForStudent] = await db<Submissions>(
+  const [matchingAssessmentForStudent] = await db<AssessmentSubmissions>(
     'assessment_submissions'
   )
     .select(
@@ -294,10 +292,12 @@ export const findSubmissionByAssessmentId = async (
 /**
  *
  * @param {number} assessmentId - The submission ID for the specified assesment
- * @returns {Submissions} - The assessment data for the specified assessment ID
+ * @returns {AssessmentSubmissions} - The assessment data for the specified assessment ID
  */
 export const listSubmissions = async (assessmentId: number) => {
-  const [matchingAssessment] = await db<Submissions>('curriculum_assessment')
+  const [matchingAssessment] = await db<AssessmentSubmissions>(
+    'curriculum_assessment'
+  )
     .select(
       'assessment_id',
       'principal_id',

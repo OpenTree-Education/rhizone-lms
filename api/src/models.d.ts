@@ -84,19 +84,20 @@ export interface ProgramAssessments {
 }
 
 export interface CurriculumAssessments {
-  id: number;
+  assessment_id?: number;
   title: string;
+  description?: string;
   max_score: number;
   max_num_submissions: number;
   time_limit?: number;
   curriculum_id: number;
-  activity_id?: number;
+  activity_id: number;
   principal_id: number;
-  created_at: string;
-  updated_at: string;
+  questions: Question[];
 }
 
-export interface Submissions {
+export interface AssessmentSubmissions {
+  submission_id: number;
   assessment_id: number;
   principal_id: number;
   assessment_submisson_state_id: number;
@@ -105,4 +106,37 @@ export interface Submissions {
   submitted_at: string;
   created_at: string;
   updated_at: string;
+  responses?: AssessmentResponse[];
+}
+
+export interface Question {
+  question_id?: number;
+  assessment_id?: number;
+  title: string;
+  description?: string;
+  question_type: string;
+  answers?: Answer[];
+  correct_answer_id?: number;
+  max_score: number;
+  sort_order: number;
+}
+
+export interface Answer {
+  answer_id?: number;
+  question_id?: number;
+  title: string;
+  description?: string;
+  sort_order: number;
+  correct_answer?: boolean;
+}
+
+export interface AssessmentResponse {
+  response_id?: number;
+  assessment_id: number;
+  submission_id: number;
+  question_id: number;
+  answer_id?: number;
+  response?: string;
+  score?: number;
+  grader_response?: string;
 }

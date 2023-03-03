@@ -124,30 +124,7 @@ assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
 assessmentsRouter.put('/assessment/:id', async (req, res, next) => {
   const { id } = req.params;
   const assessmentId = Number(id);
-  // const programId = req.params;
-  // const progranIdNum = Number(programId);
   const { principalId } = req.session;
-  const principalIdNum = Number(principalId);
-
-  if (!Number.isInteger(assessmentId) || assessmentId < 1) {
-    next(new BadRequestError(`"${id}" is not a valid assessment id.`));
-    return;
-  }
-  let isAuthorized;
-  try {
-    // isAuthorized = await findRoleParticipant(principalId, progranIdNum);
-  } catch (error) {
-    next(error);
-    return;
-  }
-  if (!isAuthorized) {
-    next(
-      new NotFoundError(
-        `A competency with the id "${assessmentId}" could not be found.`
-      )
-    );
-    return;
-  }
   const {
     title,
     description,
@@ -162,6 +139,27 @@ assessmentsRouter.put('/assessment/:id', async (req, res, next) => {
     programAssessmentId,
     programId,
   } = req.body;
+
+  // waiting to figure out how to refactor this into the function outside
+  if (!Number.isInteger(assessmentId) || assessmentId < 1) {
+    next(new BadRequestError(`"${id}" is not a valid assessment id.`));
+    return;
+  }
+  let isAuthorized;
+  try {
+    isAuthorized = await findRoleParticipant(principalId, programId);
+  } catch (error) {
+    next(error);
+    return;
+  }
+  if (!isAuthorized) {
+    next(
+      new NotFoundError(
+        `A competency with the id "${assessmentId}" could not be found.`
+      )
+    );
+    return;
+  }
 
   if (typeof title !== 'string') {
     next(new ValidationError('title must be a string!'));
