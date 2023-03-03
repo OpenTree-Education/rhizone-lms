@@ -2,9 +2,9 @@ import db from './db';
 
 interface ProgramParticipantsRow {
   id: number;
-  principal_id: number;
-  program_id: number;
-  role_id: number;
+  principal_id?: number;
+  program_id?: number;
+  role_id?: number;
 }
 
 /**
@@ -19,7 +19,7 @@ export const insertToProgramParticipants = async (
   principalId: number,
   programId: number,
   roleId: number
-): Promise<ProgramParticipantsRow[]> => {
+): Promise<ProgramParticipantsRow> => {
   // select from the program_participants table for any rows matching this principalId and this programId
 
   let matchingProgramParticipantsRows: ProgramParticipantsRow[] =
@@ -32,7 +32,6 @@ export const insertToProgramParticipants = async (
   if (matchingProgramParticipantsRows.length) {
     await db('program_participants')
       .update({
-        principal_id: principalId,
         program_id: programId,
         role_id: roleId,
       })
@@ -50,10 +49,21 @@ export const insertToProgramParticipants = async (
   matchingProgramParticipantsRows = await db<ProgramParticipantsRow>(
     'program_participants'
   )
-    .select('id', 'principal_id', 'program_id', 'role_id')
+    .select('id')
     .where({ principal_id: principalId, program_id: programId });
 
-  return matchingProgramParticipantsRows;
+  // console.log(`output of second select query:`, JSON.stringify(matchingProgramParticipantsRows));
+
+  const insertedRowParsed = {
+    id: matchingProgramParticipantsRows[0].id,
+    principal_id: principalId,
+    program_id: programId,
+    role_id: roleId,
+  };
+
+  // console.log(`inserted row parsed: `, insertedRowParsed);
+
+  return insertedRowParsed;
 };
 
 interface AssessmentSubmissionRow {

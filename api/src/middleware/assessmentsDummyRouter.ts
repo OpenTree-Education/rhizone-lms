@@ -10,9 +10,9 @@ const assessmentsDummyRouter = Router();
 
 interface ProgramParticipantsRow {
   id: number;
-  principal_id: number;
-  program_id: number;
-  role_id: number;
+  principal_id?: number;
+  program_id?: number;
+  role_id?: number;
 }
 
 assessmentsDummyRouter.get(
@@ -29,7 +29,7 @@ assessmentsDummyRouter.get(
       next(new BadRequestError(err));
       return;
     }
-    let insertedProgramParticipantsRow: ProgramParticipantsRow[];
+    let insertedProgramParticipantsRow: ProgramParticipantsRow;
     try {
       insertedProgramParticipantsRow = await insertToProgramParticipants(
         participantIdParsed,
@@ -115,12 +115,6 @@ assessmentsDummyRouter.get(
     res.status(201).json(itemEnvelope(insertedAssessmentSubmissionsRow));
   }
 );
-interface ProgramFacilitatorsRow {
-  id: number;
-  principal_id: number;
-  program_id: number;
-  role_id: number;
-}
 
 assessmentsDummyRouter.get(
   '/makeFacilitator/:programId/:participantId',
@@ -136,7 +130,7 @@ assessmentsDummyRouter.get(
       next(new BadRequestError(err));
       return;
     }
-    let insertedProgramFacilitatorsRow: ProgramFacilitatorsRow[];
+    let insertedProgramFacilitatorsRow: ProgramParticipantsRow;
     try {
       insertedProgramFacilitatorsRow = await insertToProgramParticipants(
         participantIdParsed,

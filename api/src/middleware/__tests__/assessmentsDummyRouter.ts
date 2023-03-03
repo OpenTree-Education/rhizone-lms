@@ -16,7 +16,7 @@ const mockGetInsertToProgramParticipants = jest.mocked(
 describe('assessmentsDummyRouter', () => {
   const appAgent = createAppAgentForRouter(assessmentsDummyRouter);
 
-  describe('GET/makeParticipant/:programId/:participantId', () => {
+  describe('GET /makeParticipant/:programId/:participantId', () => {
     it('should return program id and  principal Id for program_participants', done => {
       const programId = 2;
       const principalId = 3;
@@ -30,10 +30,10 @@ describe('assessmentsDummyRouter', () => {
         },
       ];
       mockPrincipalId(principalId);
-      mockGetInsertToProgramParticipants.mockResolvedValue(participantRow);
+      mockGetInsertToProgramParticipants.mockResolvedValue(participantRow[0]);
       appAgent
         .get(`/makeParticipant/${programId}/${principalId}`)
-        .expect(200, itemEnvelope(participantRow), err => {
+        .expect(201, itemEnvelope(participantRow[0]), err => {
           expect(mockGetInsertToProgramParticipants).toHaveBeenCalledWith(
             principalId,
             programId,
@@ -43,4 +43,32 @@ describe('assessmentsDummyRouter', () => {
         });
     });
   });
+
+  // describe('GET /makeFacilitator/:programId/:participantId', () => {
+  //   it('should return program id and  principal Id for program_participants', done => {
+  //     const programId = 2;
+  //     const principalId = 3;
+  //     const roleId = 2;
+  //     const participantRow = [
+  //       {
+  //         id: 2,
+  //         principal_id: principalId,
+  //         program_id: programId,
+  //         role_id: roleId,
+  //       },
+  //     ];
+  //     mockPrincipalId(principalId);
+  //     mockGetInsertToProgramParticipants.mockResolvedValue(participantRow);
+  //     appAgent
+  //       .get(`/makeParticipant/${programId}/${principalId}`)
+  //       .expect(201, itemEnvelope(participantRow), err => {
+  //         expect(mockGetInsertToProgramParticipants).toHaveBeenCalledWith(
+  //           principalId,
+  //           programId,
+  //           roleId
+  //         );
+  //         done(err);
+  //       });
+  //   });
+  // });
 });

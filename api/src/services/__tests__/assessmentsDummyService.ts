@@ -7,33 +7,68 @@ import { mockQuery } from '../mockDb';
 
 describe('assessmentsDummyService', () => {
   describe('insertToProgramParticipants', () => {
-    it('Should check for principalId,programId and insert if not exist ', async () => {
-      const participant = [
-        {
-          id: 1,
-          principal_id: 3,
-          program_id: 2,
-          role_id: 1,
-        },
-      ];
+    it('should check for principalId, programId in program_participants table and insert new record', async () => {
       const principalId = 3;
       const programId = 2;
       const roleId = 1;
-      const id = 1;
-      mockQuery('BEGIN;');
+      const participant = [
+        {
+          id: 1,
+          principal_id: principalId,
+          program_id: programId,
+          role_id: roleId,
+        },
+      ];
       mockQuery(
-        'select `id`,`principal_id`, `program_id`, `role_id` from `program_participants` where `principal_id` = ? and `program_id` = ?',
+        'select `id`, `principal_id`, `program_id`, `role_id` from `program_participants` where `principal_id` = ? and `program_id` = ?',
         [principalId, programId],
-        [participant]
+        []
       );
       mockQuery(
-        'insert into `program_participants` (`principal_id`, `program_id`,`role_id`) values (?, ?, ?)',
-        [principalId, programId, roleId]
+        'insert into `program_participants` (`principal_id`, `program_id`, `role_id`) values (?, ?, ?)',
+        [principalId, programId, roleId],
+        []
       );
-      mockQuery('COMMIT;');
+      mockQuery(
+        'select `id` from `program_participants` where `principal_id` = ? and `program_id` = ?',
+        [principalId, programId],
+        participant
+      );
       expect(
         await insertToProgramParticipants(principalId, programId, roleId)
-      ).toEqual(insertToProgramParticipants);
+      ).toEqual(participant[0]);
+    });
+
+    it('should check for principalId, programId in program_participants table and update existing record', async () => {
+      const principalId = 3;
+      const programId = 2;
+      const roleId = 1;
+      const participant = [
+        {
+          id: 1,
+          principal_id: principalId,
+          program_id: programId,
+          role_id: roleId,
+        },
+      ];
+      mockQuery(
+        'select `id`, `principal_id`, `program_id`, `role_id` from `program_participants` where `principal_id` = ? and `program_id` = ?',
+        [principalId, programId],
+        participant
+      );
+      mockQuery(
+        'update `program_participants` set `program_id` = ?, `role_id` = ? where `principal_id` = ?',
+        [programId, roleId, principalId],
+        []
+      );
+      mockQuery(
+        'select `id` from `program_participants` where `principal_id` = ? and `program_id` = ?',
+        [principalId, programId],
+        participant
+      );
+      expect(
+        await insertToProgramParticipants(principalId, programId, roleId)
+      ).toEqual(participant[0]);
     });
   });
 });
