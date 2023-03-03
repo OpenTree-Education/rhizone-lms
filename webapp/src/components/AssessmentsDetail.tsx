@@ -144,14 +144,17 @@ const AssessmentsDetail = () => {
   );
   const [progress, setProgress] = React.useState(10);
 
-  let assessmentAnswersArr = new Array<AssessmentChosenAnswer>(exampleTestQuestionsList.length);
+  let assessmentAnswersArr = new Array<AssessmentChosenAnswer>(
+    exampleTestQuestionsList.length
+  );
   for (var i = 0; i < exampleTestQuestionsList.length; i++) {
     assessmentAnswersArr[i] = {
       chosenAnswerId: undefined,
       responseText: undefined,
     };
   }
-  const [assessmentAnswers, setAssessmentAnswers] = useState(assessmentAnswersArr);
+  const [assessmentAnswers, setAssessmentAnswers] =
+    useState(assessmentAnswersArr);
   const [numOfAnsweredQuestion, setNumOfAnsweredQuestion] = useState(0);
 
   // console.log(assessmentAnswers);
@@ -260,13 +263,13 @@ const AssessmentsDetail = () => {
               bgcolor: 'background.paper',
             }}
           >
-            <ListItem>
+            {/* <ListItem>
               <ListItemText
                 primary={`${assessment?.type}: ${assessment?.title}`}
                 secondary={assessment?.description}
               />
             </ListItem>
-            <Divider variant="middle" />
+            <Divider variant="middle" /> */}
             <ListItem>
               <ListItemAvatar>
                 <Avatar>
@@ -366,6 +369,7 @@ const AssessmentsDetail = () => {
               <ListItemText>
                 <Button
                   variant="contained"
+                  // variant="outlined"
                   size="medium"
                   onClick={handleClickOpen}
                 >
@@ -375,9 +379,18 @@ const AssessmentsDetail = () => {
             </ListItem>
           </List>
         </Grid>
-        {/* <Paper elevation={3} style={{height:500}}> */}
-
-        <Grid container xs={9} spacing={2}>
+        <Grid
+          container
+          xs={9}
+          spacing={2}
+          style={{
+            height: '75vh',
+            overflow: 'auto',
+            marginTop: 0,
+            marginLeft: 0,
+          }}
+          bgcolor="#fafafa"
+        >
           <Grid item xs={1.5} />
           <Grid item xs={9}>
             <Card>
@@ -416,8 +429,8 @@ const AssessmentsDetail = () => {
             </Button>
           </Grid>
           <Grid item xs={1.5} />
+          <Grid item xs={12} />
         </Grid>
-        {/* </Paper> */}
       </Grid>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle id="alert-dialog-title">
