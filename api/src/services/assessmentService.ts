@@ -151,12 +151,13 @@ export const assessmentById = async (assessmentId: number) => {
 };
 
 /**
- * 
+ *
  *
  * (PUT /assessments/:id)
+ * @param {Object} questions
  * @param {number} principalId
  * @param {number} assessmentId - The assessment ID for the specified assessment
-//  * @param {number} programId
+ * @param {number} programId
  */
 
 export const updateAssessmentById = async (
@@ -165,27 +166,33 @@ export const updateAssessmentById = async (
   maxScore: number,
   maxNumSubmissions: number,
   timeLimit: number,
+  curiculumId: number,
   principalId: number,
+  activityId: number,
+  questions: [], // question here about type
   availableAfter: string,
   dueDate: string,
-  id: number
-  // programId: number
+  programAssessmentId: number,
+  programId: number,
+  assessmentId: number
 ) => {
-  await db('curriculum_assessments').where({ id: id }).update({
+  await db('curriculum_assessments').where({ id: assessmentId }).update({
     title,
     description,
     maxScore,
     maxNumSubmissions,
     timeLimit,
+    curiculumId,
+    activityId,
     principalId,
-    availableAfter,
-    dueDate,
-    id,
   });
   await db('program_assessments')
-    .where({ id: id })
-    .update({ availableAfter, dueDate });
-  return { id: id };
+    .where({ curiculum_id: curiculumId })
+    .update({ availableAfter, dueDate, programId });
+  await db('assessment_questions')
+    .where({ assessment_id: assessmentId })
+    .update({ title: questions, description: description });
+  return { id: assessmentId };
 };
 
 /**

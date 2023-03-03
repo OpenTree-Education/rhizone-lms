@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
-import { BadRequestError } from './httpErrors';
-import { ValidationError } from './httpErrors';
+import { BadRequestError, NotFoundError, ValidationError } from './httpErrors';
 import {
   listAssessmentsByParticipant,
   createAssessment,
@@ -134,29 +133,34 @@ assessmentsRouter.put('/assessment/:id', async (req, res, next) => {
     next(new BadRequestError(`"${id}" is not a valid assessment id.`));
     return;
   }
-  // let isAuthorized;
-  // try {
-  //   isAuthorized = await findRoleParticipant(principalIdNum, );
-  // } catch (error) {
-  //   next(error);
-  //   return;
-  // }
-  // if (!isAuthorized) {
-  //   next(
-  //     new NotFoundError(
-  //       `A competency with the id "${assessmentId}" could not be found.`
-  //     )
-  //   );
-  //   return;
-  // }
+  let isAuthorized;
+  try {
+    // isAuthorized = await findRoleParticipant(principalId, progranIdNum);
+  } catch (error) {
+    next(error);
+    return;
+  }
+  if (!isAuthorized) {
+    next(
+      new NotFoundError(
+        `A competency with the id "${assessmentId}" could not be found.`
+      )
+    );
+    return;
+  }
   const {
     title,
     description,
     maxScore,
     maxNumSubmissions,
     timeLimit,
+    curiculumId,
+    activityId,
+    questions,
     availableAfter,
     dueDate,
+    programAssessmentId,
+    programId,
   } = req.body;
 
   if (typeof title !== 'string') {
@@ -189,16 +193,21 @@ assessmentsRouter.put('/assessment/:id', async (req, res, next) => {
       maxScore,
       maxNumSubmissions,
       timeLimit,
+      curiculumId,
+      principalId,
+      activityId,
+      questions,
       availableAfter,
       dueDate,
-      id,
-      principalIdNum
+      programAssessmentId,
+      programId,
+      assessmentId
     );
   } catch (error) {
     next(error);
     return;
   }
-  res.json(itemEnvelope({ id: assessmentId }));
+  res.json(itemEnvelope({ id: id }));
 });
 
 assessmentsRouter.get('/:assessmentId/submissions/new', (req, res) => {
