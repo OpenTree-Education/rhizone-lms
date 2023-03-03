@@ -12,6 +12,7 @@ import {
   FormControlLabel,
   Radio,
   Grid,
+  Chip,
   FormGroup,
   IconButton,
 } from '@mui/material';
@@ -381,7 +382,7 @@ const AssessmentsDetail = () => {
         </Grid>
         <Grid
           container
-          xs={9}
+          xs={7.5}
           spacing={2}
           style={{
             height: '75vh',
@@ -391,8 +392,8 @@ const AssessmentsDetail = () => {
           }}
           bgcolor="#fafafa"
         >
-          <Grid item xs={1.5} />
-          <Grid item xs={9}>
+          <Grid item xs={1} />
+          <Grid item xs={10}>
             <Card>
               <CardContent>
                 <Typography gutterBottom variant="h4" component="div">
@@ -404,11 +405,11 @@ const AssessmentsDetail = () => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={1.5} />
+          <Grid item xs={1} />
           {exampleTestQuestionsList.map(q => (
             <>
-              <Grid item xs={1.5} />
-              <Grid item xs={9}>
+              <Grid item xs={1} />
+              <Grid item xs={10}>
                 {/* {assessmentAnswers[q.sortOrder - 1] &&
                   assessmentAnswers[q.sortOrder - 1].chosenAnswerId}
                 {assessmentAnswers[q.sortOrder - 1] &&
@@ -419,17 +420,41 @@ const AssessmentsDetail = () => {
                   handleNewAnswer={handleNewAnswer}
                 />
               </Grid>
-              <Grid item xs={1.5} />
+              <Grid item xs={1} />
             </>
           ))}
-          <Grid item xs={1.5} />
-          <Grid item xs={9}>
-            <Button variant="contained" size="large" onClick={handleClickOpen}>
-              Submit
-            </Button>
-          </Grid>
-          <Grid item xs={1.5} />
           <Grid item xs={12} />
+        </Grid>
+        <Grid item xs={1.5}>
+          <List style={{ paddingLeft: 0 }}>
+            <ListItem>
+              <Box sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
+                {assessmentQuestions.map(a => (
+                  <Chip
+                    style={{ marginLeft: 1, marginBottom: 3 }}
+                    label={a.sortOrder}
+                    key={a.id}
+                    color={`${
+                      assessmentAnswers[a.sortOrder - 1].chosenAnswerId ||
+                      assessmentAnswers[a.sortOrder - 1].responseText
+                        ? 'primary'
+                        : 'default'
+                    }`}
+                  />
+                ))}
+              </Box>
+            </ListItem>
+            <Divider variant="middle" />
+            <ListItem sx={{ justifyContent: 'center' }}>
+              <Button
+                variant="outlined"
+                size="medium"
+                onClick={handleClickOpen}
+              >
+                Submit
+              </Button>{' '}
+            </ListItem>
+          </List>
         </Grid>
       </Grid>
       <Dialog open={open} onClose={handleClose}>
