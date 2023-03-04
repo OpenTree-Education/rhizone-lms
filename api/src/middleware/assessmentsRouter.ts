@@ -99,6 +99,8 @@ assessmentsRouter.delete('/:assessmentId', async (req, res, next) => {
 });
 
 //Shows a single assessment
+//TODO change according to #517 
+
 assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
   const { assessmentId } = req.params;
   const assessmentIdNum = Number(assessmentId);
@@ -168,6 +170,7 @@ assessmentsRouter.put('/assessment/:id', async (req, res, next) => {
   if (typeof availableAfter !== 'string') {
     next(new ValidationError('availableAfter must be a string!'));
   }
+  //TODO add rest 
   if (typeof dueDate !== 'string') {
     next(new ValidationError('dueDate must be a string!'));
   }
@@ -218,12 +221,9 @@ assessmentsRouter.put(
   }
 );
 
-const autorizedCheck = async (
-  principalId: number,
-  programId: number,
-  assessmentId: number,
-  next: NextFunction
-) => {
+
+//TODO logic should be changed to facilitator/participant role
+const autorizedCheck = async (principalId: number, programId: number, assessmentId: number, next: NextFunction) => {
   let isAuthorized;
   try {
     isAuthorized = await findRoleParticipant(principalId, programId);
@@ -239,6 +239,8 @@ const autorizedCheck = async (
     );
     return;
   }
-};
+}
+
+
 
 export default assessmentsRouter;
