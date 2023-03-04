@@ -33,14 +33,18 @@ export const listReflections = async (
         id: 'responses.id',
         reflection_id: 'reflection_id',
         option_id: 'option_id',
-        option_label: 'options.label',
+        option_label: 'survey_answers.label',
         prompt_id: 'prompt_id',
-        prompt_label: 'prompts.label',
+        prompt_label: 'survey_questions.label',
       })
-      .join('options', 'responses.option_id', 'options.id')
-      .join('prompts', 'options.prompt_id', 'prompts.id')
+      .join('survey_answers', 'responses.option_id', 'survey_answers.id')
+      .join(
+        'survey_questions',
+        'survey_answers.prompt_id',
+        'survey_questions.id'
+      )
       .whereIn('reflection_id', reflectionIds)
-      .orderBy('prompts.sort_order'),
+      .orderBy('survey_questions.sort_order'),
   ]);
   const reflectionsById = new Map();
   for (const reflection of reflections) {
