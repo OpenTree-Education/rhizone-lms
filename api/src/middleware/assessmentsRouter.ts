@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { NextFunction, Router } from 'express';
 import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
 import { BadRequestError, NotFoundError, ValidationError } from './httpErrors';
 import {
@@ -145,21 +145,8 @@ assessmentsRouter.put('/assessment/:id', async (req, res, next) => {
     next(new BadRequestError(`"${id}" is not a valid assessment id.`));
     return;
   }
-  let isAuthorized;
-  try {
-    isAuthorized = await findRoleParticipant(principalId, programId);
-  } catch (error) {
-    next(error);
-    return;
-  }
-  if (!isAuthorized) {
-    next(
-      new NotFoundError(
-        `A competency with the id "${assessmentId}" could not be found.`
-      )
-    );
-    return;
-  }
+
+  autorizedCheck(principalId, programId, assessmentId, next);
 
   if (typeof title !== 'string') {
     next(new ValidationError('title must be a string!'));
@@ -230,5 +217,28 @@ assessmentsRouter.put(
     res.status(200).json(itemEnvelope(response));
   }
 );
+
+const autorizedCheck = async (
+  principalId: number,
+  programId: number,
+  assessmentId: number,
+  next: NextFunction
+) => {
+  let isAuthorized;
+  try {
+    isAuthorized = await findRoleParticipant(principalId, programId);
+  } catch (error) {
+    next(error);
+    return;
+  }
+  if (!isAuthorized) {
+    next(
+      new NotFoundError(
+        `A competency with the id "${assessmentId}" could not be found.`
+      )
+    );
+    return;
+  }
+};
 
 export default assessmentsRouter;
