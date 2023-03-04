@@ -10,7 +10,7 @@ const tzOffset = new IANAZone(
 ).formatOffset(DateTime.now().toMillis(), 'short');
 
 const db = knex({
-  client: 'mysql',
+  client: 'mysql2',
   connection: {
     database: findConfig('MYSQL_DATABASE', ''),
     host: findConfig('MYSQL_HOST', 'localhost'),

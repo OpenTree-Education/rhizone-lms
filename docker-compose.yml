@@ -18,7 +18,7 @@ services:
       - SESSION_SECRET
       - WEBAPP_ORIGIN
   mysql:
-    command: --default-authentication-plugin=mysql_native_password
+    command: --skip-name-resolve
     environment:
       - MYSQL_DATABASE
       - MYSQL_PASSWORD
