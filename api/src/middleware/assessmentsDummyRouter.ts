@@ -47,8 +47,8 @@ assessmentsDummyRouter.get(
 
 interface AssessmentSubmissionRow {
   id: number;
-  assessment_id: number;
-  principal_id: number;
+  assessment_id?: number;
+  principal_id?: number;
 }
 
 assessmentsDummyRouter.get(
@@ -59,53 +59,55 @@ assessmentsDummyRouter.get(
 
     try {
       participantIdParsed = Number(participantId);
-      dummyAssessmentSubmissionData = {
-        assessmentId: 1,
-        principalId: participantIdParsed,
-        assessmentSubmissionStateId: 7, // graded
-        score: 10,
-        openedAt: '2023-02-09 12:00:00',
-        submittedAt: '2023-02-09 13:23:45',
-        questions: [
-          { id: 1, answerId: 4 },
-          { id: 2, answerId: 5 },
-          { id: 3, answerId: 9 },
-          { id: 4, answerId: 14 },
-          { id: 5, answerId: 18 },
-          { id: 6, answerId: 21 },
-          { id: 7, answerId: 23 },
-          {
-            id: 8,
-            responseText:
-              'const HelloWorld = () => { return <p>Hello, World!</p>; }; export default HelloWorld;',
-          },
-          {
-            id: 9,
-            responseText:
-              'React differs from other JavaScript frameworks because it uses a component-based architecture, a virtual DOM, JSX syntax, unidirectional data flow, and is primarily focused on building UIs rather than providing a complete application framework. These features make it faster, more efficient, and more flexible than other frameworks.',
-          },
-          {
-            id: 10,
-            responseText:
-              'Benefits of using React include its modular and reusable components, efficient updates with virtual DOM, JSX syntax, and active community.',
-          },
-        ],
-      };
+      dummyAssessmentSubmissionData = [
+        {
+          assessmentId: 1,
+          principalId: participantIdParsed,
+          assessmentSubmissionStateId: 7, // graded
+          score: 10,
+          openedAt: '2023-02-09 12:00:00',
+          submittedAt: '2023-02-09 13:23:45',
+          questions: [
+            { id: 1, answerId: 4 },
+            { id: 2, answerId: 5 },
+            { id: 3, answerId: 9 },
+            { id: 4, answerId: 14 },
+            { id: 5, answerId: 18 },
+            { id: 6, answerId: 21 },
+            { id: 7, answerId: 23 },
+            {
+              id: 8,
+              responseText:
+                'const HelloWorld = () => { return <p>Hello, World!</p>; }; export default HelloWorld;',
+            },
+            {
+              id: 9,
+              responseText:
+                'React differs from other JavaScript frameworks because it uses a component-based architecture, a virtual DOM, JSX syntax, unidirectional data flow, and is primarily focused on building UIs rather than providing a complete application framework. These features make it faster, more efficient, and more flexible than other frameworks.',
+            },
+            {
+              id: 10,
+              responseText:
+                'Benefits of using React include its modular and reusable components, efficient updates with virtual DOM, JSX syntax, and active community.',
+            },
+          ],
+        },
+      ];
     } catch (err) {
       next(new BadRequestError(err));
       return;
     }
 
-    let insertedAssessmentSubmissionsRow: AssessmentSubmissionRow[];
+    let insertedAssessmentSubmissionsRow: AssessmentSubmissionRow;
     try {
       insertedAssessmentSubmissionsRow = await insertToAssessmentSubmissions(
-        dummyAssessmentSubmissionData.assessmentId,
-        dummyAssessmentSubmissionData.principalId,
-        dummyAssessmentSubmissionData.assessmentSubmissionStateId,
-        dummyAssessmentSubmissionData.score,
-        dummyAssessmentSubmissionData.openedAt,
-        dummyAssessmentSubmissionData.submittedAt,
-        dummyAssessmentSubmissionData.questions
+        dummyAssessmentSubmissionData[0].assessmentId,
+        dummyAssessmentSubmissionData[0].principalId,
+        dummyAssessmentSubmissionData[0].assessmentSubmissionStateId,
+        dummyAssessmentSubmissionData[0].score,
+        dummyAssessmentSubmissionData[0].openedAt,
+        dummyAssessmentSubmissionData[0].submittedAt,
+        dummyAssessmentSubmissionData[0].questions
       );
     } catch (error) {
       next(error);
@@ -146,8 +148,8 @@ assessmentsDummyRouter.get(
 );
 interface AssessmentStartRow {
   id: number;
-  assessment_id: number;
-  principal_id: number;
+  assessment_id?: number;
+  principal_id?: number;
 }
 assessmentsDummyRouter.get(
   '/startAssessment/:assessmentId/:participantId',
@@ -164,37 +166,14 @@ assessmentsDummyRouter.get(
         score: 10,
         openedAt: '2023-02-09 12:00:00',
         submittedAt: '2023-02-09 13:23:45',
-        questions: [
-          { id: 1, answerId: 4 },
-          { id: 2, answerId: 5 },
-          { id: 3, answerId: 9 },
-          { id: 4, answerId: 14 },
-          { id: 5, answerId: 18 },
-          { id: 6, answerId: 21 },
-          { id: 7, answerId: 23 },
-          {
-            id: 8,
-            responseText:
-              'const HelloWorld = () => { return <p>Hello, World!</p>; }; export default HelloWorld;',
-          },
-          {
-            id: 9,
-            responseText:
-              'React differs from other JavaScript frameworks because it uses a component-based architecture, a virtual DOM, JSX syntax, unidirectional data flow, and is primarily focused on building UIs rather than providing a complete application framework. These features make it faster, more efficient, and more flexible than other frameworks.',
-          },
-          {
-            id: 10,
-            responseText:
-              'Benefits of using React include its modular and reusable components, efficient updates with virtual DOM, JSX syntax, and active community.',
-          },
-        ],
+        questions: [],
       };
     } catch (err) {
       next(new BadRequestError(err));
       return;
     }
 
-    let insertedAssessmentSubmissionsRow: AssessmentSubmissionRow[];
+    let insertedAssessmentSubmissionsRow: AssessmentStartRow;
     try {
       insertedAssessmentSubmissionsRow = await insertToAssessmentSubmissions(
         dummyAssessmentSubmissionData.assessmentId,

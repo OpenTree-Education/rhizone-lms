@@ -68,8 +68,8 @@ export const insertToProgramParticipants = async (
 
 interface AssessmentSubmissionRow {
   id: number;
-  assessment_id: number;
-  principal_id: number;
+  assessment_id?: number;
+  principal_id?: number;
 }
 
 interface Question {
@@ -86,13 +86,12 @@ export const insertToAssessmentSubmissions = async (
   openedAt: string,
   submittedAt: string,
   questions: Question[]
-): Promise<AssessmentSubmissionRow[]> => {
+): Promise<AssessmentSubmissionRow> => {
   // select from the assessment_submissions table for any rows matching this principalId and assessmentId
-  let matchingAsssessmentSubmissionsRows = await db<AssessmentSubmissionRow>(
-    'assessment_submissions'
-  )
-    .select('id', 'assessment_id', 'principal_id')
-    .where({ assessment_id: assessmentId, principal_id: principalId });
+  let matchingAsssessmentSubmissionsRows: AssessmentSubmissionRow[] =
+    await db<AssessmentSubmissionRow>('assessment_submissions')
+      .select('id', 'assessment_id', 'principal_id')
+      .where({ assessment_id: assessmentId, principal_id: principalId });
 
   if (matchingAsssessmentSubmissionsRows.length) {
     // - if a row exists, update the status and submittedAt dates (if one is passed) and return the id of that row
@@ -135,8 +134,13 @@ export const insertToAssessmentSubmissions = async (
       1
     );
   });
+  const insertedRowParsed = {
+    id: matchingAsssessmentSubmissionsRows[0].id,
+    principal_id: principalId,
+    assessment_id: assessmentId,
+  };
 
-  return matchingAsssessmentSubmissionsRows;
+  return matchingAsssessmentSubmissionsRows[0];
 };
 
 export const insertToAssessmentResponses = async (
@@ -149,15 +153,20 @@ export const insertToAssessmentResponses = async (
   graderResponse?: string
 ) => {
   const assessmentResponsesWithMatchredId = await db(`assessment_responses`)
-    .select('assessment_id', 'assessment_submission_state_id', 'submitted_at')
+    .select('assessment_id', 'submission_id')
     .where({ assessment_id: assessmentId });
-  await db(`assessment_responses`).insert({
-    assessment_id: assessmentId,
-    submission_id: submissionId,
-    question_id: questionId,
-    answer_id: answerId,
-    response: response,
-    score: score,
-    grader_response: graderResponse,
-  });
+  if (!assessmentResponsesWithMatchredId.length) {
+    await db(`assessment_responses`).insert({
+      assessment_id: assessmentId,
+      submission_id: submissionId,
+      question_id: questionId,
+      answer_id: answerId,
+      response: response,
+      score: score,
+      grader_response: graderResponse,
+    });
+  }
+  // assessmentResponsesWithMatchredId=await db(`assessment_responses`)
+  // .select('id')
+  // .where({ assessment_id: assessmentId });
 };

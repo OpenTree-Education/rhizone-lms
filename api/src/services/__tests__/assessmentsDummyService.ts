@@ -71,4 +71,144 @@ describe('assessmentsDummyService', () => {
       ).toEqual(participant[0]);
     });
   });
+  // describe('insertToAssessmentSubmissions', () => {
+  //   it('should check for principalId, programId in assessment_submissions table and insert new record', async () => {
+  //     const principalId = 3;
+  //     const assessmentId = 1;
+
+  //     const dummyAssessmentSubmissionData = {
+  //       assessmentId: assessmentId,
+  //       principalId: principalId,
+  //       assessmentSubmissionStateId: 7,
+  //       score: 10,
+  //       openedAt: '2023-02-09 12:00:00',
+  //       submittedAt: '2023-02-09 13:23:45',
+  //       questions: [
+  //         { id: 1, answerId: 4 },
+  //         { id: 2, answerId: 5 },
+  //         { id: 3, answerId: 9 },
+  //         { id: 4, answerId: 14 },
+  //         { id: 5, answerId: 18 },
+  //         { id: 6, answerId: 21 },
+  //         { id: 7, answerId: 23 },
+  //         {
+  //           id: 8,
+  //           responseText:
+  //             'const HelloWorld = () => { return <p>Hello, World!</p>; }; export default HelloWorld;',
+  //         },
+  //         {
+  //           id: 9,
+  //           responseText:
+  //             'React differs from other JavaScript frameworks because it uses a component-based architecture, a virtual DOM, JSX syntax, unidirectional data flow, and is primarily focused on building UIs rather than providing a complete application framework. These features make it faster, more efficient, and more flexible than other frameworks.',
+  //         },
+  //         {
+  //           id: 10,
+  //           responseText:
+  //             'Benefits of using React include its modular and reusable components, efficient updates with virtual DOM, JSX syntax, and active community.',
+  //         },
+  //       ],
+  //     };
+
+  //     mockQuery(
+  //       'select `id`, `assessment_id`, `principal_id`, from `assessment_submissions` where`assessment_id` = ? and `principal_id` = ?  ',
+  //       [assessmentId, principalId],
+  //       []
+  //     );
+
+  //     mockQuery(
+  //       'insert into `assessment_submissions` (assessment_id,`principal_id`, `assessment_submission_state_id`,`score`,`opende_at`,`submitted_at`) values (?, ?, ?,?,?,?)',
+  //       [
+  //         assessmentId,
+  //         principalId,
+  //         dummyAssessmentSubmissionData.assessmentSubmissionStateId,
+  //         dummyAssessmentSubmissionData.score,
+  //         dummyAssessmentSubmissionData.openedAt,
+  //         dummyAssessmentSubmissionData.submittedAt,
+  //         dummyAssessmentSubmissionData.questions,
+  //       ],
+  //       []
+  //     );
+  //     mockQuery(
+  //       'select `id` from `assessment_submissions` where`assessment_id` = ? and `principal_id` = ?  ',
+  //       [assessmentId, principalId],
+  //       dummyAssessmentSubmissionData
+  //     );
+  //     expect(
+  //       await insertToAssessmentSubmissions(
+  //         assessmentId,
+  //         principalId,
+  //         dummyAssessmentSubmissionData.assessmentSubmissionStateId,
+  //         dummyAssessmentSubmissionData.score,
+  //         dummyAssessmentSubmissionData.openedAt,
+  //         dummyAssessmentSubmissionData.submittedAt,
+  //         dummyAssessmentSubmissionData.questions
+  //       )
+  //     ).toEqual(dummyAssessmentSubmissionData);
+  //   });
+
+  //   it('should check for principalId, programId in assessment_submissions table and update existing record', async () => {
+  //     const principalId = 3;
+  //     const assessmentId = 1;
+
+  //     const dummyAssessmentSubmissionData = {
+  //       assessmentId: assessmentId,
+  //       principalId: principalId,
+  //       assessmentSubmissionStateId: 7,
+  //       score: 10,
+  //       openedAt: '2023-02-09 12:00:00',
+  //       submittedAt: '2023-02-09 13:23:45',
+  //       questions: [
+  //         { id: 1, answerId: 4 },
+  //         { id: 2, answerId: 5 },
+  //         { id: 3, answerId: 9 },
+  //         { id: 4, answerId: 14 },
+  //         { id: 5, answerId: 18 },
+  //         { id: 6, answerId: 21 },
+  //         { id: 7, answerId: 23 },
+  //         {
+  //           id: 8,
+  //           responseText:
+  //             'const HelloWorld = () => { return <p>Hello, World!</p>; }; export default HelloWorld;',
+  //         },
+  //         {
+  //           id: 9,
+  //           responseText:
+  //             'React differs from other JavaScript frameworks because it uses a component-based architecture, a virtual DOM, JSX syntax, unidirectional data flow, and is primarily focused on building UIs rather than providing a complete application framework. These features make it faster, more efficient, and more flexible than other frameworks.',
+  //         },
+  //         {
+  //           id: 10,
+  //           responseText:
+  //             'Benefits of using React include its modular and reusable components, efficient updates with virtual DOM, JSX syntax, and active community.',
+  //         },
+  //       ],
+  //     };
+
+  //     mockQuery(
+  //       'select `id`, `assessment_id`, `principal_id`, from `assessment_submissions` where`assessment_id` = ? and `principal_id` = ?  ',
+  //       [assessmentId, principalId],
+  //       [dummyAssessmentSubmissionData]
+  //     );
+  //     mockQuery(
+  //       'update `assessment_submissions` set `assessment_id` = ? where `principal_id` = ?',
+  //       [assessmentId, principalId],
+  //       []
+  //     );
+  //     mockQuery(
+  //       'select `id` from `assessment_submissions` where `assessment_id` = ?and `principal_id` = ? ',
+  //       [assessmentId, principalId],
+  //       dummyAssessmentSubmissionData
+  //     );
+  //     expect(
+  //       await insertToAssessmentSubmissions(
+  //         assessmentId,
+  //         principalId,
+  //         dummyAssessmentSubmissionData.assessmentSubmissionStateId,
+  //         dummyAssessmentSubmissionData.score,
+  //         dummyAssessmentSubmissionData.openedAt,
+  //         dummyAssessmentSubmissionData.submittedAt,
+  //         dummyAssessmentSubmissionData.questions
+  //       )
+  //     ).toEqual(dummyAssessmentSubmissionData);
+  //   });
+  // });
 });
