@@ -163,7 +163,7 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   },
 }));
 
-const AssessmentsPage = () => {
+const AssessmentsListPage = () => {
   const [currentStatusTab, setCurrentStatusTab] = useState(StatusTab.Active);
   const handleChangeTab = (
     event: React.SyntheticEvent,
@@ -408,4 +408,4 @@ const AssessmentsPage = () => {
   );
 };
 
-export default AssessmentsPage;
+export default AssessmentsListPage;

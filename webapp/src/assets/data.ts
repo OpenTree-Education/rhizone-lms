@@ -4,9 +4,9 @@ export interface Assessment {
   description: string;
   type: string;
   dueDate: string;
-  testDuration: number;
+  testDuration?: number;
   submittedDate?: string;
-  score: number;
+  score?: number;
   availableDate: string;
   status: string;
   maxNumSubmissions?: number;
@@ -28,6 +28,11 @@ export interface Answer {
   title: string;
   description?: string;
   sortOrder: number;
+}
+
+export interface AssessmentChosenAnswer {
+  chosenAnswerId?: number;
+  responseText?: string;
 }
 
 export const exampleTestQuestionsList: Question[] = [
@@ -158,10 +163,10 @@ export const assessmentList: Assessment[] = [
     description: 'Debugging in Visual Studio and Unit Test',
     type: 'Assignment',
     dueDate: '2023-03-25',
-    testDuration: 0,
-    score: -1,
+    testDuration: 120,
     availableDate: '2023-02-25',
     status: 'Active',
+    maxNumSubmissions: 3,
   },
   {
     id: 2,
@@ -171,9 +176,9 @@ export const assessmentList: Assessment[] = [
     type: 'Test',
     dueDate: '2023-03-24',
     testDuration: 60,
-    score: -1,
     availableDate: '2023-04-11',
     status: 'Active',
+    maxNumSubmissions: 1,
   },
   {
     id: 3,
@@ -182,7 +187,6 @@ export const assessmentList: Assessment[] = [
     type: 'Test',
     dueDate: '2023-03-31 22:00',
     testDuration: 120,
-    score: 50,
     availableDate: '2023-03-20',
     status: 'Active',
     maxNumSubmissions: 1,
@@ -194,7 +198,6 @@ export const assessmentList: Assessment[] = [
       'Differents standars and Method related to averyone can access to webpages',
     type: 'Practice Quiz',
     dueDate: '2023-06-22',
-    testDuration: 0,
     submittedDate: '2023-02-22',
     score: 90,
     availableDate: '2023-01-22',
@@ -207,10 +210,10 @@ export const assessmentList: Assessment[] = [
       'Develop and techniques to grow-up proficiency. Books Product-Minded Professional',
     type: 'Assignment',
     dueDate: '2023-05-23',
-    testDuration: 0,
     score: 0,
     availableDate: '2023-01-11',
     status: 'Unsubmitted',
+    maxNumSubmissions: 1,
   },
   {
     id: 6,
@@ -221,9 +224,9 @@ export const assessmentList: Assessment[] = [
     dueDate: '2023-01-11',
     testDuration: 60,
     submittedDate: '2023-02-22',
-    score: -1,
     availableDate: '2023-09-08',
     status: 'Submitted',
+    maxNumSubmissions: 1,
   },
   {
     id: 7,
@@ -232,9 +235,9 @@ export const assessmentList: Assessment[] = [
     type: 'Assignment',
     dueDate: '2023-03-27',
     testDuration: 0,
-    score: -1,
     availableDate: '2023-02-27',
     status: 'Upcoming',
+    maxNumSubmissions: 1,
   },
   {
     id: 8,
@@ -247,5 +250,6 @@ export const assessmentList: Assessment[] = [
     score: 0,
     availableDate: '2023-01-15',
     status: 'Unsubmitted',
+    maxNumSubmissions: 1,
   },
 ];

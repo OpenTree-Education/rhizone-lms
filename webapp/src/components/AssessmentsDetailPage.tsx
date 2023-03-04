@@ -3,28 +3,28 @@ import { useParams } from 'react-router-dom';
 
 import {
   Container,
-  Link,
+  // Link,
   Stack,
   Button,
-  Paper,
-  TableContainer,
-  TextField,
-  FormControlLabel,
-  Radio,
+  // Paper,
+  // TableContainer,
+  // TextField,
+  // FormControlLabel,
+  // Radio,
   Grid,
   Chip,
-  FormGroup,
-  IconButton,
+  // FormGroup,
+  // IconButton,
 } from '@mui/material';
 import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import AppBar from '@mui/material/AppBar';
-import CssBaseline from '@mui/material/CssBaseline';
-import Toolbar from '@mui/material/Toolbar';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
+// import Drawer from '@mui/material/Drawer';
+// import AppBar from '@mui/material/AppBar';
+// import CssBaseline from '@mui/material/CssBaseline';
+// import Toolbar from '@mui/material/Toolbar';
+// import Card from '@mui/material/Card';
+// import CardActions from '@mui/material/CardActions';
+// import CardContent from '@mui/material/CardContent';
+// import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 
 import List from '@mui/material/List';
@@ -33,41 +33,41 @@ import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-import ImageIcon from '@mui/icons-material/Image';
+import InfoIcon from '@mui/icons-material/Info';
+// import ImageIcon from '@mui/icons-material/Image';
 import InventoryIcon from '@mui/icons-material/Inventory';
-import WorkIcon from '@mui/icons-material/Work';
-import BeachAccessIcon from '@mui/icons-material/BeachAccess';
+// import WorkIcon from '@mui/icons-material/Work';
+// import BeachAccessIcon from '@mui/icons-material/BeachAccess';
 import Divider from '@mui/material/Divider';
 import CircularProgress, {
   CircularProgressProps,
 } from '@mui/material/CircularProgress';
 import Switch from '@mui/material/Switch';
-import LinearProgress, {
-  LinearProgressProps,
-} from '@mui/material/LinearProgress';
-import PendingOutlinedIcon from '@mui/icons-material/PendingOutlined';
+import LinearProgress from '@mui/material/LinearProgress';
+// import LinearProgress, { LinearProgressProps } from '@mui/material/LinearProgress';
+// import PendingOutlinedIcon from '@mui/icons-material/PendingOutlined';
 import PendingIcon from '@mui/icons-material/Pending';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import {
-  green,
-  pink,
-  blue,
-  yellow,
-  orange,
-  amber,
-  indigo,
-} from '@mui/material/colors';
+// import RadioGroup from '@mui/material/RadioGroup';
+// import FormControl from '@mui/material/FormControl';
+// import FormLabel from '@mui/material/FormLabel';
+// import InputLabel from '@mui/material/InputLabel';
+// import MenuItem from '@mui/material/MenuItem';
+// import Select, { SelectChangeEvent } from '@mui/material/Select';
+// import {
+//   green,
+//   pink,
+//   blue,
+//   yellow,
+//   orange,
+//   amber,
+//   indigo,
+// } from '@mui/material/colors';
 
 import TimerIcon from '@mui/icons-material/Timer';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import PublishIcon from '@mui/icons-material/Publish';
+// import PublishIcon from '@mui/icons-material/Publish';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ArchiveIcon from '@mui/icons-material/Archive';
+// import ArchiveIcon from '@mui/icons-material/Archive';
 
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -79,6 +79,7 @@ import {
   assessmentList,
   exampleTestQuestionsList,
   Question,
+  AssessmentChosenAnswer
 } from '../assets/data';
 import { formatDateTime } from '../helpers/dateTime';
 import QuestionCard from './QuestionCard';
@@ -133,17 +134,12 @@ const LinearProgressWithLabel = (
   );
 };
 
-export interface AssessmentChosenAnswer {
-  chosenAnswerId?: number;
-  responseText?: string;
-}
-
-const AssessmentsDetail = () => {
+const AssessmentsDetailPage = () => {
   const id = useParams();
   const assessment = assessmentList.find(
     assessment => assessment.id === parseInt(id.id ? id.id : '')
   );
-  const [progress, setProgress] = React.useState(10);
+  const [progress] = React.useState(10);
 
   let assessmentAnswersArr = new Array<AssessmentChosenAnswer>(
     exampleTestQuestionsList.length
@@ -173,7 +169,7 @@ const AssessmentsDetail = () => {
   };
 
   // define a state variable whose value is exampleTestQuestionsList
-  const [assessmentQuestions, setAssessmentQuestions] = useState(
+  const [assessmentQuestions] = useState(
     exampleTestQuestionsList
   );
 
@@ -192,7 +188,7 @@ const AssessmentsDetail = () => {
   // - else
   //   - due date
 
-  const [endingTime, setEndingTime] = useState(new Date());
+  const [endingTime] = useState(new Date(assessment?.dueDate!));
   const [secondsRemaining, setSecondsRemaining] = useState(
     (endingTime.getTime() - new Date().getTime()) / 1000
   );
@@ -219,16 +215,16 @@ const AssessmentsDetail = () => {
     };
   });
 
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress(prevProgress =>
-        prevProgress >= 100 ? 0 : prevProgress + 10
-      );
-    }, 800);
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
+  // React.useEffect(() => {
+  //   const timer = setInterval(() => {
+  //     setProgress(prevProgress =>
+  //       prevProgress >= 100 ? 0 : prevProgress + 10
+  //     );
+  //   }, 800);
+  //   return () => {
+  //     clearInterval(timer);
+  //   };
+  // }, []);
 
   const [checked, setChecked] = React.useState(-1);
 
@@ -252,8 +248,9 @@ const AssessmentsDetail = () => {
         direction={{ xs: 'column', md: 'row' }}
         justifyContent="space-between"
         alignItems={{ xs: 'flex-start', md: 'center' }}
+        sx={{ marginBottom: '1em' }}
       >
-        <h1>Assessments</h1>
+        <h1>{assessment?.title}</h1>
       </Stack>
       <Grid container spacing={2}>
         <Grid item xs={3}>
@@ -261,16 +258,19 @@ const AssessmentsDetail = () => {
             sx={{
               width: '100%',
               maxWidth: 360,
-              bgcolor: 'background.paper',
             }}
           >
-            {/* <ListItem>
+            <ListItem>
+              <ListItemAvatar>
+                <Avatar>
+                  <InfoIcon />
+                </Avatar>
+              </ListItemAvatar>
               <ListItemText
-                primary={`${assessment?.type}: ${assessment?.title}`}
                 secondary={assessment?.description}
               />
             </ListItem>
-            <Divider variant="middle" /> */}
+            <Divider variant="middle" />
             <ListItem>
               <ListItemAvatar>
                 <Avatar>
@@ -298,8 +298,8 @@ const AssessmentsDetail = () => {
                 )}
               </ListItemAvatar>
               <ListItemText
-                secondary="Time Limit"
-                primary={`${assessment?.testDuration} minutes`}
+                secondary="Time Remaining"
+                primary={`${secondsRemaining} seconds`}
               />
               <Switch
                 edge="end"
@@ -335,7 +335,7 @@ const AssessmentsDetail = () => {
               </ListItemAvatar>
               <ListItemText
                 secondary="Submissions"
-                primary={`0 out of ${assessment?.maxNumSubmissions}`}
+                primary={`First out of ${assessment?.maxNumSubmissions}`}
               />
             </ListItem>
             <ListItem>
@@ -394,16 +394,6 @@ const AssessmentsDetail = () => {
         >
           <Grid item xs={1} />
           <Grid item xs={10}>
-            <Card>
-              <CardContent>
-                <Typography gutterBottom variant="h4" component="div">
-                  {assessment?.type}: {assessment?.title}
-                </Typography>
-                <Typography gutterBottom variant="body1" component="div">
-                  {assessment?.description}
-                </Typography>
-              </CardContent>
-            </Card>
           </Grid>
           <Grid item xs={1} />
           {exampleTestQuestionsList.map(q => (
@@ -478,4 +468,4 @@ const AssessmentsDetail = () => {
   );
 };
 
-export default AssessmentsDetail;
+export default AssessmentsDetailPage;

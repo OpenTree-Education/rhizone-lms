@@ -10,7 +10,8 @@ import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-import { AssessmentChosenAnswer } from './AssessmentsDetail';
+import { AssessmentChosenAnswer } from '../assets/data';
+
 interface QuestionCardProps {
   question: Question;
   assessmentAnswers: AssessmentChosenAnswer[];
