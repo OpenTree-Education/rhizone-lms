@@ -1,11 +1,11 @@
 // istanbul ignore file
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import connectRedis from 'connect-redis';
+import RedisStore from 'connect-redis';
 import cors from 'cors';
 import { createClient as createRedisClient } from 'redis';
 import { createServer } from 'http';
 import express from 'express';
-import expressSession, { Session, SessionData } from 'express-session';
+import session, { Session, SessionData } from 'express-session';
 import helmet from 'helmet';
 import Rollbar from 'rollbar';
 import { Server } from 'socket.io';
@@ -88,35 +88,59 @@ const start = async () => {
     });
   });
 
-  const RedisStore = connectRedis(expressSession);
-  const redisClient = createRedisClient({
-    host: findConfig('REDIS_HOST', 'localhost'),
-  });
-  redisClient.on('connect', () => console.log(`redis client connected`));
-  redisClient.on('error', error => console.log(`redis client error: ${error}`));
-
-  const sessionMiddleware = expressSession({
-    cookie: { sameSite: true, secure },
-    name: 'session_id',
-    resave: true,
-    saveUninitialized: true,
-    secret: findConfig('SESSION_SECRET', ''),
-    store: new RedisStore({ client: redisClient }),
-  });
-
-  io.use((socket, next) => {
-    // This code was taken from the documentation for using Socket.IO with express-session:
-    // https://socket.io/docs/v4/faq/#usage-with-express-session
-    // This was not designed with typescript in mind so it shows that the types are incompatible
-    // @ts-ignore
-    sessionMiddleware(socket.request, {}, next);
-  });
-
   app.set('trust proxy', 1);
 
   app.use(helmet());
   app.use(express.json());
-  app.use(sessionMiddleware);
+
+  // Session information is stored in Redis for retrieval by both the
+  // webapp front-end and the api back-end.
+  const redisHost = findConfig('REDIS_HOST', 'localhost');
+  const redisClient = createRedisClient({
+    url: `redis://${redisHost}`,
+  });
+
+  // Try connecting to Redis. If we can't, notify the user and fall back
+  // to in-memory session store, if possible.
+  try {
+    await redisClient.connect();
+
+    if (!redisClient.isOpen) {
+      throw new Error('trouble connecting to redis.');
+    } else {
+      console.info('redis client connected');
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sessionStore = new (RedisStore as any)({ client: redisClient });
+
+    const sessionMiddleware = session({
+      cookie: { sameSite: true, secure },
+      name: 'session_id',
+      resave: true,
+      saveUninitialized: true,
+      secret: findConfig('SESSION_SECRET', ''),
+      store: sessionStore,
+    });
+
+    app.use(sessionMiddleware);
+  } catch (err) {
+    console.error(`redis client error: ${err}`);
+    console.error("Have you run 'docker compose up' yet?");
+
+    const sessionMiddleware = session({
+      cookie: { sameSite: true, secure },
+      name: 'session_id',
+      resave: true,
+      saveUninitialized: true,
+      secret: findConfig('SESSION_SECRET', ''),
+    });
+
+    app.use(sessionMiddleware);
+  }
+
+  redisClient.on('error', console.error);
+
   app.use((req, res, next) => {
     req.io = io;
     next();
