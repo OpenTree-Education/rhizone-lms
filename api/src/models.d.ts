@@ -83,7 +83,7 @@ export interface ProgramAssessments {
   updated_at: string;
 }
 
-export interface CurriculumAssessments {
+export interface CurriculumAssessment {
   assessment_id?: number;
   title: string;
   description?: string;
@@ -96,7 +96,7 @@ export interface CurriculumAssessments {
   questions: Question[];
 }
 
-export interface AssessmentSubmissions {
+export interface AssessmentSubmission {
   submission_id: number;
   assessment_id: number;
   principal_id: number;
