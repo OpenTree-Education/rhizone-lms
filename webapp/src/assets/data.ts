@@ -35,6 +35,30 @@ export interface AssessmentChosenAnswer {
   responseText?: string;
 }
 
+export interface AssessmentSubmission {
+  id: number;
+  assessmentId: number;
+  state: string;
+  score?: number;
+  openAt: number;
+  submitAt?: number;
+}
+
+export const exampleTestSubmissionList: AssessmentSubmission[] = [
+  {
+    id: 1,
+    assessmentId: 3,
+    state: "Submitted",
+    openAt: 1678123118000,
+  },
+  {
+    id: 2,
+    assessmentId: 3,
+    state: "Opened",
+    openAt: 1678138445000,
+  },
+];
+
 export const exampleTestQuestionsList: Question[] = [
   {
     id: 15,

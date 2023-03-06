@@ -78,39 +78,12 @@ import DialogTitle from '@mui/material/DialogTitle';
 import {
   assessmentList,
   exampleTestQuestionsList,
+  exampleTestSubmissionList,
   Question,
   AssessmentChosenAnswer
 } from '../assets/data';
 import { formatDateTime } from '../helpers/dateTime';
 import QuestionCard from './QuestionCard';
-
-function CircularProgressWithLabel(
-  props: CircularProgressProps & { value: number }
-) {
-  return (
-    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-      <CircularProgress variant="determinate" {...props} />
-      <Box
-        sx={{
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-          position: 'absolute',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Typography
-          variant="caption"
-          component="div"
-          color="text.secondary"
-        >{`${Math.round(props.value)}%`}</Typography>
-      </Box>
-    </Box>
-  );
-}
 
 const LinearProgressWithLabel = (
   numOfAnsweredQuestion: number,
@@ -154,7 +127,6 @@ const AssessmentsDetailPage = () => {
     useState(assessmentAnswersArr);
   const [numOfAnsweredQuestion, setNumOfAnsweredQuestion] = useState(0);
 
-  // console.log(assessmentAnswers);
   const handleNewAnswer = (
     question: Question,
     chosenAnswerId?: number,
@@ -187,8 +159,21 @@ const AssessmentsDetailPage = () => {
   //     - (start time + time limit)
   // - else
   //   - due date
+  const latestSubmission = Math.max(...exampleTestSubmissionList.map(submission => submission.openAt));
+  const dueDateTime = new Date(assessment?.dueDate!);
+  // const [openedTime] = useState(latestSubmission.openAt + assessment?.testDuration! * 60 * 1000 < new Date().getTime()? ));
+  const [openedTime] = useState(new Date(latestSubmission));
+  const [endingTime] = useState(dueDateTime);
+  // const [endingTime] = useState(() =>{
+  //   if(dueDateTime.getTime() < new Date().getTime()){
+  //     return 0;
+  //   }else if(dueDateTime.getTime() - assessment?.testDuration! * 60 * 1000 < new Date().getTime()){
+  //     return dueDateTime;
+  //   }else{
+  //     return (openedTime? openedTime.getTime() : new Date().getTime()) + assessment?.testDuration! * 60 * 1000;        
+  //   }
+  // });
 
-  const [endingTime] = useState(new Date(assessment?.dueDate!));
   const [secondsRemaining, setSecondsRemaining] = useState(
     (endingTime.getTime() - new Date().getTime()) / 1000
   );
@@ -199,9 +184,17 @@ const AssessmentsDetailPage = () => {
   const animate = (time: number) => {
     if (previousTimeRef.current !== undefined) {
       // TODO: check if time remaining would be less than zero, then set to 0 instead
-      setSecondsRemaining(
-        Math.round((endingTime.getTime() - new Date().getTime()) / 1000)
-      );
+      if(endingTime.getTime() < new Date().getTime()){
+        setSecondsRemaining(0);
+      }else if(endingTime.getTime() - assessment?.testDuration! * 60 * 1000 < new Date().getTime()){
+        setSecondsRemaining(
+          Math.round((endingTime.getTime() - new Date().getTime()) / 1000)
+        );
+      }else{
+        setSecondsRemaining(
+          Math.round((openedTime.getTime() + assessment?.testDuration! * 60 * 1000 - new Date().getTime()) / 1000)
+        );        
+      }
     }
     previousTimeRef.current = time;
     // TODO: if time remaining is not zero, then execute the next line
@@ -215,21 +208,10 @@ const AssessmentsDetailPage = () => {
     };
   });
 
-  // React.useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     setProgress(prevProgress =>
-  //       prevProgress >= 100 ? 0 : prevProgress + 10
-  //     );
-  //   }, 800);
-  //   return () => {
-  //     clearInterval(timer);
-  //   };
-  // }, []);
+  const [showTimer, setChecked] = React.useState(true);
 
-  const [checked, setChecked] = React.useState(-1);
-
-  const handleToggle = (value: number) => () => {
-    setChecked(value);
+  const handleToggle = (showTimer: boolean) => () => {
+    setChecked(showTimer);
   };
 
   const [open, setOpen] = React.useState(false);
@@ -273,38 +255,23 @@ const AssessmentsDetailPage = () => {
             <Divider variant="middle" />
             <ListItem>
               <ListItemAvatar>
-                <Avatar>
-                  <PendingIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                secondary="Progress"
-                primary={LinearProgressWithLabel(
-                  numOfAnsweredQuestion,
-                  assessmentQuestions.length
-                )}
-              />
-            </ListItem>
-            <Divider variant="middle" />
-            <ListItem>
-              <ListItemAvatar>
-                {checked === 1 ? (
+                {/* {showTimer? (
                   <CircularProgressWithLabel value={progress} />
-                ) : (
+                ) : ( */}
                   <Avatar>
                     {/* <Avatar sx={{ bgcolor: amber[500] }}> */}
                     <TimerIcon />
                   </Avatar>
-                )}
+                {/* )} */}
               </ListItemAvatar>
               <ListItemText
-                secondary="Time Remaining"
-                primary={`${secondsRemaining} seconds`}
+                secondary={showTimer?`Time Remaining`:`Time Limit`}
+                primary={showTimer?`${Math.floor(secondsRemaining/60)}m ${secondsRemaining%60}s` : assessment?.testDuration+`m`}
               />
               <Switch
                 edge="end"
-                onChange={handleToggle(-checked)}
-                checked={checked === 1}
+                onChange={handleToggle(!showTimer)}
+                checked={showTimer}
                 inputProps={{
                   'aria-labelledby': 'switch-list-label-wifi',
                 }}
@@ -359,25 +326,6 @@ const AssessmentsDetailPage = () => {
               </ListItemAvatar>
               <ListItemText secondary="Score" primary="90" />
             </ListItem>
-            <Divider variant="middle" />
-            <ListItem>
-              <ListItemAvatar>
-                {/* <Avatar sx={{ bgcolor: blue[500] }}> */}
-                <Avatar>
-                  <AssignmentTurnedInIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText>
-                <Button
-                  variant="contained"
-                  // variant="outlined"
-                  size="medium"
-                  onClick={handleClickOpen}
-                >
-                  Submit
-                </Button>
-              </ListItemText>
-            </ListItem>
           </List>
         </Grid>
         <Grid
@@ -389,13 +337,11 @@ const AssessmentsDetailPage = () => {
             overflow: 'auto',
             marginTop: 0,
             marginLeft: 0,
+            paddingTop: 15,
+            paddingBottom: 20,
           }}
           bgcolor="#fafafa"
         >
-          <Grid item xs={1} />
-          <Grid item xs={10}>
-          </Grid>
-          <Grid item xs={1} />
           {exampleTestQuestionsList.map(q => (
             <>
               <Grid item xs={1} />
@@ -413,7 +359,6 @@ const AssessmentsDetailPage = () => {
               <Grid item xs={1} />
             </>
           ))}
-          <Grid item xs={12} />
         </Grid>
         <Grid item xs={1.5}>
           <List style={{ paddingLeft: 0 }}>
@@ -437,7 +382,7 @@ const AssessmentsDetailPage = () => {
             <Divider variant="middle" />
             <ListItem sx={{ justifyContent: 'center' }}>
               <Button
-                variant="outlined"
+                variant={`${numOfAnsweredQuestion === assessmentQuestions.length?'contained':'outlined'}`}
                 size="medium"
                 onClick={handleClickOpen}
               >
