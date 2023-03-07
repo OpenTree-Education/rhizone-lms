@@ -22,8 +22,8 @@ assessmentsDummyRouter.get(
     // a role ID of 1 corresponds to a participant
     const roleId = 1;
 
-  const programIdParsed = Number(programId);
-   const participantIdParsed = Number(participantId);
+    const programIdParsed = Number(programId);
+    const participantIdParsed = Number(participantId);
     if (
       !Number.isInteger(programIdParsed) ||
       programIdParsed < 1 ||
@@ -67,7 +67,7 @@ assessmentsDummyRouter.get(
   '/submitAssessment/:participantId',
   async (req, res, next) => {
     const { participantId } = req.params;
-   
+
     const participantIdParsed = Number(participantId);
     if (
       !Number.isInteger(participantIdParsed) ||
@@ -193,7 +193,7 @@ assessmentsDummyRouter.get(
     const { programId, participantId } = req.params;
     // a role ID of 2 corresponds to a Facilitator
     const roleId = 2;
-    
+
     const programIdParsed = Number(programId);
     const participantIdParsed = Number(participantId);
     if (
@@ -238,7 +238,6 @@ assessmentsDummyRouter.get(
   '/startAssessment/:assessmentId/:participantId',
   async (req, res, next) => {
     const { assessmentId, participantId } = req.params;
-   
 
     const participantIdParsed = Number(participantId);
     const assessmentIdParsed = Number(assessmentId);
