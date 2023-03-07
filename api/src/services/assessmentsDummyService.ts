@@ -72,10 +72,15 @@ interface AssessmentSubmissionRow {
   principal_id?: number;
 }
 
-interface Question {
-  id: number;
-  answerId?: number;
-  responseText?: string;
+interface Response {
+  id?: number;
+  assessment_id: number;
+  submission_id: number;
+  question_id: number;
+  answer_id?: number;
+  response?: string;
+  score?: number;
+  grader_response?: string;
 }
 
 export const insertToAssessmentSubmissions = async (
@@ -85,21 +90,20 @@ export const insertToAssessmentSubmissions = async (
   score: number,
   openedAt: string,
   submittedAt: string,
-  questions: Question[]
+  responses: Response[]
 ): Promise<AssessmentSubmissionRow> => {
   // select from the assessment_submissions table for any rows matching this principalId and assessmentId
-  let matchingAsssessmentSubmissionsRows: AssessmentSubmissionRow[] =
-    await db<AssessmentSubmissionRow>('assessment_submissions')
-      .select('id', 'assessment_id', 'principal_id')
-      .where({ assessment_id: assessmentId, principal_id: principalId });
+  let matchingAsssessmentSubmissionsRows: AssessmentSubmissionRow[] = await db(
+    'assessment_submissions'
+  )
+    .select('id', 'assessment_id')
+    .where({ assessment_id: assessmentId, principal_id: principalId });
 
   if (matchingAsssessmentSubmissionsRows.length) {
     // - if a row exists, update the status and submittedAt dates (if one is passed) and return the id of that row
 
     await db(`assessment_submissions`)
       .update({
-        assessment_id: assessmentId,
-        principal_id: principalId,
         assessment_submission_state_id: assessmentSubmissionStateId,
         score: score,
         opened_at: openedAt,
@@ -121,20 +125,21 @@ export const insertToAssessmentSubmissions = async (
   matchingAsssessmentSubmissionsRows = await db<AssessmentSubmissionRow>(
     'assessment_submissions'
   )
-    .select('id', 'assessment_id', 'principal_id')
+    .select('id')
     .where({ assessment_id: assessmentId, principal_id: principalId });
 
-  questions.forEach(question => {
-    insertToAssessmentResponses(
+  for (const response of responses) {
+    await insertToAssessmentResponses(
       assessmentId,
       matchingAsssessmentSubmissionsRows[0].id,
-      question.id,
-      question.answerId,
-      question.responseText,
-      1,
-      ''
+      response.question_id,
+      response.answer_id,
+      response.response,
+      response.score,
+      response.grader_response
     );
-  });
+  }
+
   const insertedRowParsed = {
     id: matchingAsssessmentSubmissionsRows[0].id,
     principal_id: principalId,
@@ -142,7 +147,7 @@ export const insertToAssessmentSubmissions = async (
     score: score,
     opened_at: openedAt,
     submitted_at: submittedAt,
-    questions: questions,
+    responses: responses,
   };
 
   return insertedRowParsed;
@@ -157,10 +162,10 @@ export const insertToAssessmentResponses = async (
   score?: number,
   graderResponse?: string
 ) => {
-  const assessmentResponsesWithMatchredId = await db(`assessment_responses`)
-    .select('assessment_id', 'submission_id')
-    .where({ assessment_id: assessmentId });
-  if (assessmentResponsesWithMatchredId.length) {
+  const assessmentResponsesWithMatchedId = await db(`assessment_responses`)
+    .select('id', 'assessment_id')
+    .where({ assessment_id: assessmentId, submission_id: submissionId });
+  if (assessmentResponsesWithMatchedId.length) {
     await db(`assessment_responses`)
       .update({
         answer_id: answerId,
@@ -168,7 +173,7 @@ export const insertToAssessmentResponses = async (
         score: score,
         grader_response: graderResponse,
       })
-      .where({ assessment_id: assessmentId });
+      .where({ assessment_id: assessmentId, submission_id: submissionId });
   } else {
     await db(`assessment_responses`).insert({
       assessment_id: assessmentId,
