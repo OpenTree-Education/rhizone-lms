@@ -266,7 +266,7 @@ assessmentsDummyRouter.get(
         score: 10,
         openedAt: '2023-02-09 12:00:00',
         submittedAt: '2023-02-09 13:23:45',
-        responses: [],
+        responses: [{}],
       },
     ];
 
