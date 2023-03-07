@@ -136,9 +136,17 @@ export interface ParticipantActivityForProgram {
   participant_activities: ParticipantActivityCompletionStatus[];
 }
 
+export interface Answer {
+  id?: number;
+  question_id?: number;
+  title: string;
+  description?: string;
+  sort_order: number;
+  correct_answer?: boolean;
+}
+
 export interface Question {
   id?: number;
-  assessment_question_id: number;
   assessment_id?: number;
   title: string;
   description?: string;
@@ -160,15 +168,6 @@ export interface CurriculumAssessment {
   activity_id: number;
   principal_id: number;
   questions?: Question[];
-}
-
-export interface Answer {
-  id?: number;
-  question_id?: number;
-  title: string;
-  description?: string;
-  sort_order: number;
-  correct_answer?: boolean;
 }
 
 export interface AssessmentSubmissionsSummary {
