@@ -79,6 +79,7 @@ import {
   assessmentList,
   exampleTestQuestionsList,
   exampleTestSubmissionList,
+  AssessmentSubmission,
   Question,
   AssessmentChosenAnswer
 } from '../assets/data';
@@ -140,16 +141,9 @@ const AssessmentsDetailPage = () => {
     );
   };
 
-  // define a state variable whose value is exampleTestQuestionsList
   const [assessmentQuestions] = useState(
     exampleTestQuestionsList
   );
-
-  // TODO: (task b) before we start answering questions, update the
-  // [task a]
-  // with an array of the correct number of all of those objects
-
-  // TODO: (task c) define a function that takes as parameters the question id and the updated answer choice / updated text response for an answer
 
   // TODO: update ending time with the logic we talked about in Discord:
   // - if there's a time limit
@@ -159,23 +153,14 @@ const AssessmentsDetailPage = () => {
   //     - (start time + time limit)
   // - else
   //   - due date
-  const latestSubmission = Math.max(...exampleTestSubmissionList.map(submission => submission.openAt));
-  const dueDateTime = new Date(assessment?.dueDate!);
-  // const [openedTime] = useState(latestSubmission.openAt + assessment?.testDuration! * 60 * 1000 < new Date().getTime()? ));
-  const [openedTime] = useState(new Date(latestSubmission));
-  const [endingTime] = useState(dueDateTime);
-  // const [endingTime] = useState(() =>{
-  //   if(dueDateTime.getTime() < new Date().getTime()){
-  //     return 0;
-  //   }else if(dueDateTime.getTime() - assessment?.testDuration! * 60 * 1000 < new Date().getTime()){
-  //     return dueDateTime;
-  //   }else{
-  //     return (openedTime? openedTime.getTime() : new Date().getTime()) + assessment?.testDuration! * 60 * 1000;        
-  //   }
-  // });
+
+  const lastSubmission: AssessmentSubmission = exampleTestSubmissionList.reduce((max, submission) => max.id > submission.id ? max : submission);
+  const dueTime = new Date(assessment?.dueDate!);
+  const currentTime = new Date();
+  const [endingTime, setEndingTime] = useState((dueTime));
 
   const [secondsRemaining, setSecondsRemaining] = useState(
-    (endingTime.getTime() - new Date().getTime()) / 1000
+    (endingTime!.getTime() - new Date().getTime()) / 1000
   );
 
   const requestRef = useRef<number>();
@@ -184,16 +169,12 @@ const AssessmentsDetailPage = () => {
   const animate = (time: number) => {
     if (previousTimeRef.current !== undefined) {
       // TODO: check if time remaining would be less than zero, then set to 0 instead
-      if(endingTime.getTime() < new Date().getTime()){
+      if(endingTime!.getTime() < new Date().getTime()){
         setSecondsRemaining(0);
-      }else if(endingTime.getTime() - assessment?.testDuration! * 60 * 1000 < new Date().getTime()){
-        setSecondsRemaining(
-          Math.round((endingTime.getTime() - new Date().getTime()) / 1000)
-        );
       }else{
         setSecondsRemaining(
-          Math.round((openedTime.getTime() + assessment?.testDuration! * 60 * 1000 - new Date().getTime()) / 1000)
-        );        
+          Math.round((endingTime!.getTime() - new Date().getTime()) / 1000)
+        );
       }
     }
     previousTimeRef.current = time;
@@ -362,6 +343,24 @@ const AssessmentsDetailPage = () => {
         </Grid>
         <Grid item xs={1.5}>
           <List style={{ paddingLeft: 0 }}>
+            <ListItem sx={{ justifyContent: 'center' }}>
+              <Button
+                variant={`${numOfAnsweredQuestion === assessmentQuestions.length?'contained':'outlined'}`}
+                size="medium"
+                onClick={handleClickOpen}
+              >
+                Submit
+              </Button>
+            </ListItem>            
+            <Divider variant="middle" />
+            <ListItem>
+              <ListItemText
+                primary={LinearProgressWithLabel(
+                  numOfAnsweredQuestion,
+                  assessmentQuestions.length
+                )}
+              />
+            </ListItem>
             <ListItem>
               <Box sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
                 {assessmentQuestions.map(a => (
@@ -378,16 +377,6 @@ const AssessmentsDetailPage = () => {
                   />
                 ))}
               </Box>
-            </ListItem>
-            <Divider variant="middle" />
-            <ListItem sx={{ justifyContent: 'center' }}>
-              <Button
-                variant={`${numOfAnsweredQuestion === assessmentQuestions.length?'contained':'outlined'}`}
-                size="medium"
-                onClick={handleClickOpen}
-              >
-                Submit
-              </Button>{' '}
             </ListItem>
           </List>
         </Grid>
