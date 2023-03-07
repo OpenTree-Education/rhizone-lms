@@ -136,7 +136,6 @@ export interface ParticipantActivityForProgram {
   participant_activities: ParticipantActivityCompletionStatus[];
 }
 
-
 export interface Question {
   assessment_question_id: number;
   id?: number;
