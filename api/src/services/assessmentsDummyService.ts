@@ -131,16 +131,21 @@ export const insertToAssessmentSubmissions = async (
       question.id,
       question.answerId,
       question.responseText,
-      1
+      1,
+      ''
     );
   });
   const insertedRowParsed = {
     id: matchingAsssessmentSubmissionsRows[0].id,
     principal_id: principalId,
     assessment_id: assessmentId,
+    score: score,
+    opened_at: openedAt,
+    submitted_at: submittedAt,
+    questions: questions,
   };
 
-  return matchingAsssessmentSubmissionsRows[0];
+  return insertedRowParsed;
 };
 
 export const insertToAssessmentResponses = async (
@@ -155,7 +160,16 @@ export const insertToAssessmentResponses = async (
   const assessmentResponsesWithMatchredId = await db(`assessment_responses`)
     .select('assessment_id', 'submission_id')
     .where({ assessment_id: assessmentId });
-  if (!assessmentResponsesWithMatchredId.length) {
+  if (assessmentResponsesWithMatchredId.length) {
+    await db(`assessment_responses`)
+      .update({
+        answer_id: answerId,
+        response: response,
+        score: score,
+        grader_response: graderResponse,
+      })
+      .where({ assessment_id: assessmentId });
+  } else {
     await db(`assessment_responses`).insert({
       assessment_id: assessmentId,
       submission_id: submissionId,
@@ -166,7 +180,7 @@ export const insertToAssessmentResponses = async (
       grader_response: graderResponse,
     });
   }
-  // assessmentResponsesWithMatchredId=await db(`assessment_responses`)
+  // assessmentResponsesWithMatchredId = await db(`assessment_responses`)
   // .select('id')
   // .where({ assessment_id: assessmentId });
 };
