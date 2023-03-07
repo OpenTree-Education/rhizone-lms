@@ -4,10 +4,10 @@ import { BadRequestError, NotFoundError, ValidationError } from './httpErrors';
 import {
   listAssessmentsByParticipant,
   createAssessment,
-  assessmentById,
   updateAssessmentById,
   deleteAssessmentById,
   findRoleParticipant,
+  getCurriculumAssesmentById,
 } from '../services/assessmentService';
 
 const assessmentsRouter = Router();
@@ -19,6 +19,19 @@ assessmentsRouter.get('/', async (req, res, next) => {
   let assessments;
   try {
     assessments = await listAssessmentsByParticipant(principalIdNum);
+  } catch (error) {
+    next(error);
+    return;
+  }
+  res.json(collectionEnvelope(assessments, assessments.length));
+});
+
+assessmentsRouter.get('/test/:assessmentId', async (req, res, next) => {
+  const { assessmentId } = req.params;
+  const assessmentIdNum = Number(assessmentId);
+  let assessments;
+  try {
+    assessments = await getCurriculumAssesmentById(assessmentIdNum, true);
   } catch (error) {
     next(error);
     return;
@@ -101,25 +114,25 @@ assessmentsRouter.delete('/:assessmentId', async (req, res, next) => {
 //Shows a single assessment
 //TODO change according to #517
 
-assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
-  const { assessmentId } = req.params;
-  const assessmentIdNum = Number(assessmentId);
+// assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
+//   const { assessmentId } = req.params;
+//   const assessmentIdNum = Number(assessmentId);
 
-  if (!Number.isInteger(assessmentIdNum) || assessmentIdNum < 1) {
-    next(
-      new BadRequestError(`"${assessmentIdNum}" is not a valid assessment id.`)
-    );
-    return;
-  }
-  let neededAssessmentId;
-  try {
-    neededAssessmentId = await assessmentById(assessmentIdNum);
-  } catch (error) {
-    next(error);
-    return;
-  }
-  res.json(collectionEnvelope(neededAssessmentId, neededAssessmentId.length));
-});
+//   if (!Number.isInteger(assessmentIdNum) || assessmentIdNum < 1) {
+//     next(
+//       new BadRequestError(`"${assessmentIdNum}" is not a valid assessment id.`)
+//     );
+//     return;
+//   }
+//   let neededAssessmentId;
+//   try {
+//     neededAssessmentId = await assessmentById(assessmentIdNum);
+//   } catch (error) {
+//     next(error);
+//     return;
+//   }
+//   res.json(collectionEnvelope(neededAssessmentId, neededAssessmentId.length));
+// });
 
 //Edits an assessment in the system
 
@@ -170,7 +183,6 @@ assessmentsRouter.put('/assessment/:id', async (req, res, next) => {
   if (typeof availableAfter !== 'string') {
     next(new ValidationError('availableAfter must be a string!'));
   }
-  //TODO add rest
   if (typeof dueDate !== 'string') {
     next(new ValidationError('dueDate must be a string!'));
   }

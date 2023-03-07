@@ -73,12 +73,21 @@ export interface ParticipantActivityForProgram {
   participant_activities: ParticipantActivityCompletionStatus[];
 }
 
-export interface ProgramAssessments {
+export interface ProgramAssessment {
   id: number;
   program_id: number;
   assessment_id: number;
   available_after: string;
   due_date: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProgramParticipant {
+  id: number;
+  principal_id: number;
+  program_id: number;
+  role_id: number;
   created_at: string;
   updated_at: string;
 }
@@ -110,7 +119,7 @@ export interface AssessmentSubmission {
 }
 
 export interface Question {
-  question_id?: number;
+  id?: number;
   assessment_id?: number;
   title: string;
   description?: string;
@@ -139,4 +148,18 @@ export interface AssessmentResponse {
   response?: string;
   score?: number;
   grader_response?: string;
+}
+
+export interface AssessmentSubmissionsSummary {
+  principal_id: number;
+  highest_state: string;
+  most_recent_submitted_date: string;
+  total_num_submissions: number;
+  highest_score?: number;
+}
+
+export interface ProgramParticipantCompletionSummary {
+  program: Program;
+  principal_id: number;
+  total_score: number;
 }

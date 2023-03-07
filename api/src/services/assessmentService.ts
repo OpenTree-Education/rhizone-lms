@@ -1,19 +1,162 @@
 import db from './db';
 
-import { CurriculumAssessment, AssessmentSubmission } from '../models';
+import {
+  CurriculumAssessment,
+  AssessmentSubmission,
+  ProgramAssessment,
+  Question,
+  Answer,
+} from '../models';
 // import { DateTime, Duration } from 'luxon';
 
-// /**
-//  * (GET /assessments) Returns list of assessments in the database.
-//  * @param {number} programId
-//  * @returns {ProgramAssessments[]} - list of assessments in the db
-//  * @param {number} principalId - the unique id for the user
-//  */
+/**
+ * a function that returns the curriculum assessment ID and program ID given a program assessment ID.
+ *
+ * @param {number} programAssessmentId
+ *
+ */
+export const getCurriculumAndProgramAssessmentId = async (
+  programAssessmentId: number
+) => {
+  const [matchingProgramAssessmentId] = await db<ProgramAssessment>(
+    'program_assessments'
+  )
+    .select('assessment_id', 'program_id')
+    .where({ id: programAssessmentId });
+  return matchingProgramAssessmentId;
+};
+
+/**
+ * a function to returns the role of the participant in a given program
+ *
+ * @param {number} programId
+ * @param {number} principalId
+ *
+ */
+export const findRoleParticipant = async (
+  principalId: number,
+  programId: number
+) => {
+  const [roleName] = await db('program_participants')
+    .select({ role_id: 'program_participant_roles.title' })
+    .join(
+      'program_participant_roles',
+      'program_participant_roles.id',
+      'program_participants.role_id'
+    )
+    .where({ principal_id: principalId, program_id: programId });
+  return [roleName];
+};
+
+/**
+ * a function to returns details about the curriculum assessment given a curriculum assessment ID, with an optional flag to determine whether or not questions and answers should be included in the return value.
+ *
+ * @param {number} curriculumAssessmentId
+ * @param {boolean} isQuestionsAndAnswersIncluded
+ *
+ */
+
+export const getCurriculumAssesmentById = async (
+  curriculumAssessmentId: number,
+  isQuestionsAndAnswersIncluded: boolean
+) => {
+  const curriculumAssessmentDetails = await db<CurriculumAssessment>(
+    'curriculum_assessments'
+  )
+    .select(
+      'id',
+      'title',
+      'max_score',
+      'max_num_submissions',
+      'time_limit',
+      'curriculum_id',
+      'activity_id',
+      'principal_id',
+      'created_at',
+      'updated_at'
+    )
+    .where('id', curriculumAssessmentId);
+
+  if (isQuestionsAndAnswersIncluded == true) {
+    const questions = await db<Question>('assessment_questions')
+      .select()
+      .where({ assessment_id: curriculumAssessmentId });
+    const questionIds = questions.map(element => element.id);
+    const answers = await db<Answer>('assessment_answers')
+      .select()
+      .whereIn('question_id', questionIds);
+
+    questions.forEach(
+      qestion =>
+        (qestion.answers = answers.filter(
+          answer => answer.question_id === qestion.id
+        ))
+    );
+
+    curriculumAssessmentDetails.forEach(
+      element =>
+        (element.questions = questions.filter(
+          qestion => qestion.assessment_id === element.id
+        ))
+    );
+  }
+  return curriculumAssessmentDetails;
+};
+
+/**
+ * a function that returns details about a program assessment given a program assessment ID
+ *
+ * @param {number} programAssessmentId - The assessment ID for the specified assessment
+ *
+ */
+export const programAssessmentById = async (programAssessmentId: number) => {
+  const findProgramAssessmentById = await db<ProgramAssessment>(
+    'curriculum_assessments'
+  )
+    .select(
+      'id',
+      'program_id',
+      'assessment_id',
+      'available_after',
+      'due_date',
+      'created_at',
+      'updated_at'
+    )
+    .where({ id: programAssessmentId });
+  return findProgramAssessmentById;
+};
+
+/**
+ * a function to return details about your own submissions or all participants' submissions, with an optional flag to determine whether or not responses should be included in the return value.
+ *
+ * @param {number} programAssessmentId - The assessment ID for the specified assessment
+ * @returns {Submission[]} - list of assessments in the db
+ *
+ */
+
+export const sumbmissionDetails = async (programAssessmentId: number) => {
+  const findProgramAssessmentById = await db<ProgramAssessment>(
+    'curriculum_assessments'
+  )
+    .select(
+      'id',
+      'program_id',
+      'assessment_id',
+      'available_after',
+      'due_date',
+      'created_at',
+      'updated_at'
+    )
+    .where({ id: programAssessmentId });
+  return findProgramAssessmentById;
+};
+
+// **old version from previous week is below the line
 
 /**
  * (GET /assessments) Returns list of assessments in the database.
  * @param {number} principalId - the unique id for the user
- * @returns {CurriculumAssessment[]} - list of assessments in the db
+ *
  */
 
 export const listAssessmentsByParticipant = async (principalId: number) => {
@@ -119,34 +262,6 @@ export const deleteAssessmentById = async (assessmentId: number) => {
  */
 
 /**
- * Get the assessment associated with the specified assessment ID.
- *
- * (GET /assessments/:id)
- * @param {number} assessmentId - The assessment ID for the specified assessment
- * @returns {CurriculumAssessment[]} - list of assessments in the db
- */
-
-export const assessmentById = async (assessmentId: number) => {
-  const findAssessmentId = await db<CurriculumAssessment>(
-    'curriculum_assessments'
-  )
-    .select(
-      'id',
-      'title',
-      'max_score',
-      'max_num_submissions',
-      'time_limit',
-      'curriculum_id',
-      'activity_id',
-      'principal_id',
-      'created_at',
-      'updated_at'
-    )
-    .where({ assessment_id: assessmentId });
-  return findAssessmentId;
-};
-
-/**
  *
  *
  * (PUT /assessments/:id)
@@ -191,28 +306,6 @@ export const updateAssessmentById = async (
     .where({ assessment_id: assessmentId })
     .update({ title: questions, description: description });
   return { assessment_id: assessmentId };
-};
-
-/**
- * Find the role of user.
- *
- * @param {number} programId
- * @param {number} principalId
- *
- */
-export const findRoleParticipant = async (
-  principalId: number,
-  programId: number
-) => {
-  const [roleName] = await db('program_participants')
-    .select({ role_id: 'program_participant_roles.title' })
-    .join(
-      'program_participant_roles',
-      'program_participant_roles.id',
-      'program_participants.role_id'
-    )
-    .where({ principal_id: principalId, program_id: programId });
-  return [roleName.role_id];
 };
 
 /**
