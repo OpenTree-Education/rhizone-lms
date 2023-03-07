@@ -1,11 +1,12 @@
 import db from './db';
 
 import {
-  CurriculumAssessment,
+  Answer,
   AssessmentSubmission,
+  AssessmentResponse,
+  CurriculumAssessment,
   ProgramAssessment,
   Question,
-  Answer,
 } from '../models';
 // import { DateTime, Duration } from 'luxon';
 
@@ -38,14 +39,14 @@ export const findRoleParticipant = async (
   programId: number
 ) => {
   const [roleName] = await db('program_participants')
-    .select({ role_id: 'program_participant_roles.title' })
+    .select('program_participant_roles.title')
     .join(
       'program_participant_roles',
       'program_participant_roles.id',
       'program_participants.role_id'
     )
     .where({ principal_id: principalId, program_id: programId });
-  return [roleName];
+  return roleName;
 };
 
 /**
@@ -87,9 +88,9 @@ export const getCurriculumAssesmentById = async (
       .whereIn('question_id', questionIds);
 
     questions.forEach(
-      qestion =>
-        (qestion.answers = answers.filter(
-          answer => answer.question_id === qestion.id
+      question =>
+        (question.answers = answers.filter(
+          answer => answer.question_id === question.id
         ))
     );
 
@@ -111,7 +112,7 @@ export const getCurriculumAssesmentById = async (
  */
 export const programAssessmentById = async (programAssessmentId: number) => {
   const findProgramAssessmentById = await db<ProgramAssessment>(
-    'curriculum_assessments'
+    'program_assessments'
   )
     .select(
       'id',
@@ -150,6 +151,46 @@ export const sumbmissionDetails = async (programAssessmentId: number) => {
     .where({ id: programAssessmentId });
   return findProgramAssessmentById;
 };
+
+/**
+ * a function to returns details about the curriculum assessment given a curriculum assessment ID, with an optional flag to determine whether or not questions and answers should be included in the return value.
+ *
+ * @param {number} assessmentSubmissionId
+ * @param {number} questionId
+ * @param {number} answerId
+ * @param {boolean} isResponseIncluded
+ *
+ */
+
+// export const getAssessmentSubmissionById = async (
+//   assessmentSubmissionId: number,
+//   questionId: number,
+//   answerId: number,
+//   isResponseIncluded: boolean
+// ) => {
+//   const assessmentSubmissionDetails = await db<AssessmentSubmission>(
+//     'assessment_submissions'
+//   )
+//     .select(
+//       'id',
+//       'assessment_id',
+//       'principal_id',
+//       'assessment_submisson_state_id',
+//       'score',
+//       'opened_at',
+//       'submitted_at',
+//       'created_at',
+//       'updated_at',
+//     )
+//     .where('id', assessmentSubmissionId);
+
+//   if (isResponseIncluded == true) {
+//     const responses = await db<AssessmentResponse>('assessment_responses')
+//       .select()
+//       .where({ submission_id: assessmentSubmissionId });
+
+//   return assessmentSubmissionDetails;
+// };
 
 // **old version from previous week is below the line
 

@@ -106,7 +106,7 @@ export interface CurriculumAssessment {
 }
 
 export interface AssessmentSubmission {
-  submission_id: number;
+  id: number;
   assessment_id: number;
   principal_id: number;
   assessment_submisson_state_id: number;
