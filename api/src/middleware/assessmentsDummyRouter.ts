@@ -61,34 +61,86 @@ assessmentsDummyRouter.get(
       participantIdParsed = Number(participantId);
       dummyAssessmentSubmissionData = [
         {
-          assessmentId: 1,
-          principalId: participantIdParsed,
-          assessmentSubmissionStateId: 7, // graded
+          submission_id: 2,
+          assessment_id: 1,
+          principal_id: participantIdParsed,
+          assessment_submission_state_id: 7, // graded
           score: 10,
-          openedAt: '2023-02-09 12:00:00',
-          submittedAt: '2023-02-09 13:23:45',
-          questions: [
-            { id: 1, answerId: 4 },
-            { id: 2, answerId: 5 },
-            { id: 3, answerId: 9 },
-            { id: 4, answerId: 14 },
-            { id: 5, answerId: 18 },
-            { id: 6, answerId: 21 },
-            { id: 7, answerId: 23 },
+          opened_at: '2023-02-09 12:00:00',
+          submitted_at: '2023-02-09 13:23:45',
+          responses: [
+            {
+              id: 1,
+              answer_id: 4,
+              assessment_id: 1,
+              submission_id: 2,
+              question_id: 1,
+            },
+            {
+              id: 2,
+              answer_id: 5,
+              assessment_id: 1,
+              submission_id: 2,
+              question_id: 2,
+            },
+            {
+              id: 3,
+              answer_id: 9,
+              assessment_id: 1,
+              submission_id: 2,
+              question_id: 3,
+            },
+            {
+              id: 4,
+              answer_id: 14,
+              assessment_id: 1,
+              submission_id: 2,
+              question_id: 4,
+            },
+            {
+              id: 5,
+              answer_id: 18,
+              assessment_id: 1,
+              submission_id: 2,
+              question_id: 5,
+            },
+            {
+              id: 6,
+              answer_id: 21,
+              assessment_id: 1,
+              submission_id: 2,
+              question_id: 6,
+            },
+            {
+              id: 7,
+              answer_id: 23,
+              assessment_id: 1,
+              submission_id: 2,
+              question_id: 7,
+            },
             {
               id: 8,
-              responseText:
+              response:
                 'const HelloWorld = () => { return <p>Hello, World!</p>; }; export default HelloWorld;',
+              assessment_id: 1,
+              submission_id: 2,
+              question_id: 8,
             },
             {
               id: 9,
-              responseText:
+              response:
                 'React differs from other JavaScript frameworks because it uses a component-based architecture, a virtual DOM, JSX syntax, unidirectional data flow, and is primarily focused on building UIs rather than providing a complete application framework. These features make it faster, more efficient, and more flexible than other frameworks.',
+              assessment_id: 1,
+              submission_id: 2,
+              question_id: 9,
             },
             {
               id: 10,
-              responseText:
+              response:
                 'Benefits of using React include its modular and reusable components, efficient updates with virtual DOM, JSX syntax, and active community.',
+              assessment_id: 1,
+              submission_id: 2,
+              question_id: 10,
             },
           ],
         },
@@ -101,13 +153,13 @@ assessmentsDummyRouter.get(
     let insertedAssessmentSubmissionsRow: AssessmentSubmissionRow;
     try {
       insertedAssessmentSubmissionsRow = await insertToAssessmentSubmissions(
-        dummyAssessmentSubmissionData[0].assessmentId,
-        dummyAssessmentSubmissionData[0].principalId,
-        dummyAssessmentSubmissionData[0].assessmentSubmissionStateId,
+        dummyAssessmentSubmissionData[0].assessment_id,
+        dummyAssessmentSubmissionData[0].principal_id,
+        dummyAssessmentSubmissionData[0].assessment_submission_state_id,
         dummyAssessmentSubmissionData[0].score,
-        dummyAssessmentSubmissionData[0].openedAt,
-        dummyAssessmentSubmissionData[0].submittedAt,
-        dummyAssessmentSubmissionData[0].questions
+        dummyAssessmentSubmissionData[0].opened_at,
+        dummyAssessmentSubmissionData[0].submitted_at,
+        dummyAssessmentSubmissionData[0].responses
       );
     } catch (error) {
       next(error);
