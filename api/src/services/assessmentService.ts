@@ -8,7 +8,9 @@ import {
   ProgramAssessment,
   Question,
 } from '../models';
-// import { DateTime, Duration } from 'luxon';
+
+// TODO: Need descriptions for the parameters of the functions as well as their return values
+// TODO: Test file
 
 /**
  * a function that returns the curriculum assessment ID and program ID given a program assessment ID.
@@ -26,6 +28,8 @@ export const getCurriculumAndProgramAssessmentId = async (
     .where({ id: programAssessmentId });
   return matchingProgramAssessmentId;
 };
+
+// TODO: Maybe let's rename this to findRoleInProgram, since we don't know if they are a participant or facilitator
 
 /**
  * a function to returns the role of the participant in a given program
@@ -48,6 +52,9 @@ export const findRoleParticipant = async (
     .where({ principal_id: principalId, program_id: programId });
   return roleName;
 };
+
+// TODO: Correct spelling error in function name
+// TODO: Maybe add a flag if the correct answer should also be sent
 
 /**
  * a function to returns details about the curriculum assessment given a curriculum assessment ID, with an optional flag to determine whether or not questions and answers should be included in the return value.
@@ -95,8 +102,10 @@ export const getCurriculumAssesmentById = async (
     );
 
     curriculumAssessmentDetails.forEach(
+      // TODO: Rename this from 'element' to something more descriptive
       element =>
         (element.questions = questions.filter(
+          // TODO: Fix spelling error:
           qestion => qestion.assessment_id === element.id
         ))
     );
@@ -126,6 +135,9 @@ export const programAssessmentById = async (programAssessmentId: number) => {
     .where({ id: programAssessmentId });
   return findProgramAssessmentById;
 };
+
+// TODO: Fix spelling error in function name.
+// TODO: Perhaps add flag on whether or not to include responses?
 
 /**
  * a function to return details about your own submissions or all participants' submissions, with an optional flag to determine whether or not responses should be included in the return value.
@@ -220,6 +232,8 @@ export const listAssessmentsByParticipant = async (principalId: number) => {
   return assessmentsList;
 };
 
+// TODO: Fix function header
+
 /**
  * (POST /assessments) ERR 403/
  * Creates a new assessment into the system
@@ -263,6 +277,8 @@ export const createAssessment = async (
   return { id: assessmentId };
 };
 
+// TODO: Fix function header
+
 /**
  * (DELETE /assessments/:id) ERR 403/
  * “Deletes” an assessment in the system
@@ -301,6 +317,8 @@ export const deleteAssessmentById = async (assessmentId: number) => {
  * and possible answers and the submission ID number/
  *
  */
+
+// TODO: Fix function header
 
 /**
  *
@@ -349,6 +367,8 @@ export const updateAssessmentById = async (
   return { assessment_id: assessmentId };
 };
 
+// TODO: Fix function header
+
 /**
  *
  * @param {number} assessmentId - The assessment ID for the specified submission
@@ -369,6 +389,8 @@ export const findAssessment = async (assessmentId: number) => {
     .where({ assessment_id: assessmentId });
   return matchingAssessment;
 };
+
+// TODO: Fix function header
 
 /**
  * @param {number} programId
@@ -422,6 +444,8 @@ export const findSubmissionByAssessmentId = async (
   if (roleName.role_id === 2) return matchingAssessmentForFacilitator;
   else matchingAssessmentForStudent;
 };
+
+// TODO: Fix function header
 
 /**
  *
