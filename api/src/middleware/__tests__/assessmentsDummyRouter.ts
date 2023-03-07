@@ -45,6 +45,22 @@ describe('assessmentsDummyRouter', () => {
           done(err);
         });
     });
+    it('should respond with a bad request error if given an invalid program id or principal id', done => {
+      const programId = 2;
+      const principalId = 'test';
+      appAgent
+        .get(`/makeParticipant/${programId}/${principalId}`)
+        .expect(400, done);
+    });
+
+    it('should respond with an internal server error if an error', done => {
+      const programId = 2;
+      const principalId = 3;
+      mockGetInsertToProgramParticipants.mockRejectedValue(new Error());
+      appAgent
+        .get(`/makeParticipant/${programId}/${principalId}`)
+        .expect(500, done);
+    });
   });
 
   describe('GET /submitAssessment/:participantId', () => {
@@ -162,6 +178,15 @@ describe('assessmentsDummyRouter', () => {
           done(err);
         });
     });
+    it('should respond with  error if an error ', done => {
+      const principalId = 'string';
+      appAgent.get(`/submitAssessment/${principalId}`).expect(400, done);
+    });
+    it('should respond with an internal server error if an error', done => {
+      const principalId = 3;
+      mockGetInsertToAssessmentSubmissions.mockRejectedValue(new Error());
+      appAgent.get(`/submitAssessment/${principalId}`).expect(500, done);
+    });
   });
 
   describe('GET /makeFacilitator/:programId/:participantId', () => {
@@ -190,6 +215,22 @@ describe('assessmentsDummyRouter', () => {
           done(err);
         });
     });
+    it('should respond with should respond with a bad request error if given an invalid program id or principal id', done => {
+      const programId = 'string';
+      const principalId = 3;
+
+      appAgent
+        .get(`/makeFacilitator/${programId}/${principalId}`)
+        .expect(400, done);
+    });
+    it('should respond with an internal server error if an error was thrown ', done => {
+      const programId = 2;
+      const principalId = 3;
+      mockGetInsertToProgramParticipants.mockRejectedValue(new Error());
+      appAgent
+        .get(`/makeFacilitator/${programId}/${principalId}`)
+        .expect(500, done);
+    });
   });
   describe('GET /startAssessment/:assessmentId/:participantId', () => {
     it('should start assessment', done => {
@@ -199,7 +240,8 @@ describe('assessmentsDummyRouter', () => {
       const score = 10;
       const openedAt = '2023-02-09 12:00:00';
       const submittedAt = '2023-02-09 13:23:45';
-      const questions = [{}];
+      const responses = [{}];
+
       const dummyAssessmentSubmissionData = [
         {
           id: 1,
@@ -209,7 +251,7 @@ describe('assessmentsDummyRouter', () => {
           score: score,
           opened_at: openedAt,
           submitted_at: submittedAt,
-          questions: questions,
+          responses: responses,
         },
       ];
 
@@ -232,6 +274,23 @@ describe('assessmentsDummyRouter', () => {
           );
           done(err);
         });
+    });
+    it('should respond with a bad request error if given an invalid principal id or assessment id', done => {
+      const principalId = 2;
+      const assessmentId = 'string';
+      appAgent
+        .get(`/startAssessment/${assessmentId}/${principalId}`)
+        .expect(400, done);
+    });
+
+    it('should respond with an internal server error if an error was thrown', done => {
+      const assessmentId = 1;
+      const principalId = 3;
+      mockGetInsertToAssessmentSubmissions.mockRejectedValue(new Error());
+
+      appAgent
+        .get(`/startAssessment/${assessmentId}/${principalId}`)
+        .expect(500, done);
     });
   });
 });

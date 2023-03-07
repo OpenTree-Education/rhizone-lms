@@ -52,16 +52,12 @@ export const insertToProgramParticipants = async (
     .select('id')
     .where({ principal_id: principalId, program_id: programId });
 
-  // console.log(`output of second select query:`, JSON.stringify(matchingProgramParticipantsRows));
-
   const insertedRowParsed = {
     id: matchingProgramParticipantsRows[0].id,
     principal_id: principalId,
     program_id: programId,
     role_id: roleId,
   };
-
-  // console.log(`inserted row parsed: `, insertedRowParsed);
 
   return insertedRowParsed;
 };
@@ -93,6 +89,7 @@ export const insertToAssessmentSubmissions = async (
   responses: Response[]
 ): Promise<AssessmentSubmissionRow> => {
   // select from the assessment_submissions table for any rows matching this principalId and assessmentId
+
   let matchingAsssessmentSubmissionsRows: AssessmentSubmissionRow[] = await db(
     'assessment_submissions'
   )
@@ -185,7 +182,4 @@ export const insertToAssessmentResponses = async (
       grader_response: graderResponse,
     });
   }
-  // assessmentResponsesWithMatchredId = await db(`assessment_responses`)
-  // .select('id')
-  // .where({ assessment_id: assessmentId });
 };
