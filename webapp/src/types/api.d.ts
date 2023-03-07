@@ -192,7 +192,7 @@ export interface FacilitatorAssessmentSubmissionsSummary {
   num_ungraded_submissions: number;
 }
 
-export interface AssessmentsSummary {
+export interface AssessmentSummary {
   curriculum_assessment: CurriculumAssessment;
   program_assessment: ProgramAssessment;
   submissions_summary:
