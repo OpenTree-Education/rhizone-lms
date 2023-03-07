@@ -1,3 +1,5 @@
+import assessmentsRouter from './middleware/assessmentsRouter';
+
 export interface Program {
   id: number;
   title: string;
@@ -71,4 +73,194 @@ export interface ParticipantActivityCompletionStatus {
 export interface ParticipantActivityForProgram {
   program_id: number;
   participant_activities: ParticipantActivityCompletionStatus[];
+}
+
+export interface CurriculumAssessment {
+  id?: number;
+  title: string;
+  description?: string;
+  max_score: number;
+  max_num_submissions: number;
+  time_limit?: number;
+  curriculum_id: number;
+  activity_id: number;
+  principal_id: number;
+  questions: Question[];
+}
+
+export interface Question {
+  assessment_question_id: number;
+  id?: number;
+  assessment_id?: number;
+  title: string;
+  description?: string;
+  question_type: string;
+  answers?: Answer[];
+  correct_answer_id?: number;
+  max_score: number;
+  sort_order: number;
+}
+
+export interface Answer {
+  id?: number;
+  question_id?: number;
+  title: string;
+  description?: string;
+  sort_order: number;
+  correct_answer?: boolean;
+}
+
+export interface AssessmentSubmissionsSummary {
+  principal_id: number;
+  highest_state: string;
+  most_recent_submitted_date: string;
+  total_num_submissions: number;
+  highest_score?: number;
+}
+
+export interface ProgramAssessment {
+  id?: number;
+  program_id: number;
+  assessment_id?: number;
+  available_after: string;
+  due_date: string;
+}
+
+/**
+ * GET /assessments
+ */
+
+export interface FacilitatorAssessmentSubmissionsSummary {
+  num_participants_with_submissions: number;
+  num_program_participants: number;
+  num_ungraded_submissions: number;
+}
+
+export interface ProgramAvailableAssessmentsSummary {
+  curriculum_assessment: CurriculumAssessment;
+  program_assessment: ProgramAssessment;
+  submissions_summary:
+    | AssessmentSubmissionsSummary
+    | FacilitatorAssessmentSubmissionsSummary;
+}
+
+export interface AssessmentResponses {
+  id?: number;
+  assessment_id: number;
+  submission_id: number;
+  question_id: number;
+  answer_id?: number;
+  response?: string;
+  score?: number;
+  grader_response?: string;
+}
+
+export interface AssessmentSubmission {
+  id?: number;
+  assessment_id: number;
+  principal_id: number;
+  assessment_submission_state: string;
+  score?: number;
+  opened_at: string;
+  submitted_at?: string;
+  state_id: number;
+  responses?: AssessmentResponses[];
+}
+
+/**
+ * GET assessments/:assessmentId
+ */
+export interface ProgramSubmittedAssessments {
+  /*(assessment_id: number, program_id: number)*/
+  curriculum_assessment: CurriculumAssessment;
+  program_assessment: ProgramAssessment;
+  submissions: AssessmentSubmission[];
+}
+
+export interface AssessmentSubmission {
+  id?: number;
+  assessment_id: number;
+  principal_id: number;
+  assessment_submission_state: string;
+  score?: number;
+  opened_at: string;
+  submitted_at?: string;
+  responses?: AssessmentResponses[];
+}
+
+/**
+ * GET /assessments/:assessmentId/submission/:submissionId
+ */
+
+export interface ProgramSubmittedAssessments {
+  /*(assessment_id:number, assessment_submission_id:number)*/
+  curriculum_assessment: CurriculumAssessment;
+  program_assessment: ProgramAssessment;
+  submission: AssessmentSubmission;
+}
+export interface AssessmentSubmission {
+  id?: number;
+  assessment_id: number;
+  principal_id: number;
+  assessment_submission_state: string;
+  score?: number;
+  opened_at: string;
+  submitted_at?: string;
+  responses?: AssessmentResponses[];
+}
+
+/**
+ * GET /assessments/:assessmentId/submission/new
+ */
+
+export interface DraftProgramAssessment {
+  /*(assessment_id:number)*/ curriculum_assessment: CurriculumAssessment;
+  program_assessment: ProgramAssessment;
+  submission: AssessmentSubmission;
+}
+
+export interface ProgramParticipantCompletionSummary {
+  program: Program;
+  principal_id: number;
+  total_score: number;
+}
+
+/**
+ * GET /programs/:programId/certificate/:principalId
+ */
+export interface ProgramCertificate {
+  completion_summary: boolean;
+  Program_participant_completion_summary: ProgramParticipantCompletionSummary;
+}
+
+/**
+ * POST assessments
+ */
+
+export interface NewProgramAssessment {
+  curriculum_assessment: CurriculumAssessment;
+  program_assessment: ProgramAssessment;
+}
+/**
+ * PUT assessments/:assessmentId
+ */
+
+export interface EditProgramAssessment {
+  curriculum_assessment: CurriculumAssessment;
+  program_assessment: ProgramAssessment;
+}
+
+/**
+ * DELETE /assessments/:assessmentId
+ */
+export interface DeleteProgramAssessment {
+  /*(assessment_id:number)*/ submission: AssessmentSubmission;
+}
+
+/**
+ * PUT /assessments/:assessmentId/submission/:submissionId
+ */
+export interface SubmitProgramAssessment {
+  /*(AssessmentSubmission assessment_submission)*/
+  submission: AssessmentSubmission;
 }
