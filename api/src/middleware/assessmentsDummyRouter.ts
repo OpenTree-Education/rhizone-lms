@@ -21,9 +21,9 @@ assessmentsDummyRouter.get(
     const { programId, participantId } = req.params;
     // a role ID of 1 corresponds to a participant
     const roleId = 1;
-    let programIdParsed, participantIdParsed;
-    programIdParsed = Number(programId);
-    participantIdParsed = Number(participantId);
+
+  const programIdParsed = Number(programId);
+   const participantIdParsed = Number(participantId);
     if (
       !Number.isInteger(programIdParsed) ||
       programIdParsed < 1 ||
@@ -67,8 +67,8 @@ assessmentsDummyRouter.get(
   '/submitAssessment/:participantId',
   async (req, res, next) => {
     const { participantId } = req.params;
-    let participantIdParsed, dummyAssessmentSubmissionData;
-    participantIdParsed = Number(participantId);
+   
+    const participantIdParsed = Number(participantId);
     if (
       !Number.isInteger(participantIdParsed) ||
       participantIdParsed < 1 ||
@@ -81,7 +81,7 @@ assessmentsDummyRouter.get(
       );
       return;
     }
-    dummyAssessmentSubmissionData = [
+    const dummyAssessmentSubmissionData = [
       {
         submission_id: 2,
         assessment_id: 1,
@@ -193,9 +193,9 @@ assessmentsDummyRouter.get(
     const { programId, participantId } = req.params;
     // a role ID of 2 corresponds to a Facilitator
     const roleId = 2;
-    let programIdParsed, participantIdParsed;
-    programIdParsed = Number(programId);
-    participantIdParsed = Number(participantId);
+    
+    const programIdParsed = Number(programId);
+    const participantIdParsed = Number(participantId);
     if (
       !Number.isInteger(programIdParsed) ||
       programIdParsed < 1 ||
@@ -238,10 +238,10 @@ assessmentsDummyRouter.get(
   '/startAssessment/:assessmentId/:participantId',
   async (req, res, next) => {
     const { assessmentId, participantId } = req.params;
-    let participantIdParsed, assessmentIdParsed, dummyAssessmentSubmissionData;
+   
 
-    participantIdParsed = Number(participantId);
-    assessmentIdParsed = Number(assessmentId);
+    const participantIdParsed = Number(participantId);
+    const assessmentIdParsed = Number(assessmentId);
 
     if (
       !Number.isInteger(participantIdParsed) ||
@@ -258,7 +258,7 @@ assessmentsDummyRouter.get(
       return;
     }
 
-    dummyAssessmentSubmissionData = [
+    const dummyAssessmentSubmissionData = [
       {
         assessmentId: assessmentIdParsed,
         principalId: participantIdParsed,
