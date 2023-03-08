@@ -7,6 +7,7 @@ import {
   Avatar,
   Box,
   Button,
+  Card,
   Chip,
   Container,
   Collapse,
@@ -26,13 +27,14 @@ import {
   Typography,
   Switch,
 } from '@mui/material';
+import { styled } from '@mui/system';
 import InfoIcon from '@mui/icons-material/Info';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import TimerIcon from '@mui/icons-material/Timer';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
-import { blue } from '@mui/material/colors';
+import { blue, grey } from '@mui/material/colors';
 
 import {
   assessmentList,
@@ -67,6 +69,12 @@ const LinearProgressWithLabel = (
     </Box>
   );
 };
+
+const StyledNumChip = styled(Chip)(() => ({
+  borderRadius: '50%',
+  width: '3em',
+  height: '3em',
+}));
 
 const AssessmentsDetailPage = () => {
   const id = useParams();
@@ -181,7 +189,6 @@ const AssessmentsDetailPage = () => {
       event.preventDefault();
     }
     setShowSubmitDialog(false);
-    //store the form data into database
     setCurrentStatus('Submitted');
     document.querySelector('#assessment_display')!.scrollTo(0, 0);
   };
@@ -190,14 +197,8 @@ const AssessmentsDetailPage = () => {
     <Container>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <Typography
-            variant="h4"
-            style={{ marginBottom: '20px', marginTop: '20px' }}
-          >
-            {assessment?.title}
-          </Typography>
+          <h1>{assessment?.title}</h1>
         </Grid>
-
         <Grid container spacing={2}>
           <Grid item xs={12} md={3}>
             <List
@@ -208,40 +209,37 @@ const AssessmentsDetailPage = () => {
             >
               <ListItem>
                 <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: blue[600] }}>
-                    {/* <Avatar> */}
+                  <Avatar
+                    sx={{
+                      bgcolor: `${
+                        submission.state === SubmissionStatus.Opened
+                          ? blue[600]
+                          : grey[400]
+                      }`,
+                    }}
+                  >
                     <InfoIcon />
                   </Avatar>
                 </ListItemAvatar>
-                {/* <ListItemText secondary={assessment?.description} /> */}
                 <ListItemText>
                   <Typography variant="body2">
                     {assessment?.description}
                   </Typography>
-                  <ListItemText
-                    // primary=
-                    secondary={`Type: ${assessment?.type}`}
-                  />
+                  <ListItemText secondary={`Type: ${assessment?.type}`} />
                 </ListItemText>
               </ListItem>
-              {/* <Divider variant="middle" /> */}
-              {/* <ListItem>
-              <ListItemAvatar/> */}
-              {/* <Avatar sx={{ bgcolor: blue[500] }}> */}
-              {/* <Avatar>
-                  <AssessmentIcon />
-                </Avatar> */}
-              {/* </ListItemAvatar> */}
-              {/* <ListItemText
-                primary={assessment?.type}
-                secondary="Type"
-              />
-            </ListItem> */}
               <Divider variant="middle" />
               <ListItem>
                 <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: blue[600] }}>
-                    {/* <Avatar> */}
+                  <Avatar
+                    sx={{
+                      bgcolor: `${
+                        submission.state === SubmissionStatus.Opened
+                          ? blue[600]
+                          : grey[400]
+                      }`,
+                    }}
+                  >
                     <LightbulbIcon />
                   </Avatar>
                 </ListItemAvatar>
@@ -256,11 +254,9 @@ const AssessmentsDetailPage = () => {
               </ListItem>
               {submission.state === SubmissionStatus.Graded && (
                 <>
-                  {/* <Divider variant="middle" component="li" /> */}
                   <ListItem>
                     <ListItemAvatar>
-                      <Avatar sx={{ bgcolor: blue[600] }}>
-                        {/* <Avatar> */}
+                      <Avatar>
                         <CheckCircleIcon />
                       </Avatar>
                     </ListItemAvatar>
@@ -284,13 +280,11 @@ const AssessmentsDetailPage = () => {
                 submission.state === SubmissionStatus.Graded) && (
                 <>
                   <ListItem>
-                    {/* <ListItemAvatar/> */}
                     <ListItemAvatar>
-                      <Avatar sx={{ bgcolor: blue[600] }}>
-                        {/* <Avatar> */}
+                      <Avatar>
                         <InventoryIcon />
                       </Avatar>
-                    </ListItemAvatar>{' '}
+                    </ListItemAvatar>
                     <ListItemText
                       secondary="Submissions"
                       primary={`${submission.id} out of ${assessment?.maxNumSubmissions}`}
@@ -310,8 +304,15 @@ const AssessmentsDetailPage = () => {
               <Divider variant="middle" component="li" />
               <ListItem>
                 <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: blue[600] }}>
-                    {/* <Avatar> */}
+                  <Avatar
+                    sx={{
+                      bgcolor: `${
+                        submission.state === SubmissionStatus.Opened
+                          ? blue[600]
+                          : grey[400]
+                      }`,
+                    }}
+                  >
                     <CalendarMonthIcon />
                   </Avatar>
                 </ListItemAvatar>
@@ -325,11 +326,17 @@ const AssessmentsDetailPage = () => {
               {assessment!.type === AssessmentType.Test &&
                 submission.state === SubmissionStatus.Opened && (
                   <>
-                    {/* <Divider variant="middle" /> */}
                     <ListItem>
                       <ListItemAvatar>
-                        <Avatar sx={{ bgcolor: blue[600] }}>
-                          {/* <Avatar> */}
+                        <Avatar
+                          sx={{
+                            bgcolor: `${
+                              submission.state === SubmissionStatus.Opened
+                                ? blue[600]
+                                : grey[400]
+                            }`,
+                          }}
+                        >
                           <TimerIcon />
                         </Avatar>
                       </ListItemAvatar>
@@ -352,7 +359,6 @@ const AssessmentsDetailPage = () => {
                           edge="end"
                           onChange={handleSetShowTimer(!showTimer)}
                           checked={showTimer}
-                          // color="warning"
                           inputProps={{
                             'aria-labelledby': 'switch-list-label-wifi',
                           }}
@@ -381,12 +387,14 @@ const AssessmentsDetailPage = () => {
           >
             <Grid item xs={1} />
             <Grid item xs={10}>
-              <Collapse in={currentStatus === 'Submitted'}>
-                <Alert severity="success">
-                  <AlertTitle>Success</AlertTitle>
-                  {assessment!.type} submitted successfully!
-                </Alert>
-              </Collapse>
+              <Card>
+                <Collapse in={currentStatus === 'Submitted'}>
+                  <Alert severity="success">
+                    <AlertTitle>Success</AlertTitle>
+                    {assessment!.type} submitted successfully!
+                  </Alert>
+                </Collapse>{' '}
+              </Card>
             </Grid>
             <Grid item xs={1} />
             {exampleTestQuestionsList.map(q => (
@@ -431,8 +439,8 @@ const AssessmentsDetailPage = () => {
               <ListItem>
                 <Box sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
                   {assessmentQuestions.map(a => (
-                    <Chip
-                      style={{ marginLeft: 1, marginBottom: 3 }}
+                    <StyledNumChip
+                      sx={{ marginLeft: '1px', marginBottom: '3px' }}
                       label={a.sortOrder}
                       key={a.id}
                       onClick={handleNextSubmission} //temp code for demenstraing different submissions
