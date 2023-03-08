@@ -265,15 +265,14 @@ assessmentsDummyRouter.get(
       score?: number;
       grader_response?: string;
     }[] = [];
-    
 
     const dummyAssessmentSubmissionData = {
       assessmentId: assessmentIdParsed,
       principalId: participantIdParsed,
-      assessmentSubmissionStateId: 7, 
+      assessmentSubmissionStateId: 7,
       score: 0,
       openedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
-      submittedAt:new Date().toISOString().slice(0, 19).replace('T', ' '),
+      submittedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
       responses,
     };
     try {

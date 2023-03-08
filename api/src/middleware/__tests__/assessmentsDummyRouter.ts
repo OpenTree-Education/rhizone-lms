@@ -252,7 +252,10 @@ describe('assessmentsDummyRouter', () => {
       const assessmentSubmissionStateId = 7;
       const score = 0;
       const openedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
-      const submittedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      const submittedAt = new Date()
+        .toISOString()
+        .slice(0, 19)
+        .replace('T', ' ');
       const responses: [] = [];
 
       const dummyAssessmentSubmissionData = {
