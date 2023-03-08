@@ -164,10 +164,10 @@ assessmentsDummyRouter.get(
         dummyAssessmentSubmissionData.assessment_id,
         dummyAssessmentSubmissionData.principal_id,
         dummyAssessmentSubmissionData.assessment_submission_state_id,
-        dummyAssessmentSubmissionData.score,
         dummyAssessmentSubmissionData.opened_at,
-        dummyAssessmentSubmissionData.submitted_at,
-        dummyAssessmentSubmissionData.responses
+        dummyAssessmentSubmissionData.responses,
+        dummyAssessmentSubmissionData.score,
+        dummyAssessmentSubmissionData.submitted_at
       );
     } catch (error) {
       next(error);
@@ -272,7 +272,6 @@ assessmentsDummyRouter.get(
       assessmentSubmissionStateId: 7,
       score: 0,
       openedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
-      submittedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
       responses,
     };
     try {
@@ -280,9 +279,7 @@ assessmentsDummyRouter.get(
         dummyAssessmentSubmissionData.assessmentId,
         dummyAssessmentSubmissionData.principalId,
         dummyAssessmentSubmissionData.assessmentSubmissionStateId,
-        dummyAssessmentSubmissionData.score,
         dummyAssessmentSubmissionData.openedAt,
-        dummyAssessmentSubmissionData.submittedAt,
         dummyAssessmentSubmissionData.responses
       );
     } catch (error) {

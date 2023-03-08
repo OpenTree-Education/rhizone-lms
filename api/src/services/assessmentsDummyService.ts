@@ -93,10 +93,10 @@ export const insertToAssessmentSubmissions = async (
   assessmentId: number,
   principalId: number,
   assessmentSubmissionStateId: number,
-  score: number,
   openedAt: string,
-  submittedAt: string,
-  responses: Response[]
+  responses: Response[],
+  score?: number,
+  submittedAt?: string
 ): Promise<AssessmentSubmissionRow> => {
   let matchingAsssessmentSubmissionsRows: AssessmentSubmissionRow[] = await db(
     'assessment_submissions'

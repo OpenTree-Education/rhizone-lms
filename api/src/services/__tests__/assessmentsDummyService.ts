@@ -148,10 +148,10 @@ describe('assessmentsDummyService', () => {
           assessmentId,
           principalId,
           dummyAssessmentSubmissionData.assessment_submission_state_id,
-          dummyAssessmentSubmissionData.score,
           dummyAssessmentSubmissionData.opened_at,
-          dummyAssessmentSubmissionData.submitted_at,
-          dummyAssessmentSubmissionData.responses
+          dummyAssessmentSubmissionData.responses,
+          dummyAssessmentSubmissionData.score,
+          dummyAssessmentSubmissionData.submitted_at
         )
       ).toEqual({
         id: dummyAssessmentSubmissionData.id,
@@ -245,10 +245,10 @@ describe('assessmentsDummyService', () => {
           assessmentId,
           principalId,
           dummyAssessmentSubmissionData.assessment_submission_state_id,
-          dummyAssessmentSubmissionData.score,
           dummyAssessmentSubmissionData.opened_at,
-          dummyAssessmentSubmissionData.submitted_at,
-          dummyAssessmentSubmissionData.responses
+          dummyAssessmentSubmissionData.responses,
+          dummyAssessmentSubmissionData.score,
+          dummyAssessmentSubmissionData.submitted_at
         )
       ).toEqual({
         id: dummyAssessmentSubmissionData.id,

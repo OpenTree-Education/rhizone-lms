@@ -174,10 +174,10 @@ describe('assessmentsDummyRouter', () => {
             dummyAssessmentSubmissionData.assessment_id,
             dummyAssessmentSubmissionData.principal_id,
             dummyAssessmentSubmissionData.assessment_submission_state_id,
-            dummyAssessmentSubmissionData.score,
             dummyAssessmentSubmissionData.opened_at,
-            dummyAssessmentSubmissionData.submitted_at,
-            dummyAssessmentSubmissionData.responses
+            dummyAssessmentSubmissionData.responses,
+            dummyAssessmentSubmissionData.score,
+            dummyAssessmentSubmissionData.submitted_at
           );
           done(err);
         });
@@ -250,12 +250,7 @@ describe('assessmentsDummyRouter', () => {
       const principalId = 3;
       const assessmentId = 1;
       const assessmentSubmissionStateId = 7;
-      const score = 0;
       const openedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
-      const submittedAt = new Date()
-        .toISOString()
-        .slice(0, 19)
-        .replace('T', ' ');
       const responses: [] = [];
 
       const dummyAssessmentSubmissionData = {
@@ -263,9 +258,7 @@ describe('assessmentsDummyRouter', () => {
         assessmentId: assessmentId,
         principalId: principalId,
         assessment_submission_state_id: assessmentSubmissionStateId,
-        score: score,
         opened_at: openedAt,
-        submitted_at: submittedAt,
         responses: responses,
       };
       mockPrincipalId(principalId);
@@ -280,9 +273,7 @@ describe('assessmentsDummyRouter', () => {
             dummyAssessmentSubmissionData.assessmentId,
             dummyAssessmentSubmissionData.principalId,
             dummyAssessmentSubmissionData.assessment_submission_state_id,
-            dummyAssessmentSubmissionData.score,
             dummyAssessmentSubmissionData.opened_at,
-            dummyAssessmentSubmissionData.submitted_at,
             dummyAssessmentSubmissionData.responses
           );
           done(err);
