@@ -48,13 +48,13 @@ export const exampleTestSubmissionList: AssessmentSubmission[] = [
   {
     id: 1,
     assessmentId: 3,
-    state: "Submitted",
+    state: 'Submitted',
     openAt: 1678123118000,
   },
   {
     id: 2,
     assessmentId: 3,
-    state: "Opened",
+    state: 'Opened',
     openAt: 1678138445000,
   },
 ];

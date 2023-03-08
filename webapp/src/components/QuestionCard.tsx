@@ -1,6 +1,6 @@
 import React from 'react';
 import { Question } from '../assets/data';
-import { TextField, FormControlLabel, Radio } from '@mui/material';
+import { TextField, FormControlLabel, Radio, Snackbar } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
@@ -20,12 +20,14 @@ interface QuestionCardProps {
     chosenAnswerId?: number,
     responseText?: string
   ) => void;
+  currentStatus: string;
 }
 
 const QuestionCard = ({
   question,
   assessmentAnswers,
   handleNewAnswer,
+  currentStatus,
 }: QuestionCardProps) => {
   const [radioValue, setRadioValue] = React.useState('');
   const handleChangeRadio = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,7 +60,7 @@ const QuestionCard = ({
           <RadioGroup value={radioValue} onChange={handleChangeRadio}>
             {question.answers?.map(a => (
               <FormControlLabel
-                control={<Radio />}
+                control={<Radio disabled={currentStatus === 'Submitted'} />}
                 value={a.id}
                 key={a.id}
                 label={a.title}
@@ -70,7 +72,12 @@ const QuestionCard = ({
     } else if (question.questionType === 'single choice') {
       return (
         <FormControl style={{ width: '50%' }}>
-          <Select required onChange={handleChangeSelect} value={selectValue}>
+          <Select
+            required
+            onChange={handleChangeSelect}
+            value={selectValue}
+            disabled={currentStatus === 'Submitted'}
+          >
             {question.answers?.map(a => (
               <MenuItem value={a.id} key={a.id}>
                 {a.title}
@@ -88,6 +95,7 @@ const QuestionCard = ({
           variant="standard"
           fullWidth
           onChange={handleChangeText}
+          disabled={currentStatus === 'Submitted'}
         />
       );
     }
@@ -100,6 +108,12 @@ const QuestionCard = ({
         </Typography>
         {TableRowWrapper(question)}
       </CardContent>
+      <Snackbar
+        open={currentStatus === 'Submitted'}
+        autoHideDuration={6000}
+        onClose={() => {}}
+        message="Assignment submitted successfully!"
+      />
     </Card>
   );
 };

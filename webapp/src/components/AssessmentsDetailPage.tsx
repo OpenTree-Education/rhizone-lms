@@ -81,7 +81,7 @@ import {
   exampleTestSubmissionList,
   AssessmentSubmission,
   Question,
-  AssessmentChosenAnswer
+  AssessmentChosenAnswer,
 } from '../assets/data';
 import { formatDateTime } from '../helpers/dateTime';
 import QuestionCard from './QuestionCard';
@@ -141,9 +141,7 @@ const AssessmentsDetailPage = () => {
     );
   };
 
-  const [assessmentQuestions] = useState(
-    exampleTestQuestionsList
-  );
+  const [assessmentQuestions] = useState(exampleTestQuestionsList);
 
   // TODO: update ending time with the logic we talked about in Discord:
   // - if there's a time limit
@@ -154,10 +152,12 @@ const AssessmentsDetailPage = () => {
   // - else
   //   - due date
 
-  const lastSubmission: AssessmentSubmission = exampleTestSubmissionList.reduce((max, submission) => max.id > submission.id ? max : submission);
+  const lastSubmission: AssessmentSubmission = exampleTestSubmissionList.reduce(
+    (max, submission) => (max.id > submission.id ? max : submission)
+  );
   const dueTime = new Date(assessment?.dueDate!);
   const currentTime = new Date();
-  const [endingTime, setEndingTime] = useState((dueTime));
+  const [endingTime, setEndingTime] = useState(dueTime);
 
   const [secondsRemaining, setSecondsRemaining] = useState(
     (endingTime!.getTime() - new Date().getTime()) / 1000
@@ -169,9 +169,9 @@ const AssessmentsDetailPage = () => {
   const animate = (time: number) => {
     if (previousTimeRef.current !== undefined) {
       // TODO: check if time remaining would be less than zero, then set to 0 instead
-      if(endingTime!.getTime() < new Date().getTime()){
+      if (endingTime!.getTime() < new Date().getTime()) {
         setSecondsRemaining(0);
-      }else{
+      } else {
         setSecondsRemaining(
           Math.round((endingTime!.getTime() - new Date().getTime()) / 1000)
         );
@@ -196,6 +196,7 @@ const AssessmentsDetailPage = () => {
   };
 
   const [open, setOpen] = React.useState(false);
+  const [currentStatus, setCurrentStatus] = useState('opened');
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -205,199 +206,221 @@ const AssessmentsDetailPage = () => {
     setOpen(false);
   };
 
+  const handleSubmit = (event?: React.SyntheticEvent) => {
+    if (event) {
+      event.preventDefault();
+    }
+    setOpen(false);
+    //store the form data into database
+    setCurrentStatus('submitted');
+  };
+
   return (
     <Container>
-      <Stack
-        direction={{ xs: 'column', md: 'row' }}
-        justifyContent="space-between"
-        alignItems={{ xs: 'flex-start', md: 'center' }}
-        sx={{ marginBottom: '1em' }}
-      >
-        <h1>{assessment?.title}</h1>
-      </Stack>
       <Grid container spacing={2}>
-        <Grid item xs={3}>
-          <List
-            sx={{
-              width: '100%',
-              maxWidth: 360,
-            }}
+        <Grid item xs={12} md={6}>
+          <Typography
+            variant="h4"
+            style={{ marginBottom: '20px', marginTop: '20px' }}
           >
-            <ListItem>
-              <ListItemAvatar>
-                <Avatar>
-                  <InfoIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                secondary={assessment?.description}
-              />
-            </ListItem>
-            <Divider variant="middle" />
-            <ListItem>
-              <ListItemAvatar>
-                {/* {showTimer? (
+            {assessment?.title}
+          </Typography>
+        </Grid>
+
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={3}>
+            <List
+              sx={{
+                width: '100%',
+                maxWidth: 360,
+              }}
+            >
+              <ListItem>
+                <ListItemAvatar>
+                  <Avatar>
+                    <InfoIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText secondary={assessment?.description} />
+              </ListItem>
+              <Divider variant="middle" />
+              <ListItem>
+                <ListItemAvatar>
+                  {/* {showTimer? (
                   <CircularProgressWithLabel value={progress} />
                 ) : ( */}
                   <Avatar>
                     {/* <Avatar sx={{ bgcolor: amber[500] }}> */}
                     <TimerIcon />
                   </Avatar>
-                {/* )} */}
-              </ListItemAvatar>
-              <ListItemText
-                secondary={showTimer?`Time Remaining`:`Time Limit`}
-                primary={showTimer?`${Math.floor(secondsRemaining/60)}m ${secondsRemaining%60}s` : assessment?.testDuration+`m`}
-              />
-              <Switch
-                edge="end"
-                onChange={handleToggle(!showTimer)}
-                checked={showTimer}
-                inputProps={{
-                  'aria-labelledby': 'switch-list-label-wifi',
-                }}
-              />
-            </ListItem>
-            <Divider variant="middle" component="li" />
-            <ListItem>
-              <ListItemAvatar>
-                {/* <Avatar  sx={{ bgcolor: orange[500] }}> */}
-                <Avatar>
-                  <CalendarMonthIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                secondary="Due Date"
-                primary={formatDateTime(
-                  assessment?.dueDate ? assessment?.dueDate : ''
-                )}
-              />
-            </ListItem>
-            <Divider variant="middle" />
-            <ListItem>
-              <ListItemAvatar>
-                {/* <Avatar sx={{ bgcolor: indigo[500] }}> */}
-                <Avatar>
-                  <InventoryIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                secondary="Submissions"
-                primary={`First out of ${assessment?.maxNumSubmissions}`}
-              />
-            </ListItem>
-            <ListItem>
-              <ListItemAvatar />
-              <ListItemText
-                secondary="Last Submission Date"
-                primary={formatDateTime(
-                  assessment?.submittedDate
-                    ? assessment?.submittedDate
-                    : '2023-03-31'
-                )}
-              />
-            </ListItem>
-            <Divider variant="middle" component="li" />
-            <ListItem>
-              <ListItemAvatar>
-                {/* <Avatar sx={{ bgcolor: green[500] }}> */}
-                <Avatar>
-                  <CheckCircleIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText secondary="Score" primary="90" />
-            </ListItem>
-          </List>
-        </Grid>
-        <Grid
-          container
-          xs={7.5}
-          spacing={2}
-          style={{
-            height: '75vh',
-            overflow: 'auto',
-            marginTop: 0,
-            marginLeft: 0,
-            paddingTop: 15,
-            paddingBottom: 20,
-          }}
-          bgcolor="#fafafa"
-        >
-          {exampleTestQuestionsList.map(q => (
-            <>
-              <Grid item xs={1} />
-              <Grid item xs={10}>
-                {/* {assessmentAnswers[q.sortOrder - 1] &&
+                  {/* )} */}
+                </ListItemAvatar>
+                <ListItemText
+                  secondary={showTimer ? `Time Remaining` : `Time Limit`}
+                  primary={
+                    showTimer
+                      ? `${Math.floor(secondsRemaining / 60)}m ${
+                          secondsRemaining % 60
+                        }s`
+                      : assessment?.testDuration + `m`
+                  }
+                />
+                <Switch
+                  edge="end"
+                  onChange={handleToggle(!showTimer)}
+                  checked={showTimer}
+                  inputProps={{
+                    'aria-labelledby': 'switch-list-label-wifi',
+                  }}
+                />
+              </ListItem>
+              <Divider variant="middle" component="li" />
+              <ListItem>
+                <ListItemAvatar>
+                  {/* <Avatar  sx={{ bgcolor: orange[500] }}> */}
+                  <Avatar>
+                    <CalendarMonthIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  secondary="Due Date"
+                  primary={formatDateTime(
+                    assessment?.dueDate ? assessment?.dueDate : ''
+                  )}
+                />
+              </ListItem>
+              <Divider variant="middle" />
+              <ListItem>
+                <ListItemAvatar>
+                  {/* <Avatar sx={{ bgcolor: indigo[500] }}> */}
+                  <Avatar>
+                    <InventoryIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  secondary="Submissions"
+                  primary={`First out of ${assessment?.maxNumSubmissions}`}
+                />
+              </ListItem>
+              <ListItem>
+                <ListItemAvatar />
+                <ListItemText
+                  secondary="Last Submission Date"
+                  primary={formatDateTime(
+                    assessment?.submittedDate
+                      ? assessment?.submittedDate
+                      : '2023-03-31'
+                  )}
+                />
+              </ListItem>
+              <Divider variant="middle" component="li" />
+              <ListItem>
+                <ListItemAvatar>
+                  {/* <Avatar sx={{ bgcolor: green[500] }}> */}
+                  <Avatar>
+                    <CheckCircleIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText secondary="Score" primary="90" />
+              </ListItem>
+            </List>
+          </Grid>
+          <Grid
+            container
+            xs={12}
+            md={7.5}
+            spacing={2}
+            style={{
+              height: '75vh',
+              overflow: 'auto',
+              marginTop: 0,
+              marginLeft: 0,
+              paddingTop: 15,
+              paddingBottom: 20,
+            }}
+            bgcolor="#fafafa"
+          >
+            {exampleTestQuestionsList.map(q => (
+              <>
+                <Grid item xs={1} />
+                <Grid item xs={10}>
+                  {/* {assessmentAnswers[q.sortOrder - 1] &&
                   assessmentAnswers[q.sortOrder - 1].chosenAnswerId}
                 {assessmentAnswers[q.sortOrder - 1] &&
                   assessmentAnswers[q.sortOrder - 1].responseText} */}
-                <QuestionCard
-                  question={q}
-                  assessmentAnswers={assessmentAnswers}
-                  handleNewAnswer={handleNewAnswer}
-                />
-              </Grid>
-              <Grid item xs={1} />
-            </>
-          ))}
-        </Grid>
-        <Grid item xs={1.5}>
-          <List style={{ paddingLeft: 0 }}>
-            <ListItem sx={{ justifyContent: 'center' }}>
-              <Button
-                variant={`${numOfAnsweredQuestion === assessmentQuestions.length?'contained':'outlined'}`}
-                size="medium"
-                onClick={handleClickOpen}
-              >
-                Submit
-              </Button>
-            </ListItem>            
-            <Divider variant="middle" />
-            <ListItem>
-              <ListItemText
-                primary={LinearProgressWithLabel(
-                  numOfAnsweredQuestion,
-                  assessmentQuestions.length
-                )}
-              />
-            </ListItem>
-            <ListItem>
-              <Box sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
-                {assessmentQuestions.map(a => (
-                  <Chip
-                    style={{ marginLeft: 1, marginBottom: 3 }}
-                    label={a.sortOrder}
-                    key={a.id}
-                    color={`${
-                      assessmentAnswers[a.sortOrder - 1].chosenAnswerId ||
-                      assessmentAnswers[a.sortOrder - 1].responseText
-                        ? 'primary'
-                        : 'default'
-                    }`}
+                  <QuestionCard
+                    question={q}
+                    assessmentAnswers={assessmentAnswers}
+                    handleNewAnswer={handleNewAnswer}
+                    currentStatus={currentStatus}
                   />
-                ))}
-              </Box>
-            </ListItem>
-          </List>
+                </Grid>
+                <Grid item xs={1} />
+              </>
+            ))}
+          </Grid>
+          <Grid item xs={12} md={1.5}>
+            <List style={{ paddingLeft: 0 }}>
+              <ListItem sx={{ justifyContent: 'center' }}>
+                <Button
+                  variant={`${
+                    numOfAnsweredQuestion === assessmentQuestions.length
+                      ? 'contained'
+                      : 'outlined'
+                  }`}
+                  size="medium"
+                  onClick={handleClickOpen}
+                >
+                  Submit
+                </Button>
+              </ListItem>
+              <Divider variant="middle" />
+              <ListItem>
+                <ListItemText
+                  primary={LinearProgressWithLabel(
+                    numOfAnsweredQuestion,
+                    assessmentQuestions.length
+                  )}
+                />
+              </ListItem>
+              <ListItem>
+                <Box sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
+                  {assessmentQuestions.map(a => (
+                    <Chip
+                      style={{ marginLeft: 1, marginBottom: 3 }}
+                      label={a.sortOrder}
+                      key={a.id}
+                      color={`${
+                        assessmentAnswers[a.sortOrder - 1].chosenAnswerId ||
+                        assessmentAnswers[a.sortOrder - 1].responseText
+                          ? 'primary'
+                          : 'default'
+                      }`}
+                    />
+                  ))}
+                </Box>
+              </ListItem>
+            </List>
+          </Grid>
         </Grid>
+        <Dialog open={open} onClose={handleClose}>
+          <DialogTitle id="alert-dialog-title">
+            Are you sure you would like to submit this assessmnet?
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              You have filled {numOfAnsweredQuestion} out of{' '}
+              {assessmentQuestions.length}.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleSubmit} variant="contained">
+              Submit
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Grid>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle id="alert-dialog-title">
-          Are you sure you would like to submit this assessmnet?
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            You have filled {numOfAnsweredQuestion} out of{' '}
-            {assessmentQuestions.length}.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleClose} variant="contained">
-            Submit
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Container>
   );
 };
