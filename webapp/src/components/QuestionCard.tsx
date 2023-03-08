@@ -104,16 +104,11 @@ const QuestionCard = ({
     <Card>
       <CardContent>
         <Typography gutterBottom variant="h6" component="div">
+          {currentStatus}
           {question.sortOrder}. {question.title}
         </Typography>
         {TableRowWrapper(question)}
       </CardContent>
-      <Snackbar
-        open={currentStatus === 'Submitted'}
-        autoHideDuration={6000}
-        onClose={() => {}}
-        message="Assignment submitted successfully!"
-      />
     </Card>
   );
 };

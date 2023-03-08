@@ -2,10 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import {
+  Alert,
+  AlertTitle,
   Container,
+  Collapse,
   // Link,
   Stack,
   Button,
+  Snackbar,
   // Paper,
   // TableContainer,
   // TextField,
@@ -196,8 +200,7 @@ const AssessmentsDetailPage = () => {
   };
 
   const [open, setOpen] = React.useState(false);
-  const [currentStatus, setCurrentStatus] = useState('opened');
-
+  const [currentStatus, setCurrentStatus] = React.useState('Opened');
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -212,7 +215,8 @@ const AssessmentsDetailPage = () => {
     }
     setOpen(false);
     //store the form data into database
-    setCurrentStatus('submitted');
+    setCurrentStatus('Submitted');
+    document.querySelector('#assessment_display')!.scrollTo(0, 0);
   };
 
   return (
@@ -326,20 +330,32 @@ const AssessmentsDetailPage = () => {
             </List>
           </Grid>
           <Grid
+            id="assessment_display"
             container
             xs={12}
             md={7.5}
             spacing={2}
-            style={{
+            sx={{
               height: '75vh',
               overflow: 'auto',
               marginTop: 0,
               marginLeft: 0,
-              paddingTop: 15,
-              paddingBottom: 20,
+              paddingTop: '15px',
+              paddingBottom: '20px',
+              backgroundColor: '#fafafa',
+              border: '1px solid #bbb',
             }}
-            bgcolor="#fafafa"
           >
+            <Grid item xs={1} />
+            <Grid item xs={10}>
+              <Collapse in={currentStatus === 'Submitted'}>
+                <Alert severity="success">
+                  <AlertTitle>Success</AlertTitle>
+                  {assessment!.type} submitted successfully!
+                </Alert>
+              </Collapse>
+            </Grid>
+            <Grid item xs={1} />
             {exampleTestQuestionsList.map(q => (
               <>
                 <Grid item xs={1} />
