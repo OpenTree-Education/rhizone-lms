@@ -106,15 +106,13 @@ export interface CurriculumAssessment {
 }
 
 export interface AssessmentSubmission {
-  id: number;
+  id?: number;
   assessment_id: number;
   principal_id: number;
-  assessment_submisson_state_id: number;
-  score: number;
+  assessment_submission_state: string;
+  score?: number;
   opened_at: string;
-  submitted_at: string;
-  created_at: string;
-  updated_at: string;
+  submitted_at?: string;
   responses?: AssessmentResponse[];
 }
 
@@ -140,7 +138,7 @@ export interface Answer {
 }
 
 export interface AssessmentResponse {
-  response_id?: number;
+  id?: number;
   assessment_id: number;
   submission_id: number;
   question_id: number;
@@ -162,4 +160,16 @@ export interface ProgramParticipantCompletionSummary {
   program: Program;
   principal_id: number;
   total_score: number;
+}
+
+export interface FacilitatorAssessmentSubmissionsSummary {
+  num_participants_with_submissions: number;
+  num_program_participants: number;
+  num_ungraded_submissions: number;
+}
+
+export interface SubmittedAssessment {
+  curriculum_assessment: CurriculumAssessment;
+  program_assessment: ProgramAssessment;
+  submissions: AssessmentSubmission[];
 }

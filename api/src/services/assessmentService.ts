@@ -2,6 +2,7 @@ import db from './db';
 
 import {
   Answer,
+  AssessmentResponse,
   AssessmentSubmission,
   CurriculumAssessment,
   ProgramAssessment,
@@ -14,7 +15,8 @@ import {
 /**
  * a function that returns the curriculum assessment ID and program ID given a program assessment ID.
  *
- * @param {number} programAssessmentId
+ * @param {number} programAssessmentId - The program assessment ID
+ * @returns {ProgramAssessment} - The curriculum assessment ID and program ID // TODO: ask about model should we create new ? 
  *
  */
 export const getCurriculumAndProgramAssessmentId = async (
@@ -31,9 +33,9 @@ export const getCurriculumAndProgramAssessmentId = async (
 /**
  * a function to returns the role of the participant in a given program
  *
- * @param {number} programId
- * @param {number} principalId restrict result to programs with which the
- *   user is associated
+ * @param {number} programId - The program ID for the specified program
+ * @param {number} principalId - The restrict result to programs with which the  user is associated
+ * @returns {} - 
  *
  */
 export const findRoleInProgram = async (
@@ -51,14 +53,14 @@ export const findRoleInProgram = async (
   return roleName;
 };
 
-// TODO: Maybe add a flag if the correct answer should also be sent
 
 /**
  * a function to returns details about the curriculum assessment given a curriculum assessment ID, with an optional flag to determine whether or not questions and answers should be included in the return value.
  *
- * @param {number} curriculumAssessmentId
- * @param {boolean} isQuestionsIncluded
- * @param {boolean} isAnswersIncluded
+ * @param {number} curriculumAssessmentId - The curriculum assessment ID
+ * @param {boolean} isQuestionsIncluded - The flag if the question should also be sent
+ * @param {boolean} isAnswersIncluded - The flag if the answers should also be sent
+ * @returns {CurriculumAssessment} - The details about matching curriculum assessment
  *
  */
 
@@ -101,10 +103,11 @@ export const getCurriculumAssesmentById = async (
 };
 
 /**
- * a function to returns details about the curriculum assessment given a curriculum assessment ID, with an optional flag to determine whether or not questions and answers should be included in the return value.
+ * a function based on curriculum assessment ID that allow include or exclude answers to response 
  *
- * @param {number} curriculumAssessmentId
- * @param {boolean} isAnswersIncluded
+ * @param {number} curriculumAssessmentId - The curriculum assessment ID
+ * @param {boolean} isAnswersIncluded - The flag if the answers should also be sent
+ * @returns {Question[]} - The data about questions 
  *
  */
 
@@ -157,32 +160,40 @@ export const programAssessmentById = async (programAssessmentId: number) => {
 };
 
 // TODO: Fix spelling error in function name.
-// TODO: Perhaps add flag on whether or not to include responses?
 
 /**
- * a function to return details about your own submissions or all participants' submissions, with an optional flag to determine whether or not responses should be included in the return value.
+ * A function to return details about your own submissions or all participants' submissions,
+ * with an optional flag to determine whether or not responses should be included in the return value.
  *
  * @param {number} programAssessmentId - The assessment ID for the specified assessment
- * @returns {Submission[]} - list of assessments in the db
- *
+ * @param {boolean} isResponsesIncluded - A flag to determine whether or not responses should be included
+ * @returns {<AssessmentSubmission[]>} - A list of assessment submissions in the db
  */
-
-export const sumbmissionDetails = async (programAssessmentId: number) => {
-  const findProgramAssessmentById = await db<ProgramAssessment>(
-    'curriculum_assessments'
-  )
-    .select(
-      'id',
-      'program_id',
-      'assessment_id',
-      'available_after',
-      'due_date',
-      'created_at',
-      'updated_at'
-    )
+export const submissionDetails = async (
+  programAssessmentId: number,
+  isResponsesIncluded: boolean
+) => {
+  const assessmentSubmissionByProgramAssessmentId = await db<AssessmentSubmission>('assessment_submission')
+    .select()
     .where({ id: programAssessmentId });
-  return findProgramAssessmentById;
+
+  if (isResponsesIncluded) {
+    const assessmentSubmissionIds = assessmentSubmissionByProgramAssessmentId.map((element) => element.id);
+    const responses = await db<AssessmentResponse>('assessment_responses')
+      .select()
+      .whereIn('submission_id', assessmentSubmissionIds);
+
+    assessmentSubmissionByProgramAssessmentId.forEach(
+      (assessment) =>
+        (assessment.responses = responses.filter(
+          (response) => response.submission_id === assessment.id
+        ))
+    );
+  }
+
+  return assessmentSubmissionByProgramAssessmentId;
 };
+
 
 /**
  * a function to returns details about the curriculum assessment given a curriculum assessment ID, with an optional flag to determine whether or not questions and answers should be included in the return value.
@@ -223,6 +234,10 @@ export const sumbmissionDetails = async (programAssessmentId: number) => {
 
 //   return assessmentSubmissionDetails;
 // };
+
+
+
+
 
 // **old version from previous week is below the line
 
@@ -349,7 +364,7 @@ export const deleteAssessmentById = async (assessmentId: number) => {
  * @param {number} principalId restrict result to programs with which the
  *   user is associated
  * @param {number} assessmentId - The assessment ID for the specified assessment
- * @param {number} programId
+ * @param {number} programId - The program ID for the specified program
  */
 
 export const updateAssessmentById = async (
@@ -412,12 +427,12 @@ export const findAssessment = async (assessmentId: number) => {
   return matchingAssessment;
 };
 
-// TODO: Fix function header
 
 /**
- * @param {number} programId
- * @param {number} principalId restrict result to programs with which the
- *   user is associated
+ * Get information about assessment submission based on role
+ * 
+ * @param {number} programId - The program ID for the specified program
+ * @param {number} principalId - The restrict result to programs with which the user is associated
  * @param {number} assessmentId - The submission ID for the specified assesment
  * @returns
  */
@@ -449,7 +464,7 @@ export const findSubmissionByAssessmentId = async (
       'updated_at'
     )
     .where({ assessment_id: assessmentId });
-  const [matchingAssessmentForStudent] = await db<AssessmentSubmission>(
+  const [matchingAssessmentForParticipant] = await db<AssessmentSubmission>(
     'assessment_submissions'
   )
     .select(
@@ -465,7 +480,7 @@ export const findSubmissionByAssessmentId = async (
     .where({ assessment_id: assessmentId });
 
   if (roleName.role_id === 2) return matchingAssessmentForFacilitator;
-  else matchingAssessmentForStudent;
+  else matchingAssessmentForParticipant;
 };
 
 // TODO: Fix function header
