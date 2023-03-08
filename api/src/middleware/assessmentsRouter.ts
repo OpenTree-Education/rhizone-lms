@@ -6,7 +6,7 @@ import {
   createAssessment,
   updateAssessmentById,
   deleteAssessmentById,
-  findRoleParticipant,
+  findRoleInProgram,
   getCurriculumAssesmentById,
 } from '../services/assessmentService';
 
@@ -31,7 +31,7 @@ assessmentsRouter.get('/test/:assessmentId', async (req, res, next) => {
   const assessmentIdNum = Number(assessmentId);
   let assessments;
   try {
-    assessments = await getCurriculumAssesmentById(assessmentIdNum, true);
+    assessments = await getCurriculumAssesmentById(assessmentIdNum, true, true);
   } catch (error) {
     next(error);
     return;
@@ -242,7 +242,7 @@ const autorizedCheck = async (
 ) => {
   let isAuthorized;
   try {
-    isAuthorized = await findRoleParticipant(principalId, programId);
+    isAuthorized = await findRoleInProgram(principalId, programId);
   } catch (error) {
     next(error);
     return;
