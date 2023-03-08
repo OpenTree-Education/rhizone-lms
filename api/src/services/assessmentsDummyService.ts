@@ -8,10 +8,11 @@ interface ProgramParticipantsRow {
 }
 
 /**
- * Return  program_participants table for any rows matching this principalId and this programId.
+ * return matching rows from the program_participants table that have  been inserted or updated based on their pre-existence in the table.
  *
  * @param {number} principalId - The given principalId
  * @param {number} programId - The given programId
+ * @param {number} roleId - roleId
  *
  * @returns {ProgramParticipantsRow}
  */
@@ -20,14 +21,10 @@ export const insertToProgramParticipants = async (
   programId: number,
   roleId: number
 ): Promise<ProgramParticipantsRow> => {
-  // select from the program_participants table for any rows matching this principalId and this programId
-
   let matchingProgramParticipantsRows: ProgramParticipantsRow[] =
     await db<ProgramParticipantsRow>('program_participants')
       .select('id', 'principal_id', 'program_id', 'role_id')
       .where({ principal_id: principalId, program_id: programId });
-
-  // - if a row exists, update the roleId to the roleId that's being passed in, using the id of the row returned from that table as the key for updating
 
   if (matchingProgramParticipantsRows.length) {
     await db('program_participants')
@@ -36,9 +33,7 @@ export const insertToProgramParticipants = async (
         role_id: roleId,
       })
       .where({ principal_id: principalId });
-  }
-  // - if no row exists, insert a row into the table for this principalId, programId, and roleId
-  else {
+  } else {
     await db('program_participants').insert({
       principal_id: principalId,
       program_id: programId,
@@ -79,7 +74,7 @@ interface Response {
   grader_response?: string;
 }
 
-export const insertToAssessmentSubmissions = async (
+export const insertDataIntoAssessmentSubmissions = async (
   assessmentId: number,
   principalId: number,
   assessmentSubmissionStateId: number,
@@ -88,8 +83,6 @@ export const insertToAssessmentSubmissions = async (
   submittedAt: string,
   responses: Response[]
 ): Promise<AssessmentSubmissionRow> => {
-  // select from the assessment_submissions table for any rows matching this principalId and assessmentId
-
   let matchingAsssessmentSubmissionsRows: AssessmentSubmissionRow[] = await db(
     'assessment_submissions'
   )
@@ -97,8 +90,6 @@ export const insertToAssessmentSubmissions = async (
     .where({ assessment_id: assessmentId, principal_id: principalId });
 
   if (matchingAsssessmentSubmissionsRows.length) {
-    // - if a row exists, update the status and submittedAt dates (if one is passed) and return the id of that row
-
     await db(`assessment_submissions`)
       .update({
         assessment_submission_state_id: assessmentSubmissionStateId,
@@ -108,7 +99,6 @@ export const insertToAssessmentSubmissions = async (
       })
       .where({ assessment_id: assessmentId, principal_id: principalId });
   } else {
-    // - if a row doesn't exist, create one and return the id of that row in the assessment_submissions table
     await db(`assessment_submissions`).insert({
       assessment_id: assessmentId,
       principal_id: principalId,
@@ -126,7 +116,7 @@ export const insertToAssessmentSubmissions = async (
     .where({ assessment_id: assessmentId, principal_id: principalId });
 
   for (const response of responses) {
-    await insertToAssessmentResponses(
+    await insertIntoAssessmentResponses(
       assessmentId,
       matchingAsssessmentSubmissionsRows[0].id,
       response.question_id,
@@ -150,7 +140,7 @@ export const insertToAssessmentSubmissions = async (
   return insertedRowParsed;
 };
 
-export const insertToAssessmentResponses = async (
+export const insertIntoAssessmentResponses = async (
   assessmentId: number,
   submissionId: number,
   questionId: number,
@@ -159,7 +149,7 @@ export const insertToAssessmentResponses = async (
   score?: number,
   graderResponse?: string
 ) => {
-  const assessmentResponsesWithMatchedId = await db(`assessment_responses`)
+  let assessmentResponsesWithMatchedId = await db(`assessment_responses`)
     .select('id', 'assessment_id')
     .where({ assessment_id: assessmentId, submission_id: submissionId });
   if (assessmentResponsesWithMatchedId.length) {
@@ -182,4 +172,9 @@ export const insertToAssessmentResponses = async (
       grader_response: graderResponse,
     });
   }
+  assessmentResponsesWithMatchedId = await db(`assessment_responses`)
+    .select('id')
+    .where({ assessment_id: assessmentId, submission_id: submissionId });
+
+  return assessmentResponsesWithMatchedId;
 };

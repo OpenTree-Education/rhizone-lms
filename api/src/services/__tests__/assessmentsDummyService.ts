@@ -1,6 +1,6 @@
 import {
   insertToProgramParticipants,
-  insertToAssessmentSubmissions,
+  insertDataIntoAssessmentSubmissions,
 } from '../assessmentsDummyService';
 import { mockQuery } from '../mockDb';
 
@@ -75,29 +75,26 @@ describe('assessmentsDummyService', () => {
       const assessmentId = 3;
       const submissionId = 2;
       const principalId = 3;
-      const dummyAssessmentSubmissionData = [
-        {
-          id: submissionId,
-          assessment_id: assessmentId,
-          principal_id: principalId,
-          assessment_submission_state_id: 7,
-          score: 10,
-          opened_at: '2023-02-09 12:00:00',
-          submitted_at: '2023-02-09 13:23:45',
-          responses: [
-            {
-              assessment_id: assessmentId,
-              submission_id: submissionId,
-              question_id: 1,
-              answer_id: 4,
-              response: 'test',
-              score: 8,
-              grader_response: '',
-            },
-          ],
-        },
-      ];
-
+      const dummyAssessmentSubmissionData = {
+        id: submissionId,
+        assessment_id: assessmentId,
+        principal_id: principalId,
+        assessment_submission_state_id: 7,
+        score: 10,
+        opened_at: '2023-02-09 12:00:00',
+        submitted_at: '2023-02-09 13:23:45',
+        responses: [
+          {
+            assessment_id: assessmentId,
+            submission_id: submissionId,
+            question_id: 1,
+            answer_id: 4,
+            response: 'test',
+            score: 8,
+            grader_response: '',
+          },
+        ],
+      };
       mockQuery(
         'select `id`, `assessment_id` from `assessment_submissions` where `assessment_id` = ? and `principal_id` = ?',
         [assessmentId, principalId],
@@ -108,11 +105,11 @@ describe('assessmentsDummyService', () => {
         'insert into `assessment_submissions` (`assessment_id`, `assessment_submission_state_id`, `opened_at`, `principal_id`, `score`, `submitted_at`) values (?, ?, ?, ?, ?, ?)',
         [
           assessmentId,
-          dummyAssessmentSubmissionData[0].assessment_submission_state_id,
-          dummyAssessmentSubmissionData[0].opened_at,
+          dummyAssessmentSubmissionData.assessment_submission_state_id,
+          dummyAssessmentSubmissionData.opened_at,
           principalId,
-          dummyAssessmentSubmissionData[0].score,
-          dummyAssessmentSubmissionData[0].submitted_at,
+          dummyAssessmentSubmissionData.score,
+          dummyAssessmentSubmissionData.submitted_at,
         ],
         []
       );
@@ -121,7 +118,7 @@ describe('assessmentsDummyService', () => {
         [assessmentId, principalId],
         [{ id: submissionId }]
       );
-      const [response] = dummyAssessmentSubmissionData[0].responses;
+      const [response] = dummyAssessmentSubmissionData.responses;
       mockQuery(
         'select `id`, `assessment_id` from `assessment_responses` where `assessment_id` = ? and `submission_id` = ?',
         [assessmentId, submissionId],
@@ -140,25 +137,30 @@ describe('assessmentsDummyService', () => {
         ],
         []
       );
+      mockQuery(
+        'select `id` from `assessment_responses` where `assessment_id` = ? and `submission_id` = ?',
+        [assessmentId, submissionId],
+        []
+      );
 
       expect(
-        await insertToAssessmentSubmissions(
+        await insertDataIntoAssessmentSubmissions(
           assessmentId,
           principalId,
-          dummyAssessmentSubmissionData[0].assessment_submission_state_id,
-          dummyAssessmentSubmissionData[0].score,
-          dummyAssessmentSubmissionData[0].opened_at,
-          dummyAssessmentSubmissionData[0].submitted_at,
-          dummyAssessmentSubmissionData[0].responses
+          dummyAssessmentSubmissionData.assessment_submission_state_id,
+          dummyAssessmentSubmissionData.score,
+          dummyAssessmentSubmissionData.opened_at,
+          dummyAssessmentSubmissionData.submitted_at,
+          dummyAssessmentSubmissionData.responses
         )
       ).toEqual({
-        id: dummyAssessmentSubmissionData[0].id,
+        id: dummyAssessmentSubmissionData.id,
         principal_id: principalId,
         assessment_id: assessmentId,
-        score: dummyAssessmentSubmissionData[0].score,
-        opened_at: dummyAssessmentSubmissionData[0].opened_at,
-        submitted_at: dummyAssessmentSubmissionData[0].submitted_at,
-        responses: dummyAssessmentSubmissionData[0].responses,
+        score: dummyAssessmentSubmissionData.score,
+        opened_at: dummyAssessmentSubmissionData.opened_at,
+        submitted_at: dummyAssessmentSubmissionData.submitted_at,
+        responses: dummyAssessmentSubmissionData.responses,
       });
     });
 
@@ -167,30 +169,27 @@ describe('assessmentsDummyService', () => {
       const assessmentId = 2;
       const submissionId = 2;
 
-      const dummyAssessmentSubmissionData = [
-        {
-          id: submissionId,
-          assessment_id: assessmentId,
-          principal_id: principalId,
-          assessment_submission_state_id: 7,
-          score: 10,
-          opened_at: '2023-02-09 12:00:00',
-          submitted_at: '2023-02-09 13:23:45',
-          responses: [
-            {
-              id: 2,
-              assessment_id: assessmentId,
-              submission_id: submissionId,
-              question_id: 1,
-              answer_id: 4,
-              response: 'test',
-              score: 8,
-              grader_response: '',
-            },
-          ],
-        },
-      ];
-
+      const dummyAssessmentSubmissionData = {
+        id: submissionId,
+        assessment_id: assessmentId,
+        principal_id: principalId,
+        assessment_submission_state_id: 7,
+        score: 10,
+        opened_at: '2023-02-09 12:00:00',
+        submitted_at: '2023-02-09 13:23:45',
+        responses: [
+          {
+            id: 2,
+            assessment_id: assessmentId,
+            submission_id: submissionId,
+            question_id: 1,
+            answer_id: 4,
+            response: 'test',
+            score: 8,
+            grader_response: '',
+          },
+        ],
+      };
       mockQuery(
         'select `id`, `assessment_id` from `assessment_submissions` where `assessment_id` = ? and `principal_id` = ?',
         [assessmentId, principalId],
@@ -204,10 +203,10 @@ describe('assessmentsDummyService', () => {
       mockQuery(
         'update `assessment_submissions` set `assessment_submission_state_id` = ?, `score` = ?, `opened_at` = ?, `submitted_at` = ? where `assessment_id` = ? and `principal_id` = ?',
         [
-          dummyAssessmentSubmissionData[0].assessment_submission_state_id,
-          dummyAssessmentSubmissionData[0].score,
-          dummyAssessmentSubmissionData[0].opened_at,
-          dummyAssessmentSubmissionData[0].submitted_at,
+          dummyAssessmentSubmissionData.assessment_submission_state_id,
+          dummyAssessmentSubmissionData.score,
+          dummyAssessmentSubmissionData.opened_at,
+          dummyAssessmentSubmissionData.submitted_at,
           assessmentId,
           principalId,
         ],
@@ -218,7 +217,7 @@ describe('assessmentsDummyService', () => {
         [assessmentId, principalId],
         [{ id: submissionId }]
       );
-      const [response] = dummyAssessmentSubmissionData[0].responses;
+      const [response] = dummyAssessmentSubmissionData.responses;
       mockQuery(
         'select `id`, `assessment_id` from `assessment_responses` where `assessment_id` = ? and `submission_id` = ?',
         [assessmentId, submissionId],
@@ -236,25 +235,29 @@ describe('assessmentsDummyService', () => {
         ],
         []
       );
-
+      mockQuery(
+        'select `id` from `assessment_responses` where `assessment_id` = ? and `submission_id` = ?',
+        [assessmentId, submissionId],
+        [{ id: submissionId }]
+      );
       expect(
-        await insertToAssessmentSubmissions(
+        await insertDataIntoAssessmentSubmissions(
           assessmentId,
           principalId,
-          dummyAssessmentSubmissionData[0].assessment_submission_state_id,
-          dummyAssessmentSubmissionData[0].score,
-          dummyAssessmentSubmissionData[0].opened_at,
-          dummyAssessmentSubmissionData[0].submitted_at,
-          dummyAssessmentSubmissionData[0].responses
+          dummyAssessmentSubmissionData.assessment_submission_state_id,
+          dummyAssessmentSubmissionData.score,
+          dummyAssessmentSubmissionData.opened_at,
+          dummyAssessmentSubmissionData.submitted_at,
+          dummyAssessmentSubmissionData.responses
         )
       ).toEqual({
-        id: dummyAssessmentSubmissionData[0].id,
+        id: dummyAssessmentSubmissionData.id,
         principal_id: principalId,
         assessment_id: assessmentId,
-        score: dummyAssessmentSubmissionData[0].score,
-        opened_at: dummyAssessmentSubmissionData[0].opened_at,
-        submitted_at: dummyAssessmentSubmissionData[0].submitted_at,
-        responses: dummyAssessmentSubmissionData[0].responses,
+        score: dummyAssessmentSubmissionData.score,
+        opened_at: dummyAssessmentSubmissionData.opened_at,
+        submitted_at: dummyAssessmentSubmissionData.submitted_at,
+        responses: dummyAssessmentSubmissionData.responses,
       });
     });
   });
