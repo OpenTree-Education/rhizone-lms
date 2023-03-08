@@ -104,7 +104,6 @@ const QuestionCard = ({
     <Card>
       <CardContent>
         <Typography gutterBottom variant="h6" component="div">
-          {currentStatus}
           {question.sortOrder}. {question.title}
         </Typography>
         {TableRowWrapper(question)}

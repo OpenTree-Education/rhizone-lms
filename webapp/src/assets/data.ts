@@ -44,18 +44,46 @@ export interface AssessmentSubmission {
   submitAt?: number;
 }
 
+export enum SubmissionStatus {
+  Submitted = 'Submitted',
+  Opened = 'Opened',
+  Expired = 'Expired',
+  Graded = 'Graded',
+}
+
+export enum AssessmentType {
+  Test = 'Test',
+  Quiz = 'Practice Quiz',
+  Assignment = 'Assignment',
+}
+
 export const exampleTestSubmissionList: AssessmentSubmission[] = [
   {
     id: 1,
     assessmentId: 3,
     state: 'Submitted',
     openAt: 1678123118000,
+    submitAt: 1678123118000,
   },
   {
     id: 2,
     assessmentId: 3,
     state: 'Opened',
     openAt: 1678138445000,
+  },
+  {
+    id: 3,
+    assessmentId: 3,
+    state: 'Expired',
+    openAt: 1678138445000,
+  },
+  {
+    id: 4,
+    assessmentId: 3,
+    state: 'Graded',
+    score: 80,
+    openAt: 1678138445000,
+    submitAt: 1678123118000,
   },
 ];
 

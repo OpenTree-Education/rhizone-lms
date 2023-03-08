@@ -4,88 +4,44 @@ import { useParams } from 'react-router-dom';
 import {
   Alert,
   AlertTitle,
+  Avatar,
+  Box,
+  Button,
+  Chip,
   Container,
   Collapse,
-  // Link,
-  Stack,
-  Button,
-  Snackbar,
-  // Paper,
-  // TableContainer,
-  // TextField,
-  // FormControlLabel,
-  // Radio,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Divider,
+  LinearProgress,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
   Grid,
-  Chip,
-  // FormGroup,
-  // IconButton,
+  Tooltip,
+  Typography,
+  Switch,
 } from '@mui/material';
-import Box from '@mui/material/Box';
-// import Drawer from '@mui/material/Drawer';
-// import AppBar from '@mui/material/AppBar';
-// import CssBaseline from '@mui/material/CssBaseline';
-// import Toolbar from '@mui/material/Toolbar';
-// import Card from '@mui/material/Card';
-// import CardActions from '@mui/material/CardActions';
-// import CardContent from '@mui/material/CardContent';
-// import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
-
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import Avatar from '@mui/material/Avatar';
 import InfoIcon from '@mui/icons-material/Info';
-// import ImageIcon from '@mui/icons-material/Image';
 import InventoryIcon from '@mui/icons-material/Inventory';
-// import WorkIcon from '@mui/icons-material/Work';
-// import BeachAccessIcon from '@mui/icons-material/BeachAccess';
-import Divider from '@mui/material/Divider';
-import CircularProgress, {
-  CircularProgressProps,
-} from '@mui/material/CircularProgress';
-import Switch from '@mui/material/Switch';
-import LinearProgress from '@mui/material/LinearProgress';
-// import LinearProgress, { LinearProgressProps } from '@mui/material/LinearProgress';
-// import PendingOutlinedIcon from '@mui/icons-material/PendingOutlined';
-import PendingIcon from '@mui/icons-material/Pending';
-// import RadioGroup from '@mui/material/RadioGroup';
-// import FormControl from '@mui/material/FormControl';
-// import FormLabel from '@mui/material/FormLabel';
-// import InputLabel from '@mui/material/InputLabel';
-// import MenuItem from '@mui/material/MenuItem';
-// import Select, { SelectChangeEvent } from '@mui/material/Select';
-// import {
-//   green,
-//   pink,
-//   blue,
-//   yellow,
-//   orange,
-//   amber,
-//   indigo,
-// } from '@mui/material/colors';
-
 import TimerIcon from '@mui/icons-material/Timer';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-// import PublishIcon from '@mui/icons-material/Publish';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-// import ArchiveIcon from '@mui/icons-material/Archive';
-
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import { blue } from '@mui/material/colors';
 
 import {
   assessmentList,
   exampleTestQuestionsList,
   exampleTestSubmissionList,
-  AssessmentSubmission,
   Question,
   AssessmentChosenAnswer,
+  SubmissionStatus,
+  AssessmentType,
 } from '../assets/data';
 import { formatDateTime } from '../helpers/dateTime';
 import QuestionCard from './QuestionCard';
@@ -117,7 +73,6 @@ const AssessmentsDetailPage = () => {
   const assessment = assessmentList.find(
     assessment => assessment.id === parseInt(id.id ? id.id : '')
   );
-  const [progress] = React.useState(10);
 
   let assessmentAnswersArr = new Array<AssessmentChosenAnswer>(
     exampleTestQuestionsList.length
@@ -147,24 +102,11 @@ const AssessmentsDetailPage = () => {
 
   const [assessmentQuestions] = useState(exampleTestQuestionsList);
 
-  // TODO: update ending time with the logic we talked about in Discord:
-  // - if there's a time limit
-  //   - if (start time + time limit) > due date
-  //     - due date
-  //   - else
-  //     - (start time + time limit)
-  // - else
-  //   - due date
-
-  const lastSubmission: AssessmentSubmission = exampleTestSubmissionList.reduce(
-    (max, submission) => (max.id > submission.id ? max : submission)
-  );
   const dueTime = new Date(assessment?.dueDate!);
-  const currentTime = new Date();
-  const [endingTime, setEndingTime] = useState(dueTime);
-
+  //TODO: use the opened date from the submission
+  const [openedTime] = useState(new Date());
   const [secondsRemaining, setSecondsRemaining] = useState(
-    (endingTime!.getTime() - new Date().getTime()) / 1000
+    assessment?.testDuration! * 60
   );
 
   const requestRef = useRef<number>();
@@ -172,17 +114,27 @@ const AssessmentsDetailPage = () => {
 
   const animate = (time: number) => {
     if (previousTimeRef.current !== undefined) {
-      // TODO: check if time remaining would be less than zero, then set to 0 instead
-      if (endingTime!.getTime() < new Date().getTime()) {
+      if (new Date().getTime() > dueTime.getTime()) {
         setSecondsRemaining(0);
+      } else if (
+        new Date().getTime() + assessment?.testDuration! * 60 * 1000 >
+        dueTime.getTime()
+      ) {
+        setSecondsRemaining(
+          Math.round((dueTime.getTime() - new Date().getTime()) / 1000)
+        );
       } else {
         setSecondsRemaining(
-          Math.round((endingTime!.getTime() - new Date().getTime()) / 1000)
+          Math.round(
+            (openedTime.getTime() +
+              assessment?.testDuration! * 60 * 1000 -
+              new Date().getTime()) /
+              1000
+          )
         );
       }
     }
     previousTimeRef.current = time;
-    // TODO: if time remaining is not zero, then execute the next line
     requestRef.current = requestAnimationFrame(animate);
   };
 
@@ -193,27 +145,42 @@ const AssessmentsDetailPage = () => {
     };
   });
 
-  const [showTimer, setChecked] = React.useState(true);
+  const [showTimer, setShowTimer] = React.useState(true);
 
-  const handleToggle = (showTimer: boolean) => () => {
-    setChecked(showTimer);
+  const handleSetShowTimer = (showTimer: boolean) => () => {
+    setShowTimer(showTimer);
   };
 
-  const [open, setOpen] = React.useState(false);
+  const [showSubmitDialog, setShowSubmitDialog] = React.useState(false);
   const [currentStatus, setCurrentStatus] = React.useState('Opened');
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleOpenSubmitDialog = () => {
+    setShowSubmitDialog(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleCloseSubmitDialog = () => {
+    setShowSubmitDialog(false);
   };
+
+  const [submissionIndex, setNextSubmission] = React.useState(0);
+
+  const handleNextSubmission = () => {
+    if (submissionIndex === 3) {
+      setNextSubmission(0);
+      setSubmission(exampleTestSubmissionList[0]);
+    } else {
+      setNextSubmission(submissionIndex + 1);
+      setSubmission(exampleTestSubmissionList[submissionIndex + 1]);
+    }
+  };
+  const [submission, setSubmission] = React.useState(
+    exampleTestSubmissionList[submissionIndex]
+  );
 
   const handleSubmit = (event?: React.SyntheticEvent) => {
     if (event) {
       event.preventDefault();
     }
-    setOpen(false);
+    setShowSubmitDialog(false);
     //store the form data into database
     setCurrentStatus('Submitted');
     document.querySelector('#assessment_display')!.scrollTo(0, 0);
@@ -241,48 +208,110 @@ const AssessmentsDetailPage = () => {
             >
               <ListItem>
                 <ListItemAvatar>
-                  <Avatar>
+                  <Avatar sx={{ bgcolor: blue[600] }}>
+                    {/* <Avatar> */}
                     <InfoIcon />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText secondary={assessment?.description} />
+                {/* <ListItemText secondary={assessment?.description} /> */}
+                <ListItemText>
+                  <Typography variant="body2">
+                    {assessment?.description}
+                  </Typography>
+                  <ListItemText
+                    // primary=
+                    secondary={`Type: ${assessment?.type}`}
+                  />
+                </ListItemText>
               </ListItem>
+              {/* <Divider variant="middle" /> */}
+              {/* <ListItem>
+              <ListItemAvatar/> */}
+              {/* <Avatar sx={{ bgcolor: blue[500] }}> */}
+              {/* <Avatar>
+                  <AssessmentIcon />
+                </Avatar> */}
+              {/* </ListItemAvatar> */}
+              {/* <ListItemText
+                primary={assessment?.type}
+                secondary="Type"
+              />
+            </ListItem> */}
               <Divider variant="middle" />
               <ListItem>
                 <ListItemAvatar>
-                  {/* {showTimer? (
-                  <CircularProgressWithLabel value={progress} />
-                ) : ( */}
-                  <Avatar>
-                    {/* <Avatar sx={{ bgcolor: amber[500] }}> */}
-                    <TimerIcon />
+                  <Avatar sx={{ bgcolor: blue[600] }}>
+                    {/* <Avatar> */}
+                    <LightbulbIcon />
                   </Avatar>
-                  {/* )} */}
                 </ListItemAvatar>
                 <ListItemText
-                  secondary={showTimer ? `Time Remaining` : `Time Limit`}
-                  primary={
-                    showTimer
-                      ? `${Math.floor(secondsRemaining / 60)}m ${
-                          secondsRemaining % 60
-                        }s`
-                      : assessment?.testDuration + `m`
-                  }
-                />
-                <Switch
-                  edge="end"
-                  onChange={handleToggle(!showTimer)}
-                  checked={showTimer}
-                  inputProps={{
-                    'aria-labelledby': 'switch-list-label-wifi',
-                  }}
+                  primary={`${
+                    submission?.state === SubmissionStatus.Opened
+                      ? `Active`
+                      : `${submission?.state}`
+                  }`}
+                  secondary="Status"
                 />
               </ListItem>
+              {submission.state === SubmissionStatus.Graded && (
+                <>
+                  {/* <Divider variant="middle" component="li" /> */}
+                  <ListItem>
+                    <ListItemAvatar>
+                      <Avatar sx={{ bgcolor: blue[600] }}>
+                        {/* <Avatar> */}
+                        <CheckCircleIcon />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      secondary="Score"
+                      primary={submission.score}
+                    />
+                  </ListItem>
+                </>
+              )}
+              {submission.state === SubmissionStatus.Opened && (
+                <ListItem>
+                  <ListItemAvatar />
+                  <ListItemText
+                    secondary="Attempts"
+                    primary={`${submission.id} out of max ${assessment?.maxNumSubmissions}`}
+                  />
+                </ListItem>
+              )}
+              {(submission.state === SubmissionStatus.Submitted ||
+                submission.state === SubmissionStatus.Graded) && (
+                <>
+                  <ListItem>
+                    {/* <ListItemAvatar/> */}
+                    <ListItemAvatar>
+                      <Avatar sx={{ bgcolor: blue[600] }}>
+                        {/* <Avatar> */}
+                        <InventoryIcon />
+                      </Avatar>
+                    </ListItemAvatar>{' '}
+                    <ListItemText
+                      secondary="Submissions"
+                      primary={`${submission.id} out of ${assessment?.maxNumSubmissions}`}
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemAvatar />
+                    <ListItemText
+                      secondary="Submitted At"
+                      primary={formatDateTime(
+                        new Date(submission.submitAt!).toDateString()
+                      )}
+                    />
+                  </ListItem>
+                </>
+              )}
               <Divider variant="middle" component="li" />
               <ListItem>
                 <ListItemAvatar>
-                  {/* <Avatar  sx={{ bgcolor: orange[500] }}> */}
-                  <Avatar>
+                  <Avatar sx={{ bgcolor: blue[600] }}>
+                    {/* <Avatar> */}
                     <CalendarMonthIcon />
                   </Avatar>
                 </ListItemAvatar>
@@ -293,40 +322,45 @@ const AssessmentsDetailPage = () => {
                   )}
                 />
               </ListItem>
-              <Divider variant="middle" />
-              <ListItem>
-                <ListItemAvatar>
-                  {/* <Avatar sx={{ bgcolor: indigo[500] }}> */}
-                  <Avatar>
-                    <InventoryIcon />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  secondary="Submissions"
-                  primary={`First out of ${assessment?.maxNumSubmissions}`}
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemAvatar />
-                <ListItemText
-                  secondary="Last Submission Date"
-                  primary={formatDateTime(
-                    assessment?.submittedDate
-                      ? assessment?.submittedDate
-                      : '2023-03-31'
-                  )}
-                />
-              </ListItem>
-              <Divider variant="middle" component="li" />
-              <ListItem>
-                <ListItemAvatar>
-                  {/* <Avatar sx={{ bgcolor: green[500] }}> */}
-                  <Avatar>
-                    <CheckCircleIcon />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText secondary="Score" primary="90" />
-              </ListItem>
+              {assessment!.type === AssessmentType.Test &&
+                submission.state === SubmissionStatus.Opened && (
+                  <>
+                    {/* <Divider variant="middle" /> */}
+                    <ListItem>
+                      <ListItemAvatar>
+                        <Avatar sx={{ bgcolor: blue[600] }}>
+                          {/* <Avatar> */}
+                          <TimerIcon />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        secondary={showTimer ? `Time Remaining` : `Time Limit`}
+                        primary={
+                          showTimer
+                            ? `${Math.floor(secondsRemaining / 60)}m ${
+                                secondsRemaining % 60
+                              }s`
+                            : assessment?.testDuration + `m`
+                        }
+                      />
+                      <Tooltip
+                        title={showTimer ? `Hide Timer` : `Show Timer`}
+                        placement="top"
+                        arrow
+                      >
+                        <Switch
+                          edge="end"
+                          onChange={handleSetShowTimer(!showTimer)}
+                          checked={showTimer}
+                          // color="warning"
+                          inputProps={{
+                            'aria-labelledby': 'switch-list-label-wifi',
+                          }}
+                        />
+                      </Tooltip>
+                    </ListItem>
+                  </>
+                )}
             </List>
           </Grid>
           <Grid
@@ -340,7 +374,6 @@ const AssessmentsDetailPage = () => {
               overflow: 'auto',
               marginTop: 0,
               marginLeft: 0,
-              paddingTop: '15px',
               paddingBottom: '20px',
               backgroundColor: '#fafafa',
               border: '1px solid #bbb',
@@ -360,10 +393,6 @@ const AssessmentsDetailPage = () => {
               <>
                 <Grid item xs={1} />
                 <Grid item xs={10}>
-                  {/* {assessmentAnswers[q.sortOrder - 1] &&
-                  assessmentAnswers[q.sortOrder - 1].chosenAnswerId}
-                {assessmentAnswers[q.sortOrder - 1] &&
-                  assessmentAnswers[q.sortOrder - 1].responseText} */}
                   <QuestionCard
                     question={q}
                     assessmentAnswers={assessmentAnswers}
@@ -385,7 +414,7 @@ const AssessmentsDetailPage = () => {
                       : 'outlined'
                   }`}
                   size="medium"
-                  onClick={handleClickOpen}
+                  onClick={handleOpenSubmitDialog}
                 >
                   Submit
                 </Button>
@@ -406,6 +435,7 @@ const AssessmentsDetailPage = () => {
                       style={{ marginLeft: 1, marginBottom: 3 }}
                       label={a.sortOrder}
                       key={a.id}
+                      onClick={handleNextSubmission} //temp code for demenstraing different submissions
                       color={`${
                         assessmentAnswers[a.sortOrder - 1].chosenAnswerId ||
                         assessmentAnswers[a.sortOrder - 1].responseText
@@ -419,24 +449,24 @@ const AssessmentsDetailPage = () => {
             </List>
           </Grid>
         </Grid>
-        <Dialog open={open} onClose={handleClose}>
-          <DialogTitle id="alert-dialog-title">
-            Are you sure you would like to submit this assessmnet?
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              You have filled {numOfAnsweredQuestion} out of{' '}
-              {assessmentQuestions.length}.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button onClick={handleSubmit} variant="contained">
-              Submit
-            </Button>
-          </DialogActions>
-        </Dialog>
       </Grid>
+      <Dialog open={showSubmitDialog} onClose={handleCloseSubmitDialog}>
+        <DialogTitle>
+          Are you sure you would like to submit this assessmnet?
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            You have filled {numOfAnsweredQuestion} out of{' '}
+            {assessmentQuestions.length}.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseSubmitDialog}>Cancel</Button>
+          <Button onClick={handleSubmit} variant="contained">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
