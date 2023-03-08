@@ -131,7 +131,7 @@ assessmentsDummyRouter.get(
         {
           id: 8,
           response:
-            'const HelloWorld = () => { return <p>Hello,  World!</p>; }; export default HelloWorld;',
+            'const HelloWorld = () => { return <p>Hello, World!</p>; }; export default HelloWorld;',
           assessment_id: 1,
           submission_id: 2,
           question_id: 8,
@@ -265,14 +265,15 @@ assessmentsDummyRouter.get(
       score?: number;
       grader_response?: string;
     }[] = [];
+    
 
     const dummyAssessmentSubmissionData = {
       assessmentId: assessmentIdParsed,
       principalId: participantIdParsed,
-      assessmentSubmissionStateId: 7,
+      assessmentSubmissionStateId: 7, 
       score: 0,
       openedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
-      submittedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      submittedAt:new Date().toISOString().slice(0, 19).replace('T', ' '),
       responses,
     };
     try {

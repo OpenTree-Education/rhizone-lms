@@ -82,7 +82,7 @@ describe('assessmentsDummyRouter', () => {
         submission_id: 2,
         assessment_id: 1,
         principal_id: principalId,
-        assessment_submission_state_id: assessmentSubmissionStateId, // graded
+        assessment_submission_state_id: assessmentSubmissionStateId,
         score: score,
         opened_at: openedAt,
         submitted_at: submittedAt,
@@ -249,10 +249,10 @@ describe('assessmentsDummyRouter', () => {
     it('should start assessment', done => {
       const principalId = 3;
       const assessmentId = 1;
-      const assessmentSubmissionStateId = 0;
+      const assessmentSubmissionStateId = 7;
       const score = 0;
       const openedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
-      const submittedAt = '';
+      const submittedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
       const responses: [] = [];
 
       const dummyAssessmentSubmissionData = {
