@@ -1,6 +1,6 @@
 import {
   insertToProgramParticipants,
-  insertDataIntoAssessmentSubmissions,
+  insertToAssessmentSubmissions,
 } from '../assessmentsDummyService';
 import { mockQuery } from '../mockDb';
 
@@ -144,7 +144,7 @@ describe('assessmentsDummyService', () => {
       );
 
       expect(
-        await insertDataIntoAssessmentSubmissions(
+        await insertToAssessmentSubmissions(
           assessmentId,
           principalId,
           dummyAssessmentSubmissionData.assessment_submission_state_id,
@@ -241,7 +241,7 @@ describe('assessmentsDummyService', () => {
         [{ id: submissionId }]
       );
       expect(
-        await insertDataIntoAssessmentSubmissions(
+        await insertToAssessmentSubmissions(
           assessmentId,
           principalId,
           dummyAssessmentSubmissionData.assessment_submission_state_id,

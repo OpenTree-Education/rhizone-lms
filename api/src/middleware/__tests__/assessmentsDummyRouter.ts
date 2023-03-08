@@ -2,7 +2,7 @@ import { itemEnvelope } from '../responseEnvelope';
 
 import {
   insertToProgramParticipants,
-  insertDataIntoAssessmentSubmissions,
+  insertToAssessmentSubmissions,
 } from '../../services/assessmentsDummyService';
 
 import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
@@ -14,7 +14,7 @@ const mockGetInsertToProgramParticipants = jest.mocked(
   insertToProgramParticipants
 );
 const mockGetInsertToAssessmentSubmissions = jest.mocked(
-  insertDataIntoAssessmentSubmissions
+  insertToAssessmentSubmissions
 );
 describe('assessmentsDummyRouter', () => {
   const appAgent = createAppAgentForRouter(assessmentsDummyRouter);
@@ -251,9 +251,9 @@ describe('assessmentsDummyRouter', () => {
       const assessmentId = 1;
       const assessmentSubmissionStateId = 0;
       const score = 0;
-      const openedAt = '2023-02-09 12:10:10';
+      const openedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
       const submittedAt = '';
-      const responses = [{}];
+      const responses: [] = [];
 
       const dummyAssessmentSubmissionData = {
         id: 1,
@@ -280,7 +280,7 @@ describe('assessmentsDummyRouter', () => {
             dummyAssessmentSubmissionData.score,
             dummyAssessmentSubmissionData.opened_at,
             dummyAssessmentSubmissionData.submitted_at,
-            []
+            dummyAssessmentSubmissionData.responses
           );
           done(err);
         });

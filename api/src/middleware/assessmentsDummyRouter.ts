@@ -4,7 +4,7 @@ import { itemEnvelope } from './responseEnvelope';
 import { BadRequestError } from './httpErrors';
 import {
   insertToProgramParticipants,
-  insertDataIntoAssessmentSubmissions,
+  insertToAssessmentSubmissions,
 } from '../services/assessmentsDummyService';
 const assessmentsDummyRouter = Router();
 
@@ -12,7 +12,7 @@ assessmentsDummyRouter.get(
   '/makeParticipant/:programId/:participantId',
   async (req, res, next) => {
     const { programId, participantId } = req.params;
-    // a role ID of 1 corresponds to a participant
+
     const roleId = 1;
 
     const programIdParsed = Number(programId);
@@ -61,11 +61,7 @@ assessmentsDummyRouter.get(
     const { participantId } = req.params;
 
     const participantIdParsed = Number(participantId);
-    if (
-      !Number.isInteger(participantIdParsed) ||
-      participantIdParsed < 1 ||
-      !Number.isInteger
-    ) {
+    if (!Number.isInteger(participantIdParsed) || participantIdParsed < 1) {
       next(
         new BadRequestError(
           `"${participantIdParsed}" is not a valid participant id.`
@@ -135,7 +131,7 @@ assessmentsDummyRouter.get(
         {
           id: 8,
           response:
-            'const HelloWorld = () => { return <p>Hello, World!</p>; }; export default HelloWorld;',
+            'const HelloWorld = () => { return <p>Hello,  World!</p>; }; export default HelloWorld;',
           assessment_id: 1,
           submission_id: 2,
           question_id: 8,
@@ -164,16 +160,15 @@ assessmentsDummyRouter.get(
       principal_id?: number;
     };
     try {
-      insertedAssessmentSubmissionsRow =
-        await insertDataIntoAssessmentSubmissions(
-          dummyAssessmentSubmissionData.assessment_id,
-          dummyAssessmentSubmissionData.principal_id,
-          dummyAssessmentSubmissionData.assessment_submission_state_id,
-          dummyAssessmentSubmissionData.score,
-          dummyAssessmentSubmissionData.opened_at,
-          dummyAssessmentSubmissionData.submitted_at,
-          dummyAssessmentSubmissionData.responses
-        );
+      insertedAssessmentSubmissionsRow = await insertToAssessmentSubmissions(
+        dummyAssessmentSubmissionData.assessment_id,
+        dummyAssessmentSubmissionData.principal_id,
+        dummyAssessmentSubmissionData.assessment_submission_state_id,
+        dummyAssessmentSubmissionData.score,
+        dummyAssessmentSubmissionData.opened_at,
+        dummyAssessmentSubmissionData.submitted_at,
+        dummyAssessmentSubmissionData.responses
+      );
     } catch (error) {
       next(error);
       return;
@@ -255,31 +250,41 @@ assessmentsDummyRouter.get(
       return;
     }
 
-    const dummyAssessmentSubmissionData = {
-      assessmentId: assessmentIdParsed,
-      principalId: participantIdParsed,
-      assessmentSubmissionStateId: 0, // graded
-      score: 0,
-      openedAt: '2023-02-09 12:10:10',
-      submittedAt: '',
-      responses: [{}],
-    };
     let insertedAssessmentSubmissionsRow: {
       id: number;
       assessment_id?: number;
       principal_id?: number;
     };
+    const responses: {
+      id?: number;
+      assessment_id: number;
+      submission_id: number;
+      question_id: number;
+      answer_id?: number;
+      response?: string;
+      score?: number;
+      grader_response?: string;
+    }[] = [];
+
+    const dummyAssessmentSubmissionData = {
+      assessmentId: assessmentIdParsed,
+      principalId: participantIdParsed,
+      assessmentSubmissionStateId: 7,
+      score: 0,
+      openedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      submittedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      responses,
+    };
     try {
-      insertedAssessmentSubmissionsRow =
-        await insertDataIntoAssessmentSubmissions(
-          dummyAssessmentSubmissionData.assessmentId,
-          dummyAssessmentSubmissionData.principalId,
-          dummyAssessmentSubmissionData.assessmentSubmissionStateId,
-          dummyAssessmentSubmissionData.score,
-          dummyAssessmentSubmissionData.openedAt,
-          dummyAssessmentSubmissionData.submittedAt,
-          []
-        );
+      insertedAssessmentSubmissionsRow = await insertToAssessmentSubmissions(
+        dummyAssessmentSubmissionData.assessmentId,
+        dummyAssessmentSubmissionData.principalId,
+        dummyAssessmentSubmissionData.assessmentSubmissionStateId,
+        dummyAssessmentSubmissionData.score,
+        dummyAssessmentSubmissionData.openedAt,
+        dummyAssessmentSubmissionData.submittedAt,
+        dummyAssessmentSubmissionData.responses
+      );
     } catch (error) {
       next(error);
       return;

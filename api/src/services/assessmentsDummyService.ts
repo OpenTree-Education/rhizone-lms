@@ -8,13 +8,13 @@ interface ProgramParticipantsRow {
 }
 
 /**
- * return matching rows from the program_participants table that have  been inserted or updated based on their pre-existence in the table.
+ * Return matching rows from the program_participants table that have  been inserted or updated based on their pre-existence in the table.
  *
- * @param {number} principalId - The given principalId
- * @param {number} programId - The given programId
- * @param {number} roleId - roleId
+ * @param {number} principalId - The user Id
+ * @param {number} programId - The given program Id
+ * @param {number} roleId - The id associate to the program    participant
  *
- * @returns {ProgramParticipantsRow}
+ * @returns {ProgramParticipantsRow}-Return id,principl id,program id,role id
  */
 export const insertToProgramParticipants = async (
   principalId: number,
@@ -73,8 +73,21 @@ interface Response {
   score?: number;
   grader_response?: string;
 }
+/**
+ * Return matching rows from the assessment_submissions table that have  been inserted or updated based on their pre-existence in the table.
+ *
+ * @param {number} principalId - The given user id 
+ * @param {number} assessmentId - The  assessment id for taken assessment
+ * @param {number} assessmentSubmissionStateId -Id for assessment subission state /active/inactive/open 
+ * @param {number} score -Total score for submitted assessment
+ * @param {string} openedAt - Open time for assessment 
+ * @param {string} submittedAt - Assessment submitted date
+ * @param {Response[]} responses - Responses for the questions in the assessment
 
-export const insertDataIntoAssessmentSubmissions = async (
+ * @returns {AssessmentSubmissionRow} return data for taking assessment 
+ */
+
+export const insertToAssessmentSubmissions = async (
   assessmentId: number,
   principalId: number,
   assessmentSubmissionStateId: number,
@@ -116,7 +129,7 @@ export const insertDataIntoAssessmentSubmissions = async (
     .where({ assessment_id: assessmentId, principal_id: principalId });
 
   for (const response of responses) {
-    await insertIntoAssessmentResponses(
+    await insertToAssessmentResponses(
       assessmentId,
       matchingAsssessmentSubmissionsRows[0].id,
       response.question_id,
@@ -140,7 +153,21 @@ export const insertDataIntoAssessmentSubmissions = async (
   return insertedRowParsed;
 };
 
-export const insertIntoAssessmentResponses = async (
+/**
+ * Return matching rows from the assessment_responses table that have  been inserted or updated based on their pre-existence in the table.
+ *
+ *
+ * @param {number} assessmentId - Assessment Is associated with the taken assessment
+ * @param {number} submissionId - Id for the submitted assessment
+ * @param {number} questionId - Question id
+ * @param {number} answerId - Id associated with answer
+ * @param {string} responses - Respone for a question
+ * @param {number} score - Total score for answered  questions
+ * @param {string} graderResponse - The graderResponse
+ * @returns {Response} -Responses for the taken assessment
+ */
+
+export const insertToAssessmentResponses = async (
   assessmentId: number,
   submissionId: number,
   questionId: number,
@@ -176,5 +203,16 @@ export const insertIntoAssessmentResponses = async (
     .select('id')
     .where({ assessment_id: assessmentId, submission_id: submissionId });
 
-  return assessmentResponsesWithMatchedId;
+  const insertedRowParsed = {
+    id: assessmentResponsesWithMatchedId,
+    assessment_id: assessmentId,
+    submission_id: submissionId,
+    question_id: questionId,
+    answer_id: answerId,
+    responses: response,
+    score: score,
+    graderResponse: graderResponse,
+  };
+
+  return insertedRowParsed;
 };
