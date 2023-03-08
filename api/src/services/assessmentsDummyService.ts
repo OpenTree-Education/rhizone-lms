@@ -8,7 +8,8 @@ interface ProgramParticipantsRow {
 }
 
 /**
- * Return matching rows from the program_participants table that have  been inserted or updated based on their pre-existence in the table.
+ * Return matching rows from the program_participants table that have
+   been inserted or updated based on their pre-existence in the table.
  *
  * @param {number} principalId - The user Id
  * @param {number} programId - The given program Id
@@ -74,7 +75,8 @@ interface Response {
   grader_response?: string;
 }
 /**
- * Return matching rows from the assessment_submissions table that have  been inserted or updated based on their pre-existence in the table.
+ * Return matching rows from the assessment_submissions table that have
+   been inserted or updated based on their pre-existence in the table.
  *
  * @param {number} principalId - The given user id 
  * @param {number} assessmentId - The  assessment id for taken assessment
@@ -154,7 +156,8 @@ export const insertToAssessmentSubmissions = async (
 };
 
 /**
- * Return matching rows from the assessment_responses table that have  been inserted or updated based on their pre-existence in the table.
+ * Return matching rows from the assessment_responses table that have
+   been inserted or updated based on their pre-existence in the table.
  *
  *
  * @param {number} assessmentId - Assessment Is associated with the taken assessment
