@@ -48,7 +48,7 @@ const StyledNumChip = styled(Chip)(() => ({
   height: '3em',
 }));
 
-interface AssessmentsSubmitBarProps {
+interface AssessmentSubmitBarProps {
   submissionState: string;
   assessmentQuestions: Question[];
   assessmentAnswers: AssessmentChosenAnswer[];
@@ -58,7 +58,7 @@ interface AssessmentsSubmitBarProps {
   handleSubmit: () => void;
 }
 
-const AssessmentsSubmitBar = ({
+const AssessmentSubmitBar = ({
   submissionState,
   assessmentQuestions,
   assessmentAnswers,
@@ -66,7 +66,7 @@ const AssessmentsSubmitBar = ({
   showSubmitDialog,
   setShowSubmitDialog,
   handleSubmit,
-}: AssessmentsSubmitBarProps) => {
+}: AssessmentSubmitBarProps) => {
   const handleOpenSubmitDialog = () => {
     setShowSubmitDialog(true);
   };
@@ -140,4 +140,4 @@ const AssessmentsSubmitBar = ({
   );
 };
 
-export default AssessmentsSubmitBar;
+export default AssessmentSubmitBar;

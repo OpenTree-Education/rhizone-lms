@@ -12,7 +12,7 @@ import RequireAuth from './RequireAuth';
 import SessionContext from './SessionContext';
 import ProgramsPage from './ProgramsPage';
 import AssessmentsListPage from './AssessmentsListPage';
-import AssessmentsDetailPage from './AssessmentsDetailPage';
+import AssessmentsDetailPage from './AssessmentDetailPage';
 
 const App = () => {
   const { isAuthenticated } = useContext(SessionContext);

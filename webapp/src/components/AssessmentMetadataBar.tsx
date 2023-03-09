@@ -27,15 +27,15 @@ import {
 } from '../assets/data';
 import { formatDateTime } from '../helpers/dateTime';
 
-interface AssessmentsMetadataBarProps {
+interface AssessmentMetadataBarProps {
   assessment: Assessment;
   submission: AssessmentSubmission;
 }
 
-const AssessmentsMetadataBar = ({
+const AssessmentMetadataBar = ({
   assessment,
   submission,
-}: AssessmentsMetadataBarProps) => {
+}: AssessmentMetadataBarProps) => {
   const dueTime = new Date(assessment?.dueDate!);
   //TODO: use the opened date from the submission
   const [openedTime] = useState(new Date());
@@ -257,4 +257,4 @@ const AssessmentsMetadataBar = ({
   );
 };
 
-export default AssessmentsMetadataBar;
+export default AssessmentMetadataBar;

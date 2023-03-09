@@ -10,11 +10,11 @@ import {
   Question,
   AssessmentChosenAnswer,
 } from '../assets/data';
-import AssessmentsMetadataBar from './AssessmentsMetadataBar';
-import AssessmentsDisplay from './AssessmentsDisplay';
-import AssessmentsSubmitBar from './AssessmentsSubmitBar';
+import AssessmentMetadataBar from './AssessmentMetadataBar';
+import AssessmentDisplay from './AssessmentDisplay';
+import AssessmentSubmitBar from './AssessmentSubmitBar';
 
-const AssessmentsDetailPage = () => {
+const AssessmentDetailPage = () => {
   const id = useParams();
   //TODO: fetch the assessment by id
   const assessment = assessmentList.find(
@@ -82,7 +82,7 @@ const AssessmentsDetailPage = () => {
         </Grid>
         <Grid container spacing={2}>
           <Grid item xs={12} md={3}>
-            <AssessmentsMetadataBar
+            <AssessmentMetadataBar
               assessment={assessment}
               submission={submission}
             />
@@ -103,13 +103,13 @@ const AssessmentsDetailPage = () => {
               border: '1px solid #bbb',
             }}
           >
-            <AssessmentsDisplay
+            <AssessmentDisplay
               submission={submission}
               handleNewAnswer={handleNewAnswer}
             />
           </Grid>
           <Grid item xs={12} md={1.5}>
-            <AssessmentsSubmitBar
+            <AssessmentSubmitBar
               submissionState={submission.state}
               assessmentQuestions={assessmentQuestions}
               assessmentAnswers={assessmentAnswers}
@@ -125,4 +125,4 @@ const AssessmentsDetailPage = () => {
   );
 };
 
-export default AssessmentsDetailPage;
+export default AssessmentDetailPage;
