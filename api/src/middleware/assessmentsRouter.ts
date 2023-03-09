@@ -6,7 +6,15 @@ import {
   updateAssessmentById,
   deleteAssessmentById,
   getCurriculumAssessmentById,
+  getAssessmentsSummary
+
 } from '../services/assessmentService';
+import {
+
+  AssessmentSummary,
+  
+} from '../models';
+
 
 const assessmentsRouter = Router();
 
@@ -15,18 +23,20 @@ const assessmentsRouter = Router();
 // Outgoing:
 // - participant: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for their submissions to this program assessment
 // - facilitator: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for all submissions to this program assessment
-// assessmentsRouter.get('/', async (req, res, next) => {
-//   const { principalId } = req.session;
-//   const principalIdNum = Number(principalId);
-//   let assessments;
-//   try {
-//     assessments = await listAssessmentsByParticipant(principalIdNum);
-//   } catch (error) {
-//     next(error);
-//     return;
-//   }
-//   res.json(collectionEnvelope(assessments, assessments.length));
-// });
+assessmentsRouter.get('/', async (req, res, next) => {
+  const { principalId } = req.session;
+
+  let assessments: AssessmentSummary[];
+  try {
+    assessments = await getAssessmentsSummary(principalId);
+  } catch (error) {
+    next(error);
+    return;
+  }
+  
+  res.json(collectionEnvelope(assessments, assessments.length));
+
+});
 
 assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
   const { assessmentId } = req.params;
