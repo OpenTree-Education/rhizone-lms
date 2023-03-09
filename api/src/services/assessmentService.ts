@@ -29,7 +29,7 @@ import {
  * @param {number} programAssessmentId - The program assessment ID
  * @param {number} programId - The program ID for the specified program
  * @param {number} principalId - The restrict result to programs with which the user is associated
- * @returns {AssessmentSummary} - The curriculum assessment ID and program ID // ? ask about model should we create new ?
+ * @returns {AssessmentSummary} - assessment summary that includes curiculum assessment, program assessment and submissions summury
  *
  */
 // export const getCurriculumAndProgramAssessment = async (
@@ -38,40 +38,69 @@ import {
 //   principalId: number,
 //   programId: number
 // ) => {
-
-//   const curriculumAssessment = await getCurriculumAssessment(curriculumAssessmentId)
-//   const programAssessment = await getProgramAssessment(programAssessmentId, curriculumAssessmentId)
-//   const role = await findRoleInProgram (principalId, programId)
-//   const question = await getQuestionsByCurriculumAssessmentId (curriculumAssessmentId, true)
+//   const curriculumAssessment = await getCurriculumAssessment(
+//     curriculumAssessmentId
+//   );
+//   const programAssessment = await getProgramAssessment(
+//     programAssessmentId,
+//     curriculumAssessmentId
+//   );
+//   const role = await findRoleInProgram(principalId, programId);
+//   const question = await getQuestionsByCurriculumAssessmentId(
+//     curriculumAssessmentId,
+//     true
+//   );
 
 //   const autorizedCheck = async (
-//   principalId: number,
-//   programId: number,
-//   assessmentId: number,
+//     principalId: number,
+//     programId: number,
+//     assessmentId: number
+//   ) => {
+//     if (role === 'Facilitator') return;
+//   };
+// };
+
+// export const getCurriculumAssessment = async (
+//   curriculumAssessmentId: number
 // ) => {
-//   if (role === "Facilitator")
-//   return
-// };
-
-// };
-
-// export const getCurriculumAssessment = async (curriculumAssessmentId: number) => {
-// const [matchingCurriculumAssessmentId] = await db<CurriculumAssessment>(
+//   const [matchingCurriculumAssessmentId] = await db<CurriculumAssessment>(
 //     'curriculum_assessments'
 //   )
 //     .select()
 //     .where({ id: curriculumAssessmentId });
 //   return matchingCurriculumAssessmentId;
-// }
+// };
 
-// export const getProgramAssessment = async (programAssessmentId: number, curriculumAssessmentId: number) => {
+// export const getProgramAssessment = async (
+//   programAssessmentId: number,
+//   curriculumAssessmentId: number
+// ) => {
 //   const [matchingProgramAssessmentId] = await db<ProgramAssessment>(
 //     'program_assessments'
 //   )
 //     .select()
 //     .where({ id: programAssessmentId, assessment_id: curriculumAssessmentId });
 //   return matchingProgramAssessmentId;
-// }
+// };
+
+// export const getNumProgramParticipants = async (programId: number) => {
+//   return await db<number>('program_participants')
+//     .count('id')
+//     .where('program_id', programId);
+// };
+
+// export const getNumUngradedSubmissons = async (assessmentId: number) => {
+//   return await db<number>('assessment_submissions')
+//     .count('id')
+//     .where('assessment_id', assessmentId)
+//     .andWhere('score', null);
+// };
+
+// export const getTotalNumSubmissons = async (assessmentId: number) => {
+//   return await db<number>('assessment_submissions')
+//     .count('id')
+//     .where('assessment_id', assessmentId);
+// };
 
 /**
  * a function to returns the role of the participant in a given program
@@ -280,6 +309,9 @@ export const listAssessmentsByParticipant = async (principalId: number) => {
  * @param {number} curriculumId
  * @param {number} activityId //?number of activity in database
  * @param {number} principalId - restrict result to programs with which the user is associated
+ * @param {number} programId
+ * @param {string} availableAfter
+ * @param {string} dueDate
  *
  */
 export const createAssessment = async (
@@ -290,7 +322,10 @@ export const createAssessment = async (
   timeLimit: number,
   curriculumId: number,
   activityId: number,
-  principalId: number
+  principalId: number,
+  programId: number,
+  availableAfter: string,
+  dueDate: string
 ) => {
   let assessmentId: number;
   await db.transaction(async trx => {
@@ -304,12 +339,12 @@ export const createAssessment = async (
       activity_id: activityId,
       principal_id: principalId,
     });
-    // await trx('program_assessments').insert({
-    //   assessment_id: assessmentId,
-    //   program_id: programId,
-    //   available_after: availableAfter,
-    //   due_date: dueDate,
-    // });
+    await trx('program_assessments').insert({
+      assessment_id: assessmentId,
+      program_id: programId,
+      available_after: availableAfter,
+      due_date: dueDate,
+    });
   });
   return { id: assessmentId };
 };

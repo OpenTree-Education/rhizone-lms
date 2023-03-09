@@ -62,14 +62,13 @@ assessmentsRouter.post('/', async (req, res, next) => {
     max_score: maxScore,
     max_num_submissions: maxNumSubmissions,
     time_limit: timeLimit,
+    available_after: availableAfter,
+    due_date: dueDate,
+    program_id: programId,
   } = req.body;
   const { principalId } = req.session;
   const { curriculum_id: curriculumId, activity_id: activityId } = req.body;
 
-  // if (!Number.isInteger(principalId === 1)) {
-  //   next(new BadRequestError(`"You are not able to create new assessment`));
-  //  return;
-  // }
   if (typeof title !== 'string') {
     next(new ValidationError('title must be a string!'));
     return;
@@ -87,6 +86,9 @@ assessmentsRouter.post('/', async (req, res, next) => {
   if (typeof timeLimit !== 'number') {
     next(new ValidationError('timeLimit must be a number!'));
   }
+  if (typeof curriculumId !== 'number') {
+    next(new ValidationError('curriculumId must be a number!'));
+  }
   let assessment;
   try {
     assessment = await createAssessment(
@@ -97,7 +99,10 @@ assessmentsRouter.post('/', async (req, res, next) => {
       timeLimit,
       curriculumId,
       activityId,
-      principalId
+      principalId,
+      availableAfter,
+      programId,
+      dueDate
     );
   } catch (error) {
     next(error);
