@@ -1,4 +1,5 @@
 import db from './db';
+import { AssessmentResponse } from '../models';
 
 interface ProgramParticipantsRow {
   id: number;
@@ -8,14 +9,15 @@ interface ProgramParticipantsRow {
 }
 
 /**
- * Return matching rows from the program_participants table that have
-   been inserted or updated based on their pre-existence in the table.
+ * Enrolls a user in the system into a program and grants them the corresponding
+ * permission. If user is pre-existing in that program, their permission is
+ * changed to the specified permission level.
  *
- * @param {number} principalId - The user Id
- * @param {number} programId - The given program Id
- * @param {number} roleId - The id associate to the program    participant
- *
- * @returns {ProgramParticipantsRow}-Return id,principl id,program id,role id
+ * @param {number} principalId - The user ID to make a program participant
+ * @param {number} programId - The given program ID
+ * @param {number} roleId - The program participant role type ID
+ * @returns {ProgramParticipantsRow} -
+ *   The inserted row in the program_participants table
  */
 export const insertToProgramParticipants = async (
   principalId: number,
@@ -48,53 +50,47 @@ export const insertToProgramParticipants = async (
     .select('id')
     .where({ principal_id: principalId, program_id: programId });
 
-  const insertedRowParsed = {
+  return {
     id: matchingProgramParticipantsRows[0].id,
     principal_id: principalId,
     program_id: programId,
     role_id: roleId,
   };
-
-  return insertedRowParsed;
 };
 
 interface AssessmentSubmissionRow {
   id: number;
-  assessment_id?: number;
   principal_id?: number;
-}
-
-interface Response {
-  id?: number;
-  assessment_id: number;
-  submission_id: number;
-  question_id: number;
-  answer_id?: number;
-  response?: string;
+  assessment_id?: number;
+  opened_at?: string;
   score?: number;
-  grader_response?: string;
+  submitted_at?: string;
+  responses?: AssessmentResponse[];
 }
+
 /**
- * Return matching rows from the assessment_submissions table that have
-   been inserted or updated based on their pre-existence in the table.
+ * Inserts a new (or updates an existing) assessment into the
+ * assessment_submissions table, and if provided responses, inserts or updates
+ * those as well.
  *
- * @param {number} principalId - The given user id 
- * @param {number} assessmentId - The  assessment id for taken assessment
- * @param {number} assessmentSubmissionStateId -Id for assessment subission state /active/inactive/open 
- * @param {number} score -Total score for submitted assessment
- * @param {string} openedAt - Open time for assessment 
- * @param {string} submittedAt - Assessment submitted date
- * @param {Response[]} responses - Responses for the questions in the assessment
-
- * @returns {AssessmentSubmissionRow} return data for taking assessment 
+ * @param {number} assessmentId - The ID of the assessment being updated
+ * @param {number} principalId - The ID of the user submitting the assessment
+ * @param {number} assessmentSubmissionStateId -
+ *   The assessment submission state type ID
+ * @param {string} openedAt - The date and time the assessment was first opened
+ * @param {AssessmentResponse[]} responses -
+ *   Responses for the questions in the assessment
+ * @param {number?} score - The total score for the assessment being updated
+ * @param {string?} submittedAt - The date and time the assessment was submitted
+ * @returns {AssessmentSubmissionRow} -
+ *   The inserted or updated row in the assessment_submissions table
  */
-
 export const insertToAssessmentSubmissions = async (
   assessmentId: number,
   principalId: number,
   assessmentSubmissionStateId: number,
   openedAt: string,
-  responses: Response[],
+  responses: AssessmentResponse[],
   score?: number,
   submittedAt?: string
 ): Promise<AssessmentSubmissionRow> => {
@@ -142,7 +138,7 @@ export const insertToAssessmentSubmissions = async (
     );
   }
 
-  const insertedRowParsed = {
+  return {
     id: matchingAsssessmentSubmissionsRows[0].id,
     principal_id: principalId,
     assessment_id: assessmentId,
@@ -151,25 +147,22 @@ export const insertToAssessmentSubmissions = async (
     submitted_at: submittedAt,
     responses: responses,
   };
-
-  return insertedRowParsed;
 };
 
 /**
- * Return matching rows from the assessment_responses table that have
-   been inserted or updated based on their pre-existence in the table.
+ * Inserts a new (or updates an existing) response into the
+ * assessment_responses table.
  *
- *
- * @param {number} assessmentId - Assessment Is associated with the taken assessment
- * @param {number} submissionId - Id for the submitted assessment
- * @param {number} questionId - Question id
- * @param {number} answerId - Id associated with answer
- * @param {string} responses - Respone for a question
- * @param {number} score - Total score for answered  questions
- * @param {string} graderResponse - The graderResponse
- * @returns {Response} -Responses for the taken assessment
+ * @param {number} assessmentId - The associated assessment for this response
+ * @param {number} submissionId - The associated assessment submission
+ * @param {number} questionId - The ID of the question for this response
+ * @param {number?} answerId - The ID of the answer for this response
+ * @param {string?} response - The text of the answer for this response
+ * @param {number?} score - The graded score for this response
+ * @param {string?} graderResponse - Text of grader's feedback for this response
+ * @returns {AssessmentResponse} -
+ *   The inserted or updated row in the assessment_responses table
  */
-
 export const insertToAssessmentResponses = async (
   assessmentId: number,
   submissionId: number,
@@ -206,16 +199,14 @@ export const insertToAssessmentResponses = async (
     .select('id')
     .where({ assessment_id: assessmentId, submission_id: submissionId });
 
-  const insertedRowParsed = {
-    id: assessmentResponsesWithMatchedId,
+  return {
+    id: assessmentResponsesWithMatchedId[0].id,
     assessment_id: assessmentId,
     submission_id: submissionId,
     question_id: questionId,
     answer_id: answerId,
-    responses: response,
+    response: response,
     score: score,
-    graderResponse: graderResponse,
+    grader_response: graderResponse,
   };
-
-  return insertedRowParsed;
 };

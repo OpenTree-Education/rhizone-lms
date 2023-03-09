@@ -75,6 +75,7 @@ describe('assessmentsDummyService', () => {
       const assessmentId = 3;
       const submissionId = 2;
       const principalId = 3;
+      const responseId = 5;
       const dummyAssessmentSubmissionData = {
         id: submissionId,
         assessment_id: assessmentId,
@@ -140,7 +141,7 @@ describe('assessmentsDummyService', () => {
       mockQuery(
         'select `id` from `assessment_responses` where `assessment_id` = ? and `submission_id` = ?',
         [assessmentId, submissionId],
-        []
+        [{ id: responseId }]
       );
 
       expect(
@@ -154,7 +155,7 @@ describe('assessmentsDummyService', () => {
           dummyAssessmentSubmissionData.submitted_at
         )
       ).toEqual({
-        id: dummyAssessmentSubmissionData.id,
+        id: submissionId,
         principal_id: principalId,
         assessment_id: assessmentId,
         score: dummyAssessmentSubmissionData.score,
@@ -238,7 +239,7 @@ describe('assessmentsDummyService', () => {
       mockQuery(
         'select `id` from `assessment_responses` where `assessment_id` = ? and `submission_id` = ?',
         [assessmentId, submissionId],
-        [{ id: submissionId }]
+        [{ id: dummyAssessmentSubmissionData.responses[0].id }]
       );
       expect(
         await insertToAssessmentSubmissions(
@@ -251,7 +252,7 @@ describe('assessmentsDummyService', () => {
           dummyAssessmentSubmissionData.submitted_at
         )
       ).toEqual({
-        id: dummyAssessmentSubmissionData.id,
+        id: submissionId,
         principal_id: principalId,
         assessment_id: assessmentId,
         score: dummyAssessmentSubmissionData.score,
