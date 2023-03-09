@@ -12,11 +12,11 @@ assessmentsDummyRouter.get(
   '/makeParticipant/:programId/:participantId',
   async (req, res, next) => {
     const { programId, participantId } = req.params;
-
     const roleId = 1;
 
     const programIdParsed = Number(programId);
     const participantIdParsed = Number(participantId);
+
     if (!Number.isInteger(participantIdParsed) || participantIdParsed < 1) {
       next(
         new BadRequestError(
@@ -59,8 +59,8 @@ assessmentsDummyRouter.get(
   '/submitAssessment/:participantId',
   async (req, res, next) => {
     const { participantId } = req.params;
-
     const participantIdParsed = Number(participantId);
+
     if (!Number.isInteger(participantIdParsed) || participantIdParsed < 1) {
       next(
         new BadRequestError(
@@ -85,6 +85,7 @@ assessmentsDummyRouter.get(
           assessment_id: 1,
           submission_id: 2,
           question_id: 1,
+          score: 1,
         },
         {
           id: 2,
@@ -92,6 +93,7 @@ assessmentsDummyRouter.get(
           assessment_id: 1,
           submission_id: 2,
           question_id: 2,
+          score: 1,
         },
         {
           id: 3,
@@ -99,6 +101,7 @@ assessmentsDummyRouter.get(
           assessment_id: 1,
           submission_id: 2,
           question_id: 3,
+          score: 1,
         },
         {
           id: 4,
@@ -106,6 +109,7 @@ assessmentsDummyRouter.get(
           assessment_id: 1,
           submission_id: 2,
           question_id: 4,
+          score: 1,
         },
         {
           id: 5,
@@ -113,6 +117,7 @@ assessmentsDummyRouter.get(
           assessment_id: 1,
           submission_id: 2,
           question_id: 5,
+          score: 1,
         },
         {
           id: 6,
@@ -120,6 +125,7 @@ assessmentsDummyRouter.get(
           assessment_id: 1,
           submission_id: 2,
           question_id: 6,
+          score: 1,
         },
         {
           id: 7,
@@ -127,6 +133,7 @@ assessmentsDummyRouter.get(
           assessment_id: 1,
           submission_id: 2,
           question_id: 7,
+          score: 1,
         },
         {
           id: 8,
@@ -135,6 +142,8 @@ assessmentsDummyRouter.get(
           assessment_id: 1,
           submission_id: 2,
           question_id: 8,
+          score: 1,
+          grader_response: 'Great work! Looks good to me.',
         },
         {
           id: 9,
@@ -143,6 +152,9 @@ assessmentsDummyRouter.get(
           assessment_id: 1,
           submission_id: 2,
           question_id: 9,
+          score: 1,
+          grader_response:
+            'You hit exactly the points I wanted you to hit in your response. Well done!',
         },
         {
           id: 10,
@@ -151,14 +163,17 @@ assessmentsDummyRouter.get(
           assessment_id: 1,
           submission_id: 2,
           question_id: 10,
+          score: 1,
         },
       ],
     };
+
     let insertedAssessmentSubmissionsRow: {
       id: number;
       assessment_id?: number;
       principal_id?: number;
     };
+
     try {
       insertedAssessmentSubmissionsRow = await insertToAssessmentSubmissions(
         dummyAssessmentSubmissionData.assessment_id,
@@ -187,13 +202,13 @@ assessmentsDummyRouter.get(
 
     const programIdParsed = Number(programId);
     const participantIdParsed = Number(participantId);
+
     if (!Number.isInteger(participantIdParsed) || participantIdParsed < 1) {
       next(
         new BadRequestError(
           `"${participantIdParsed}" is not a valid participant id.`
         )
       );
-
       return;
     }
     if (!Number.isInteger(programIdParsed) || programIdParsed < 1) {
@@ -209,6 +224,7 @@ assessmentsDummyRouter.get(
       program_id?: number;
       role_id?: number;
     };
+
     try {
       insertedProgramFacilitatorsRow = await insertToProgramParticipants(
         participantIdParsed,
@@ -237,7 +253,6 @@ assessmentsDummyRouter.get(
           `"${participantIdParsed}" is not a valid participant id.`
         )
       );
-
       return;
     }
     if (!Number.isInteger(assessmentIdParsed) || assessmentIdParsed < 1) {
@@ -246,7 +261,6 @@ assessmentsDummyRouter.get(
           `"${assessmentIdParsed}" is not a valid assessment id.`
         )
       );
-
       return;
     }
 
@@ -255,6 +269,7 @@ assessmentsDummyRouter.get(
       assessment_id?: number;
       principal_id?: number;
     };
+
     const responses: {
       id?: number;
       assessment_id: number;
@@ -274,6 +289,7 @@ assessmentsDummyRouter.get(
       openedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
       responses,
     };
+
     try {
       insertedAssessmentSubmissionsRow = await insertToAssessmentSubmissions(
         dummyAssessmentSubmissionData.assessmentId,
@@ -286,6 +302,7 @@ assessmentsDummyRouter.get(
       next(error);
       return;
     }
+
     res.status(201).json(itemEnvelope(insertedAssessmentSubmissionsRow));
   }
 );

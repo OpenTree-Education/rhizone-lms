@@ -93,6 +93,7 @@ describe('assessmentsDummyRouter', () => {
             assessment_id: 1,
             submission_id: 2,
             question_id: 1,
+            score: 1,
           },
           {
             id: 2,
@@ -100,6 +101,7 @@ describe('assessmentsDummyRouter', () => {
             assessment_id: 1,
             submission_id: 2,
             question_id: 2,
+            score: 1,
           },
           {
             id: 3,
@@ -107,6 +109,7 @@ describe('assessmentsDummyRouter', () => {
             assessment_id: 1,
             submission_id: 2,
             question_id: 3,
+            score: 1,
           },
           {
             id: 4,
@@ -114,6 +117,7 @@ describe('assessmentsDummyRouter', () => {
             assessment_id: 1,
             submission_id: 2,
             question_id: 4,
+            score: 1,
           },
           {
             id: 5,
@@ -121,6 +125,7 @@ describe('assessmentsDummyRouter', () => {
             assessment_id: 1,
             submission_id: 2,
             question_id: 5,
+            score: 1,
           },
           {
             id: 6,
@@ -128,6 +133,7 @@ describe('assessmentsDummyRouter', () => {
             assessment_id: 1,
             submission_id: 2,
             question_id: 6,
+            score: 1,
           },
           {
             id: 7,
@@ -135,6 +141,7 @@ describe('assessmentsDummyRouter', () => {
             assessment_id: 1,
             submission_id: 2,
             question_id: 7,
+            score: 1,
           },
           {
             id: 8,
@@ -143,6 +150,8 @@ describe('assessmentsDummyRouter', () => {
             assessment_id: 1,
             submission_id: 2,
             question_id: 8,
+            score: 1,
+            grader_response: 'Great work! Looks good to me.',
           },
           {
             id: 9,
@@ -151,6 +160,9 @@ describe('assessmentsDummyRouter', () => {
             assessment_id: 1,
             submission_id: 2,
             question_id: 9,
+            score: 1,
+            grader_response:
+              'You hit exactly the points I wanted you to hit in your response. Well done!',
           },
           {
             id: 10,
@@ -159,6 +171,7 @@ describe('assessmentsDummyRouter', () => {
             assessment_id: 1,
             submission_id: 2,
             question_id: 10,
+            score: 1,
           },
         ],
       };

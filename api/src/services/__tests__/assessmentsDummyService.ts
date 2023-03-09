@@ -121,8 +121,8 @@ describe('assessmentsDummyService', () => {
       );
       const [response] = dummyAssessmentSubmissionData.responses;
       mockQuery(
-        'select `id`, `assessment_id` from `assessment_responses` where `assessment_id` = ? and `submission_id` = ?',
-        [assessmentId, submissionId],
+        'select `id`, `assessment_id` from `assessment_responses` where `submission_id` = ? and `question_id` = ?',
+        [submissionId, response.question_id],
         []
       );
       mockQuery(
@@ -139,8 +139,8 @@ describe('assessmentsDummyService', () => {
         []
       );
       mockQuery(
-        'select `id` from `assessment_responses` where `assessment_id` = ? and `submission_id` = ?',
-        [assessmentId, submissionId],
+        'select `id` from `assessment_responses` where `submission_id` = ? and `question_id` = ?',
+        [submissionId, response.question_id],
         [{ id: responseId }]
       );
 
@@ -220,25 +220,25 @@ describe('assessmentsDummyService', () => {
       );
       const [response] = dummyAssessmentSubmissionData.responses;
       mockQuery(
-        'select `id`, `assessment_id` from `assessment_responses` where `assessment_id` = ? and `submission_id` = ?',
-        [assessmentId, submissionId],
+        'select `id`, `assessment_id` from `assessment_responses` where `submission_id` = ? and `question_id` = ?',
+        [submissionId, response.question_id],
         [{ id: response.id }]
       );
       mockQuery(
-        'update `assessment_responses` set `answer_id` = ?, `response` = ?, `score` = ?, `grader_response` = ? where `assessment_id` = ? and `submission_id` = ?',
+        'update `assessment_responses` set `answer_id` = ?, `response` = ?, `score` = ?, `grader_response` = ? where `submission_id` = ? and `question_id` = ?',
         [
           response.answer_id,
           response.response,
           response.score,
           response.grader_response,
-          assessmentId,
           submissionId,
+          response.question_id,
         ],
         []
       );
       mockQuery(
-        'select `id` from `assessment_responses` where `assessment_id` = ? and `submission_id` = ?',
-        [assessmentId, submissionId],
+        'select `id` from `assessment_responses` where `submission_id` = ? and `question_id` = ?',
+        [submissionId, response.question_id],
         [{ id: dummyAssessmentSubmissionData.responses[0].id }]
       );
       expect(

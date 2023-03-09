@@ -171,10 +171,11 @@ export const insertToAssessmentResponses = async (
   response?: string,
   score?: number,
   graderResponse?: string
-) => {
+): Promise<AssessmentResponse> => {
   let assessmentResponsesWithMatchedId = await db(`assessment_responses`)
     .select('id', 'assessment_id')
-    .where({ assessment_id: assessmentId, submission_id: submissionId });
+    .where({ submission_id: submissionId, question_id: questionId });
+
   if (assessmentResponsesWithMatchedId.length) {
     await db(`assessment_responses`)
       .update({
@@ -183,7 +184,7 @@ export const insertToAssessmentResponses = async (
         score: score,
         grader_response: graderResponse,
       })
-      .where({ assessment_id: assessmentId, submission_id: submissionId });
+      .where({ submission_id: submissionId, question_id: questionId });
   } else {
     await db(`assessment_responses`).insert({
       assessment_id: assessmentId,
@@ -195,9 +196,10 @@ export const insertToAssessmentResponses = async (
       grader_response: graderResponse,
     });
   }
+
   assessmentResponsesWithMatchedId = await db(`assessment_responses`)
     .select('id')
-    .where({ assessment_id: assessmentId, submission_id: submissionId });
+    .where({ submission_id: submissionId, question_id: questionId });
 
   return {
     id: assessmentResponsesWithMatchedId[0].id,
