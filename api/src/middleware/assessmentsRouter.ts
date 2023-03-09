@@ -1,45 +1,60 @@
-import { NextFunction, Router } from 'express';
+import { Router } from 'express';
 import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
-import { BadRequestError, NotFoundError, ValidationError } from './httpErrors';
+import { BadRequestError, ValidationError } from './httpErrors';
 import {
-  listAssessmentsByParticipant,
   createAssessment,
   updateAssessmentById,
   deleteAssessmentById,
-  findRoleInProgram,
-  getCurriculumAssesmentById,
+  getCurriculumAssessmentById,
 } from '../services/assessmentService';
 
 const assessmentsRouter = Router();
 
 // Shows a list of all assessments
-assessmentsRouter.get('/', async (req, res, next) => {
-  const { principalId } = req.session;
-  const principalIdNum = Number(principalId);
-  let assessments;
-  try {
-    assessments = await listAssessmentsByParticipant(principalIdNum);
-  } catch (error) {
-    next(error);
-    return;
-  }
-  res.json(collectionEnvelope(assessments, assessments.length));
-});
+// Incoming: nothing expected
+// Outgoing:
+// - participant: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for their submissions to this program assessment
+// - facilitator: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for all submissions to this program assessment
+// assessmentsRouter.get('/', async (req, res, next) => {
+//   const { principalId } = req.session;
+//   const principalIdNum = Number(principalId);
+//   let assessments;
+//   try {
+//     assessments = await listAssessmentsByParticipant(principalIdNum);
+//   } catch (error) {
+//     next(error);
+//     return;
+//   }
+//   res.json(collectionEnvelope(assessments, assessments.length));
+// });
 
-assessmentsRouter.get('/test/:assessmentId', async (req, res, next) => {
+assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
   const { assessmentId } = req.params;
   const assessmentIdNum = Number(assessmentId);
-  let assessments;
   try {
-    assessments = await getCurriculumAssesmentById(assessmentIdNum, true, true);
+    const [assessmentsForFacilitator, assessmentsForParticipant] =
+      await Promise.all([
+        getCurriculumAssessmentById(assessmentIdNum, true, true),
+        getCurriculumAssessmentById(assessmentIdNum, true, false),
+      ]);
+    res.json({
+      facilitatorAssessment: collectionEnvelope(
+        assessmentsForFacilitator,
+        assessmentsForFacilitator.length
+      ),
+      participantAssessment: collectionEnvelope(
+        assessmentsForParticipant,
+        assessmentsForParticipant.length
+      ),
+    });
   } catch (error) {
     next(error);
-    return;
   }
-  res.json(collectionEnvelope(assessments, assessments.length));
 });
 
 // Creates a new assessment
+// Incoming: CurriculumAssessment (including 'questions') and ProgramAssessment
+// Outgoing: ids of rows inserted into both curriculum_assessments and program_assessments tables
 assessmentsRouter.post('/', async (req, res, next) => {
   const {
     title,
@@ -91,54 +106,37 @@ assessmentsRouter.post('/', async (req, res, next) => {
   res.status(200).json(itemEnvelope(assessment));
 });
 
-// Deletes” an assessment in the system
-assessmentsRouter.delete('/:assessmentId', async (req, res, next) => {
+//Shows a single assessment
+//TODO change according to #517
+
+// Outgoing:
+// - participant: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and their AssessmentSubmissions[] (not including 'responses' member)
+// - facilitator: CurriculumAssessment (including 'questions' and 'answers'), ProgramAssessment, and all AssessmentSubmissions[] for all assessment submissions for this assessment and for participants in this program (not including 'responses' member)
+
+assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
   const { assessmentId } = req.params;
   const assessmentIdNum = Number(assessmentId);
-
-  if (!Number.isInteger(assessmentIdNum) || assessmentIdNum < 1) {
-    next(
-      new BadRequestError(`"${assessmentIdNum}" is not a valid assessment id.`)
-    );
-    return;
-  }
+  let assessments;
   try {
-    await deleteAssessmentById(assessmentIdNum);
+    assessments = await getCurriculumAssessmentById(
+      assessmentIdNum,
+      true,
+      true
+    );
   } catch (error) {
     next(error);
     return;
   }
-  res.status(204).send();
+  res.json(collectionEnvelope(assessments, assessments.length));
 });
 
-//Shows a single assessment
-//TODO change according to #517
+// Edits an assessment in the system
 
-// assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
-//   const { assessmentId } = req.params;
-//   const assessmentIdNum = Number(assessmentId);
-
-//   if (!Number.isInteger(assessmentIdNum) || assessmentIdNum < 1) {
-//     next(
-//       new BadRequestError(`"${assessmentIdNum}" is not a valid assessment id.`)
-//     );
-//     return;
-//   }
-//   let neededAssessmentId;
-//   try {
-//     neededAssessmentId = await assessmentById(assessmentIdNum);
-//   } catch (error) {
-//     next(error);
-//     return;
-//   }
-//   res.json(collectionEnvelope(neededAssessmentId, neededAssessmentId.length));
-// });
-
-//Edits an assessment in the system
-
-assessmentsRouter.put('/assessment/:id', async (req, res, next) => {
-  const { id } = req.params;
-  const assessmentId = Number(id);
+// Incoming: CurriculumAssessment (including 'questions') and ProgramAssessment
+// Outgoing: ids of rows inserted into both curriculum_assessments and program_assessments tables
+assessmentsRouter.put('/assessment/:assessmentId', async (req, res, next) => {
+  const { assessmentId } = req.params;
+  const assessmentIdNumber = Number(assessmentId);
   const { principalId } = req.session;
   const {
     title,
@@ -151,17 +149,18 @@ assessmentsRouter.put('/assessment/:id', async (req, res, next) => {
     questions,
     availableAfter,
     dueDate,
-    programAssessmentId,
     programId,
   } = req.body;
 
   // waiting to figure out how to refactor this into the function outside
-  if (!Number.isInteger(assessmentId) || assessmentId < 1) {
-    next(new BadRequestError(`"${id}" is not a valid assessment id.`));
+  if (!Number.isInteger(assessmentIdNumber) || assessmentIdNumber < 1) {
+    next(
+      new BadRequestError(`"${assessmentId}" is not a valid assessment id.`)
+    );
     return;
   }
 
-  autorizedCheck(principalId, programId, assessmentId, next);
+  // autorizedCheck(principalId, programId, assessmentIdNumber, next);
 
   if (typeof title !== 'string') {
     next(new ValidationError('title must be a string!'));
@@ -199,22 +198,50 @@ assessmentsRouter.put('/assessment/:id', async (req, res, next) => {
       questions,
       availableAfter,
       dueDate,
-      programAssessmentId,
       programId,
-      assessmentId
+      assessmentIdNumber
     );
   } catch (error) {
     next(error);
     return;
   }
-  res.json(itemEnvelope({ id: id }));
+  res.json(itemEnvelope({ id: assessmentId }));
 });
 
+//TODO logic should be changed to facilitator/participant role
+//
+
+// Deletes” an assessment in the system
+assessmentsRouter.delete('/:assessmentId', async (req, res, next) => {
+  const { assessmentId } = req.params;
+  const assessmentIdNum = Number(assessmentId);
+
+  if (!Number.isInteger(assessmentIdNum) || assessmentIdNum < 1) {
+    next(
+      new BadRequestError(`"${assessmentIdNum}" is not a valid assessment id.`)
+    );
+    return;
+  }
+  try {
+    await deleteAssessmentById(assessmentIdNum);
+  } catch (error) {
+    next(error);
+    return;
+  }
+  res.status(204).send();
+});
+
+// Outgoing:
+// - participants: CurriculumAssessment (with 'questions' and 'answers' but not the correct answers), ProgramAssessment, and a newly-created AssessmentSubmission
+// - facilitators: error (they shouldn't access this page)
 assessmentsRouter.get('/:assessmentId/submissions/new', (req, res) => {
   const response = { behaviour: 'Creates a new draft submission' };
   res.status(200).json(itemEnvelope(response));
 });
 
+// Outgoing:
+// - participants: CurriculumAssessment (with 'questions' and 'answers' and correct answers (if graded)), ProgramAssessment, and AssessmentSubmission (with 'responses')
+// - facilitator: CurriculumAssessment (with 'questions' and 'answers' and correct answers), ProgramAssessment, and AssessmentSubmission (with 'responses')
 assessmentsRouter.get(
   '/:assessmentId/submissions/:submissionId',
   (req, res) => {
@@ -225,6 +252,8 @@ assessmentsRouter.get(
   }
 );
 
+// Incoming: AssessmentSubmission (with 'responses') (but participants shouldn't be allowed to update their scores or update their answers after it's been submitt)
+// Outgoing: AssessmentSubmission (with 'responses')
 assessmentsRouter.put(
   '/:assessmentId/submissions/:submissionId',
   (req, res) => {
@@ -232,29 +261,5 @@ assessmentsRouter.put(
     res.status(200).json(itemEnvelope(response));
   }
 );
-
-//TODO logic should be changed to facilitator/participant role
-const autorizedCheck = async (
-  principalId: number,
-  programId: number,
-  assessmentId: number,
-  next: NextFunction
-) => {
-  let isAuthorized;
-  try {
-    isAuthorized = await findRoleInProgram(principalId, programId);
-  } catch (error) {
-    next(error);
-    return;
-  }
-  if (!isAuthorized) {
-    next(
-      new NotFoundError(
-        `A competency with the id "${assessmentId}" could not be found.`
-      )
-    );
-    return;
-  }
-};
 
 export default assessmentsRouter;

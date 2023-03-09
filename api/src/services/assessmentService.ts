@@ -12,30 +12,73 @@ import {
 // TODO: Need descriptions for the parameters of the functions as well as their return values
 // TODO: Test file
 
+// ** Helper functions ** //
+
+/* Helper functions we need:
+
+- Something that can grab a ProgramAssessment given a program assessment ID
+- It should probably grab the associated CurriculumAssessment
+
+- Something that can check if the user is enrolled in the program
+- It should probably return the permission level if they are ("participant"/"facilitator")
+*/
+
 /**
  * a function that returns the curriculum assessment ID and program ID given a program assessment ID.
- *
+ * @param {number} curriculumAssessmentId - THe curriculum assessment ID
  * @param {number} programAssessmentId - The program assessment ID
- * @returns {ProgramAssessment} - The curriculum assessment ID and program ID // TODO: ask about model should we create new ? 
+ * @param {number} programId - The program ID for the specified program
+ * @param {number} principalId - The restrict result to programs with which the user is associated
+ * @returns {AssessmentSummary} - The curriculum assessment ID and program ID // ? ask about model should we create new ?
  *
  */
-export const getCurriculumAndProgramAssessmentId = async (
-  programAssessmentId: number
-) => {
-  const [matchingProgramAssessmentId] = await db<ProgramAssessment>(
-    'program_assessments'
-  )
-    .select('assessment_id', 'program_id')
-    .where({ id: programAssessmentId });
-  return matchingProgramAssessmentId;
-};
+// export const getCurriculumAndProgramAssessment = async (
+//   curriculumAssessmentId: number,
+//   programAssessmentId: number,
+//   principalId: number,
+//   programId: number
+// ) => {
+
+//   const curriculumAssessment = await getCurriculumAssessment(curriculumAssessmentId)
+//   const programAssessment = await getProgramAssessment(programAssessmentId, curriculumAssessmentId)
+//   const role = await findRoleInProgram (principalId, programId)
+//   const question = await getQuestionsByCurriculumAssessmentId (curriculumAssessmentId, true)
+
+//   const autorizedCheck = async (
+//   principalId: number,
+//   programId: number,
+//   assessmentId: number,
+// ) => {
+//   if (role === "Facilitator")
+//   return
+// };
+
+// };
+
+// export const getCurriculumAssessment = async (curriculumAssessmentId: number) => {
+// const [matchingCurriculumAssessmentId] = await db<CurriculumAssessment>(
+//     'curriculum_assessments'
+//   )
+//     .select()
+//     .where({ id: curriculumAssessmentId });
+//   return matchingCurriculumAssessmentId;
+// }
+
+// export const getProgramAssessment = async (programAssessmentId: number, curriculumAssessmentId: number) => {
+//   const [matchingProgramAssessmentId] = await db<ProgramAssessment>(
+//     'program_assessments'
+//   )
+//     .select()
+//     .where({ id: programAssessmentId, assessment_id: curriculumAssessmentId });
+//   return matchingProgramAssessmentId;
+// }
 
 /**
  * a function to returns the role of the participant in a given program
  *
  * @param {number} programId - The program ID for the specified program
- * @param {number} principalId - The restrict result to programs with which the  user is associated
- * @returns {} - 
+ * @param {number} principalId - The restrict result to programs with which the user is associated
+ * @returns {} - //? should it be extend to ProgramParticipantCompletionSummary ?
  *
  */
 export const findRoleInProgram = async (
@@ -53,7 +96,7 @@ export const findRoleInProgram = async (
   return roleName;
 };
 
-
+// ? where do we get information for AssessmentSubmissionsSummary
 /**
  * a function to returns details about the curriculum assessment given a curriculum assessment ID, with an optional flag to determine whether or not questions and answers should be included in the return value.
  *
@@ -64,7 +107,7 @@ export const findRoleInProgram = async (
  *
  */
 
-export const getCurriculumAssesmentById = async (
+export const getCurriculumAssessmentById = async (
   curriculumAssessmentId: number,
   isQuestionsIncluded: boolean,
   isAnswersIncluded: boolean
@@ -103,11 +146,11 @@ export const getCurriculumAssesmentById = async (
 };
 
 /**
- * a function based on curriculum assessment ID that allow include or exclude answers to response 
+ * a function based on curriculum assessment ID that allow include or exclude answers to response
  *
  * @param {number} curriculumAssessmentId - The curriculum assessment ID
  * @param {boolean} isAnswersIncluded - The flag if the answers should also be sent
- * @returns {Question[]} - The data about questions 
+ * @returns {Question[]} - The data about questions
  *
  */
 
@@ -173,20 +216,22 @@ export const submissionDetails = async (
   programAssessmentId: number,
   isResponsesIncluded: boolean
 ) => {
-  const assessmentSubmissionByProgramAssessmentId = await db<AssessmentSubmission>('assessment_submission')
-    .select()
-    .where({ id: programAssessmentId });
+  const assessmentSubmissionByProgramAssessmentId =
+    await db<AssessmentSubmission>('assessment_submission')
+      .select()
+      .where({ id: programAssessmentId });
 
   if (isResponsesIncluded) {
-    const assessmentSubmissionIds = assessmentSubmissionByProgramAssessmentId.map((element) => element.id);
+    const assessmentSubmissionIds =
+      assessmentSubmissionByProgramAssessmentId.map(element => element.id);
     const responses = await db<AssessmentResponse>('assessment_responses')
       .select()
       .whereIn('submission_id', assessmentSubmissionIds);
 
     assessmentSubmissionByProgramAssessmentId.forEach(
-      (assessment) =>
+      assessment =>
         (assessment.responses = responses.filter(
-          (response) => response.submission_id === assessment.id
+          response => response.submission_id === assessment.id
         ))
     );
   }
@@ -194,58 +239,12 @@ export const submissionDetails = async (
   return assessmentSubmissionByProgramAssessmentId;
 };
 
-
-/**
- * a function to returns details about the curriculum assessment given a curriculum assessment ID, with an optional flag to determine whether or not questions and answers should be included in the return value.
- *
- * @param {number} assessmentSubmissionId
- * @param {number} questionId
- * @param {number} answerId
- * @param {boolean} isResponseIncluded
- *
- */
-
-// export const getAssessmentSubmissionById = async (
-//   assessmentSubmissionId: number,
-//   questionId: number,
-//   answerId: number,
-//   isResponseIncluded: boolean
-// ) => {
-//   const assessmentSubmissionDetails = await db<AssessmentSubmission>(
-//     'assessment_submissions'
-//   )
-//     .select(
-//       'id',
-//       'assessment_id',
-//       'principal_id',
-//       'assessment_submisson_state_id',
-//       'score',
-//       'opened_at',
-//       'submitted_at',
-//       'created_at',
-//       'updated_at',
-//     )
-//     .where('id', assessmentSubmissionId);
-
-//   if (isResponseIncluded == true) {
-//     const responses = await db<AssessmentResponse>('assessment_responses')
-//       .select()
-//       .where({ submission_id: assessmentSubmissionId });
-
-//   return assessmentSubmissionDetails;
-// };
-
-
-
-
-
-// **old version from previous week is below the line
+//** service functions for router **/
 
 /**
  * (GET /assessments) Returns list of assessments in the database.
- * @param {number} principalId - restrict result to programs with which the
- *   user is associated
- *
+ * @param {number} principalId - restrict result to programs with which the user is associated
+ * @returns {CurriculumAssessment}
  */
 
 export const listAssessmentsByParticipant = async (principalId: number) => {
@@ -264,7 +263,7 @@ export const listAssessmentsByParticipant = async (principalId: number) => {
       'created_at',
       'updated_at'
     )
-    .where('principal_id', principalId); // we can use it as a filter
+    .where('principal_id', principalId);
   return assessmentsList;
 };
 
@@ -272,14 +271,16 @@ export const listAssessmentsByParticipant = async (principalId: number) => {
 
 /**
  * (POST /assessments) ERR 403/
- * Creates a new assessment into the system
+ * A function that creates a new assessment into the system
+ * @param {string} title title for assessment
+ * @param {string} description description of assessment
+ * @param {number} maxScore max score for assessment
+ * @param {number} maxNumSubmissions maximum number of allowed submission
+ * @param {number} timeLimit time limit
+ * @param {number} curriculumId
+ * @param {number} activityId //?number of activity in database
+ * @param {number} principalId - restrict result to programs with which the user is associated
  *
- * Program participants should be able to create a new
- * submission for an assessment if:
- * - they have not reached the limit of the allowed number
- * of submissions
- * - the available_after date has passed
- * - the due_date has not passed
  */
 export const createAssessment = async (
   title: string,
@@ -353,18 +354,25 @@ export const deleteAssessmentById = async (assessmentId: number) => {
  * and possible answers and the submission ID number/
  *
  */
-
-// TODO: Fix function header
+// ? which function structure is more apropriate post/put assessment
 
 /**
- *
+ * A function that update assessment by ID
  *
  * (PUT /assessments/:id)
- * @param {Object} questions
- * @param {number} principalId restrict result to programs with which the
- *   user is associated
+ * @param {<Question> []} questions
+ * @param {number} principalId restrict result to programs with which theuser is associated
  * @param {number} assessmentId - The assessment ID for the specified assessment
  * @param {number} programId - The program ID for the specified program
+ * @param {string} title title for assessment
+ * @param {string} description description of assessment
+ * @param {number} maxScore max score for assessment
+ * @param {number} maxNumSubmissions maximum number of allowed submission
+ * @param {number} timeLimit time limit
+ * @param {number} curriculumId the ID for uniq curriculum assessment
+ * @param {number} activityId //?number of activity in database
+ * @param {string} availableAfter date after
+ *
  */
 
 export const updateAssessmentById = async (
@@ -376,10 +384,9 @@ export const updateAssessmentById = async (
   curiculumId: number,
   principalId: number,
   activityId: number,
-  questions: [], // question here about type
+  questions: [], // ????question here about type
   availableAfter: string,
   dueDate: string,
-  programAssessmentId: number,
   programId: number,
   assessmentId: number
 ) => {
@@ -406,31 +413,30 @@ export const updateAssessmentById = async (
 
 // TODO: Fix function header
 
-/**
- *
- * @param {number} assessmentId - The assessment ID for the specified submission
- * @returns {Assessment} - The assessment data for the specified assessment ID
- */
-export const findAssessment = async (assessmentId: number) => {
-  const [matchingAssessment] = await db<CurriculumAssessment>(
-    'curriculum_assessment'
-  )
-    .select(
-      'id',
-      'title',
-      'start_date',
-      'end_date',
-      'time_zone',
-      'curriculum_id'
-    )
-    .where({ assessment_id: assessmentId });
-  return matchingAssessment;
-};
-
+// /**
+//  *
+//  * @param {number} assessmentId - The assessment ID for the specified submission
+//  * @returns {Assessment} - The assessment data for the specified assessment ID
+//  */
+// export const findAssessment = async (assessmentId: number) => {
+//   const [matchingAssessment] = await db<CurriculumAssessment>(
+//     'curriculum_assessment'
+//   )
+//     .select(
+//       'id',
+//       'title',
+//       'start_date',
+//       'end_date',
+//       'time_zone',
+//       'curriculum_id'
+//     )
+//     .where({ assessment_id: assessmentId });
+//   return matchingAssessment;
+// };
 
 /**
  * Get information about assessment submission based on role
- * 
+ *
  * @param {number} programId - The program ID for the specified program
  * @param {number} principalId - The restrict result to programs with which the user is associated
  * @param {number} assessmentId - The submission ID for the specified assesment
@@ -441,14 +447,7 @@ export const findSubmissionByAssessmentId = async (
   programId: number,
   principalId: number
 ) => {
-  const [roleName] = await db('program_participants')
-    .select({ role_id: 'program_participant_roles.title' })
-    .join(
-      'program_participant_roles',
-      'program_participant_roles.id',
-      'program_participants.role_id'
-    )
-    .where({ principal_id: principalId, program_id: programId });
+  const role = await findRoleInProgram(programId, principalId);
 
   const [matchingAssessmentForFacilitator] = await db<AssessmentSubmission>(
     'assessment_submissions'
@@ -479,11 +478,9 @@ export const findSubmissionByAssessmentId = async (
     )
     .where({ assessment_id: assessmentId });
 
-  if (roleName.role_id === 2) return matchingAssessmentForFacilitator;
+  if (role === 'Facilitator') return matchingAssessmentForFacilitator;
   else matchingAssessmentForParticipant;
 };
-
-// TODO: Fix function header
 
 /**
  *
