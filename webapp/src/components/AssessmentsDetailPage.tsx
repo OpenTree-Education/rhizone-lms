@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { Alert, AlertTitle, Button, Container, Grid } from '@mui/material';
+import { Alert, AlertTitle, Container, Grid } from '@mui/material';
 
 import {
   assessmentList,
@@ -50,9 +50,7 @@ const AssessmentsDetailPage = () => {
   const [assessmentQuestions] = useState(exampleTestQuestionsList);
 
   //TODO: fetch previous or request a new submission
-  const [submission] = React.useState(
-    exampleTestSubmissionList[1]
-  );
+  const [submission] = React.useState(exampleTestSubmissionList[1]);
 
   const [showSubmitDialog, setShowSubmitDialog] = React.useState(false);
 
