@@ -1,20 +1,21 @@
 import React from 'react';
-import { Question } from '../assets/data';
-import { TextField, FormControlLabel, Radio, Snackbar } from '@mui/material';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControl from '@mui/material/FormControl';
-import MenuItem from '@mui/material/MenuItem';
+import {
+  TextField,
+  FormControlLabel,
+  Radio,
+  Card,
+  CardContent,
+  Typography,
+  RadioGroup,
+  FormControl,
+  MenuItem,
+} from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-import { AssessmentChosenAnswer } from '../assets/data';
+import { Question } from '../assets/data';
 
 interface QuestionCardProps {
   question: Question;
-  assessmentAnswers: AssessmentChosenAnswer[];
   handleNewAnswer: (
     question: Question,
     chosenAnswerId?: number,
@@ -25,7 +26,6 @@ interface QuestionCardProps {
 
 const QuestionCard = ({
   question,
-  assessmentAnswers,
   handleNewAnswer,
   currentStatus,
 }: QuestionCardProps) => {

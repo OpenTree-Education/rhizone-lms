@@ -1,40 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import {
-  Alert,
-  AlertTitle,
-  Avatar,
-  Box,
-  Button,
-  Card,
-  Chip,
-  Container,
-  Collapse,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Divider,
-  LinearProgress,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Grid,
-  Tooltip,
-  Typography,
-  Switch,
-} from '@mui/material';
-import { styled } from '@mui/system';
-import InfoIcon from '@mui/icons-material/Info';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import TimerIcon from '@mui/icons-material/Timer';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import LightbulbIcon from '@mui/icons-material/Lightbulb';
-import { blue, grey } from '@mui/material/colors';
+import { Button, Container, Grid } from '@mui/material';
 
 import {
   assessmentList,
@@ -42,39 +9,10 @@ import {
   exampleTestSubmissionList,
   Question,
   AssessmentChosenAnswer,
-  SubmissionStatus,
-  AssessmentType,
 } from '../assets/data';
-import { formatDateTime } from '../helpers/dateTime';
-import QuestionCard from './QuestionCard';
-
-const LinearProgressWithLabel = (
-  numOfAnsweredQuestion: number,
-  numOfTotalQuestion: number
-) => {
-  return (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <Box sx={{ width: '100%', mr: 1 }}>
-        <LinearProgress
-          variant="determinate"
-          value={Math.round((numOfAnsweredQuestion * 100) / numOfTotalQuestion)}
-        />
-      </Box>
-      <Box sx={{ minWidth: 35 }}>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-        >{`${numOfAnsweredQuestion}/${numOfTotalQuestion}`}</Typography>
-      </Box>
-    </Box>
-  );
-};
-
-const StyledNumChip = styled(Chip)(() => ({
-  borderRadius: '50%',
-  width: '3em',
-  height: '3em',
-}));
+import AssessmentsMetadataBar from './AssessmentsMetadataBar';
+import AssessmentsDisplay from './AssessmentsDisplay';
+import AssessmentsSubmitBar from './AssessmentsSubmitBar';
 
 const AssessmentsDetailPage = () => {
   const id = useParams();
@@ -110,65 +48,7 @@ const AssessmentsDetailPage = () => {
 
   const [assessmentQuestions] = useState(exampleTestQuestionsList);
 
-  const dueTime = new Date(assessment?.dueDate!);
-  //TODO: use the opened date from the submission
-  const [openedTime] = useState(new Date());
-  const [secondsRemaining, setSecondsRemaining] = useState(
-    assessment?.testDuration! * 60
-  );
-
-  const requestRef = useRef<number>();
-  const previousTimeRef = useRef<number>();
-
-  const animate = (time: number) => {
-    if (previousTimeRef.current !== undefined) {
-      if (new Date().getTime() > dueTime.getTime()) {
-        setSecondsRemaining(0);
-      } else if (
-        new Date().getTime() + assessment?.testDuration! * 60 * 1000 >
-        dueTime.getTime()
-      ) {
-        setSecondsRemaining(
-          Math.round((dueTime.getTime() - new Date().getTime()) / 1000)
-        );
-      } else {
-        setSecondsRemaining(
-          Math.round(
-            (openedTime.getTime() +
-              assessment?.testDuration! * 60 * 1000 -
-              new Date().getTime()) /
-              1000
-          )
-        );
-      }
-    }
-    previousTimeRef.current = time;
-    requestRef.current = requestAnimationFrame(animate);
-  };
-
-  useEffect(() => {
-    requestRef.current = requestAnimationFrame(animate);
-    return () => {
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
-    };
-  });
-
-  const [showTimer, setShowTimer] = React.useState(true);
-
-  const handleSetShowTimer = (showTimer: boolean) => () => {
-    setShowTimer(showTimer);
-  };
-
-  const [showSubmitDialog, setShowSubmitDialog] = React.useState(false);
-  const [currentStatus, setCurrentStatus] = React.useState('Opened');
-  const handleOpenSubmitDialog = () => {
-    setShowSubmitDialog(true);
-  };
-
-  const handleCloseSubmitDialog = () => {
-    setShowSubmitDialog(false);
-  };
-
+  //start: dummy code to test different state
   const [submissionIndex, setNextSubmission] = React.useState(0);
 
   const handleNextSubmission = () => {
@@ -180,16 +60,23 @@ const AssessmentsDetailPage = () => {
       setSubmission(exampleTestSubmissionList[submissionIndex + 1]);
     }
   };
+  //end.
+
+  //TODO: fetch or request a new submission
   const [submission, setSubmission] = React.useState(
     exampleTestSubmissionList[submissionIndex]
   );
+
+  const [showSubmitDialog, setShowSubmitDialog] = React.useState(false);
 
   const handleSubmit = (event?: React.SyntheticEvent) => {
     if (event) {
       event.preventDefault();
     }
     setShowSubmitDialog(false);
-    setCurrentStatus('Submitted');
+    submission.state = 'Submitted';
+    submission.submitAt = new Date().getTime();
+    //TODO: send request to submit the assessment
     document.querySelector('#assessment_display')!.scrollTo(0, 0);
   };
 
@@ -198,176 +85,15 @@ const AssessmentsDetailPage = () => {
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <h1>{assessment?.title}</h1>
+          <Button onClick={handleNextSubmission}>next state</Button>
+          {/* dummy code to test different state */}
         </Grid>
         <Grid container spacing={2}>
           <Grid item xs={12} md={3}>
-            <List
-              sx={{
-                width: '100%',
-                maxWidth: 360,
-              }}
-            >
-              <ListItem>
-                <ListItemAvatar>
-                  <Avatar
-                    sx={{
-                      bgcolor: `${
-                        submission.state === SubmissionStatus.Opened
-                          ? blue[600]
-                          : grey[400]
-                      }`,
-                    }}
-                  >
-                    <InfoIcon />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText>
-                  <Typography variant="body2">
-                    {assessment?.description}
-                  </Typography>
-                  <ListItemText secondary={`Type: ${assessment?.type}`} />
-                </ListItemText>
-              </ListItem>
-              <Divider variant="middle" />
-              <ListItem>
-                <ListItemAvatar>
-                  <Avatar
-                    sx={{
-                      bgcolor: `${
-                        submission.state === SubmissionStatus.Opened
-                          ? blue[600]
-                          : grey[400]
-                      }`,
-                    }}
-                  >
-                    <LightbulbIcon />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary={`${
-                    submission?.state === SubmissionStatus.Opened
-                      ? `Active`
-                      : `${submission?.state}`
-                  }`}
-                  secondary="Status"
-                />
-              </ListItem>
-              {submission.state === SubmissionStatus.Graded && (
-                <>
-                  <ListItem>
-                    <ListItemAvatar>
-                      <Avatar>
-                        <CheckCircleIcon />
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      secondary="Score"
-                      primary={submission.score}
-                    />
-                  </ListItem>
-                </>
-              )}
-              {submission.state === SubmissionStatus.Opened && (
-                <ListItem>
-                  <ListItemAvatar />
-                  <ListItemText
-                    secondary="Attempts"
-                    primary={`${submission.id} out of max ${assessment?.maxNumSubmissions}`}
-                  />
-                </ListItem>
-              )}
-              {(submission.state === SubmissionStatus.Submitted ||
-                submission.state === SubmissionStatus.Graded) && (
-                <>
-                  <ListItem>
-                    <ListItemAvatar>
-                      <Avatar>
-                        <InventoryIcon />
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      secondary="Submissions"
-                      primary={`${submission.id} out of ${assessment?.maxNumSubmissions}`}
-                    />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemAvatar />
-                    <ListItemText
-                      secondary="Submitted At"
-                      primary={formatDateTime(
-                        new Date(submission.submitAt!).toDateString()
-                      )}
-                    />
-                  </ListItem>
-                </>
-              )}
-              <Divider variant="middle" component="li" />
-              <ListItem>
-                <ListItemAvatar>
-                  <Avatar
-                    sx={{
-                      bgcolor: `${
-                        submission.state === SubmissionStatus.Opened
-                          ? blue[600]
-                          : grey[400]
-                      }`,
-                    }}
-                  >
-                    <CalendarMonthIcon />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  secondary="Due Date"
-                  primary={formatDateTime(
-                    assessment?.dueDate ? assessment?.dueDate : ''
-                  )}
-                />
-              </ListItem>
-              {assessment!.type === AssessmentType.Test &&
-                submission.state === SubmissionStatus.Opened && (
-                  <>
-                    <ListItem>
-                      <ListItemAvatar>
-                        <Avatar
-                          sx={{
-                            bgcolor: `${
-                              submission.state === SubmissionStatus.Opened
-                                ? blue[600]
-                                : grey[400]
-                            }`,
-                          }}
-                        >
-                          <TimerIcon />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        secondary={showTimer ? `Time Remaining` : `Time Limit`}
-                        primary={
-                          showTimer
-                            ? `${Math.floor(secondsRemaining / 60)}m ${
-                                secondsRemaining % 60
-                              }s`
-                            : assessment?.testDuration + `m`
-                        }
-                      />
-                      <Tooltip
-                        title={showTimer ? `Hide Timer` : `Show Timer`}
-                        placement="top"
-                        arrow
-                      >
-                        <Switch
-                          edge="end"
-                          onChange={handleSetShowTimer(!showTimer)}
-                          checked={showTimer}
-                          inputProps={{
-                            'aria-labelledby': 'switch-list-label-wifi',
-                          }}
-                        />
-                      </Tooltip>
-                    </ListItem>
-                  </>
-                )}
-            </List>
+            <AssessmentsMetadataBar
+              assessment={assessment!}
+              submission={submission!}
+            />
           </Grid>
           <Grid
             id="assessment_display"
@@ -385,96 +111,24 @@ const AssessmentsDetailPage = () => {
               border: '1px solid #bbb',
             }}
           >
-            <Grid item xs={1} />
-            <Grid item xs={10}>
-              <Card>
-                <Collapse in={currentStatus === 'Submitted'}>
-                  <Alert severity="success">
-                    <AlertTitle>Success</AlertTitle>
-                    {assessment!.type} submitted successfully!
-                  </Alert>
-                </Collapse>{' '}
-              </Card>
-            </Grid>
-            <Grid item xs={1} />
-            {exampleTestQuestionsList.map(q => (
-              <>
-                <Grid item xs={1} />
-                <Grid item xs={10}>
-                  <QuestionCard
-                    question={q}
-                    assessmentAnswers={assessmentAnswers}
-                    handleNewAnswer={handleNewAnswer}
-                    currentStatus={currentStatus}
-                  />
-                </Grid>
-                <Grid item xs={1} />
-              </>
-            ))}
+            <AssessmentsDisplay
+              submission={submission!}
+              handleNewAnswer={handleNewAnswer}
+            />
           </Grid>
           <Grid item xs={12} md={1.5}>
-            <List style={{ paddingLeft: 0 }}>
-              <ListItem sx={{ justifyContent: 'center' }}>
-                <Button
-                  variant={`${
-                    numOfAnsweredQuestion === assessmentQuestions.length
-                      ? 'contained'
-                      : 'outlined'
-                  }`}
-                  size="medium"
-                  onClick={handleOpenSubmitDialog}
-                >
-                  Submit
-                </Button>
-              </ListItem>
-              <Divider variant="middle" />
-              <ListItem>
-                <ListItemText
-                  primary={LinearProgressWithLabel(
-                    numOfAnsweredQuestion,
-                    assessmentQuestions.length
-                  )}
-                />
-              </ListItem>
-              <ListItem>
-                <Box sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
-                  {assessmentQuestions.map(a => (
-                    <StyledNumChip
-                      sx={{ marginLeft: '1px', marginBottom: '3px' }}
-                      label={a.sortOrder}
-                      key={a.id}
-                      onClick={handleNextSubmission} //temp code for demenstraing different submissions
-                      color={`${
-                        assessmentAnswers[a.sortOrder - 1].chosenAnswerId ||
-                        assessmentAnswers[a.sortOrder - 1].responseText
-                          ? 'primary'
-                          : 'default'
-                      }`}
-                    />
-                  ))}
-                </Box>
-              </ListItem>
-            </List>
+            <AssessmentsSubmitBar
+              submissionState={submission.state}
+              assessmentQuestions={assessmentQuestions}
+              assessmentAnswers={assessmentAnswers}
+              numOfAnsweredQuestion={numOfAnsweredQuestion}
+              showSubmitDialog={showSubmitDialog}
+              setShowSubmitDialog={setShowSubmitDialog}
+              handleSubmit={handleSubmit}
+            />
           </Grid>
         </Grid>
       </Grid>
-      <Dialog open={showSubmitDialog} onClose={handleCloseSubmitDialog}>
-        <DialogTitle>
-          Are you sure you would like to submit this assessmnet?
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            You have filled {numOfAnsweredQuestion} out of{' '}
-            {assessmentQuestions.length}.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseSubmitDialog}>Cancel</Button>
-          <Button onClick={handleSubmit} variant="contained">
-            Submit
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Container>
   );
 };
