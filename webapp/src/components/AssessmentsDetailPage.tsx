@@ -49,23 +49,9 @@ const AssessmentsDetailPage = () => {
 
   const [assessmentQuestions] = useState(exampleTestQuestionsList);
 
-  //start: dummy code to test different state
-  const [submissionIndex, setNextSubmission] = React.useState(0);
-
-  const handleNextSubmission = () => {
-    if (submissionIndex === 3) {
-      setNextSubmission(0);
-      setSubmission(exampleTestSubmissionList[0]);
-    } else {
-      setNextSubmission(submissionIndex + 1);
-      setSubmission(exampleTestSubmissionList[submissionIndex + 1]);
-    }
-  };
-  //end.
-
   //TODO: fetch previous or request a new submission
-  const [submission, setSubmission] = React.useState(
-    exampleTestSubmissionList[submissionIndex]
+  const [submission] = React.useState(
+    exampleTestSubmissionList[1]
   );
 
   const [showSubmitDialog, setShowSubmitDialog] = React.useState(false);
@@ -137,8 +123,6 @@ const AssessmentsDetailPage = () => {
           </Grid>
         </Grid>
       </Grid>
-      <Button onClick={handleNextSubmission}>next state</Button>
-      {/* dummy code to test different state */}
     </Container>
   );
 };
