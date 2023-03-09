@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { Button, Container, Grid } from '@mui/material';
+import { Alert, AlertTitle, Button, Container, Grid } from '@mui/material';
 
 import {
   assessmentList,
@@ -16,6 +16,7 @@ import AssessmentsSubmitBar from './AssessmentsSubmitBar';
 
 const AssessmentsDetailPage = () => {
   const id = useParams();
+  //TODO: fetch the assessment by id
   const assessment = assessmentList.find(
     assessment => assessment.id === parseInt(id.id ? id.id : '')
   );
@@ -62,7 +63,7 @@ const AssessmentsDetailPage = () => {
   };
   //end.
 
-  //TODO: fetch or request a new submission
+  //TODO: fetch previous or request a new submission
   const [submission, setSubmission] = React.useState(
     exampleTestSubmissionList[submissionIndex]
   );
@@ -80,19 +81,26 @@ const AssessmentsDetailPage = () => {
     document.querySelector('#assessment_display')!.scrollTo(0, 0);
   };
 
+  if (!assessment || !submission) {
+    return (
+      <Alert severity="error">
+        <AlertTitle>Sorry!</AlertTitle>
+        There is a problem loading this assessment or submisssion.
+      </Alert>
+    );
+  }
+
   return (
     <Container>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <h1>{assessment?.title}</h1>
-          <Button onClick={handleNextSubmission}>next state</Button>
-          {/* dummy code to test different state */}
+          <h1>{assessment.title}</h1>
         </Grid>
         <Grid container spacing={2}>
           <Grid item xs={12} md={3}>
             <AssessmentsMetadataBar
-              assessment={assessment!}
-              submission={submission!}
+              assessment={assessment}
+              submission={submission}
             />
           </Grid>
           <Grid
@@ -112,7 +120,7 @@ const AssessmentsDetailPage = () => {
             }}
           >
             <AssessmentsDisplay
-              submission={submission!}
+              submission={submission}
               handleNewAnswer={handleNewAnswer}
             />
           </Grid>
@@ -129,6 +137,8 @@ const AssessmentsDetailPage = () => {
           </Grid>
         </Grid>
       </Grid>
+      <Button onClick={handleNextSubmission}>next state</Button>
+      {/* dummy code to test different state */}
     </Container>
   );
 };
