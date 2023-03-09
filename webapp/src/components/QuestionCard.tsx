@@ -60,7 +60,7 @@ const QuestionCard = ({
           <RadioGroup value={radioValue} onChange={handleChangeRadio}>
             {question.answers?.map(a => (
               <FormControlLabel
-                control={<Radio disabled={currentStatus === 'Submitted'} />}
+                control={<Radio disabled={currentStatus !== 'Opened'} />}
                 value={a.id}
                 key={a.id}
                 label={a.title}
@@ -76,7 +76,7 @@ const QuestionCard = ({
             required
             onChange={handleChangeSelect}
             value={selectValue}
-            disabled={currentStatus === 'Submitted'}
+            disabled={currentStatus !== 'Opened'}
           >
             {question.answers?.map(a => (
               <MenuItem value={a.id} key={a.id}>
@@ -95,7 +95,7 @@ const QuestionCard = ({
           variant="standard"
           fullWidth
           onChange={handleChangeText}
-          disabled={currentStatus === 'Submitted'}
+          disabled={currentStatus !== 'Opened'}
         />
       );
     }
