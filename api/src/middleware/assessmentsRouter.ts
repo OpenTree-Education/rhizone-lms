@@ -6,15 +6,9 @@ import {
   updateAssessmentById,
   deleteAssessmentById,
   getCurriculumAssessmentById,
-  getAssessmentsSummary
-
+  getAssessmentsSummary,
 } from '../services/assessmentService';
-import {
-
-  AssessmentSummary,
-  
-} from '../models';
-
+import { AssessmentSummary } from '../models';
 
 const assessmentsRouter = Router();
 
@@ -33,9 +27,8 @@ assessmentsRouter.get('/', async (req, res, next) => {
     next(error);
     return;
   }
-  
-  res.json(collectionEnvelope(assessments, assessments.length));
 
+  res.json(collectionEnvelope(assessments, assessments.length));
 });
 
 // assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
@@ -127,22 +120,22 @@ assessmentsRouter.post('/', async (req, res, next) => {
 // - participant: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and their AssessmentSubmissions[] (not including 'responses' member)
 // - facilitator: CurriculumAssessment (including 'questions' and 'answers'), ProgramAssessment, and all AssessmentSubmissions[] for all assessment submissions for this assessment and for participants in this program (not including 'responses' member)
 
-assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
-  const { assessmentId } = req.params;
-  const assessmentIdNum = Number(assessmentId);
-  let assessments;
-  try {
-    assessments = await getCurriculumAssessmentById(
-      assessmentIdNum,
-      true,
-      true
-    );
-  } catch (error) {
-    next(error);
-    return;
-  }
-  res.json(collectionEnvelope(assessments, assessments.length));
-});
+// assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
+//   const { assessmentId } = req.params;
+//   const assessmentIdNum = Number(assessmentId);
+//   let assessmentsResponse;
+//   try {
+//     assessmentsResponse = await getCurriculumAssessmentById(
+//       assessmentIdNum,
+//       true,
+//       true
+//     );
+//   } catch (error) {
+//     next(error);
+//     return;
+//   }
+//   res.json(collectionEnvelope(assessments, assessments.length));
+// });
 
 // Edits an assessment in the system
 
@@ -258,7 +251,7 @@ assessmentsRouter.get('/:assessmentId/submissions/new', (req, res) => {
 // - facilitator: CurriculumAssessment (with 'questions' and 'answers' and correct answers), ProgramAssessment, and AssessmentSubmission (with 'responses')
 assessmentsRouter.get(
   '/:assessmentId/submissions/:submissionId',
-  
+
   (req, res) => {
     const response = {
       behaviour: 'Returns the submission information (metadata, answers, etc)',
