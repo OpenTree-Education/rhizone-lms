@@ -6,9 +6,8 @@ import {
   updateAssessmentById,
   deleteAssessmentById,
   getCurriculumAssessmentById,
+  getAssessmentsSummary,
   getCurriculumAssessmentBasedOnRole,
-
-  // getAssessmentsSummary
 } from '../services/assessmentService';
 import { AssessmentSummary } from '../models';
 
@@ -19,20 +18,19 @@ const assessmentsRouter = Router();
 // Outgoing:
 // - participant: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for their submissions to this program assessment
 // - facilitator: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for all submissions to this program assessment
-// assessmentsRouter.get('/', async (req, res, next) => {
-//   const { principalId } = req.session;
+assessmentsRouter.get('/', async (req, res, next) => {
+  const { principalId } = req.session;
 
-//   let assessments: AssessmentSummary[];
-//   try {
-//     assessments = await getAssessmentsSummary(principalId);
-//   } catch (error) {
-//     next(error);
-//     return;
-//   }
+  let assessments: AssessmentSummary[];
+  try {
+    assessments = await getAssessmentsSummary(principalId);
+  } catch (error) {
+    next(error);
+    return;
+  }
 
-//   res.json(collectionEnvelope(assessments, assessments.length));
-
-// });
+  res.json(collectionEnvelope(assessments, assessments.length));
+});
 
 // assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
 //   const { assessmentId } = req.params;
@@ -118,7 +116,6 @@ assessmentsRouter.post('/', async (req, res, next) => {
 });
 
 //Shows a single assessment
-//TODO change according to #517
 
 // Outgoing:
 // - participant: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and their AssessmentSubmissions[] (not including 'responses' member)
@@ -127,9 +124,9 @@ assessmentsRouter.post('/', async (req, res, next) => {
 // assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
 //   const { assessmentId } = req.params;
 //   const assessmentIdNum = Number(assessmentId);
-//   let assessments;
+//   let assessmentsResponse;
 //   try {
-//     assessments = await getCurriculumAssessmentById(
+//     assessmentsResponse = await getCurriculumAssessmentById(
 //       assessmentIdNum,
 //       true,
 //       true
