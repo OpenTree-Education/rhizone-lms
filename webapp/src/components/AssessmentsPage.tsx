@@ -29,7 +29,7 @@ import LockClockOutlinedIcon from '@mui/icons-material/LockClockOutlined';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 
 import { formatDateTime } from '../helpers/dateTime';
-import { assessmentList } from '../assets/data';
+import { assessmentList } from '../assets/dataAssessment';
 
 enum StatusTab {
   All,
@@ -215,7 +215,11 @@ const AssessmentsPage = () => {
             icon={
               <StyledBadge
                 badgeContent={
-                  assessmentList.filter(x => x.status === 'Active').length
+                  assessmentList.filter(
+                    x =>
+                      x.submissions_summary.assessment_submission_state ===
+                      'Active'
+                  ).length
                 }
                 color="primary"
               >
@@ -328,8 +332,10 @@ const AssessmentsPage = () => {
             {assessmentList.map(assessment => (
               <TableRowWrapper
                 statusTab={currentStatusTab}
-                status={assessment.status}
-                key={assessment.id}
+                status={
+                  assessment.submissions_summary.assessment_submission_state
+                }
+                key={assessment.submissions_summary.id}
               >
                 <TableCellWrapper
                   statusTab={currentStatusTab}
@@ -340,9 +346,9 @@ const AssessmentsPage = () => {
                     StatusTab.Upcoming,
                   ]}
                 >
-                  <strong>{assessment.title}</strong>
+                  <strong>{assessment.curriculum_assessment.title}</strong>
                   <br />
-                  {assessment.description}
+                  {assessment.curriculum_assessment.description}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
@@ -353,33 +359,40 @@ const AssessmentsPage = () => {
                     StatusTab.Upcoming,
                   ]}
                 >
-                  {assessment.type}
+                  {assessment.curriculum_assessment.activity_id}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
                   index={[StatusTab.All, StatusTab.Active]}
                 >
-                  {formatDateTime(assessment.dueDate)}
+                  {formatDateTime(assessment.program_assessment.due_date)}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
                   index={[StatusTab.Past]}
                 >
-                  {(assessment.status === 'Submitted' ||
-                    assessment.status === 'Graded') &&
-                    formatDateTime(assessment.submittedDate)}
+                  {(assessment.submissions_summary
+                    .assessment_submission_state === 'Submitted' ||
+                    assessment.submissions_summary
+                      .assessment_submission_state === 'Graded') &&
+                    formatDateTime(
+                      assessment.submissions_summary.most_recent_submitted_date
+                    )}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
                   index={[StatusTab.All, StatusTab.Past]}
                 >
-                  {assessment.score !== -1 && assessment.score}
+                  {assessment.submissions_summary.highest_score !== -1 &&
+                    assessment.submissions_summary.highest_score}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
                   index={[StatusTab.Upcoming]}
                 >
-                  {formatDateTime(assessment.availableDate)}
+                  {formatDateTime(
+                    assessment.program_assessment.available_after
+                  )}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
@@ -390,13 +403,17 @@ const AssessmentsPage = () => {
                     StatusTab.Upcoming,
                   ]}
                 >
-                  {renderChipByStatus(assessment.status)}
+                  {renderChipByStatus(
+                    assessment.submissions_summary.assessment_submission_state
+                  )}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
                   index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}
                 >
-                  {renderButtonByStatus(assessment.status)}
+                  {renderButtonByStatus(
+                    assessment.submissions_summary.assessment_submission_state
+                  )}
                 </TableCellWrapper>
               </TableRowWrapper>
             ))}
