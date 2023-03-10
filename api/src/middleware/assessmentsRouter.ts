@@ -6,15 +6,11 @@ import {
   updateAssessmentById,
   deleteAssessmentById,
   getCurriculumAssessmentById,
-  getAssessmentsSummary
+  getCurriculumAssessmentBasedOnRole,
 
+  // getAssessmentsSummary
 } from '../services/assessmentService';
-import {
-
-  AssessmentSummary,
-  
-} from '../models';
-
+import { AssessmentSummary } from '../models';
 
 const assessmentsRouter = Router();
 
@@ -23,20 +19,20 @@ const assessmentsRouter = Router();
 // Outgoing:
 // - participant: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for their submissions to this program assessment
 // - facilitator: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for all submissions to this program assessment
-assessmentsRouter.get('/', async (req, res, next) => {
-  const { principalId } = req.session;
+// assessmentsRouter.get('/', async (req, res, next) => {
+//   const { principalId } = req.session;
 
-  let assessments: AssessmentSummary[];
-  try {
-    assessments = await getAssessmentsSummary(principalId);
-  } catch (error) {
-    next(error);
-    return;
-  }
-  
-  res.json(collectionEnvelope(assessments, assessments.length));
+//   let assessments: AssessmentSummary[];
+//   try {
+//     assessments = await getAssessmentsSummary(principalId);
+//   } catch (error) {
+//     next(error);
+//     return;
+//   }
 
-});
+//   res.json(collectionEnvelope(assessments, assessments.length));
+
+// });
 
 // assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
 //   const { assessmentId } = req.params;
@@ -122,27 +118,28 @@ assessmentsRouter.post('/', async (req, res, next) => {
 });
 
 //Shows a single assessment
+//TODO change according to #517
 
 // Outgoing:
 // - participant: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and their AssessmentSubmissions[] (not including 'responses' member)
 // - facilitator: CurriculumAssessment (including 'questions' and 'answers'), ProgramAssessment, and all AssessmentSubmissions[] for all assessment submissions for this assessment and for participants in this program (not including 'responses' member)
 
-assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
-  const { assessmentId } = req.params;
-  const assessmentIdNum = Number(assessmentId);
-  let assessments;
-  try {
-    assessments = await getCurriculumAssessmentById(
-      assessmentIdNum,
-      true,
-      true
-    );
-  } catch (error) {
-    next(error);
-    return;
-  }
-  res.json(collectionEnvelope(assessments, assessments.length));
-});
+// assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
+//   const { assessmentId } = req.params;
+//   const assessmentIdNum = Number(assessmentId);
+//   let assessments;
+//   try {
+//     assessments = await getCurriculumAssessmentById(
+//       assessmentIdNum,
+//       true,
+//       true
+//     );
+//   } catch (error) {
+//     next(error);
+//     return;
+//   }
+//   res.json(collectionEnvelope(assessments, assessments.length));
+// });
 
 // Edits an assessment in the system
 
@@ -258,12 +255,38 @@ assessmentsRouter.get('/:assessmentId/submissions/new', (req, res) => {
 // - facilitator: CurriculumAssessment (with 'questions' and 'answers' and correct answers), ProgramAssessment, and AssessmentSubmission (with 'responses')
 assessmentsRouter.get(
   '/:assessmentId/submissions/:submissionId',
-  
-  (req, res) => {
-    const response = {
-      behaviour: 'Returns the submission information (metadata, answers, etc)',
-    };
-    res.status(200).json(itemEnvelope(response));
+  async (req, res, next) => {
+    const { principalId } = req.session;
+    const { assessmentId, submissionId } = req.params;
+    const assessmentIdPrased = Number(assessmentId);
+    const submissionIdPrased = Number(submissionId);
+    if (!Number.isInteger(assessmentIdPrased) || assessmentIdPrased < 1) {
+      next(
+        new BadRequestError(
+          `"${assessmentIdPrased}" is not a valid participant id.`
+        )
+      );
+    }
+    if (!Number.isInteger(submissionIdPrased) || submissionIdPrased < 1) {
+      next(
+        new BadRequestError(
+          `"${submissionIdPrased}" is not a valid participant id.`
+        )
+      );
+    }
+    let listOfAssessmentWithAnswers;
+    try {
+      listOfAssessmentWithAnswers = await getCurriculumAssessmentBasedOnRole(
+        principalId,
+        assessmentIdPrased,
+        submissionIdPrased
+      );
+    } catch (error) {
+      next(error);
+      return;
+    }
+    res.json(itemEnvelope(listOfAssessmentWithAnswers));
+    // res.json(collectionEnvelope(listOfAssessmentWithAnswers,listOfAssessmentWithAnswers.length));
   }
 );
 
