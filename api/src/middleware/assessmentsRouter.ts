@@ -244,6 +244,24 @@ assessmentsRouter.delete('/:assessmentId', async (req, res, next) => {
 // - facilitators: error (they shouldn't access this page)
 assessmentsRouter.get('/:assessmentId/submissions/new', (req, res) => {
   const response = { behaviour: 'Creates a new draft submission' };
+  const { principalId } = req.session;
+  const { assessmentId, submissionId } = req.params;
+  const assessmentIdPrased = Number(assessmentId);
+  const submissionIdPrased = Number(submissionId);
+  let new_submission= [];
+  if (!Number.isInteger(assessmentIdPrased) || assessmentIdPrased < 1) {
+    
+      new BadRequestError(
+        `"${assessmentIdPrased}" is not a valid participant id.`
+      );
+  }
+  if (!Number.isInteger(submissionIdPrased) || submissionIdPrased < 1) {
+    
+      new BadRequestError(
+        `"${submissionIdPrased}" is not a valid participant id.`
+      );
+  }
+  
   res.status(200).json(itemEnvelope(response));
 });
 
