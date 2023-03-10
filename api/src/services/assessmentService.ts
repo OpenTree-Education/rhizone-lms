@@ -165,7 +165,7 @@ export const findRoleInProgram = async (
 /**
  * a function to returns details about the curriculum assessment given a curriculum assessment ID, with an optional flag to determine whether or not questions and answers should be included in the return value.
  *
- * @param {number} curriculumAssessmentId - The curriculum assessment ID
+ * @param {number} assessmentId - The curriculum assessment ID
  * @param {boolean} isQuestionsIncluded - The flag if the question should also be sent
  * @param {boolean} isAnswersIncluded - The flag if the answers should also be sent
  * @returns {CurriculumAssessment} - The details about matching curriculum assessment
@@ -178,7 +178,7 @@ export const findRoleInProgram = async (
 
 
 export const getCurriculumAssessmentById = async (
-  curriculumAssessmentId: number,
+  assessmentId: number,
   isQuestionsIncluded?: boolean,
   isAnswersIncluded?: boolean
 ): Promise<CurriculumAssessment> => {
@@ -197,11 +197,11 @@ export const getCurriculumAssessmentById = async (
       'created_at',
       'updated_at'
     )
-    .where('id', curriculumAssessmentId);
+    .where('id', assessmentId);
 
   if (isQuestionsIncluded == true) {
     const questions = await getQuestionsByCurriculumAssessmentId(
-      curriculumAssessmentId,
+      assessmentId,
       isAnswersIncluded
     );
 
@@ -215,19 +215,19 @@ export const getCurriculumAssessmentById = async (
 /**
  * a function based on curriculum assessment ID that allow include or exclude answers to response
  *
- * @param {number} curriculumAssessmentId - The curriculum assessment ID
+ * @param {number} assessmentId - The curriculum assessment ID
  * @param {boolean} isAnswersIncluded - The flag if the answers should also be sent
  * @returns {Question[]} - The data about questions
  *
  */
 
 export const getQuestionsByCurriculumAssessmentId = async (
-  curriculumAssessmentId: number,
+  assessmentId: number,
   isAnswersIncluded: boolean
 ) => {
   const questions = await db<Question>('assessment_questions')
     .select()
-    .where({ assessment_id: curriculumAssessmentId });
+    .where({ assessment_id: assessmentId });
 
   if (isAnswersIncluded == true) {
     const questionIds = questions.map(element => element.id);
@@ -285,7 +285,7 @@ export const submissionDetails = async (
 ) => {
   const assessmentSubmissionByProgramAssessmentId =
     await db<AssessmentSubmission>('assessment_submission')
-      .select()
+      .select("*")
       .where({ id: programAssessmentId });
 
   if (isResponsesIncluded) {
