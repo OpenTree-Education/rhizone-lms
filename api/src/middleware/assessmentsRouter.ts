@@ -38,29 +38,29 @@ assessmentsRouter.get('/', async (req, res, next) => {
 
 });
 
-assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
-  const { assessmentId } = req.params;
-  const assessmentIdNum = Number(assessmentId);
-  try {
-    const [assessmentsForFacilitator, assessmentsForParticipant] =
-      await Promise.all([
-        getCurriculumAssessmentById(assessmentIdNum, true, true),
-        getCurriculumAssessmentById(assessmentIdNum, true, false),
-      ]);
-    res.json({
-      facilitatorAssessment: collectionEnvelope(
-        assessmentsForFacilitator,
-        assessmentsForFacilitator.length
-      ),
-      participantAssessment: collectionEnvelope(
-        assessmentsForParticipant,
-        assessmentsForParticipant.length
-      ),
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+// assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
+//   const { assessmentId } = req.params;
+//   const assessmentIdNum = Number(assessmentId);
+//   try {
+//     const [assessmentsForFacilitator, assessmentsForParticipant] =
+//       await Promise.all([
+//         getCurriculumAssessmentById(assessmentIdNum, true, true),
+//         getCurriculumAssessmentById(assessmentIdNum, true, false),
+//       ]);
+//     res.json({
+//       facilitatorAssessment: collectionEnvelope(
+//         assessmentsForFacilitator,
+//         assessmentsForFacilitator.length
+//       ),
+//       participantAssessment: collectionEnvelope(
+//         assessmentsForParticipant,
+//         assessmentsForParticipant.length
+//       ),
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
 // Creates a new assessment
 // Incoming: CurriculumAssessment (including 'questions') and ProgramAssessment
@@ -122,7 +122,6 @@ assessmentsRouter.post('/', async (req, res, next) => {
 });
 
 //Shows a single assessment
-//TODO change according to #517
 
 // Outgoing:
 // - participant: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and their AssessmentSubmissions[] (not including 'responses' member)
@@ -259,6 +258,7 @@ assessmentsRouter.get('/:assessmentId/submissions/new', (req, res) => {
 // - facilitator: CurriculumAssessment (with 'questions' and 'answers' and correct answers), ProgramAssessment, and AssessmentSubmission (with 'responses')
 assessmentsRouter.get(
   '/:assessmentId/submissions/:submissionId',
+  
   (req, res) => {
     const response = {
       behaviour: 'Returns the submission information (metadata, answers, etc)',
