@@ -12,7 +12,7 @@ import {
   Question,
 } from '../models';
 
-// TODO: Test file
+// TODO: Test file, check headers
 
 /**
  * a function that returns the curriculum assessment ID and program ID given a program assessment ID.
@@ -169,7 +169,7 @@ export const getCurriculumAssessmentWithQuestions = async (
   if (isQuestionsIncluded == true) {
     const questions = await getQuestionsByCurriculumAssessmentId(
       assessmentId,
-      isAnswersIncluded == false
+      isAnswersIncluded
     );
   }
   return curriculumAssessmentDetails;
@@ -340,7 +340,6 @@ export const getCurriculumAssessmentBasedOnRole = async (
   }
 };
 
-// ? where do we get information for AssessmentSubmissionsSummary
 /**
  * a function to returns details about the curriculum assessment given a curriculum assessment ID, with an optional flag to determine whether or not questions and answers should be included in the return value.
  *
@@ -376,8 +375,8 @@ export const getCurriculumAssessmentById = async (
 
   if (isQuestionsIncluded == true) {
     const questions = await getQuestionsByCurriculumAssessmentId(
-      isAnswersIncluded,
-      assessmentId
+      assessmentId,
+      isAnswersIncluded
     );
 
     curriculumAssessmentDetails.questions = questions.filter(
@@ -398,8 +397,8 @@ export const getCurriculumAssessmentById = async (
  */
 
 export const getQuestionsByCurriculumAssessmentId = async (
-  isAnswersIncluded: boolean,
-  assessmentId: number
+  assessmentId: number,
+  isAnswersIncluded: boolean
 ) => {
   const questions = await db<Question>('assessment_questions')
     .select('*')
