@@ -32,6 +32,7 @@ assessmentsRouter.get('/', async (req, res, next) => {
   res.json(collectionEnvelope(assessments, assessments.length));
 });
 
+// TODO: fixed function
 // assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
 //   const { assessmentId } = req.params;
 //   const assessmentIdNum = Number(assessmentId);
@@ -120,6 +121,7 @@ assessmentsRouter.post('/', async (req, res, next) => {
 // Outgoing:
 // - participant: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and their AssessmentSubmissions[] (not including 'responses' member)
 // - facilitator: CurriculumAssessment (including 'questions' and 'answers'), ProgramAssessment, and all AssessmentSubmissions[] for all assessment submissions for this assessment and for participants in this program (not including 'responses' member)
+// TODO: fixed function
 
 // assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
 //   const { assessmentId } = req.params;
@@ -135,7 +137,7 @@ assessmentsRouter.post('/', async (req, res, next) => {
 //     next(error);
 //     return;
 //   }
-//   res.json(collectionEnvelope(assessments, assessments.length));
+//   res.json(collectionEnvelope(assessmentsResponse, assessmentsResponse.length));
 // });
 
 // Edits an assessment in the system
@@ -216,9 +218,7 @@ assessmentsRouter.put('/assessment/:assessmentId', async (req, res, next) => {
   res.json(itemEnvelope({ id: assessmentId }));
 });
 
-//TODO logic should be changed to facilitator/participant role
-//
-
+//TODO: logic should be changed to facilitator/participant role based on permission
 // Deletes” an assessment in the system
 assessmentsRouter.delete('/:assessmentId', async (req, res, next) => {
   const { assessmentId } = req.params;
@@ -238,7 +238,7 @@ assessmentsRouter.delete('/:assessmentId', async (req, res, next) => {
   }
   res.status(204).send();
 });
-
+//TODO: fixed the router
 // Outgoing:
 // - participants: CurriculumAssessment (with 'questions' and 'answers' but not the correct answers), ProgramAssessment, and a newly-created AssessmentSubmission
 // - facilitators: error (they shouldn't access this page)

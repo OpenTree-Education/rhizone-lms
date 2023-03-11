@@ -12,7 +12,7 @@ import {
   Question,
 } from '../models';
 
-// TODO: Test file, check headers
+// TODO: Test file, check and finished with headers
 
 /**
  * a function that returns the curriculum assessment ID and program ID given a program assessment ID.
@@ -85,6 +85,8 @@ export const getAssessmentSubmissionsSummary = async (
 ): Promise<
   AssessmentSubmissionsSummary | FacilitatorAssessmentSubmissionsSummary
 > => {
+  // TODO: make it as a function within this function
+
   const programId = await getProgramIdByAssessmentId(programAssessmentId);
   const programIdNum = Number(programId);
   const role = await findRoleInProgram(principalId, programIdNum);
@@ -138,7 +140,7 @@ export const getAssessmentsForProgram = async (
     .where({ program_id: programId });
   return matchingProgramAssessment;
 };
-
+//TODO: test this function with postman
 /**
  * a function that returns assessment summary that needed for getAssessmentsSummary function
  * @param {number} assessmentId - The program ID for the specified program
@@ -445,8 +447,6 @@ export const programAssessmentById = async (programAssessmentId: number) => {
   return findProgramAssessmentById;
 };
 
-// TODO: Fix spelling error in function name.
-
 /**
  * A function to return details about your own submissions or all participants' submissions,
  * with an optional flag to determine whether or not responses should be included in the return value.
@@ -516,7 +516,6 @@ export const listAssessmentsByParticipant = async (principalId: number) => {
 // TODO: Fix function header
 
 /**
- * (POST /assessments) ERR 403/
  * A function that creates a new assessment into the system
  * @param {string} title title for assessment
  * @param {string} description description of assessment
@@ -581,6 +580,7 @@ export const deleteAssessmentById = async (assessmentId: number) => {
   });
 };
 
+//TODO: this functions left
 /**
  * (PUT /assessments/:id) ERR 403/
  * Edits an assessment in the system
@@ -606,7 +606,6 @@ export const deleteAssessmentById = async (assessmentId: number) => {
  * and possible answers and the submission ID number/
  *
  */
-// ? which function structure is more apropriate post/put assessment
 
 /**
  * A function that update assessment by ID
@@ -665,26 +664,26 @@ export const updateAssessmentById = async (
 
 // TODO: Fix function header
 
-// /**
-//  *
-//  * @param {number} assessmentId - The assessment ID for the specified submission
-//  * @returns {Assessment} - The assessment data for the specified assessment ID
-//  */
-// export const findAssessment = async (assessmentId: number) => {
-//   const [matchingAssessment] = await db<CurriculumAssessment>(
-//     'curriculum_assessment'
-//   )
-//     .select(
-//       'id',
-//       'title',
-//       'start_date',
-//       'end_date',
-//       'time_zone',
-//       'curriculum_id'
-//     )
-//     .where({ assessment_id: assessmentId });
-//   return matchingAssessment;
-// };
+/**
+ *a function that match curriculum assessment informatio with given assessment ID
+ * @param {number} assessmentId - The assessment ID for the specified submission
+ * @returns {Assessment} - The assessment data for the specified assessment ID
+ */
+export const findAssessment = async (assessmentId: number) => {
+  const [matchingAssessment] = await db<CurriculumAssessment>(
+    'curriculum_assessment'
+  )
+    .select(
+      'id',
+      'title',
+      'start_date',
+      'end_date',
+      'time_zone',
+      'curriculum_id'
+    )
+    .where({ id: assessmentId });
+  return matchingAssessment;
+};
 
 /**
  * Get information about assessment submission based on role
