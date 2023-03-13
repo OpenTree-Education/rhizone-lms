@@ -70,7 +70,7 @@ const App = () => {
             }
           />
           <Route
-            path="/assessments/:id"
+            path="/assessments/:assessmentId/:submissionId"
             element={
               <RequireAuth>
                 <AssessmentsDetailPage />

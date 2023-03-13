@@ -12,38 +12,40 @@ import {
 } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-import { Question } from '../assets/data';
+import {Question, AssessmentResponse, Answer, AssessmentSubmission} from '../types/api.d'
 
 interface QuestionCardProps {
   question: Question;
-  handleNewAnswer: (
-    question: Question,
-    chosenAnswerId?: number,
-    responseText?: string
+  assessmentResponse:AssessmentResponse;
+  handleUpdatedResponse: (
+    questionId: number,
+    answerId?: number,
+    response?: string
   ) => void;
-  currentStatus: string;
+  submissionState: string;
 }
 
 const QuestionCard = ({
   question,
-  handleNewAnswer,
-  currentStatus,
+  assessmentResponse,
+  handleUpdatedResponse,
+  submissionState,
 }: QuestionCardProps) => {
   const [radioValue, setRadioValue] = React.useState('');
   const handleChangeRadio = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRadioValue(event.target.value);
-    handleNewAnswer(question, parseInt(event.target.value), undefined);
+    handleUpdatedResponse(question.id!, parseInt(event.target.value), undefined);
   };
 
   const [selectValue, setSelectValue] = React.useState('');
   const handleChangeSelect = (event: SelectChangeEvent) => {
     setSelectValue(event.target.value);
-    handleNewAnswer(question, parseInt(event.target.value), undefined);
+    handleUpdatedResponse(question.id!, parseInt(event.target.value), undefined);
   };
 
   const handleChangeText = (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleNewAnswer(
-      question,
+    handleUpdatedResponse(
+      question.id!,
       undefined,
       event.target.value === '' ? undefined : event.target.value
     );
@@ -51,7 +53,7 @@ const QuestionCard = ({
 
   const TableRowWrapper = (question: Question) => {
     if (
-      question.questionType === 'single choice' &&
+      question.question_type === 'single choice' &&
       question.answers?.length &&
       question.answers?.length < 5
     ) {
@@ -60,23 +62,24 @@ const QuestionCard = ({
           <RadioGroup value={radioValue} onChange={handleChangeRadio}>
             {question.answers?.map(a => (
               <FormControlLabel
-                control={<Radio disabled={currentStatus !== 'Opened'} />}
+                control={<Radio disabled={submissionState !== 'Opened'} />}
                 value={a.id}
                 key={a.id}
                 label={a.title}
+                checked={assessmentResponse.answer_id === a.id}
               />
             ))}
           </RadioGroup>
         </FormControl>
       );
-    } else if (question.questionType === 'single choice') {
+    } else if (question.question_type === 'single choice') {
       return (
         <FormControl style={{ width: '50%' }}>
           <Select
             required
             onChange={handleChangeSelect}
             value={selectValue}
-            disabled={currentStatus !== 'Opened'}
+            disabled={submissionState !== 'Opened'}
           >
             {question.answers?.map(a => (
               <MenuItem value={a.id} key={a.id}>
@@ -90,12 +93,12 @@ const QuestionCard = ({
       return (
         <TextField
           required
-          label="Answer"
+          label={assessmentResponse.response}
           multiline
           variant="standard"
           fullWidth
           onChange={handleChangeText}
-          disabled={currentStatus !== 'Opened'}
+          disabled={submissionState !== 'Opened'}
         />
       );
     }
@@ -104,7 +107,7 @@ const QuestionCard = ({
     <Card>
       <CardContent>
         <Typography gutterBottom variant="h6" component="div">
-          {question.sortOrder}. {question.title}
+          {question.sort_order}. {question.title}
         </Typography>
         {TableRowWrapper(question)}
       </CardContent>

@@ -6,51 +6,76 @@ import { Alert, AlertTitle, Container, Grid } from '@mui/material';
 import {
   assessmentList,
   exampleTestQuestionsList,
-  exampleTestSubmissionList,
-  Question,
-  AssessmentChosenAnswer,
 } from '../assets/data';
+import {Question, AssessmentResponse, Answer, AssessmentSubmission} from '../types/api.d'
 import AssessmentMetadataBar from './AssessmentMetadataBar';
 import AssessmentDisplay from './AssessmentDisplay';
 import AssessmentSubmitBar from './AssessmentSubmitBar';
 
 const AssessmentDetailPage = () => {
-  const id = useParams();
-  //TODO: fetch the assessment by id
+  const { assessmentId, submissionId } = useParams(); 
+  const assessmentIdNumber = Number(assessmentId); 
+  const submissionIdNumber = Number(submissionId); 
+  if (!Number.isInteger(assessmentIdNumber) || !Number.isInteger(submissionIdNumber) || assessmentIdNumber < 0 || submissionIdNumber<0) {
+    return (
+      <Alert severity="error">
+        <AlertTitle>Sorry!</AlertTitle>
+        The assessment and submission id must be valid.
+      </Alert>
+    );
+  }
+
   const assessment = assessmentList.find(
-    assessment => assessment.id === parseInt(id.id ? id.id : '')
+    assessment => assessment.id === assessmentIdNumber
   );
 
-  let assessmentAnswersArr = new Array<AssessmentChosenAnswer>(
-    exampleTestQuestionsList.length
-  );
-  for (var i = 0; i < exampleTestQuestionsList.length; i++) {
-    assessmentAnswersArr[i] = {
-      chosenAnswerId: undefined,
-      responseText: undefined,
-    };
-  }
-  const [assessmentAnswers, setAssessmentAnswers] =
-    useState(assessmentAnswersArr);
+  // const assessmentResponses: AssessmentResponse[] = exampleTestQuestionsList.map((question) => {
+  //    return { assessment_id: assessmentIdNumber, submission_id: submissionIdNumber, question_id: question.id }
+  //    });
+  // let assessmentAnswersArr = new Array<AssessmentResponse>(
+  //   exampleTestQuestionsList.length
+  // );
+  // for (var i = 0; i < exampleTestQuestionsList.length; i++) {
+  //   assessmentAnswersArr[i] = {
+  //     chosenAnswerId: undefined,
+  //     responseText: undefined,
+  //   };
+  // }
+  const [assessmentResponse, setAssessmentResponse] =
+    useState<AssessmentResponse[]>(exampleTestQuestionsList.map((question) => {
+      return { assessment_id: assessmentIdNumber, submission_id: submissionIdNumber, question_id: question.id! }
+      }));
   const [numOfAnsweredQuestion, setNumOfAnsweredQuestion] = useState(0);
 
-  const handleNewAnswer = (
-    question: Question,
-    chosenAnswerId?: number,
-    responseText?: string
+  const handleUpdatedResponse = (
+    questionId: number,
+    answerId?: number,
+    response?: string
   ) => {
-    assessmentAnswers[question.sortOrder - 1].chosenAnswerId = chosenAnswerId;
-    assessmentAnswers[question.sortOrder - 1].responseText = responseText;
-    setAssessmentAnswers(assessmentAnswers);
+    if(answerId){
+      assessmentResponse.find(q => q.question_id ===questionId)!.answer_id = answerId;
+    }
+
+    if(response){
+      assessmentResponse.find(q => q.question_id ===questionId)!.response = response;
+    }
+
+    setAssessmentResponse(assessmentResponse);
     setNumOfAnsweredQuestion(
-      assessmentAnswers.filter(a => a.chosenAnswerId || a.responseText).length
+      assessmentResponse.filter(a => a.answer_id || a.response).length
     );
   };
 
   const [assessmentQuestions] = useState(exampleTestQuestionsList);
 
-  //TODO: fetch previous or request a new submission
-  const [submission] = React.useState(exampleTestSubmissionList[1]);
+  const [submission] = React.useState<AssessmentSubmission>(
+      {
+    id: 2,
+    assessment_id: 3,
+    principal_id:1,
+    assessment_submission_state: 'Opened',
+    opened_at: new Date().getTime().toString(),
+  });
 
   const [showSubmitDialog, setShowSubmitDialog] = React.useState(false);
 
@@ -59,17 +84,17 @@ const AssessmentDetailPage = () => {
       event.preventDefault();
     }
     setShowSubmitDialog(false);
-    submission.state = 'Submitted';
-    submission.submitAt = new Date().getTime();
+    submission.assessment_submission_state = 'Submitted';
+    submission.submitted_at = "631152000000";
     //TODO: send request to submit the assessment
-    document.querySelector('#assessment_display')!.scrollTo(0, 0);
+    document.querySelector('#assessment_display')!.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (!assessment || !submission) {
     return (
       <Alert severity="error">
         <AlertTitle>Sorry!</AlertTitle>
-        There is a problem loading this assessment or submisssion.
+        There is a problem loading this assessment or submission.
       </Alert>
     );
   }
@@ -104,13 +129,15 @@ const AssessmentDetailPage = () => {
             }}
           >
             <AssessmentDisplay
-              submission={submission}
-              handleNewAnswer={handleNewAnswer}
+            questioins={exampleTestQuestionsList}
+              submissionState={submission.assessment_submission_state}
+              assessmentResponse={assessmentResponse}
+              handleUpdatedResponse={handleUpdatedResponse}
             />
           </Grid>
           <Grid item xs={12} md={1.5}>
             <AssessmentSubmitBar
-              submissionState={submission.state}
+              submissionState={submission.assessment_submission_state}
               assessmentQuestions={assessmentQuestions}
               assessmentAnswers={assessmentAnswers}
               numOfAnsweredQuestion={numOfAnsweredQuestion}

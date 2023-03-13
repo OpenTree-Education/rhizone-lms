@@ -23,8 +23,9 @@ import {
   Assessment,
   SubmissionStatus,
   AssessmentType,
-  AssessmentSubmission,
+  // AssessmentSubmission,
 } from '../assets/data';
+import {Question, AssessmentResponse, Answer, AssessmentSubmission} from '../types/api.d'
 import { formatDateTime } from '../helpers/dateTime';
 
 interface AssessmentMetadataBarProps {
@@ -36,9 +37,11 @@ const AssessmentMetadataBar = ({
   assessment,
   submission,
 }: AssessmentMetadataBarProps) => {
+  const enabledBgColor = blue[600];
+  const disabledBgColor = grey[400];
   const dueTime = new Date(assessment?.dueDate!);
   //TODO: use the opened date from the submission
-  const [openedTime] = useState(new Date());
+  const [openedTime] = useState(new Date(submission.opened_at));
   const [secondsRemaining, setSecondsRemaining] = useState(
     assessment?.testDuration! * 60
   );
@@ -102,9 +105,9 @@ const AssessmentMetadataBar = ({
             <Avatar
               sx={{
                 bgcolor: `${
-                  submission.state === SubmissionStatus.Opened
-                    ? blue[600]
-                    : grey[400]
+                  submission.assessment_submission_state === SubmissionStatus.Opened
+                    ? enabledBgColor
+                    : disabledBgColor
                 }`,
               }}
             >
@@ -122,9 +125,9 @@ const AssessmentMetadataBar = ({
             <Avatar
               sx={{
                 bgcolor: `${
-                  submission.state === SubmissionStatus.Opened
-                    ? blue[600]
-                    : grey[400]
+                  submission.assessment_submission_state === SubmissionStatus.Opened
+                    ? enabledBgColor
+                    : disabledBgColor
                 }`,
               }}
             >
@@ -133,15 +136,15 @@ const AssessmentMetadataBar = ({
           </ListItemAvatar>
           <ListItemText
             primary={`${
-              submission?.state === SubmissionStatus.Opened
+              submission?.assessment_submission_state === SubmissionStatus.Opened
                 ? `Active`
-                : `${submission?.state}`
+                : `${submission?.assessment_submission_state}`
             }`}
             secondary="Status"
           />
         </ListItem>
-        {submission.state === SubmissionStatus.Graded && (
-          <>
+        {submission.assessment_submission_state === SubmissionStatus.Graded && (
+          // <>
             <ListItem>
               <ListItemAvatar>
                 <Avatar>
@@ -150,9 +153,9 @@ const AssessmentMetadataBar = ({
               </ListItemAvatar>
               <ListItemText secondary="Score" primary={submission.score} />
             </ListItem>
-          </>
+          // </>
         )}
-        {submission.state === SubmissionStatus.Opened && (
+        {/* {submission.assessment_submission_state === SubmissionStatus.Opened && (
           <ListItem>
             <ListItemAvatar />
             <ListItemText
@@ -160,31 +163,31 @@ const AssessmentMetadataBar = ({
               primary={`${submission.id} out of max ${assessment?.maxNumSubmissions}`}
             />
           </ListItem>
-        )}
-        {(submission.state === SubmissionStatus.Submitted ||
-          submission.state === SubmissionStatus.Graded) && (
-          <>
-            <ListItem>
-              <ListItemAvatar>
-                <Avatar>
-                  <InventoryIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                secondary="Submissions"
-                primary={`${submission.id} out of ${assessment?.maxNumSubmissions}`}
-              />
-            </ListItem>
+        )} */}
+        {(submission.assessment_submission_state === SubmissionStatus.Submitted ||
+          submission.assessment_submission_state === SubmissionStatus.Graded) && (
+          // <>
+          //   <ListItem>
+          //     <ListItemAvatar>
+          //       <Avatar>
+          //         <InventoryIcon />
+          //       </Avatar>
+          //     </ListItemAvatar>
+          //     <ListItemText
+          //       secondary="Submissions"
+          //       primary={`${submission.id} out of ${assessment?.maxNumSubmissions}`}
+          //     />
+          //   </ListItem>
             <ListItem>
               <ListItemAvatar />
               <ListItemText
                 secondary="Submitted At"
                 primary={formatDateTime(
-                  new Date(submission.submitAt!).toString()
+                  new Date(submission.submitted_at!).toString()
                 )}
               />
             </ListItem>
-          </>
+          // </>
         )}
         <Divider variant="middle" component="li" />
         <ListItem>
@@ -192,9 +195,9 @@ const AssessmentMetadataBar = ({
             <Avatar
               sx={{
                 bgcolor: `${
-                  submission.state === SubmissionStatus.Opened
-                    ? blue[600]
-                    : grey[400]
+                  submission.assessment_submission_state === SubmissionStatus.Opened
+                    ? enabledBgColor
+                    : disabledBgColor
                 }`,
               }}
             >
@@ -209,16 +212,16 @@ const AssessmentMetadataBar = ({
           />
         </ListItem>
         {assessment!.type === AssessmentType.Test &&
-          submission.state === SubmissionStatus.Opened && (
+          submission.assessment_submission_state === SubmissionStatus.Opened && (
             <>
               <ListItem>
                 <ListItemAvatar>
                   <Avatar
                     sx={{
                       bgcolor: `${
-                        submission.state === SubmissionStatus.Opened
-                          ? blue[600]
-                          : grey[400]
+                        submission.assessment_submission_state === SubmissionStatus.Opened
+                          ? enabledBgColor
+                          : disabledBgColor
                       }`,
                     }}
                   >
