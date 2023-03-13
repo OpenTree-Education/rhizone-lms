@@ -87,7 +87,9 @@ export const getAssessmentSubmissionsSummary = async (
 > => {
   // TODO: make it as a function within this function
 
-  const programId = await getProgramIdByAssessmentId(programAssessmentId);
+  const programId = await getProgramIdByProgramAssessmentId(
+    programAssessmentId
+  );
   const programIdNum = Number(programId);
   const role = await findRoleInProgram(principalId, programIdNum);
 
@@ -101,12 +103,20 @@ export const getAssessmentSubmissionsSummary = async (
   }
 };
 
-export const getProgramIdByAssessmentId = async (
+export const getProgramIdByCurriculumAssessmentId = async (
+  curriculumAssessmentId: number
+) => {
+  return await db('program_assessment')
+    .select('program_id')
+    .where({ assessment_id: curriculumAssessmentId });
+};
+
+export const getProgramIdByProgramAssessmentId = async (
   programAssessmentId: number
 ) => {
   return await db('program_assessment')
     .select('program_id')
-    .where({ assessment_id: programAssessmentId });
+    .where({ id: programAssessmentId });
 };
 /**
  * a function that returns assessment summary that needed for getAssessmentsSummary function
@@ -118,7 +128,13 @@ export const principalEnrolledPrograms = async (principalId: number) => {
   const enrolledProgramsList = await db('program_participants')
     .select('program_id')
     .where({ principal_id: principalId });
-  console.log(enrolledProgramsList);
+  console.log(
+    `Principal ID ${principalId} is enrolled in the following programs: ${JSON.stringify(
+      enrolledProgramsList,
+      null,
+      2
+    )}`
+  );
   return enrolledProgramsList.map(
     enrolledProgram => enrolledProgram.program_id
   );
@@ -147,10 +163,10 @@ export const getAssessmentsForProgram = async (
  * @returns {CurriculumAssessment} - The curriculum assessment
  *
  */
-export const getCurriculumAssessmentWithQuestions = async (
+export const getCurriculumAssessment = async (
   assessmentId: number,
-  isQuestionsIncluded?: boolean,
-  isAnswersIncluded?: boolean
+  includeQuestions?: boolean,
+  includeAnswers?: boolean
 ): Promise<CurriculumAssessment> => {
   const [curriculumAssessmentDetails] = await db<CurriculumAssessment>(
     'curriculum_assessments'
@@ -168,11 +184,9 @@ export const getCurriculumAssessmentWithQuestions = async (
   );
   // .where('id', assessmentId);
 
-  if (isQuestionsIncluded == true) {
-    const questions = await getQuestionsByCurriculumAssessmentId(
-      assessmentId,
-      isAnswersIncluded
-    );
+  if (includeQuestions === true) {
+    curriculumAssessmentDetails.questions =
+      await getQuestionsByCurriculumAssessmentId(assessmentId, includeAnswers);
   }
   return curriculumAssessmentDetails;
 };
@@ -183,18 +197,16 @@ export const getCurriculumAssessmentWithQuestions = async (
  *
  */
 export const getFacilitatorAssessmentSubmissionsSummary = async (
-  assessmentId: number,
+  programAssessmentId: number,
   programId: number
 ): Promise<FacilitatorAssessmentSubmissionsSummary> => {
-  const [
-    numParticipantsWithSubmissions,
-    numProgramParticipants,
-    numUngradedSubmissions,
-  ] = await Promise.all([
-    Number(getTotalNumSubmissons(assessmentId)),
-    Number(getNumProgramParticipants(programId)),
-    Number(getNumUngradedSubmissons(assessmentId)),
-  ]);
+  const numParticipantsWithSubmissions = await getTotalNumSubmissons(
+    programAssessmentId
+  );
+  const numProgramParticipants = await getNumProgramParticipants(programId);
+  const numUngradedSubmissions = await getNumUngradedSubmissons(
+    programAssessmentId
+  );
 
   return {
     num_participants_with_submissions: numParticipantsWithSubmissions,
@@ -204,23 +216,33 @@ export const getFacilitatorAssessmentSubmissionsSummary = async (
 };
 
 // *******  Helpers for FacilitatorAssessmentSubmissionsSummary  **************//
-export const getNumProgramParticipants = async (programId: number) => {
-  return await db<number>('program_participants')
-    .count('id')
-    .where('program_id', programId);
+export const getNumProgramParticipants = async (
+  programId: number
+): Promise<number> => {
+  const [numProgramParticipants] = await db<number>('program_participants')
+    .where('program_id', programId)
+    .andWhere('role_id', 1)
+    .count({ count: '*' });
+  return numProgramParticipants as number;
 };
 
-export const getNumUngradedSubmissons = async (assessmentId: number) => {
-  return await db<number>('assessment_submissions')
-    .count('id')
-    .where('assessment_id', assessmentId)
-    .andWhere('score', null);
+export const getNumUngradedSubmissons = async (
+  programAssessmentId: number
+): Promise<number> => {
+  const [numUngradedSubmissions] = await db<number>('assessment_submissions')
+    .where('assessment_id', programAssessmentId)
+    .andWhere('score', null)
+    .count({ count: '*' });
+  return numUngradedSubmissions as number;
 };
 
-export const getTotalNumSubmissons = async (assessmentId: number) => {
-  return await db<number>('assessment_submissions')
-    .count('id')
-    .where('assessment_id', assessmentId);
+export const getTotalNumSubmissons = async (
+  programAssessmentId: number
+): Promise<number> => {
+  const [numTotalSubmissions] = await db<number>('assessment_submissions')
+    .where('assessment_id', programAssessmentId)
+    .count({ count: '*' });
+  return numTotalSubmissions as number;
 };
 // *******   end of helpers for FacilitatorAssessmentSubmissionsSummary **************//
 
