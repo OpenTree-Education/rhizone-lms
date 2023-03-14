@@ -109,13 +109,12 @@ export interface CurriculumAssessment {
 }
 
 export interface AssessmentSubmissionsSummary {
-  id?: number; //mgasquez Added
   principal_id: number;
   highest_state: string;
   most_recent_submitted_date: string;
   total_num_submissions: number;
   highest_score?: number;
-  assessment_submission_state: string; //mgasquez Added
+  assessment_submission_state: string;
 }
 
 export interface ProgramAssessment {
@@ -136,7 +135,7 @@ export interface AssessmentSummary {
   curriculum_assessment: CurriculumAssessment;
   program_assessment: ProgramAssessment;
   submissions_summary: AssessmentSubmissionsSummary;
-  // | FacilitatorAssessmentSubmissionsSummary;
+  /* | FacilitatorAssessmentSubmissionsSummary;*/
 }
 
 export interface AssessmentResponse {

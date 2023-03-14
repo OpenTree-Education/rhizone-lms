@@ -335,7 +335,7 @@ const AssessmentsPage = () => {
                 status={
                   assessment.submissions_summary.assessment_submission_state
                 }
-                key={assessment.submissions_summary.id}
+                key={assessment.submissions_summary.assessment_submission_state}
               >
                 <TableCellWrapper
                   statusTab={currentStatusTab}
@@ -359,7 +359,7 @@ const AssessmentsPage = () => {
                     StatusTab.Upcoming,
                   ]}
                 >
-                  {assessment.curriculum_assessment.activity_id}
+                  {assessment.curriculum_assessment.assessment_type}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
