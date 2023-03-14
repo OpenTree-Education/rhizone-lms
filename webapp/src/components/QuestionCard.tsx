@@ -12,38 +12,41 @@ import {
 } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-import { Question } from '../assets/data';
+import { Question, AssessmentResponse } from '../types/api.d';
 
 interface QuestionCardProps {
   question: Question;
-  handleNewAnswer: (
-    question: Question,
-    chosenAnswerId?: number,
-    responseText?: string
+  assessmentResponse: AssessmentResponse;
+  handleUpdatedResponse: (
+    questionId: number,
+    answerId?: number,
+    response?: string
   ) => void;
-  currentStatus: string;
+  submissionState: string;
 }
 
 const QuestionCard = ({
   question,
-  handleNewAnswer,
-  currentStatus,
+  assessmentResponse,
+  handleUpdatedResponse,
+  submissionState,
 }: QuestionCardProps) => {
-  const [radioValue, setRadioValue] = React.useState('');
-  const handleChangeRadio = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRadioValue(event.target.value);
-    handleNewAnswer(question, parseInt(event.target.value), undefined);
+  const [singleChoiceValue, setSingleChoiceValue] = React.useState(
+    assessmentResponse.answer_id ? assessmentResponse.answer_id : 0
+  );
+  const handleChangeSingleChoice = (event: SelectChangeEvent) => {
+    setSingleChoiceValue(Number(event.target.value));
+    handleUpdatedResponse(question.id!, Number(event.target.value), undefined);
   };
 
-  const [selectValue, setSelectValue] = React.useState('');
-  const handleChangeSelect = (event: SelectChangeEvent) => {
-    setSelectValue(event.target.value);
-    handleNewAnswer(question, parseInt(event.target.value), undefined);
-  };
+  const [responseTextValue, setResponseTextValue] = React.useState(
+    assessmentResponse.response ? assessmentResponse.response : ''
+  );
 
   const handleChangeText = (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleNewAnswer(
-      question,
+    setResponseTextValue(event.target.value);
+    handleUpdatedResponse(
+      question.id!,
       undefined,
       event.target.value === '' ? undefined : event.target.value
     );
@@ -51,36 +54,59 @@ const QuestionCard = ({
 
   const TableRowWrapper = (question: Question) => {
     if (
-      question.questionType === 'single choice' &&
+      question.question_type === 'single choice' &&
       question.answers?.length &&
       question.answers?.length < 5
     ) {
       return (
         <FormControl>
-          <RadioGroup value={radioValue} onChange={handleChangeRadio}>
+          <RadioGroup
+            value={singleChoiceValue}
+            onChange={handleChangeSingleChoice}
+          >
             {question.answers?.map(a => (
-              <FormControlLabel
-                control={<Radio disabled={currentStatus !== 'Opened'} />}
-                value={a.id}
-                key={a.id}
-                label={a.title}
-              />
+              <React.Fragment key={a.id}>
+                <FormControlLabel
+                  control={
+                    <Radio
+                      disabled={
+                        submissionState !== 'Opened' &&
+                        submissionState !== 'In Progress'
+                      }
+                    />
+                  }
+                  value={a.id}
+                  key={a.id}
+                  label={a.title}
+                  checked={assessmentResponse.answer_id === a.id}
+                />
+                {a.description && (
+                  <Typography variant="caption" sx={{ marginLeft: '3em' }}>
+                    ({a.description})
+                  </Typography>
+                )}{' '}
+              </React.Fragment>
             ))}
           </RadioGroup>
         </FormControl>
       );
-    } else if (question.questionType === 'single choice') {
+    } else if (question.question_type === 'single choice') {
       return (
         <FormControl style={{ width: '50%' }}>
           <Select
             required
-            onChange={handleChangeSelect}
-            value={selectValue}
-            disabled={currentStatus !== 'Opened'}
+            onChange={handleChangeSingleChoice}
+            value={singleChoiceValue === 0 ? '' : singleChoiceValue.toString()}
+            disabled={
+              submissionState !== 'Opened' && submissionState !== 'In Progress'
+            }
           >
             {question.answers?.map(a => (
               <MenuItem value={a.id} key={a.id}>
                 {a.title}
+                {a.description && (
+                  <Typography variant="caption">({a.description})</Typography>
+                )}
               </MenuItem>
             ))}
           </Select>
@@ -90,12 +116,15 @@ const QuestionCard = ({
       return (
         <TextField
           required
-          label="Answer"
           multiline
           variant="standard"
           fullWidth
+          label="Answer"
+          value={responseTextValue}
           onChange={handleChangeText}
-          disabled={currentStatus !== 'Opened'}
+          disabled={
+            submissionState !== 'Opened' && submissionState !== 'In Progress'
+          }
         />
       );
     }
@@ -104,7 +133,12 @@ const QuestionCard = ({
     <Card>
       <CardContent>
         <Typography gutterBottom variant="h6" component="div">
-          {question.sortOrder}. {question.title}
+          {question.sort_order}. {question.title}
+          {question.description && (
+            <Typography variant="caption" sx={{ marginLeft: '1em' }}>
+              ({question.description})
+            </Typography>
+          )}
         </Typography>
         {TableRowWrapper(question)}
       </CardContent>

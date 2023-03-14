@@ -1,3 +1,4 @@
+import { Question } from '../types/api.d';
 export interface Assessment {
   id: number;
   title: string;
@@ -12,41 +13,10 @@ export interface Assessment {
   maxNumSubmissions?: number;
 }
 
-export interface Question {
-  id: number;
-  title: string;
-  description?: string;
-  questionType: string;
-  correctAnswer?: number;
-  maxScore: number;
-  sortOrder: number;
-  answers?: Answer[];
-}
-
-export interface Answer {
-  id?: number;
-  title: string;
-  description?: string;
-  sortOrder: number;
-}
-
-export interface AssessmentChosenAnswer {
-  chosenAnswerId?: number;
-  responseText?: string;
-}
-
-export interface AssessmentSubmission {
-  id: number;
-  assessmentId: number;
-  state: string;
-  score?: number;
-  openAt: number;
-  submitAt?: number;
-}
-
 export enum SubmissionStatus {
   Submitted = 'Submitted',
   Opened = 'Opened',
+  InProgress = 'In Progress',
   Expired = 'Expired',
   Graded = 'Graded',
 }
@@ -57,154 +27,126 @@ export enum AssessmentType {
   Assignment = 'Assignment',
 }
 
-export const exampleTestSubmissionList: AssessmentSubmission[] = [
-  {
-    id: 1,
-    assessmentId: 3,
-    state: 'Submitted',
-    openAt: 1678123118000,
-    submitAt: 1678123118000,
-  },
-  {
-    id: 2,
-    assessmentId: 3,
-    state: 'Opened',
-    openAt: 1678138445000,
-  },
-  {
-    id: 3,
-    assessmentId: 3,
-    state: 'Expired',
-    openAt: 1678138445000,
-  },
-  {
-    id: 4,
-    assessmentId: 3,
-    state: 'Graded',
-    score: 80,
-    openAt: 1678138445000,
-    submitAt: 1678123118000,
-  },
-];
-
 export const exampleTestQuestionsList: Question[] = [
   {
     id: 15,
     title: 'What is MySQL?',
-    questionType: 'single choice',
-    maxScore: 1,
-    sortOrder: 1,
+    description: 'Choose one.',
+    question_type: 'single choice',
+    max_score: 1,
+    sort_order: 1,
     answers: [
       {
         id: 42,
         title: 'A relational database management system',
-        sortOrder: 1,
+        description: 'aka a database.',
+        sort_order: 1,
       },
-      { id: 43, title: 'A programming language', sortOrder: 2 },
-      { id: 44, title: 'An operating system', sortOrder: 3 },
-      { id: 45, title: 'A web server', sortOrder: 4 },
+      { id: 43, title: 'A programming language', sort_order: 2 },
+      { id: 44, title: 'An operating system', sort_order: 3 },
+      { id: 45, title: 'A web server', sort_order: 4 },
     ],
   },
   {
     id: 16,
     title: 'INT and VARCHAR are some common data types in MySQL.',
-    questionType: 'single choice',
-    maxScore: 1,
-    sortOrder: 2,
+    question_type: 'single choice',
+    max_score: 1,
+    sort_order: 2,
     answers: [
-      { id: 46, title: 'True', sortOrder: 1 },
-      { id: 47, title: 'False', sortOrder: 2 },
+      { id: 46, title: 'True', sort_order: 1 },
+      { id: 47, title: 'False', sort_order: 2 },
     ],
   },
   {
     id: 17,
     title: 'Which command is used to create a new database in MySQL?',
-    questionType: 'single choice',
-    maxScore: 1,
-    sortOrder: 3,
+    question_type: 'single choice',
+    max_score: 1,
+    sort_order: 3,
     answers: [
-      { id: 48, title: 'CREATE TABLE', sortOrder: 1 },
-      { id: 49, title: 'CREATE INDEX', sortOrder: 2 },
-      { id: 50, title: 'CREATE DATABASE', sortOrder: 3 },
-      { id: 51, title: 'CREATE SCHEMA', sortOrder: 4 },
+      { id: 48, title: 'CREATE TABLE', sort_order: 1 },
+      { id: 49, title: 'CREATE INDEX', sort_order: 2 },
+      { id: 50, title: 'CREATE DATABASE', sort_order: 3 },
+      { id: 51, title: 'CREATE SCHEMA', sort_order: 4 },
     ],
   },
   {
     id: 18,
     title:
       'COUNT, SUM, and INSERT INTO are some common MySQL aggregate functions.',
-    questionType: 'single choice',
-    maxScore: 1,
-    sortOrder: 4,
+    question_type: 'single choice',
+    max_score: 1,
+    sort_order: 4,
     answers: [
-      { id: 52, title: 'True', sortOrder: 1 },
-      { id: 53, title: 'False', sortOrder: 2 },
+      { id: 52, title: 'True', sort_order: 1 },
+      { id: 53, title: 'False', sort_order: 2 },
     ],
   },
   {
     id: 19,
     title: 'Which command is used to insert new data into a MySQL table?',
-    questionType: 'single choice',
-    maxScore: 1,
-    sortOrder: 5,
+    question_type: 'single choice',
+    max_score: 1,
+    sort_order: 5,
     answers: [
-      { id: 54, title: 'ADD DATA', sortOrder: 1 },
-      { id: 55, title: 'INSERT DATA', sortOrder: 2 },
-      { id: 56, title: 'INSERT ROW', sortOrder: 3 },
-      { id: 57, title: 'INSERT INTO', sortOrder: 4 },
+      { id: 54, title: 'ADD DATA', sort_order: 1 },
+      { id: 55, title: 'INSERT DATA', sort_order: 2 },
+      { id: 56, title: 'INSERT ROW', sort_order: 3 },
+      { id: 57, title: 'INSERT INTO', sort_order: 4 },
     ],
   },
   {
     id: 20,
     title: 'Which command is used to delete a table from a MySQL database?',
-    questionType: 'single choice',
-    maxScore: 1,
-    sortOrder: 6,
+    question_type: 'single choice',
+    max_score: 1,
+    sort_order: 6,
     answers: [
-      { id: 58, title: 'DELETE TABLE', sortOrder: 1 },
-      { id: 59, title: 'DROP TABLE', sortOrder: 2 },
-      { id: 60, title: 'REMOVE TABLE', sortOrder: 3 },
-      { id: 61, title: 'ERASE TABLE', sortOrder: 4 },
+      { id: 58, title: 'DELETE TABLE', sort_order: 1 },
+      { id: 59, title: 'DROP TABLE', sort_order: 2 },
+      { id: 60, title: 'REMOVE TABLE', sort_order: 3 },
+      { id: 61, title: 'ERASE TABLE', sort_order: 4 },
     ],
   },
   {
     id: 21,
     title:
       'Which builtin MySQL function can be used to add every value from a column together in a query?',
-    questionType: 'single choice',
-    maxScore: 1,
-    sortOrder: 7,
+    question_type: 'single choice',
+    max_score: 1,
+    sort_order: 7,
     answers: [
-      { id: 62, title: 'MAX', sortOrder: 1 },
-      { id: 63, title: 'TOGETHER', sortOrder: 2 },
-      { id: 64, title: 'TOTAL', sortOrder: 3 },
-      { id: 65, title: 'SUM', sortOrder: 4 },
-      { id: 66, title: 'MIN', sortOrder: 5 },
-      { id: 67, title: 'SUMTOTAL', sortOrder: 6 },
-      { id: 68, title: 'TOTALSUM', sortOrder: 7 },
+      { id: 62, title: 'MAX', sort_order: 1, description: 'aka MAX.' },
+      { id: 63, title: 'TOGETHER', sort_order: 2 },
+      { id: 64, title: 'TOTAL', sort_order: 3 },
+      { id: 65, title: 'SUM', sort_order: 4 },
+      { id: 66, title: 'MIN', sort_order: 5 },
+      { id: 67, title: 'SUMTOTAL', sort_order: 6 },
+      { id: 68, title: 'TOTALSUM', sort_order: 7 },
     ],
   },
   {
     id: 22,
     title: 'Which command is used to retrieve data from a MySQL table?',
-    questionType: 'free response',
-    maxScore: 9,
-    sortOrder: 8,
+    question_type: 'free response',
+    max_score: 9,
+    sort_order: 8,
   },
   {
     id: 23,
     title:
       'Which function is used to count the number of rows in a MySQL table?',
-    questionType: 'free response',
-    maxScore: 9,
-    sortOrder: 9,
+    question_type: 'free response',
+    max_score: 9,
+    sort_order: 9,
   },
   {
     id: 24,
     title: 'Which keyword is used to specify the condition for a MySQL query?',
-    questionType: 'free response',
-    maxScore: 10,
-    sortOrder: 10,
+    question_type: 'free response',
+    max_score: 10,
+    sort_order: 10,
   },
 ];
 
@@ -237,7 +179,7 @@ export const assessmentList: Assessment[] = [
     title: 'Final Exam',
     description: 'The final exam for the course.',
     type: 'Test',
-    dueDate: '2023-03-31 22:00',
+    dueDate: '1680289940000',
     testDuration: 120,
     availableDate: '2023-03-20',
     status: 'Active',
