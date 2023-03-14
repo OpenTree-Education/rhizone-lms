@@ -12,11 +12,11 @@ import {
 } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-import {Question, AssessmentResponse, Answer, AssessmentSubmission} from '../types/api.d'
+import { Question, AssessmentResponse } from '../types/api.d';
 
 interface QuestionCardProps {
   question: Question;
-  assessmentResponse:AssessmentResponse;
+  assessmentResponse: AssessmentResponse;
   handleUpdatedResponse: (
     questionId: number,
     answerId?: number,
@@ -31,19 +31,20 @@ const QuestionCard = ({
   handleUpdatedResponse,
   submissionState,
 }: QuestionCardProps) => {
-  const [radioValue, setRadioValue] = React.useState('');
-  const handleChangeRadio = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRadioValue(event.target.value);
-    handleUpdatedResponse(question.id!, parseInt(event.target.value), undefined);
+  const [singleChoiceValue, setSingleChoiceValue] = React.useState(
+    assessmentResponse.answer_id ? assessmentResponse.answer_id : 0
+  );
+  const handleChangeSingleChoice = (event: SelectChangeEvent) => {
+    setSingleChoiceValue(Number(event.target.value));
+    handleUpdatedResponse(question.id!, Number(event.target.value), undefined);
   };
 
-  const [selectValue, setSelectValue] = React.useState('');
-  const handleChangeSelect = (event: SelectChangeEvent) => {
-    setSelectValue(event.target.value);
-    handleUpdatedResponse(question.id!, parseInt(event.target.value), undefined);
-  };
+  const [responseTextValue, setResponseTextValue] = React.useState(
+    assessmentResponse.response ? assessmentResponse.response : ''
+  );
 
   const handleChangeText = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setResponseTextValue(event.target.value);
     handleUpdatedResponse(
       question.id!,
       undefined,
@@ -59,15 +60,32 @@ const QuestionCard = ({
     ) {
       return (
         <FormControl>
-          <RadioGroup value={radioValue} onChange={handleChangeRadio}>
+          <RadioGroup
+            value={singleChoiceValue}
+            onChange={handleChangeSingleChoice}
+          >
             {question.answers?.map(a => (
-              <FormControlLabel
-                control={<Radio disabled={submissionState !== 'Opened'} />}
-                value={a.id}
-                key={a.id}
-                label={a.title}
-                checked={assessmentResponse.answer_id === a.id}
-              />
+              <>
+                <FormControlLabel
+                  control={
+                    <Radio
+                      disabled={
+                        submissionState !== 'Opened' &&
+                        submissionState !== 'In Progress'
+                      }
+                    />
+                  }
+                  value={a.id}
+                  key={a.id}
+                  label={a.title}
+                  checked={assessmentResponse.answer_id === a.id}
+                />
+                {a.description && (
+                  <Typography variant="caption" sx={{ marginLeft: '3em' }}>
+                    ({a.description})
+                  </Typography>
+                )}{' '}
+              </>
             ))}
           </RadioGroup>
         </FormControl>
@@ -77,13 +95,18 @@ const QuestionCard = ({
         <FormControl style={{ width: '50%' }}>
           <Select
             required
-            onChange={handleChangeSelect}
-            value={selectValue}
-            disabled={submissionState !== 'Opened'}
+            onChange={handleChangeSingleChoice}
+            value={singleChoiceValue === 0 ? '' : singleChoiceValue.toString()}
+            disabled={
+              submissionState !== 'Opened' && submissionState !== 'In Progress'
+            }
           >
             {question.answers?.map(a => (
               <MenuItem value={a.id} key={a.id}>
                 {a.title}
+                {a.description && (
+                  <Typography variant="caption">({a.description})</Typography>
+                )}
               </MenuItem>
             ))}
           </Select>
@@ -93,12 +116,15 @@ const QuestionCard = ({
       return (
         <TextField
           required
-          label={assessmentResponse.response}
           multiline
           variant="standard"
           fullWidth
+          label="Answer"
+          value={responseTextValue}
           onChange={handleChangeText}
-          disabled={submissionState !== 'Opened'}
+          disabled={
+            submissionState !== 'Opened' && submissionState !== 'In Progress'
+          }
         />
       );
     }
@@ -108,6 +134,11 @@ const QuestionCard = ({
       <CardContent>
         <Typography gutterBottom variant="h6" component="div">
           {question.sort_order}. {question.title}
+          {question.description && (
+            <Typography variant="caption" sx={{ marginLeft: '1em' }}>
+              ({question.description})
+            </Typography>
+          )}
         </Typography>
         {TableRowWrapper(question)}
       </CardContent>

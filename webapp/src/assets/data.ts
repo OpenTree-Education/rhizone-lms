@@ -1,4 +1,4 @@
-import {Question, Answer, AssessmentSubmission} from '../types/api.d'
+import { Question } from '../types/api.d';
 export interface Assessment {
   id: number;
   title: string;
@@ -16,6 +16,7 @@ export interface Assessment {
 export enum SubmissionStatus {
   Submitted = 'Submitted',
   Opened = 'Opened',
+  InProgress = 'In Progress',
   Expired = 'Expired',
   Graded = 'Graded',
 }
@@ -30,6 +31,7 @@ export const exampleTestQuestionsList: Question[] = [
   {
     id: 15,
     title: 'What is MySQL?',
+    description: 'Choose one.',
     question_type: 'single choice',
     max_score: 1,
     sort_order: 1,
@@ -37,6 +39,7 @@ export const exampleTestQuestionsList: Question[] = [
       {
         id: 42,
         title: 'A relational database management system',
+        description: 'aka a database.',
         sort_order: 1,
       },
       { id: 43, title: 'A programming language', sort_order: 2 },
@@ -114,7 +117,7 @@ export const exampleTestQuestionsList: Question[] = [
     max_score: 1,
     sort_order: 7,
     answers: [
-      { id: 62, title: 'MAX', sort_order: 1 },
+      { id: 62, title: 'MAX', sort_order: 1, description: 'aka MAX.' },
       { id: 63, title: 'TOGETHER', sort_order: 2 },
       { id: 64, title: 'TOTAL', sort_order: 3 },
       { id: 65, title: 'SUM', sort_order: 4 },
@@ -176,7 +179,7 @@ export const assessmentList: Assessment[] = [
     title: 'Final Exam',
     description: 'The final exam for the course.',
     type: 'Test',
-    dueDate: '2023-03-31 22:00',
+    dueDate: '1680289940000',
     testDuration: 120,
     availableDate: '2023-03-20',
     status: 'Active',

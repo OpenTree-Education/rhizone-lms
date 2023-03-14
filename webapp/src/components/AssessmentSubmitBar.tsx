@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 
-import { Question, AssessmentChosenAnswer } from '../assets/data';
+import { Question, AssessmentResponse } from '../types/api.d';
 
 const LinearProgressWithLabel = (
   numOfAnsweredQuestion: number,
@@ -51,7 +51,7 @@ const StyledNumChip = styled(Chip)(() => ({
 interface AssessmentSubmitBarProps {
   submissionState: string;
   assessmentQuestions: Question[];
-  assessmentAnswers: AssessmentChosenAnswer[];
+  assessmentResponse: AssessmentResponse[];
   numOfAnsweredQuestion: number;
   showSubmitDialog: boolean;
   setShowSubmitDialog: Dispatch<SetStateAction<boolean>>;
@@ -61,7 +61,7 @@ interface AssessmentSubmitBarProps {
 const AssessmentSubmitBar = ({
   submissionState,
   assessmentQuestions,
-  assessmentAnswers,
+  assessmentResponse,
   numOfAnsweredQuestion,
   showSubmitDialog,
   setShowSubmitDialog,
@@ -103,19 +103,23 @@ const AssessmentSubmitBar = ({
         </ListItem>
         <ListItem>
           <Box sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
-            {assessmentQuestions.map(a => (
-              <StyledNumChip
-                sx={{ marginLeft: '1px', marginBottom: '3px' }}
-                label={a.sortOrder}
-                key={a.id}
-                color={`${
-                  assessmentAnswers[a.sortOrder - 1].chosenAnswerId ||
-                  assessmentAnswers[a.sortOrder - 1].responseText
-                    ? 'primary'
-                    : 'default'
-                }`}
-              />
-            ))}
+            {assessmentQuestions
+              .sort(q => q.sort_order)
+              .map(q => (
+                <StyledNumChip
+                  sx={{ marginLeft: '1px', marginBottom: '3px' }}
+                  label={q.sort_order}
+                  key={q.id}
+                  color={`${
+                    assessmentResponse.find(a => a.question_id === q.id)!
+                      .answer_id ||
+                    assessmentResponse.find(a => a.question_id === q.id)!
+                      .response
+                      ? 'primary'
+                      : 'default'
+                  }`}
+                />
+              ))}
           </Box>
         </ListItem>
       </List>
@@ -123,12 +127,14 @@ const AssessmentSubmitBar = ({
         <DialogTitle>
           Are you sure you would like to submit this assessmnet?
         </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            You have filled {numOfAnsweredQuestion} out of{' '}
-            {assessmentQuestions.length}.
-          </DialogContentText>
-        </DialogContent>
+        {numOfAnsweredQuestion < assessmentQuestions.length && (
+          <DialogContent>
+            <DialogContentText>
+              You have only filled {numOfAnsweredQuestion} out of{' '}
+              {assessmentQuestions.length}.
+            </DialogContentText>
+          </DialogContent>
+        )}
         <DialogActions>
           <Button onClick={handleCloseSubmitDialog}>Cancel</Button>
           <Button onClick={handleSubmit} variant="contained">
