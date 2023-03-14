@@ -1,6 +1,20 @@
 import { itemEnvelope } from '../responseEnvelope';
-import { createAppAgentForRouter, mockPrincipalId , mockDeleteAssessmentById, mockFindRoleInProgram} from '../routerTestUtils';
+import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
 import assessmentsRouter from '../assessmentsRouter';
+
+jest.mock('../../services/assessmentService.ts');
+
+import {
+  findRoleInProgram,
+  getProgramIdByProgramAssessmentId,
+  deleteAssessmentById,
+} from '../../services/assessmentService';
+
+const mockFindRoleInProgram = jest.mocked(findRoleInProgram);
+const mockGetProgramIdByProgramAssessmentId = jest.mocked(
+  getProgramIdByProgramAssessmentId
+);
+const mockDeleteAssessmentById = jest.mocked(deleteAssessmentById);
 
 describe('assessmentsRouter', () => {
   const appAgent = createAppAgentForRouter(assessmentsRouter);
@@ -49,66 +63,29 @@ describe('assessmentsRouter', () => {
 
   describe('DELETE /:assessmentId', () => {
     it('should delete a program assessment in the system if logged-in user is facilitator of that program', done => {
-      const principalId =3;
+      const principalId = 3;
       const assessmentId = 1;
       mockPrincipalId(principalId);
-      mockGetProgramIdByProgramAssessmentId
-        .mockResolvedValue(
-        // what should be returned from this function?
-        );
-      mockFindRoleInProgram
-        .mockResolvedValue(
-        // what should be returned from this function?
-        );
-      mockDeleteAssessmentById
-        .mockResolvedValue(
-        // what should be returned from this function?
-        );
-      appAgent.delete(`/${assessmentId}`).expect(204, null, err => {
-        expect(mockGetProgramIdByProgramAssessmentId)
-          .toHaveBeenCalledWith(
-          // what did we call it with?
-          );
-        expect(mockFindRoleInProgram)
-          .toHaveBeenCalledWith(
-          // what did we call it with?
-          );
-        expect(mockDeleteAssessmentById)
-          .toHaveBeenCalledWith(
-          // what did we call it with?
-          );
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([2]);
+      mockFindRoleInProgram.mockResolvedValue({ title: 'facilitator' });
+      appAgent.delete(`/1`).expect(204, null, err => {
+        expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(1);
+        expect(mockFindRoleInProgram).toHaveBeenCalledWith(principalId, 2);
+        expect(mockDeleteAssessmentById).toHaveBeenCalledWith(1);
         done(err);
       });
     });
     it('should return an error if logged-in user is not a facilitator of that program', done => {
-      const principalId =3;
+      const principalId = 4;
       const assessmentId = 1;
       mockPrincipalId(principalId);
-      mockGetProgramIdByProgramAssessmentId
-        .mockResolvedValue(
-        // what should be returned from this function?
-        );
-      mockFindRoleInProgram
-        .mockResolvedValue(
-        // what should be returned from this function?
-        );
-      appAgent.delete(`/${assessmentId}`).expect(
-        401,
-        {
-          // what goes here?
-        },
-        err => {
-          expect(mockGetProgramIdByProgramAssessmentId)
-            .toHaveBeenCalledWith(
-            // what did we call it with?
-            );
-          expect(mockFindRoleInProgram)
-            .toHaveBeenCalledWith(
-            // what did we call it with?
-            );
-          done(err);
-        }
-      );
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([2]);
+      mockFindRoleInProgram.mockResolvedValue({ title: 'participant' });
+      appAgent.delete(`/1`).expect(401, null, err => {
+        expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(1);
+        expect(mockFindRoleInProgram).toHaveBeenCalledWith(principalId, 2);
+        done(err);
+      });
     });
   });
 
