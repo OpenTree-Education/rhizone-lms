@@ -23,7 +23,7 @@ assessmentsRouter.get('/', async (req, res, next) => {
 
   let assessments: AssessmentSummary[];
   try {
-    assessments = await getAssessmentsSummary(principalId);
+    assessments = await getAssessmentsSummary(3);
   } catch (error) {
     next(error);
     return;

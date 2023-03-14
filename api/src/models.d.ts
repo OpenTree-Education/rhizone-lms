@@ -159,14 +159,14 @@ export interface AssessmentSubmission {
   responses?: AssessmentResponse[];
 }
 
-export interface SubmittedAssessment {
+export interface AssessmentWithSubmissions {
   curriculum_assessment: CurriculumAssessment;
   program_assessment: ProgramAssessment;
   submissions: AssessmentSubmission[];
 }
 
-export interface ProgramParticipantCompletionSummary {
-  program: Program;
-  principal_id: number;
-  total_score: number;
+export interface SubmittedAssessment {
+  curriculum_assessment: CurriculumAssessment;
+  program_assessment: ProgramAssessment;
+  submission: AssessmentSubmission;
 }
