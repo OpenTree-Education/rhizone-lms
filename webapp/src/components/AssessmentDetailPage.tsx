@@ -13,8 +13,7 @@ const AssessmentDetailPage = () => {
   const { assessmentId, submissionId } = useParams();
   const assessmentIdNumber = Number(assessmentId);
   const submissionIdNumber = Number(submissionId);
-  //if add a check and return the alert, i will get the following message loading the page 
-  //React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return? 
+  //TODO: adding ingeter check in the useEffect to avoiding useState condition check
   // if (!Number.isInteger(assessmentIdNumber) || !Number.isInteger(submissionIdNumber) || assessmentIdNumber < 0 || submissionIdNumber<0) {
   //   return (
   //     <Alert severity="error">
@@ -63,7 +62,7 @@ const AssessmentDetailPage = () => {
 
   const [assessmentQuestions] = useState(exampleTestQuestionsList);
 
-  const [submission] = React.useState<AssessmentSubmission>({
+  const [submission, setSubmission] = React.useState<AssessmentSubmission>({
     id: 2,
     assessment_id: 3,
     principal_id: 1,
@@ -78,8 +77,10 @@ const AssessmentDetailPage = () => {
       event.preventDefault();
     }
     setShowSubmitDialog(false);
-    submission.assessment_submission_state = 'Submitted';
-    submission.submitted_at = '631152000000';
+    const completedSubmission = { ...submission };
+    completedSubmission.assessment_submission_state = 'Submitted';
+    completedSubmission.submitted_at = '631152000000';
+    setSubmission(completedSubmission);
     //TODO: send request to submit the assessment
     document
       .querySelector('#assessment_display')!
@@ -101,46 +102,52 @@ const AssessmentDetailPage = () => {
         <Grid item xs={12} md={6}>
           <h1>{assessment.title}</h1>
         </Grid>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={3}>
-            <AssessmentMetadataBar
-              assessment={assessment}
-              submission={submission}
-            />
-          </Grid>
-          <Grid
-            id="assessment_display"
-            container
-            xs={12}
-            md={7.5}
-            spacing={2}
-            sx={{
-              height: '75vh',
-              overflow: 'auto',
-              marginTop: 0,
-              marginLeft: 0,
-              paddingBottom: '20px',
-              backgroundColor: '#fafafa',
-              border: '1px solid #bbb',
-            }}
-          >
-            <AssessmentDisplay
-              questioins={exampleTestQuestionsList}
-              submissionState={submission.assessment_submission_state}
-              assessmentResponse={assessmentResponse}
-              handleUpdatedResponse={handleUpdatedResponse}
-            />
-          </Grid>
-          <Grid item xs={12} md={1.5}>
-            <AssessmentSubmitBar
-              submissionState={submission.assessment_submission_state}
-              assessmentQuestions={assessmentQuestions}
-              assessmentResponse={assessmentResponse}
-              numOfAnsweredQuestion={numOfAnsweredQuestion}
-              showSubmitDialog={showSubmitDialog}
-              setShowSubmitDialog={setShowSubmitDialog}
-              handleSubmit={handleSubmit}
-            />
+
+        <Grid item xs={12} md={12}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={3}>
+              <AssessmentMetadataBar
+                assessment={assessment}
+                submission={submission}
+                setSubmission={setSubmission}
+              />
+            </Grid>
+
+            <Grid
+              id="assessment_display"
+              item
+              xs={12}
+              md={7.5}
+              // spacing={2}
+              sx={{
+                height: '75vh',
+                overflow: 'auto',
+                marginTop: 0,
+                marginLeft: 0,
+                paddingBottom: '20px',
+                backgroundColor: '#fafafa',
+                border: '1px solid #bbb',
+              }}
+            >
+              <AssessmentDisplay
+                questioins={exampleTestQuestionsList}
+                submissionState={submission.assessment_submission_state}
+                assessmentResponse={assessmentResponse}
+                handleUpdatedResponse={handleUpdatedResponse}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={1.5}>
+              <AssessmentSubmitBar
+                submissionState={submission.assessment_submission_state}
+                assessmentQuestions={assessmentQuestions}
+                assessmentResponse={assessmentResponse}
+                numOfAnsweredQuestion={numOfAnsweredQuestion}
+                showSubmitDialog={showSubmitDialog}
+                setShowSubmitDialog={setShowSubmitDialog}
+                handleSubmit={handleSubmit}
+              />
+            </Grid>
           </Grid>
         </Grid>
       </Grid>

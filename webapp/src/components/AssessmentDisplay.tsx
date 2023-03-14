@@ -23,7 +23,7 @@ const AssessmentDisplay = ({
   handleUpdatedResponse,
 }: AssessmentsDisplayProps) => {
   return (
-    <>
+    <Grid container>
       <Grid item xs={1} />
       <Grid item xs={10}>
         <Card>
@@ -39,7 +39,7 @@ const AssessmentDisplay = ({
       {questioins
         .sort(q => q.sort_order)
         .map(question => (
-          <>
+          <React.Fragment key={question.id}>
             <Grid item xs={1} />
             <Grid item xs={10}>
               <QuestionCard
@@ -54,9 +54,9 @@ const AssessmentDisplay = ({
               />
             </Grid>
             <Grid item xs={1} />
-          </>
+          </React.Fragment>
         ))}
-    </>
+    </Grid>
   );
 };
 

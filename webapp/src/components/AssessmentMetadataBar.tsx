@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+} from 'react';
 
 import {
   Avatar,
@@ -24,11 +30,13 @@ import { formatDateTime } from '../helpers/dateTime';
 interface AssessmentMetadataBarProps {
   assessment: Assessment;
   submission: AssessmentSubmission;
+  setSubmission: Dispatch<SetStateAction<AssessmentSubmission>>;
 }
 
 const AssessmentMetadataBar = ({
   assessment,
   submission,
+  setSubmission,
 }: AssessmentMetadataBarProps) => {
   const enabledBgColor = '#1e88e5';
   const disabledBgColor = '#bdbdbd';
@@ -78,13 +86,20 @@ const AssessmentMetadataBar = ({
       }
     }
     previousTimeRef.current = time;
-    requestRef.current = requestAnimationFrame(animate);
+    if (
+      secondsRemaining !== 0 &&
+      submission.assessment_submission_state !== 'Submitted'
+    ) {
+      requestRef.current = requestAnimationFrame(animate);
+    } else {
+      const completedSubmission = { ...submission };
+      completedSubmission.assessment_submission_state = 'Expired';
+      setSubmission(completedSubmission);
+    }
   };
 
   useEffect(() => {
-    if (secondsRemaining !== 0) {
-      requestRef.current = requestAnimationFrame(animate);
-    }
+    requestRef.current = requestAnimationFrame(animate);
     return () => {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };

@@ -65,7 +65,7 @@ const QuestionCard = ({
             onChange={handleChangeSingleChoice}
           >
             {question.answers?.map(a => (
-              <>
+              <React.Fragment key={a.id}>
                 <FormControlLabel
                   control={
                     <Radio
@@ -85,7 +85,7 @@ const QuestionCard = ({
                     ({a.description})
                   </Typography>
                 )}{' '}
-              </>
+              </React.Fragment>
             ))}
           </RadioGroup>
         </FormControl>
