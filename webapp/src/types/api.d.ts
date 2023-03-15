@@ -223,6 +223,12 @@ export interface AssessmentSubmission {
   responses?: AssessmentResponse[];
 }
 
+export interface OpenedAssessment {
+  curriculum_assessment: CurriculumAssessment,
+  program_assessment: ProgramAssessment,
+  submission: AssessmentSubmission
+}
+
 export interface SubmittedAssessment {
   curriculum_assessment: CurriculumAssessment;
   program_assessment: ProgramAssessment;
