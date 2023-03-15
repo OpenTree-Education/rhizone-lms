@@ -147,7 +147,7 @@ interface AssessmentListTableProps {
 
 const AssessmentsListTable = ({
   currentStatusTab,
-  matchingAssessmentList
+  matchingAssessmentList,
 }: AssessmentListTableProps) => {
   return (
     <TableContainer component={Paper}>
@@ -272,10 +272,10 @@ const AssessmentsListTable = ({
                 statusTab={currentStatusTab}
                 index={[StatusTab.Past]}
               >
-                {(assessment.submissions_summary
-                  .assessment_submission_state === 'Submitted' ||
-                  assessment.submissions_summary
-                    .assessment_submission_state === 'Graded') &&
+                {(assessment.submissions_summary.assessment_submission_state ===
+                  'Submitted' ||
+                  assessment.submissions_summary.assessment_submission_state ===
+                    'Graded') &&
                   formatDateTime(
                     assessment.submissions_summary.most_recent_submitted_date
                   )}
@@ -291,9 +291,7 @@ const AssessmentsListTable = ({
                 statusTab={currentStatusTab}
                 index={[StatusTab.Upcoming]}
               >
-                {formatDateTime(
-                  assessment.program_assessment.available_after
-                )}
+                {formatDateTime(assessment.program_assessment.available_after)}
               </TableCellWrapper>
               <TableCellWrapper
                 statusTab={currentStatusTab}
@@ -312,10 +310,11 @@ const AssessmentsListTable = ({
                 statusTab={currentStatusTab}
                 index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}
               >
-                {assessment.program_assessment.id && renderButtonByStatus(
-                  assessment.submissions_summary.assessment_submission_state,
-                  assessment.program_assessment.id
-                )}
+                {assessment.program_assessment.id &&
+                  renderButtonByStatus(
+                    assessment.submissions_summary.assessment_submission_state,
+                    assessment.program_assessment.id
+                  )}
               </TableCellWrapper>
             </TableRowWrapper>
           ))}
@@ -323,6 +322,6 @@ const AssessmentsListTable = ({
       </Table>
     </TableContainer>
   );
-}
+};
 
 export default AssessmentsListTable;

@@ -1,23 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
-import {
-  Box,
-  Container,
-  Stack,
-  Tabs,
-  Tab,
-} from '@mui/material';
-import Badge, { BadgeProps } from '@mui/material/Badge';
-import { styled } from '@mui/material/styles';
-
-import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
-import AssessmentIcon from '@mui/icons-material/Assessment';
-import UpcomingOutlinedIcon from '@mui/icons-material/UpcomingOutlined';
-import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined';
+import { Container, Stack } from '@mui/material';
 
 import { assessmentListPageExampleData } from '../assets/data';
 import { AssessmentSummary } from '../types/api';
 import AssessmentsListTable from './AssessmentsListTable';
+import AssessmentsListTabs from './AssessmentsListTabs';
 
 export enum StatusTab {
   All,
@@ -25,13 +13,6 @@ export enum StatusTab {
   Past,
   Upcoming,
 }
-
-const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
-  '& .MuiBadge-badge': {
-    border: `2px solid ${theme.palette.background.paper}`,
-    padding: '0 4px',
-  },
-}));
 
 const AssessmentsListPage = () => {
   const [currentStatusTab, setCurrentStatusTab] = useState(StatusTab.Active);
@@ -45,6 +26,7 @@ const AssessmentsListPage = () => {
     event: React.SyntheticEvent,
     newCurrentStatusTab: number
   ) => {
+    event.preventDefault();
     setCurrentStatusTab(newCurrentStatusTab);
   };
 
@@ -76,56 +58,15 @@ const AssessmentsListPage = () => {
         <h1>Assessments</h1>
       </Stack>
 
-      <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
-        <Tabs value={currentStatusTab} onChange={handleChangeTab}>
-          <Tab
-            icon={
-              <StyledBadge color="primary">
-                <AssessmentIcon />
-              </StyledBadge>
-            }
-            iconPosition="start"
-            label="All"
-          />
-          <Tab
-            icon={
-              <StyledBadge
-                badgeContent={
-                  assessmentList.filter(
-                    x =>
-                      x.submissions_summary.assessment_submission_state ===
-                      'Active'
-                  ).length
-                }
-                color="primary"
-              >
-                <ScheduleOutlinedIcon />
-              </StyledBadge>
-            }
-            iconPosition="start"
-            label="Active"
-          />
-          <Tab
-            icon={
-              <StyledBadge color="primary">
-                <ArchiveOutlinedIcon />
-              </StyledBadge>
-            }
-            iconPosition="start"
-            label="Past"
-          />
-          <Tab
-            icon={
-              <StyledBadge color="primary">
-                <UpcomingOutlinedIcon />
-              </StyledBadge>
-            }
-            iconPosition="start"
-            label="Upcoming"
-          />
-        </Tabs>
-      </Box>
-      <AssessmentsListTable currentStatusTab={currentStatusTab} matchingAssessmentList={assessmentList} />
+      <AssessmentsListTabs
+        assessmentList={assessmentList}
+        currentStatusTab={currentStatusTab}
+        handleChangeTab={handleChangeTab}
+      />
+      <AssessmentsListTable
+        currentStatusTab={currentStatusTab}
+        matchingAssessmentList={assessmentList}
+      />
     </Container>
   );
 };
