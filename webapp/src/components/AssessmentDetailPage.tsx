@@ -305,8 +305,9 @@ const AssessmentDetailPage = () => {
           assessment.curriculum_assessment.questions!.length && (
           <DialogContent>
             <DialogContentText>
-              You have only filled {numOfAnsweredQuestions} out of{' '}
-              {assessment.curriculum_assessment.questions!.length}.
+              {`You have only responded to ${numOfAnsweredQuestions} out of ` +
+                assessment.curriculum_assessment.questions!.length +
+                'questions.'}
             </DialogContentText>
           </DialogContent>
         )}
