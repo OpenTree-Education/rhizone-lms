@@ -137,8 +137,8 @@ const AssessmentDetailPage = () => {
       !submissionDisabled
     ) {
       requestRef.current = requestAnimationFrame(animate);
-    } else {
-      if (assessment && !submissionDisabled) {
+  } else {
+      if (assessment && !submissionDisabled && secondsRemaining === 0) {
         const completedAssessment = structuredClone(assessment);
         completedAssessment!.submission.assessment_submission_state = 'Expired';
         setAssessment(completedAssessment);
@@ -312,7 +312,7 @@ const AssessmentDetailPage = () => {
             <DialogContentText>
               {`You have only responded to ${numOfAnsweredQuestions} out of ` +
                 assessment.curriculum_assessment.questions!.length +
-                'questions.'}
+                ' questions.'}
             </DialogContentText>
           </DialogContent>
         )}
