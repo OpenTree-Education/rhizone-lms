@@ -235,6 +235,11 @@ const AssessmentDetailPage = () => {
     (assessment && typeof assessment.curriculum_assessment === 'undefined') ||
     (assessment &&
       typeof assessment.curriculum_assessment.questions === 'undefined') ||
+    (Array.isArray(assessment.curriculum_assessment.questions) &&
+      assessment.curriculum_assessment.questions.length === 0) ||
+    typeof assessment.submission.responses === 'undefined' ||
+    (Array.isArray(assessment.submission.responses) &&
+      assessment.submission.responses.length === 0) ||
     !endTime
   ) {
     return (
