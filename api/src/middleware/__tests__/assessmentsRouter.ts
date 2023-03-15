@@ -1,19 +1,31 @@
-import { itemEnvelope } from '../responseEnvelope';
+import { itemEnvelope, errorEnvelope } from '../responseEnvelope';
 import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
 import assessmentsRouter from '../assessmentsRouter';
-import { getCurriculumAssessmentBasedOnRole } from '../../services/assessmentService';
 import {
-  CurriculumAssessment,
-  ProgramAssessment,
-  AssessmentSubmission,
-  Question,
-  Answer,
-} from '../../models';
+  getCurriculumAssessmentBasedOnRole,
+  getProgramIdByProgramAssessmentId,
+  findRoleInProgram,
+  programAssessmentById,
+  getCurriculumAssessmentById,
+  submissionDetails,
+} from '../../services/assessmentService';
+
+import { AssessmentSubmission, AssessmentWithSubmissions } from '../../models';
+
 jest.mock('../../services/assessmentService.ts');
 
 const mockGetCurriculumAssesmentBasedOnRole = jest.mocked(
   getCurriculumAssessmentBasedOnRole
 );
+const mokeGetProgramIdByProgramAssessmentId = jest.mocked(
+  getProgramIdByProgramAssessmentId
+);
+const mokeFindRoleInProgram = jest.mocked(findRoleInProgram);
+const mokeProgramAssessmentById = jest.mocked(programAssessmentById);
+const mokeGetCurriculumAssessmentById = jest.mocked(
+  getCurriculumAssessmentById
+);
+const mokeSubmissionDetails = jest.mocked(submissionDetails);
 
 describe('assessmentsRouter', () => {
   const appAgent = createAppAgentForRouter(assessmentsRouter);
@@ -23,6 +35,7 @@ describe('assessmentsRouter', () => {
   describe('GET /', () => {
     it('should respond with a list of all assessments', done => {
       const response = { behaviour: 'Shows a list of all assessments' };
+
       appAgent.get('/').expect(200, itemEnvelope(response), err => {
         done(err);
       });
@@ -70,11 +83,344 @@ describe('assessmentsRouter', () => {
         });
     });
   });
-  //**participants: CurriculumAssessment (with 'questions' and 'answers' and correct answers (if graded)), ProgramAssessment, and AssessmentSubmission (with 'responses')
-  //facilitator: CurriculumAssessment (with 'questions' and 'answers' and correct answers), ProgramAssessment, and AssessmentSubmission (with 'responses') */
 
   describe('GET /:assessmentId/submissions/:submissionId', () => {
-    it('should return the submission information for the subimtted assessment for facilitator', done => {
+    it("should show a facilitator the full submission information for a participant's ungraded submitted assessment, including the correct answers", done => {
+      const facilitatorPrincipalId = 3;
+      const participantPrincipalId = 2;
+      const programAssessmentId = 1;
+      const submissionId = 1;
+      const curriculumAssessmentId = 1;
+      const curriculumAssessment = {
+        id: curriculumAssessmentId,
+        title: 'Assignment 1: React',
+        description: 'Your assignment for week 1 learning.',
+        max_score: 10,
+        max_num_submissions: 1,
+        time_limit: 120,
+        curriculum_id: 3,
+        activity_id: 97,
+        principal_id: facilitatorPrincipalId,
+        questions: [
+          {
+            id: 1,
+            assessment_id: curriculumAssessmentId,
+            title: 'What is React?',
+            description: '',
+            question_type: 'single choice',
+            answers: [
+              {
+                id: 1,
+                question_id: 1,
+                title: 'A relational database management system',
+                description: '',
+                sort_order: 1,
+                correct_answer: true,
+              },
+            ],
+            correct_answer_id: 1,
+            max_score: 1,
+            sort_order: 1,
+          },
+        ],
+      };
+      const programAssessment = {
+        id: programAssessmentId,
+        program_id: 1,
+        assessment_id: curriculumAssessmentId,
+        available_after: '2023-02-06',
+        due_date: '2023-02-10',
+      };
+
+      const assessmentSubmission: AssessmentSubmission[] = [
+        {
+          id: 2,
+          assessment_id: programAssessmentId,
+          principal_id: participantPrincipalId,
+          assessment_submission_state: 'Submitted',
+          opened_at: '2023-02-09 12:00:00',
+          submitted_at: '2023-02-09 13:23:45',
+          responses: [
+            {
+              id: 1,
+              answer_id: 1,
+              assessment_id: 1,
+              submission_id: 2,
+              question_id: 1,
+            },
+          ],
+        },
+      ];
+      const response: AssessmentWithSubmissions = {
+        curriculum_assessment: curriculumAssessment,
+        program_assessment: programAssessment,
+        submissions: assessmentSubmission,
+      };
+
+      mockGetCurriculumAssesmentBasedOnRole.mockResolvedValue(response);
+      mokeGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        { program_id: programAssessment.program_id },
+      ]);
+      mokeFindRoleInProgram.mockResolvedValue({ title: 'facilitator' });
+      mokeProgramAssessmentById.mockResolvedValue([programAssessment]);
+      mokeGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
+      mokeSubmissionDetails.mockResolvedValue(
+        assessmentSubmission[0].responses
+      );
+      mockPrincipalId(facilitatorPrincipalId);
+      appAgent
+        .get(`/${programAssessmentId}/submissions/${submissionId}`)
+
+        .expect(200, itemEnvelope(response), err => {
+          expect(mockGetCurriculumAssesmentBasedOnRole).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            programAssessmentId,
+            submissionId
+          );
+          expect(mokeProgramAssessmentById).toHaveBeenCalledWith(
+            programAssessmentId
+          );
+          expect(mokeGetCurriculumAssessmentById).toHaveBeenCalledWith(
+            programAssessmentId,
+            true,
+            true
+          );
+
+          expect(mokeFindRoleInProgram).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            programAssessment.program_id
+          );
+          expect(mokeSubmissionDetails).toHaveBeenCalledWith(
+            programAssessmentId,
+            submissionId,
+            true
+          );
+          done(err);
+        });
+    });
+    it('should show a participant their submission information for an in-progress assessment without including the correct answers', done => {
+      const facilitatorPrincipalId = 3;
+      const participantPrincipalId = 2;
+      const programAssessmentId = 1,
+        submissionId = 1;
+      const curriculumAssessmentId = 1;
+      const curriculumAssessment = {
+        id: curriculumAssessmentId,
+        title: 'Assignment 1: React',
+        description: 'Your assignment for week 1 learning.',
+        max_score: 10,
+        max_num_submissions: 3,
+        time_limit: 120,
+        curriculum_id: 3,
+        activity_id: 97,
+        principal_id: participantPrincipalId,
+        questions: [
+          {
+            id: 1,
+            assessment_id: curriculumAssessmentId,
+            title: 'What is React?',
+            description: '',
+            question_type: 'single choice',
+            answers: [
+              {
+                id: 1,
+                question_id: 1,
+                title: 'A relational database management system',
+                description: '',
+                sort_order: 1,
+              },
+            ],
+            max_score: 1,
+            sort_order: 1,
+          },
+        ],
+      };
+      const programAssessment = {
+        id: programAssessmentId,
+        program_id: 1,
+        assessment_id: curriculumAssessmentId,
+        available_after: '2023-02-06',
+        due_date: '2023-02-10',
+      };
+
+      const assessmentSubmission: AssessmentSubmission[] = [
+        {
+          id: 2,
+          assessment_id: programAssessmentId,
+          principal_id: participantPrincipalId,
+          assessment_submission_state: 'In Progress',
+          opened_at: '2023-02-09 12:00:00',
+          submitted_at: '2023-02-09 13:23:45',
+          responses: [
+            {
+              id: 1,
+              answer_id: 1,
+              assessment_id: 1,
+              submission_id: 2,
+              question_id: 1,
+            },
+          ],
+        },
+      ];
+      const response: AssessmentWithSubmissions = {
+        curriculum_assessment: curriculumAssessment,
+        program_assessment: programAssessment,
+        submissions: assessmentSubmission,
+      };
+
+      mockGetCurriculumAssesmentBasedOnRole.mockResolvedValue(response);
+      mokeGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        { program_id: programAssessment.program_id },
+      ]);
+      mokeFindRoleInProgram.mockResolvedValue({ title: 'participant' });
+      mokeProgramAssessmentById.mockResolvedValue([programAssessment]);
+      mokeGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
+      mokeSubmissionDetails.mockResolvedValue(
+        assessmentSubmission[0].responses
+      );
+      mockPrincipalId(participantPrincipalId);
+      appAgent
+        .get(`/${programAssessmentId}/submissions/${submissionId}`)
+
+        .expect(200, itemEnvelope(response), err => {
+          expect(mockGetCurriculumAssesmentBasedOnRole).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            programAssessmentId,
+            submissionId
+          );
+          expect(mokeProgramAssessmentById).toHaveBeenCalledWith(
+            programAssessmentId
+          );
+          expect(mokeGetCurriculumAssessmentById).toHaveBeenCalledWith(
+            programAssessmentId,
+            true,
+            false
+          );
+
+          expect(mokeFindRoleInProgram).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            programAssessment.program_id
+          );
+          expect(mokeSubmissionDetails).toHaveBeenCalledWith(
+            programAssessmentId,
+            submissionId,
+            true
+          );
+          done(err);
+        });
+    });
+    it('should show a participant their submission information for an ungraded submitted assessment without including the correct answers', done => {
+      const facilitatorPrincipalId = 3;
+      const participantPrincipalId = 2;
+      const programAssessmentId = 1,
+        submissionId = 1;
+      const curriculumAssessmentId = 1;
+      const curriculumAssessment = {
+        id: curriculumAssessmentId,
+        title: 'Assignment 1: React',
+        description: 'Your assignment for week 1 learning.',
+        max_score: 10,
+        max_num_submissions: 3,
+        time_limit: 120,
+        curriculum_id: 3,
+        activity_id: 97,
+        principal_id: participantPrincipalId,
+        questions: [
+          {
+            id: 1,
+            assessment_id: curriculumAssessmentId,
+            title: 'What is React?',
+            description: '',
+            question_type: 'single choice',
+            answers: [
+              {
+                id: 1,
+                question_id: 1,
+                title: 'A relational database management system',
+                description: '',
+                sort_order: 1,
+              },
+            ],
+            max_score: 1,
+            sort_order: 1,
+          },
+        ],
+      };
+      const programAssessment = {
+        id: programAssessmentId,
+        program_id: 1,
+        assessment_id: curriculumAssessmentId,
+        available_after: '2023-02-06',
+        due_date: '2023-02-10',
+      };
+
+      const assessmentSubmission: AssessmentSubmission[] = [
+        {
+          id: 2,
+          assessment_id: programAssessmentId,
+          principal_id: participantPrincipalId,
+          assessment_submission_state: 'Submitted',
+          opened_at: '2023-02-09 12:00:00',
+          submitted_at: '2023-02-09 13:23:45',
+          responses: [
+            {
+              id: 1,
+              answer_id: 1,
+              assessment_id: 1,
+              submission_id: 2,
+              question_id: 1,
+            },
+          ],
+        },
+      ];
+      const response: AssessmentWithSubmissions = {
+        curriculum_assessment: curriculumAssessment,
+        program_assessment: programAssessment,
+        submissions: assessmentSubmission,
+      };
+
+      mockGetCurriculumAssesmentBasedOnRole.mockResolvedValue(response);
+      mokeGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        { program_id: programAssessment.program_id },
+      ]);
+      mokeFindRoleInProgram.mockResolvedValue({ title: 'participant' });
+      mokeProgramAssessmentById.mockResolvedValue([programAssessment]);
+      mokeGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
+      mokeSubmissionDetails.mockResolvedValue(
+        assessmentSubmission[0].responses
+      );
+      mockPrincipalId(participantPrincipalId);
+      appAgent
+        .get(`/${programAssessmentId}/submissions/${submissionId}`)
+
+        .expect(200, itemEnvelope(response), err => {
+          expect(mockGetCurriculumAssesmentBasedOnRole).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            programAssessmentId,
+            submissionId
+          );
+          expect(mokeProgramAssessmentById).toHaveBeenCalledWith(
+            programAssessmentId
+          );
+          expect(mokeGetCurriculumAssessmentById).toHaveBeenCalledWith(
+            programAssessmentId,
+            true,
+            false
+          );
+
+          expect(mokeFindRoleInProgram).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            programAssessment.program_id
+          );
+          expect(mokeSubmissionDetails).toHaveBeenCalledWith(
+            programAssessmentId,
+            submissionId,
+            true
+          );
+          done(err);
+        });
+    });
+    it('should show a participant their submission information for a graded submitted assessment including the correct answers', done => {
       const facilitatorPrincipalId = 3;
       const participantPrincipalId = 2;
       const programAssessmentId = 1,
@@ -121,38 +467,33 @@ describe('assessmentsRouter', () => {
         due_date: '2023-02-10',
       };
 
-      const assessmentSubmission = {
-        id: 2,
-        submission_id: 2,
-        assessment_id: programAssessmentId,
-        principal_id: participantPrincipalId,
-        assessment_submission_state: 'Graded',
-        score: 10,
-        opened_at: '2023-02-09 12:00:00',
-        submitted_at: '2023-02-09 13:23:45',
-        responses: [
-          {
-            id: 1,
-            answer_id: 4,
-            assessment_id: 1,
-            submission_id: 2,
-            question_id: 1,
-            score: 1,
-          },
-        ],
-      };
-      const response: {
-        curriculum_assessment: CurriculumAssessment;
-        program_assessment: ProgramAssessment;
-        assessment_submission: AssessmentSubmission;
-      } = {
+      const assessmentSubmission: AssessmentSubmission[] = [
+        {
+          id: 2,
+          assessment_id: programAssessmentId,
+          principal_id: participantPrincipalId,
+          assessment_submission_state: 'graded',
+          score: 1,
+          opened_at: '2023-02-09 12:00:00',
+          submitted_at: '2023-02-09 13:23:45',
+          responses: [
+            {
+              id: 1,
+              answer_id: 1,
+              assessment_id: 1,
+              submission_id: 2,
+              question_id: 1,
+            },
+          ],
+        },
+      ];
+      const response: AssessmentWithSubmissions = {
         curriculum_assessment: curriculumAssessment,
         program_assessment: programAssessment,
-        assessment_submission: assessmentSubmission,
+        submissions: assessmentSubmission,
       };
 
-      mockGetCurriculumAssesmentBasedOnRole.mockResolvedValue(response);
-      mockPrincipalId(facilitatorPrincipalId);
+      mockPrincipalId(participantPrincipalId);
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
 
@@ -162,7 +503,24 @@ describe('assessmentsRouter', () => {
             programAssessmentId,
             submissionId
           );
+          expect(mokeProgramAssessmentById).toHaveBeenCalledWith(
+            programAssessmentId
+          );
+          expect(mokeGetCurriculumAssessmentById).toHaveBeenCalledWith(
+            programAssessmentId,
+            true,
+            true
+          );
 
+          expect(mokeFindRoleInProgram).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            programAssessment.program_id
+          );
+          expect(mokeSubmissionDetails).toHaveBeenCalledWith(
+            programAssessmentId,
+            submissionId,
+            true
+          );
           done(err);
         });
     });
@@ -174,44 +532,173 @@ describe('assessmentsRouter', () => {
         .get(`/${assessmentId}/submissions/${submissionId}`)
         .expect(400, done);
     });
+    it('should respond with a NotFoundError if the assessment ID was not found in the database', done => {
+      const programAssessmentId = 7,
+        submissionId = 1;
+
+      mokeGetProgramIdByProgramAssessmentId.mockResolvedValue([]);
+      appAgent
+        .get(`/${programAssessmentId}/submissions/${submissionId}`)
+        .expect(
+          404,
+          errorEnvelope('The requested resource does not exist.'),
+          err => {
+            expect(mokeGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
+              programAssessmentId
+            );
+            done(err);
+          }
+        );
+    });
     it('should respond with a bad request error if given an invalid submission id ', done => {
-      const assessmentId = 1,
+      const programAssessmentId = 1,
         submissionId = 'test';
 
       appAgent
-        .get(`/${assessmentId}/submissions/${submissionId}`)
+        .get(`/${programAssessmentId}/submissions/${submissionId}`)
         .expect(400, done);
     });
+    it('should respond with a NotFoundError if the submission ID was not found in the database ', done => {
+      const programAssessmentId = 1,
+        submissionId = 8;
 
-    it('should respond with an internal server error if an error', done => {
-      const assessmentId = 1,
+      mokeSubmissionDetails.mockResolvedValue([]);
+      appAgent
+        .get(`/${programAssessmentId}/submissions/${submissionId}`)
+        .expect(
+          404,
+          errorEnvelope('The requested resource does not exist.'),
+          err => {
+            expect(mokeSubmissionDetails).toHaveBeenCalledWith(
+              programAssessmentId,
+              submissionId,
+              true
+            );
+            done(err);
+          }
+        );
+    });
+
+    it('should respond with an UnauthorizedError if the logged-in principal ID is not the same as the principal ID of the submission ID and is not the principal ID of the program facilitator', done => {
+      const facilitatorPrincipalId = 3;
+      const loggedPrincipalId = 4;
+      const participantPrincipalId = 2;
+      const programAssessmentId = 1;
+      const submissionId = 1;
+      const curriculumAssessmentId = 1;
+      const curriculumAssessment = {
+        id: curriculumAssessmentId,
+        title: 'Assignment 1: React',
+        description: 'Your assignment for week 1 learning.',
+        max_score: 10,
+        max_num_submissions: 1,
+        time_limit: 120,
+        curriculum_id: 3,
+        activity_id: 97,
+        principal_id: facilitatorPrincipalId,
+        questions: [
+          {
+            id: 1,
+            assessment_id: curriculumAssessmentId,
+            title: 'What is React?',
+            description: '',
+            question_type: 'single choice',
+            answers: [
+              {
+                id: 1,
+                question_id: 1,
+                title: 'A relational database management system',
+                description: '',
+                sort_order: 1,
+                correct_answer: true,
+              },
+            ],
+            correct_answer_id: 1,
+            max_score: 1,
+            sort_order: 1,
+          },
+        ],
+      };
+      const programAssessment = {
+        id: programAssessmentId,
+        program_id: 1,
+        assessment_id: curriculumAssessmentId,
+        available_after: '2023-02-06',
+        due_date: '2023-02-10',
+      };
+
+      const assessmentSubmission: AssessmentSubmission[] = [
+        {
+          id: 2,
+          assessment_id: programAssessmentId,
+          principal_id: participantPrincipalId,
+          assessment_submission_state: 'Submitted',
+          opened_at: '2023-02-09 12:00:00',
+          submitted_at: '2023-02-09 13:23:45',
+          responses: [
+            {
+              id: 1,
+              answer_id: 1,
+              assessment_id: 1,
+              submission_id: 2,
+              question_id: 1,
+            },
+          ],
+        },
+      ];
+      const response: AssessmentWithSubmissions = {
+        curriculum_assessment: curriculumAssessment,
+        program_assessment: programAssessment,
+        submissions: assessmentSubmission,
+      };
+
+      mockGetCurriculumAssesmentBasedOnRole.mockResolvedValue(response);
+
+      mockPrincipalId(loggedPrincipalId);
+      appAgent
+        .get(`/${programAssessmentId}/submissions/${submissionId}`)
+        .expect(401, errorEnvelope('Unauthorized user.'), err => {
+          expect(mockGetCurriculumAssesmentBasedOnRole).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            programAssessmentId,
+            submissionId
+          );
+          // expect(mockPrincipalId).toHaveBeenCalledWith(
+          //   participantPrincipalId
+          // );
+          done(err);
+        });
+    });
+    it('should respond with an internal server error if a database error occurs', done => {
+      const programAssessmentId = 1,
         submissionId = 1;
+
       mockGetCurriculumAssesmentBasedOnRole.mockRejectedValue(new Error());
       appAgent
-        .get(`/${assessmentId}/submissions/${submissionId}`)
+        .get(`/${programAssessmentId}/submissions/${submissionId}`)
         .expect(500, done);
     });
-  });
 
-  describe('PUT /:assessmentId/submissions/:submissionId', () => {
-    it('should update the state of a submission', done => {
-      const response = { behaviour: 'Updates the state of a submission' };
-      appAgent
-        .put(`/${exampleAssessmentId}/submissions/${exampleSubmissionId}`)
-        .expect(200, itemEnvelope(response), err => {
-          done(err);
-        });
+    describe('PUT /:assessmentId/submissions/:submissionId', () => {
+      it('should update the state of a submission', done => {
+        const response = { behaviour: 'Updates the state of a submission' };
+        appAgent
+          .put(`/${exampleAssessmentId}/submissions/${exampleSubmissionId}`)
+          .expect(200, itemEnvelope(response), err => {
+            done(err);
+          });
+      });
     });
-  });
 
-  describe('GET /:assessmentId/submissions/new', () => {
-    it('should create a new draft submission', done => {
-      const response = { behaviour: 'Creates a new draft submission' };
-      appAgent
-        .get(`/${exampleAssessmentId}/submissions/new`)
-        .expect(200, itemEnvelope(response), err => {
-          done(err);
-        });
+    describe('GET /:assessmentId/submissions/new', () => {
+      it('should create a new draft submission', done => {
+        const response = { behaviour: 'Creates a new draft submission' };
+        appAgent
+          .get(`/${exampleAssessmentId}/submissions/new`)
+          .expect(200, itemEnvelope(response), err => {
+            done(err);
+          });
+      });
     });
   });
 });
