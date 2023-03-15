@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   Box,
@@ -29,7 +29,8 @@ import LockClockOutlinedIcon from '@mui/icons-material/LockClockOutlined';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 
 import { formatDateTime } from '../helpers/dateTime';
-import { assessmentListPageExampleData as assessmentList } from '../assets/data';
+import { assessmentListPageExampleData } from '../assets/data';
+import { AssessmentSummary } from '../types/api';
 
 enum StatusTab {
   All,
@@ -165,6 +166,12 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
 
 const AssessmentsListPage = () => {
   const [currentStatusTab, setCurrentStatusTab] = useState(StatusTab.Active);
+  const [assessmentList, setAssessmentList] = useState<AssessmentSummary[]>([]);
+
+  useEffect(() => {
+    setAssessmentList(assessmentListPageExampleData);
+  }, []);
+
   const handleChangeTab = (
     event: React.SyntheticEvent,
     newCurrentStatusTab: number
@@ -411,8 +418,9 @@ const AssessmentsListPage = () => {
                   statusTab={currentStatusTab}
                   index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}
                 >
-                  {renderButtonByStatus(
-                    assessment.submissions_summary.assessment_submission_state
+                  {assessment.program_assessment.id && renderButtonByStatus(
+                    assessment.submissions_summary.assessment_submission_state,
+                    assessment.program_assessment.id
                   )}
                 </TableCellWrapper>
               </TableRowWrapper>
