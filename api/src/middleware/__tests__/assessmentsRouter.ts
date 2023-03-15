@@ -1,7 +1,6 @@
 import { itemEnvelope, errorEnvelope } from '../responseEnvelope';
 import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
 import assessmentsRouter from '../assessmentsRouter';
-
 jest.mock('../../services/assessmentService.ts');
 
 import {
@@ -68,7 +67,7 @@ describe('assessmentsRouter', () => {
       mockPrincipalId(principalId);
       mockGetProgramIdByProgramAssessmentId.mockResolvedValue([2]);
       mockFindRoleInProgram.mockResolvedValue({ title: 'facilitator' });
-      appAgent.delete(`/1`).expect(204, null, err => {
+      appAgent.delete(`/${assessmentId}`).expect(204, null, err => {
         expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(1);
         expect(mockFindRoleInProgram).toHaveBeenCalledWith(principalId, 2);
         expect(mockDeleteAssessmentById).toHaveBeenCalledWith(1);
@@ -82,7 +81,7 @@ describe('assessmentsRouter', () => {
       mockGetProgramIdByProgramAssessmentId.mockResolvedValue([2]);
       mockFindRoleInProgram.mockResolvedValue({ title: 'participant' });
       appAgent
-        .delete(`/1`)
+        .delete(`/${assessmentId}`)
         .expect(401, errorEnvelope('Unauthorized user.'), err => {
           expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(1);
           expect(mockFindRoleInProgram).toHaveBeenCalledWith(principalId, 2);
