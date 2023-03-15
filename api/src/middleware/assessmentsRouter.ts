@@ -13,7 +13,6 @@ import { AssessmentSummary } from '../models';
 
 const assessmentsRouter = Router();
 
-// Shows a list of all assessments
 // Incoming: nothing expected
 // Outgoing:
 // - participant: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for their submissions to this program assessment
@@ -23,13 +22,13 @@ assessmentsRouter.get('/', async (req, res, next) => {
 
   let assessments: AssessmentSummary[];
   try {
-    assessments = await getAssessmentsSummary(3);
+    assessments = await getAssessmentsSummary(principalId);
   } catch (error) {
     next(error);
     return;
   }
 
-  res.json(collectionEnvelope(assessments, assessments.length));
+  res.json(collectionEnvelope(assessments, 0));
 });
 
 // TODO: fixed function
