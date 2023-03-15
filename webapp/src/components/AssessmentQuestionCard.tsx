@@ -12,41 +12,41 @@ import {
 } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-import { Question, AssessmentResponse } from '../types/api.d';
+import { Question, AssessmentResponse } from '../types/api';
 
 interface QuestionCardProps {
-  question: Question;
-  assessmentResponse: AssessmentResponse;
+  assessmentQuestion: Question;
+  submissionResponse: AssessmentResponse;
   handleUpdatedResponse: (
     questionId: number,
     answerId?: number,
     response?: string
   ) => void;
-  submissionState: string;
+  disabled: boolean;
 }
 
-const QuestionCard = ({
-  question,
-  assessmentResponse,
+const AssessmentQuestionCard = ({
+  assessmentQuestion,
+  submissionResponse,
   handleUpdatedResponse,
-  submissionState,
+  disabled,
 }: QuestionCardProps) => {
   const [singleChoiceValue, setSingleChoiceValue] = React.useState(
-    assessmentResponse.answer_id ? assessmentResponse.answer_id : 0
+    submissionResponse.answer_id ? submissionResponse.answer_id : 0
   );
   const handleChangeSingleChoice = (event: SelectChangeEvent) => {
     setSingleChoiceValue(Number(event.target.value));
-    handleUpdatedResponse(question.id!, Number(event.target.value), undefined);
+    handleUpdatedResponse(assessmentQuestion.id!, Number(event.target.value));
   };
 
   const [responseTextValue, setResponseTextValue] = React.useState(
-    assessmentResponse.response ? assessmentResponse.response : ''
+    submissionResponse.response ? submissionResponse.response : ''
   );
 
   const handleChangeText = (event: React.ChangeEvent<HTMLInputElement>) => {
     setResponseTextValue(event.target.value);
     handleUpdatedResponse(
-      question.id!,
+      assessmentQuestion.id!,
       undefined,
       event.target.value === '' ? undefined : event.target.value
     );
@@ -54,9 +54,9 @@ const QuestionCard = ({
 
   const TableRowWrapper = (question: Question) => {
     if (
-      question.question_type === 'single choice' &&
-      question.answers?.length &&
-      question.answers?.length < 5
+      assessmentQuestion.question_type === 'single choice' &&
+      assessmentQuestion.answers?.length &&
+      assessmentQuestion.answers?.length < 5
     ) {
       return (
         <FormControl>
@@ -64,21 +64,14 @@ const QuestionCard = ({
             value={singleChoiceValue}
             onChange={handleChangeSingleChoice}
           >
-            {question.answers?.map(a => (
+            {assessmentQuestion.answers?.map(a => (
               <React.Fragment key={a.id}>
                 <FormControlLabel
-                  control={
-                    <Radio
-                      disabled={
-                        submissionState !== 'Opened' &&
-                        submissionState !== 'In Progress'
-                      }
-                    />
-                  }
+                  control={<Radio disabled={disabled} />}
                   value={a.id}
                   key={a.id}
                   label={a.title}
-                  checked={assessmentResponse.answer_id === a.id}
+                  checked={submissionResponse.answer_id === a.id}
                 />
                 {a.description && (
                   <Typography variant="caption" sx={{ marginLeft: '3em' }}>
@@ -97,9 +90,7 @@ const QuestionCard = ({
             required
             onChange={handleChangeSingleChoice}
             value={singleChoiceValue === 0 ? '' : singleChoiceValue.toString()}
-            disabled={
-              submissionState !== 'Opened' && submissionState !== 'In Progress'
-            }
+            disabled={disabled}
           >
             {question.answers?.map(a => (
               <MenuItem value={a.id} key={a.id}>
@@ -122,9 +113,7 @@ const QuestionCard = ({
           label="Answer"
           value={responseTextValue}
           onChange={handleChangeText}
-          disabled={
-            submissionState !== 'Opened' && submissionState !== 'In Progress'
-          }
+          disabled={disabled}
         />
       );
     }
@@ -133,17 +122,17 @@ const QuestionCard = ({
     <Card>
       <CardContent>
         <Typography gutterBottom variant="h6" component="div">
-          {question.sort_order}. {question.title}
-          {question.description && (
+          {assessmentQuestion.sort_order}. {assessmentQuestion.title}
+          {assessmentQuestion.description && (
             <Typography variant="caption" sx={{ marginLeft: '1em' }}>
-              ({question.description})
+              ({assessmentQuestion.description})
             </Typography>
           )}
         </Typography>
-        {TableRowWrapper(question)}
+        {TableRowWrapper(assessmentQuestion)}
       </CardContent>
     </Card>
   );
 };
 
-export default QuestionCard;
+export default AssessmentQuestionCard;

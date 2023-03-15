@@ -1,6 +1,4 @@
-import {
-  OpenedAssessment
-} from '../types/api';
+import { OpenedAssessment } from '../types/api';
 
 export enum SubmissionStatus {
   Submitted = 'Submitted',
@@ -117,12 +115,12 @@ export const assessmentListPageExampleData = [
 export const assessmentDetailPageExampleData: OpenedAssessment = {
   curriculum_assessment: {
     id: 2,
-    title: '2	SQL Quiz',
+    title: 'SQL Quiz',
     description: 'A check on your SQL learning.',
     assessment_type: 'Quiz',
-    max_score: 5,
+    max_score: 10,
     max_num_submissions: 3,
-    time_limit: -1,
+    time_limit: 60,
     curriculum_id: 3,
     activity_id: 98,
     principal_id: 2,
@@ -240,12 +238,13 @@ export const assessmentDetailPageExampleData: OpenedAssessment = {
       },
       {
         id: 24,
-        title: 'Which keyword is used to specify the condition for a MySQL query?',
+        title:
+          'Which keyword is used to specify the condition for a MySQL query?',
         question_type: 'free response',
         max_score: 10,
         sort_order: 10,
       },
-    ]
+    ],
   },
   program_assessment: {
     id: 1,
@@ -258,7 +257,7 @@ export const assessmentDetailPageExampleData: OpenedAssessment = {
     id: 17,
     assessment_id: 1,
     principal_id: 3,
-    assessment_submission_state: "Opened",
-    opened_at: "2023-03-14 01:23:45"
-  }
+    assessment_submission_state: 'Opened',
+    opened_at: new Date().toISOString().slice(0, 19).replace('T', ' ') + 'Z',
+  },
 };

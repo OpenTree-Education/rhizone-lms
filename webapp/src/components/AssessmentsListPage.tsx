@@ -29,7 +29,7 @@ import LockClockOutlinedIcon from '@mui/icons-material/LockClockOutlined';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 
 import { formatDateTime } from '../helpers/dateTime';
-import { assessmentList } from '../assets/data';
+import { assessmentListPageExampleData as assessmentList } from '../assets/data';
 
 enum StatusTab {
   All,

@@ -224,9 +224,9 @@ export interface AssessmentSubmission {
 }
 
 export interface OpenedAssessment {
-  curriculum_assessment: CurriculumAssessment,
-  program_assessment: ProgramAssessment,
-  submission: AssessmentSubmission
+  curriculum_assessment: CurriculumAssessment;
+  program_assessment: ProgramAssessment;
+  submission: AssessmentSubmission;
 }
 
 export interface SubmittedAssessment {
