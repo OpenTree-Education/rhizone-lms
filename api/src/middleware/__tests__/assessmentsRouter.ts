@@ -13,15 +13,15 @@ import { AssessmentSubmission, AssessmentWithSubmissions } from '../../models';
 
 jest.mock('../../services/assessmentService.ts');
 
-const mokeGetProgramIdByProgramAssessmentId = jest.mocked(
+const mockGetProgramIdByProgramAssessmentId = jest.mocked(
   getProgramIdByProgramAssessmentId
 );
-const mokeFindRoleInProgram = jest.mocked(findRoleInProgram);
-const mokeProgramAssessmentById = jest.mocked(programAssessmentById);
-const mokeGetCurriculumAssessmentById = jest.mocked(
+const mockFindRoleInProgram = jest.mocked(findRoleInProgram);
+const mockProgramAssessmentById = jest.mocked(programAssessmentById);
+const mockGetCurriculumAssessmentById = jest.mocked(
   getCurriculumAssessmentById
 );
-const mokeSubmissionDetails = jest.mocked(submissionDetails);
+const mockSubmissionDetails = jest.mocked(submissionDetails);
 
 describe('assessmentsRouter', () => {
   const appAgent = createAppAgentForRouter(assessmentsRouter);
@@ -153,32 +153,32 @@ describe('assessmentsRouter', () => {
         submissions: assessmentSubmission,
       };
 
-      mokeGetProgramIdByProgramAssessmentId.mockResolvedValue([
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
         { program_id: programAssessment.program_id },
       ]);
-      mokeFindRoleInProgram.mockResolvedValue({ title: 'facilitator' });
-      mokeProgramAssessmentById.mockResolvedValue([programAssessment]);
-      mokeGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
-      mokeSubmissionDetails.mockResolvedValue(assessmentSubmission);
+      mockFindRoleInProgram.mockResolvedValue({ title: 'facilitator' });
+      mockProgramAssessmentById.mockResolvedValue([programAssessment]);
+      mockGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
+      mockSubmissionDetails.mockResolvedValue(assessmentSubmission);
       mockPrincipalId(facilitatorPrincipalId);
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
 
         .expect(200, itemEnvelope(response), err => {
-          expect(mokeProgramAssessmentById).toHaveBeenCalledWith(
+          expect(mockProgramAssessmentById).toHaveBeenCalledWith(
             programAssessmentId
           );
-          expect(mokeGetCurriculumAssessmentById).toHaveBeenCalledWith(
+          expect(mockGetCurriculumAssessmentById).toHaveBeenCalledWith(
             programAssessmentId,
             true,
             true
           );
 
-          expect(mokeFindRoleInProgram).toHaveBeenCalledWith(
+          expect(mockFindRoleInProgram).toHaveBeenCalledWith(
             facilitatorPrincipalId,
             programAssessment.program_id
           );
-          expect(mokeSubmissionDetails).toHaveBeenCalledWith(
+          expect(mockSubmissionDetails).toHaveBeenCalledWith(
             programAssessmentId,
             submissionId,
             true
@@ -256,32 +256,32 @@ describe('assessmentsRouter', () => {
         submissions: assessmentSubmission,
       };
 
-      mokeGetProgramIdByProgramAssessmentId.mockResolvedValue([
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
         { program_id: programAssessment.program_id },
       ]);
-      mokeFindRoleInProgram.mockResolvedValue({ title: 'participant' });
-      mokeProgramAssessmentById.mockResolvedValue([programAssessment]);
-      mokeGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
-      mokeSubmissionDetails.mockResolvedValue(assessmentSubmission);
+      mockFindRoleInProgram.mockResolvedValue({ title: 'participant' });
+      mockProgramAssessmentById.mockResolvedValue([programAssessment]);
+      mockGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
+      mockSubmissionDetails.mockResolvedValue(assessmentSubmission);
       mockPrincipalId(participantPrincipalId);
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
 
         .expect(200, itemEnvelope(response), err => {
-          expect(mokeProgramAssessmentById).toHaveBeenCalledWith(
+          expect(mockProgramAssessmentById).toHaveBeenCalledWith(
             programAssessmentId
           );
-          expect(mokeGetCurriculumAssessmentById).toHaveBeenCalledWith(
+          expect(mockGetCurriculumAssessmentById).toHaveBeenCalledWith(
             programAssessmentId,
             true,
             false
           );
 
-          expect(mokeFindRoleInProgram).toHaveBeenCalledWith(
+          expect(mockFindRoleInProgram).toHaveBeenCalledWith(
             facilitatorPrincipalId,
             programAssessment.program_id
           );
-          expect(mokeSubmissionDetails).toHaveBeenCalledWith(
+          expect(mockSubmissionDetails).toHaveBeenCalledWith(
             programAssessmentId,
             submissionId,
             true
@@ -359,32 +359,32 @@ describe('assessmentsRouter', () => {
         submissions: assessmentSubmission,
       };
 
-      mokeGetProgramIdByProgramAssessmentId.mockResolvedValue([
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
         { program_id: programAssessment.program_id },
       ]);
-      mokeFindRoleInProgram.mockResolvedValue({ title: 'participant' });
-      mokeProgramAssessmentById.mockResolvedValue([programAssessment]);
-      mokeGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
-      mokeSubmissionDetails.mockResolvedValue(assessmentSubmission);
+      mockFindRoleInProgram.mockResolvedValue({ title: 'participant' });
+      mockProgramAssessmentById.mockResolvedValue([programAssessment]);
+      mockGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
+      mockSubmissionDetails.mockResolvedValue(assessmentSubmission);
       mockPrincipalId(participantPrincipalId);
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
 
         .expect(200, itemEnvelope(response), err => {
-          expect(mokeProgramAssessmentById).toHaveBeenCalledWith(
+          expect(mockProgramAssessmentById).toHaveBeenCalledWith(
             programAssessmentId
           );
-          expect(mokeGetCurriculumAssessmentById).toHaveBeenCalledWith(
+          expect(mockGetCurriculumAssessmentById).toHaveBeenCalledWith(
             programAssessmentId,
             true,
             false
           );
 
-          expect(mokeFindRoleInProgram).toHaveBeenCalledWith(
+          expect(mockFindRoleInProgram).toHaveBeenCalledWith(
             facilitatorPrincipalId,
             programAssessment.program_id
           );
-          expect(mokeSubmissionDetails).toHaveBeenCalledWith(
+          expect(mockSubmissionDetails).toHaveBeenCalledWith(
             programAssessmentId,
             submissionId,
             true
@@ -470,20 +470,20 @@ describe('assessmentsRouter', () => {
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
 
         .expect(200, itemEnvelope(response), err => {
-          expect(mokeProgramAssessmentById).toHaveBeenCalledWith(
+          expect(mockProgramAssessmentById).toHaveBeenCalledWith(
             programAssessmentId
           );
-          expect(mokeGetCurriculumAssessmentById).toHaveBeenCalledWith(
+          expect(mockGetCurriculumAssessmentById).toHaveBeenCalledWith(
             programAssessmentId,
             true,
             true
           );
 
-          expect(mokeFindRoleInProgram).toHaveBeenCalledWith(
+          expect(mockFindRoleInProgram).toHaveBeenCalledWith(
             facilitatorPrincipalId,
             programAssessment.program_id
           );
-          expect(mokeSubmissionDetails).toHaveBeenCalledWith(
+          expect(mockSubmissionDetails).toHaveBeenCalledWith(
             programAssessmentId,
             submissionId,
             true
@@ -503,14 +503,14 @@ describe('assessmentsRouter', () => {
       const programAssessmentId = 7,
         submissionId = 1;
 
-      mokeGetProgramIdByProgramAssessmentId.mockResolvedValue([]);
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([]);
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
         .expect(
           404,
           errorEnvelope('The requested resource does not exist.'),
           err => {
-            expect(mokeGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
+            expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
               programAssessmentId
             );
             done(err);
@@ -529,14 +529,14 @@ describe('assessmentsRouter', () => {
       const programAssessmentId = 1,
         submissionId = 8;
 
-      mokeSubmissionDetails.mockResolvedValue([]);
+      mockSubmissionDetails.mockResolvedValue([]);
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
         .expect(
           404,
           errorEnvelope('The requested resource does not exist.'),
           err => {
-            expect(mokeSubmissionDetails).toHaveBeenCalledWith(
+            expect(mockSubmissionDetails).toHaveBeenCalledWith(
               programAssessmentId,
               submissionId,
               true
@@ -572,13 +572,13 @@ describe('assessmentsRouter', () => {
         },
       ];
 
-      mokeSubmissionDetails.mockResolvedValue(assessmentSubmission);
+      mockSubmissionDetails.mockResolvedValue(assessmentSubmission);
 
       mockPrincipalId(loggedPrincipalId);
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
         .expect(401, errorEnvelope('Unauthorized user.'), err => {
-          expect(mokeSubmissionDetails).toHaveBeenCalledWith(
+          expect(mockSubmissionDetails).toHaveBeenCalledWith(
             programAssessmentId,
             submissionId,
             true
@@ -589,7 +589,7 @@ describe('assessmentsRouter', () => {
     it('should respond with an internal server error if a database error occurs', done => {
       const programAssessmentId = 1,
         submissionId = 1;
-      mokeSubmissionDetails.mockRejectedValue(new Error());
+      mockSubmissionDetails.mockRejectedValue(new Error());
       appAgent;
 
       appAgent
