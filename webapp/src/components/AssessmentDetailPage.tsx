@@ -137,7 +137,7 @@ const AssessmentDetailPage = () => {
       !submissionDisabled
     ) {
       requestRef.current = requestAnimationFrame(animate);
-  } else {
+    } else {
       if (assessment && !submissionDisabled && secondsRemaining === 0) {
         const completedAssessment = structuredClone(assessment);
         completedAssessment!.submission.assessment_submission_state = 'Expired';
