@@ -28,7 +28,7 @@ assessmentsRouter.get('/', async (req, res, next) => {
     return;
   }
 
-  res.json(collectionEnvelope(assessments, 0));
+  res.json(collectionEnvelope(assessments, assessments.length));
 });
 
 // TODO: fixed function

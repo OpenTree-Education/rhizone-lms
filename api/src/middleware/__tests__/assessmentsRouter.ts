@@ -9,18 +9,17 @@ import {
   ProgramAssessment,
 } from '../../../src/models';
 import {
-  getAssessmentsSummary,
   principalEnrolledPrograms,
   getAssessmentsForProgram,
   findRoleInProgram,
   getCurriculumAssessmentById,
   getProgramIdByProgramAssessmentId,
   getAssessmentSubmissions,
+  getFacilitatorAssessmentSubmissionsSummary,
 } from '../../services/assessmentService';
 
 jest.mock('../../services/assessmentService');
 
-// const mockGetAssessmentsSummary = jest.mocked(getAssessmentsSummary);
 const mockPrincipalEnrolledPrograms = jest.mocked(principalEnrolledPrograms);
 const mockGetAssessmentsForProgram = jest.mocked(getAssessmentsForProgram);
 const mockFindRoleInProgram = jest.mocked(findRoleInProgram);
@@ -30,6 +29,10 @@ const mockGetCurriculumAssessmentById = jest.mocked(
 const mockGetAssessmentSubmissionsSummary = jest.mocked(
   getAssessmentSubmissions
 );
+const mockGetFacilitatorAssessmentSubmissionsSummary = jest.mocked(
+  getFacilitatorAssessmentSubmissionsSummary
+);
+
 const mockGetProgramIdByProgramAssessmentId = jest.mocked(
   getProgramIdByProgramAssessmentId
 );
@@ -74,21 +77,12 @@ const facilitatorAssessmentSubmissionsSummary: FacilitatorAssessmentSubmissionsS
     num_ungraded_submissions: 2,
   };
 
-const assessmentsSummaryList: AssessmentSummary[] = [
-  {
-    curriculum_assessment: curriculumAssessment,
-    program_assessment: programAssessment,
-    submissions_summary:
-      assessmentSubmissionsSummary || facilitatorAssessmentSubmissionsSummary,
-  },
-];
-
 const emptyAssessmentsSummaryList: AssessmentSummary[] = [];
 
 describe('assessmentsRouter', () => {
   const appAgent = createAppAgentForRouter(assessmentsRouter);
   const exampleAssessmentId = 1;
-  const exampleSubmissionId = 1;
+  const exampleSubmissionId =1;
 
   describe('GET /', () => {
     const unenrolledPrincipalId = 4;
@@ -97,17 +91,15 @@ describe('assessmentsRouter', () => {
 
     const exampleCurriculumAssessments: CurriculumAssessment[] = [];
     const exampleProgramAssessments: ProgramAssessment[] = [];
-
     const exampleParticipantAssessmentSummaries: AssessmentSubmissionsSummary[] =
       [];
-    const exampleFacilitatorAssessmentSummaries: [] = [];
-
+    const exampleFacilitatorAssessmentSummaries: FacilitatorAssessmentSubmissionsSummary[] =
+      [];
     const programIds: number[] = [];
 
     it('should respond with an empty list for a user not enrolled in any programs', done => {
       // mock response from function that gets a list of programs the user is enrolled in to return an empty list
       mockPrincipalId(unenrolledPrincipalId);
-      // mockGetAssessmentsSummary.mockResolvedValue(emptyAssessmentsSummaryList);
       mockPrincipalEnrolledPrograms.mockResolvedValue(programIds);
 
       appAgent
@@ -117,10 +109,6 @@ describe('assessmentsRouter', () => {
           collectionEnvelope(emptyAssessmentsSummaryList, 0),
           err => {
             // call a (mock) function that gets a list of programs the user is enrolled in
-            // expect(mockGetAssessmentsSummary).toHaveBeenCalledWith(
-            //   unenrolledPrincipalId
-            // );
-
             expect(mockPrincipalEnrolledPrograms).toHaveBeenCalledWith(
               unenrolledPrincipalId
             );
@@ -145,7 +133,9 @@ describe('assessmentsRouter', () => {
       // mock response from (function that gets a list of programs the user is enrolled in) to include one program
       mockPrincipalEnrolledPrograms.mockResolvedValue([4]);
       // mock response from (call a function that returns the permission of the user for each program (participant/facilitator)) to respond with participant for that one program
-      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([1]);
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        exampleAssessmentId,
+      ]);
       mockFindRoleInProgram.mockResolvedValue({ title: 'participant' });
       // mock response from (get a list of program assessments for each program the user is enrolled in) to respond with a list of program assessments
       mockGetAssessmentsForProgram.mockResolvedValue(programAssessment);
@@ -168,16 +158,18 @@ describe('assessmentsRouter', () => {
             expect(mockPrincipalEnrolledPrograms).toHaveBeenCalledWith(
               enrolledParticipantPrincipalId
             );
-            expect(mockGetAssessmentsForProgram).toHaveBeenCalledWith(
-              programId
-            );
             // call a function that returns the permission of the user for each program (participant/facilitator)
+            expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
+              programAssessmentId
+            );
             expect(mockFindRoleInProgram).toHaveBeenCalledWith(
               programId,
               enrolledParticipantPrincipalId
             );
             // get a list of program assessments for each program the user is enrolled in
-            expect(mockPrincipalEnrolledPrograms).toHaveBeenCalledWith();
+            expect(mockPrincipalEnrolledPrograms).toHaveBeenCalledWith(
+              enrolledParticipantPrincipalId
+            );
             // get a list of curriculum assessments that correspond to each program assessment
             expect(mockGetCurriculumAssessmentById).toHaveBeenCalledWith(
               exampleAssessmentId,
@@ -185,6 +177,9 @@ describe('assessmentsRouter', () => {
               false
             );
             // call a (mock) function that gets the participant assessment summary for each program assessment where the user is a participant of that program
+            expect(mockGetAssessmentsForProgram).toHaveBeenCalledWith(
+              programId
+            );
             expect(mockGetAssessmentSubmissionsSummary).toHaveBeenCalledWith(
               programAssessmentId,
               enrolledParticipantPrincipalId
@@ -194,123 +189,153 @@ describe('assessmentsRouter', () => {
         );
     });
 
-    //   it('should respond with a list of all assessments (without questions) for facilitator of one program', done => {
-    //     // TODO: build out the rest of this response to better match what we'd actually return
-    //     const facilitatorAssessmentListResponse = [
-    //       {
-    //         curriculum_assessment: exampleCurriculumAssessments[0],
-    //         program_assessment: exampleProgramAssessments[0],
-    //         submissions_summary: exampleFacilitatorAssessmentSummaries[0],
-    //       },
-    //     ];
-    //     // mock response from (function that gets a list of programs the user is enrolled in) to include one program
-    //     // mock response from (call a function that returns the permission of the user for each program (participant/facilitator)) to respond with facilitator for that one program
-    //     // mock response from (get a list of program assessments for each program the user is enrolled in) to respond with a list of program assessments
-    //     // mock responses from (get a list of curriculum assessments that correspond to each program assessment) to respond with the corresponding curriculum assessment for each program assessment in that previous list
-    //     // mock responses from (call a (mock) function that gets the facilitator assessment summary for each program assessment where the user is a facilitator of that program) to respond with the assessment summary for all participants for each program assessment
-    //     appAgent
-    //       .get('/')
-    //       .expect(
-    //         200,
-    //         collectionEnvelope(
-    //           facilitatorAssessmentListResponse,
-    //           facilitatorAssessmentListResponse.length
-    //         ),
-    //         err => {
-    //           // call a (mock) function that gets a list of programs the user is facilitating
-    //           // call a function that returns the permission of the user for each program (participant/facilitator)
-    //           // get a list of program assessments for each program the user is facilitating
-    //           // get a list of curriculum assessments that correspond to each program assessment
-    //           // call a (mock) function that gets the facilitator assessment summary for each program assessment where the user is a facilitator of that program
-    //           done(err);
-    //         }
-    //       );
-    //   });
-    // it('should respond with an error if an error occurs fetching information from the database', done => {
-    //   // mock response from function that gets a list of programs the user is enrolled in to reject the database call
-    //   mockPrincipalEnrolledPrograms.mockRejectedValue(
-    //     new Error()
-    //   );
+    it('should respond with a list of all assessments (without questions) for facilitator of one program', done => {
+      mockPrincipalId(facilitatorPrincipalId);
+      const facilitatorAssessmentListResponse = [
+        {
+          curriculum_assessment:
+            exampleCurriculumAssessments.push(curriculumAssessment),
+          program_assessment: exampleProgramAssessments.push(programAssessment),
+          submissions_summary: exampleFacilitatorAssessmentSummaries.push(
+            facilitatorAssessmentSubmissionsSummary
+          ),
+        },
+      ];
+      // mock response from (function that gets a list of programs the user is enrolled in) to include one program
+      mockPrincipalEnrolledPrograms.mockResolvedValue([4]);
+      // mock response from (call a function that returns the permission of the user for each program (participant/facilitator)) to respond with facilitator for that one program
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([2]);
+      mockFindRoleInProgram.mockResolvedValue({ title: 'facilitator' });
+      // mock response from (get a list of program assessments for each program the user is enrolled in) to respond with a list of program assessments
+      mockGetAssessmentsForProgram.mockResolvedValue(programAssessment);
+      // mock responses from (get a list of curriculum assessments that correspond to each program assessment) to respond with the corresponding curriculum assessment for each program assessment in that previous list
+      mockGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
+      // mock responses from (call a (mock) function that gets the facilitator assessment summary for each program assessment where the user is a facilitator of that program) to respond with the assessment summary for all participants for each program assessment
+      mockGetFacilitatorAssessmentSubmissionsSummary.mockResolvedValue(
+        facilitatorAssessmentSubmissionsSummary
+      );
+      appAgent
+        .get('/')
+        .expect(
+          200,
+          collectionEnvelope(
+            facilitatorAssessmentListResponse,
+            facilitatorAssessmentListResponse.length
+          ),
+          err => {
+            // call a (mock) function that gets a list of programs the user is facilitating
+            expect(mockPrincipalEnrolledPrograms).toHaveBeenCalledWith(
+              facilitatorPrincipalId
+            );
+            // call a function that returns the permission of the user for each program (participant/facilitator)
+            expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
+              programAssessmentId
+            );
+            expect(mockFindRoleInProgram).toHaveBeenCalledWith(
+              programId,
+              facilitatorPrincipalId
+            );
+            // get a list of program assessments for each program the user is facilitating
+            expect(mockPrincipalEnrolledPrograms).toHaveBeenCalledWith(
+              facilitatorPrincipalId
+            );
+            // get a list of curriculum assessments that correspond to each program assessment
+            expect(mockGetCurriculumAssessmentById).toHaveBeenCalledWith(
+              exampleAssessmentId,
+              false,
+              false
+            );
+            // call a (mock) function that gets the facilitator assessment summary for each program assessment where the user is a facilitator of that program
+            expect(
+              mockGetFacilitatorAssessmentSubmissionsSummary
+            ).toHaveBeenCalledWith(programAssessmentId, facilitatorPrincipalId);
+            done(err);
+          }
+        );
+    });
 
-    //   appAgent.get('/').expect(500, done);
-    // });
+    it('should respond with an error if an error occurs fetching information from the database', done => {
+      // mock response from function that gets a list of programs the user is enrolled in to reject the database call
+      mockPrincipalEnrolledPrograms.mockRejectedValue(new Error());
+      appAgent.get('/').expect(500, done);
+    });
   });
 
-  // describe('POST /', () => {
-  //   it('should create a new assessment', done => {
-  //     const response = { behaviour: 'Creates a new assessment' };
-  //     appAgent.post('/').expect(200, itemEnvelope(response), err => {
-  //       done(err);
-  //     });
-  //   });
-  // });
+  describe('POST /', () => {
+    it('should create a new assessment', done => {
+      const response = { behaviour: 'Creates a new assessment' };
+      appAgent.post('/').expect(200, itemEnvelope(response), err => {
+        done(err);
+      });
+    });
+  });
 
-  // describe('GET /:assessmentId', () => {
-  //   it('should show a single assessment', done => {
-  //     const response = { behaviour: 'Shows a single assessment' };
-  //     appAgent
-  //       .get(`/${exampleAssessmentId}`)
-  //       .expect(200, itemEnvelope(response), err => {
-  //         done(err);
-  //       });
-  //   });
-  // });
+  describe('GET /:assessmentId', () => {
+    it('should show a single assessment', done => {
+      const response = { behaviour: 'Shows a single assessment' };
+      appAgent
+        .get(`/${exampleAssessmentId}`)
+        .expect(200, itemEnvelope(response), err => {
+          done(err);
+        });
+    });
+  });
 
-  // describe('PUT /:assessmentId', () => {
-  //   it('should edit an assessment in the system', done => {
-  //     const response = { behaviour: 'Edits an assessment in the system' };
-  //     appAgent
-  //       .put(`/${exampleAssessmentId}`)
-  //       .expect(200, itemEnvelope(response), err => {
-  //         done(err);
-  //       });
-  //   });
-  // });
+  describe('PUT /:assessmentId', () => {
+    it('should edit an assessment in the system', done => {
+      const response = { behaviour: 'Edits an assessment in the system' };
+      appAgent
+        .put(`/${exampleAssessmentId}`)
+        .expect(200, itemEnvelope(response), err => {
+          done(err);
+        });
+    });
+  });
 
-  // describe('DELETE /:assessmentId', () => {
-  //   it('should delete an assessment in the system', done => {
-  //     const response = { behaviour: '“Deletes” an assessment in the system' };
-  //     appAgent
-  //       .delete(`/${exampleAssessmentId}`)
-  //       .expect(200, itemEnvelope(response), err => {
-  //         done(err);
-  //       });
-  //   });
-  // });
+  describe('DELETE /:assessmentId', () => {
+    it('should delete an assessment in the system', done => {
+      const response = { behaviour: '“Deletes” an assessment in the system' };
+      appAgent
+        .delete(`/${exampleAssessmentId}`)
+        .expect(200, itemEnvelope(response), err => {
+          done(err);
+        });
+    });
+  });
 
-  // describe('GET /:assessmentId/submissions/:submissionId', () => {
-  //   it('should return the submission information', done => {
-  //     const response = {
-  //       behaviour:
-  //         'Returns the submission information (metadata, answers, etc)',
-  //     };
-  //     appAgent
-  //       .get(`/${exampleAssessmentId}/submissions/${exampleSubmissionId}`)
-  //       .expect(200, itemEnvelope(response), err => {
-  //         done(err);
-  //       });
-  //   });
-  // });
+  describe('GET /:assessmentId/submissions/:submissionId', () => {
+    it('should return the submission information', done => {
+      const response = {
+        behaviour:
+          'Returns the submission information (metadata, answers, etc)',
+      };
+      appAgent
+        .get(`/${exampleAssessmentId}/submissions/${exampleSubmissionId}`)
+        .expect(200, itemEnvelope(response), err => {
+          done(err);
+        });
+    });
+  });
 
-  // describe('PUT /:assessmentId/submissions/:submissionId', () => {
-  //   it('should update the state of a submission', done => {
-  //     const response = { behaviour: 'Updates the state of a submission' };
-  //     appAgent
-  //       .put(`/${exampleAssessmentId}/submissions/${exampleSubmissionId}`)
-  //       .expect(200, itemEnvelope(response), err => {
-  //         done(err);
-  //       });
-  //   });
-  // });
+  describe('PUT /:assessmentId/submissions/:submissionId', () => {
+    it('should update the state of a submission', done => {
+      const response = { behaviour: 'Updates the state of a submission' };
+      appAgent
+        .put(`/${exampleAssessmentId}/submissions/${exampleSubmissionId}`)
+        .expect(200, itemEnvelope(response), err => {
+          done(err);
+        });
+    });
+  });
 
-  // describe('GET /:assessmentId/submissions/new', () => {
-  //   it('should create a new draft submission', done => {
-  //     const response = { behaviour: 'Creates a new draft submission' };
-  //     appAgent
-  //       .get(`/${exampleAssessmentId}/submissions/new`)
-  //       .expect(200, itemEnvelope(response), err => {
-  //         done(err);
-  //       });
-  //   });
-  // });
+  describe('GET /:assessmentId/submissions/new', () => {
+    it('should create a new draft submission', done => {
+      const response = { behaviour: 'Creates a new draft submission' };
+      appAgent
+        .get(`/${exampleAssessmentId}/submissions/new`)
+        .expect(200, itemEnvelope(response), err => {
+          done(err);
+        });
+    });
+  });
 });
