@@ -1,4 +1,4 @@
-import { itemEnvelope } from '../responseEnvelope';
+import { itemEnvelope, errorEnvelope } from '../responseEnvelope';
 import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
 import assessmentsRouter from '../assessmentsRouter';
 
@@ -81,11 +81,13 @@ describe('assessmentsRouter', () => {
       mockPrincipalId(principalId);
       mockGetProgramIdByProgramAssessmentId.mockResolvedValue([2]);
       mockFindRoleInProgram.mockResolvedValue({ title: 'participant' });
-      appAgent.delete(`/1`).expect(401, null, err => {
-        expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(1);
-        expect(mockFindRoleInProgram).toHaveBeenCalledWith(principalId, 2);
-        done(err);
-      });
+      appAgent
+        .delete(`/1`)
+        .expect(401, errorEnvelope('Unauthorized user.'), err => {
+          expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(1);
+          expect(mockFindRoleInProgram).toHaveBeenCalledWith(principalId, 2);
+          done(err);
+        });
     });
   });
 
