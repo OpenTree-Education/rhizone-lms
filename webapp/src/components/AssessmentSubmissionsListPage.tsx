@@ -59,7 +59,7 @@ const AssessmentSubmissionsListPage = () => {
           submitted_at: '2023-03-15 02:32:54',
         },
         {
-          id: 17,
+          id: 18,
           assessment_id: 1,
           principal_id: 3,
           assessment_submission_state: 'Submitted',
@@ -80,7 +80,7 @@ const AssessmentSubmissionsListPage = () => {
 
   const ButtonWrapper = () => {
     if (
-      new Date(assessment.program_assessment.due_date) < new Date() &&
+      new Date(assessment.program_assessment.due_date) > new Date() &&
       assessment.curriculum_assessment.max_num_submissions >
         assessment.submissions.length
     ) {
@@ -94,6 +94,7 @@ const AssessmentSubmissionsListPage = () => {
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <h1>{assessment.curriculum_assessment.title}</h1>
+          <p>{assessment.curriculum_assessment.description}</p>
         </Grid>
 
         <Grid item xs={12} md={12}>
@@ -142,10 +143,12 @@ const AssessmentSubmissionsListPage = () => {
                 ))}
               </TableBody>
             </Table>
-
-            <ButtonWrapper />
           </TableContainer>
         </Grid>
+      </Grid>
+
+      <Grid item xs={12} md={12}>
+        <ButtonWrapper />
       </Grid>
     </Container>
   );
