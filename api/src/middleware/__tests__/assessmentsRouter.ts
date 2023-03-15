@@ -9,7 +9,7 @@ import {
   submissionDetails,
 } from '../../services/assessmentService';
 
-import { AssessmentSubmission, AssessmentWithSubmissions } from '../../models';
+import { SubmittedAssessment } from '../../models';
 
 jest.mock('../../services/assessmentService.ts');
 
@@ -128,29 +128,28 @@ describe('assessmentsRouter', () => {
         due_date: '2023-02-10',
       };
 
-      const assessmentSubmission: AssessmentSubmission[] = [
-        {
-          id: 2,
-          assessment_id: programAssessmentId,
-          principal_id: participantPrincipalId,
-          assessment_submission_state: 'Submitted',
-          opened_at: '2023-02-09 12:00:00',
-          submitted_at: '2023-02-09 13:23:45',
-          responses: [
-            {
-              id: 1,
-              answer_id: 1,
-              assessment_id: 1,
-              submission_id: 2,
-              question_id: 1,
-            },
-          ],
-        },
-      ];
-      const response: AssessmentWithSubmissions = {
+      const assessmentSubmission = {
+        id: 2,
+        assessment_id: programAssessmentId,
+        principal_id: participantPrincipalId,
+        assessment_submission_state: 'Submitted',
+        opened_at: '2023-02-09 12:00:00',
+        submitted_at: '2023-02-09 13:23:45',
+        responses: [
+          {
+            id: 1,
+            answer_id: 1,
+            assessment_id: 1,
+            submission_id: 2,
+            question_id: 1,
+          },
+        ],
+      };
+
+      const response: SubmittedAssessment = {
         curriculum_assessment: curriculumAssessment,
         program_assessment: programAssessment,
-        submissions: assessmentSubmission,
+        submission: assessmentSubmission,
       };
 
       mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
@@ -159,7 +158,7 @@ describe('assessmentsRouter', () => {
       mockFindRoleInProgram.mockResolvedValue({ title: 'facilitator' });
       mockProgramAssessmentById.mockResolvedValue([programAssessment]);
       mockGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
-      mockSubmissionDetails.mockResolvedValue(assessmentSubmission);
+      mockSubmissionDetails.mockResolvedValue([assessmentSubmission]);
       mockPrincipalId(facilitatorPrincipalId);
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
@@ -186,6 +185,7 @@ describe('assessmentsRouter', () => {
           done(err);
         });
     });
+
     it('should show a participant their submission information for an in-progress assessment without including the correct answers', done => {
       const facilitatorPrincipalId = 3;
       const participantPrincipalId = 2;
@@ -231,29 +231,27 @@ describe('assessmentsRouter', () => {
         due_date: '2023-02-10',
       };
 
-      const assessmentSubmission: AssessmentSubmission[] = [
-        {
-          id: 2,
-          assessment_id: programAssessmentId,
-          principal_id: participantPrincipalId,
-          assessment_submission_state: 'In Progress',
-          opened_at: '2023-02-09 12:00:00',
-          submitted_at: '2023-02-09 13:23:45',
-          responses: [
-            {
-              id: 1,
-              answer_id: 1,
-              assessment_id: 1,
-              submission_id: 2,
-              question_id: 1,
-            },
-          ],
-        },
-      ];
-      const response: AssessmentWithSubmissions = {
+      const assessmentSubmission = {
+        id: 2,
+        assessment_id: programAssessmentId,
+        principal_id: participantPrincipalId,
+        assessment_submission_state: 'In Progress',
+        opened_at: '2023-02-09 12:00:00',
+        submitted_at: '2023-02-09 13:23:45',
+        responses: [
+          {
+            id: 1,
+            answer_id: 1,
+            assessment_id: 1,
+            submission_id: 2,
+            question_id: 1,
+          },
+        ],
+      };
+      const response: SubmittedAssessment = {
         curriculum_assessment: curriculumAssessment,
         program_assessment: programAssessment,
-        submissions: assessmentSubmission,
+        submission: assessmentSubmission,
       };
 
       mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
@@ -262,7 +260,7 @@ describe('assessmentsRouter', () => {
       mockFindRoleInProgram.mockResolvedValue({ title: 'participant' });
       mockProgramAssessmentById.mockResolvedValue([programAssessment]);
       mockGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
-      mockSubmissionDetails.mockResolvedValue(assessmentSubmission);
+      mockSubmissionDetails.mockResolvedValue([assessmentSubmission]);
       mockPrincipalId(participantPrincipalId);
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
@@ -289,6 +287,7 @@ describe('assessmentsRouter', () => {
           done(err);
         });
     });
+
     it('should show a participant their submission information for an ungraded submitted assessment without including the correct answers', done => {
       const facilitatorPrincipalId = 3;
       const participantPrincipalId = 2;
@@ -334,29 +333,27 @@ describe('assessmentsRouter', () => {
         due_date: '2023-02-10',
       };
 
-      const assessmentSubmission: AssessmentSubmission[] = [
-        {
-          id: 2,
-          assessment_id: programAssessmentId,
-          principal_id: participantPrincipalId,
-          assessment_submission_state: 'Submitted',
-          opened_at: '2023-02-09 12:00:00',
-          submitted_at: '2023-02-09 13:23:45',
-          responses: [
-            {
-              id: 1,
-              answer_id: 1,
-              assessment_id: 1,
-              submission_id: 2,
-              question_id: 1,
-            },
-          ],
-        },
-      ];
-      const response: AssessmentWithSubmissions = {
+      const assessmentSubmission = {
+        id: 2,
+        assessment_id: programAssessmentId,
+        principal_id: participantPrincipalId,
+        assessment_submission_state: 'Submitted',
+        opened_at: '2023-02-09 12:00:00',
+        submitted_at: '2023-02-09 13:23:45',
+        responses: [
+          {
+            id: 1,
+            answer_id: 1,
+            assessment_id: 1,
+            submission_id: 2,
+            question_id: 1,
+          },
+        ],
+      };
+      const response: SubmittedAssessment = {
         curriculum_assessment: curriculumAssessment,
         program_assessment: programAssessment,
-        submissions: assessmentSubmission,
+        submission: assessmentSubmission,
       };
 
       mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
@@ -365,7 +362,7 @@ describe('assessmentsRouter', () => {
       mockFindRoleInProgram.mockResolvedValue({ title: 'participant' });
       mockProgramAssessmentById.mockResolvedValue([programAssessment]);
       mockGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
-      mockSubmissionDetails.mockResolvedValue(assessmentSubmission);
+      mockSubmissionDetails.mockResolvedValue([assessmentSubmission]);
       mockPrincipalId(participantPrincipalId);
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
@@ -392,6 +389,7 @@ describe('assessmentsRouter', () => {
           done(err);
         });
     });
+
     it('should show a participant their submission information for a graded submitted assessment including the correct answers', done => {
       const facilitatorPrincipalId = 3;
       const participantPrincipalId = 2;
@@ -439,30 +437,28 @@ describe('assessmentsRouter', () => {
         due_date: '2023-02-10',
       };
 
-      const assessmentSubmission: AssessmentSubmission[] = [
-        {
-          id: 2,
-          assessment_id: programAssessmentId,
-          principal_id: participantPrincipalId,
-          assessment_submission_state: 'graded',
-          score: 1,
-          opened_at: '2023-02-09 12:00:00',
-          submitted_at: '2023-02-09 13:23:45',
-          responses: [
-            {
-              id: 1,
-              answer_id: 1,
-              assessment_id: 1,
-              submission_id: 2,
-              question_id: 1,
-            },
-          ],
-        },
-      ];
-      const response: AssessmentWithSubmissions = {
+      const assessmentSubmission = {
+        id: 2,
+        assessment_id: programAssessmentId,
+        principal_id: participantPrincipalId,
+        assessment_submission_state: 'graded',
+        score: 1,
+        opened_at: '2023-02-09 12:00:00',
+        submitted_at: '2023-02-09 13:23:45',
+        responses: [
+          {
+            id: 1,
+            answer_id: 1,
+            assessment_id: 1,
+            submission_id: 2,
+            question_id: 1,
+          },
+        ],
+      };
+      const response: SubmittedAssessment = {
         curriculum_assessment: curriculumAssessment,
         program_assessment: programAssessment,
-        submissions: assessmentSubmission,
+        submission: assessmentSubmission,
       };
 
       mockPrincipalId(participantPrincipalId);
@@ -491,6 +487,7 @@ describe('assessmentsRouter', () => {
           done(err);
         });
     });
+
     it('should respond with a bad request error if given an invalid assessment id', done => {
       const programAssessmentId = 'test',
         submissionId = 1;
@@ -499,6 +496,7 @@ describe('assessmentsRouter', () => {
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
         .expect(400, done);
     });
+
     it('should respond with a NotFoundError if the assessment ID was not found in the database', done => {
       const programAssessmentId = 7,
         submissionId = 1;
@@ -517,6 +515,7 @@ describe('assessmentsRouter', () => {
           }
         );
     });
+
     it('should respond with a bad request error if given an invalid submission id ', done => {
       const programAssessmentId = 1,
         submissionId = 'test';
@@ -525,6 +524,7 @@ describe('assessmentsRouter', () => {
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
         .expect(400, done);
     });
+
     it('should respond with a NotFoundError if the submission ID was not found in the database ', done => {
       const programAssessmentId = 1,
         submissionId = 8;
@@ -552,27 +552,25 @@ describe('assessmentsRouter', () => {
       const programAssessmentId = 1;
       const submissionId = 1;
 
-      const assessmentSubmission: AssessmentSubmission[] = [
-        {
-          id: 2,
-          assessment_id: programAssessmentId,
-          principal_id: participantPrincipalId,
-          assessment_submission_state: 'Submitted',
-          opened_at: '2023-02-09 12:00:00',
-          submitted_at: '2023-02-09 13:23:45',
-          responses: [
-            {
-              id: 1,
-              answer_id: 1,
-              assessment_id: 1,
-              submission_id: 2,
-              question_id: 1,
-            },
-          ],
-        },
-      ];
+      const assessmentSubmission = {
+        id: 2,
+        assessment_id: programAssessmentId,
+        principal_id: participantPrincipalId,
+        assessment_submission_state: 'Submitted',
+        opened_at: '2023-02-09 12:00:00',
+        submitted_at: '2023-02-09 13:23:45',
+        responses: [
+          {
+            id: 1,
+            answer_id: 1,
+            assessment_id: 1,
+            submission_id: 2,
+            question_id: 1,
+          },
+        ],
+      };
 
-      mockSubmissionDetails.mockResolvedValue(assessmentSubmission);
+      mockSubmissionDetails.mockResolvedValue([assessmentSubmission]);
 
       mockPrincipalId(loggedPrincipalId);
       appAgent
@@ -586,6 +584,7 @@ describe('assessmentsRouter', () => {
           done(err);
         });
     });
+
     it('should respond with an internal server error if a database error occurs', done => {
       const programAssessmentId = 1,
         submissionId = 1;
@@ -596,27 +595,27 @@ describe('assessmentsRouter', () => {
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
         .expect(500, done);
     });
+  });
 
-    describe('PUT /:assessmentId/submissions/:submissionId', () => {
-      it('should update the state of a submission', done => {
-        const response = { behaviour: 'Updates the state of a submission' };
-        appAgent
-          .put(`/${exampleAssessmentId}/submissions/${exampleSubmissionId}`)
-          .expect(200, itemEnvelope(response), err => {
-            done(err);
-          });
-      });
+  describe('PUT /:assessmentId/submissions/:submissionId', () => {
+    it('should update the state of a submission', done => {
+      const response = { behaviour: 'Updates the state of a submission' };
+      appAgent
+        .put(`/${exampleAssessmentId}/submissions/${exampleSubmissionId}`)
+        .expect(200, itemEnvelope(response), err => {
+          done(err);
+        });
     });
+  });
 
-    describe('GET /:assessmentId/submissions/new', () => {
-      it('should create a new draft submission', done => {
-        const response = { behaviour: 'Creates a new draft submission' };
-        appAgent
-          .get(`/${exampleAssessmentId}/submissions/new`)
-          .expect(200, itemEnvelope(response), err => {
-            done(err);
-          });
-      });
+  describe('GET /:assessmentId/submissions/new', () => {
+    it('should create a new draft submission', done => {
+      const response = { behaviour: 'Creates a new draft submission' };
+      appAgent
+        .get(`/${exampleAssessmentId}/submissions/new`)
+        .expect(200, itemEnvelope(response), err => {
+          done(err);
+        });
     });
   });
 });
