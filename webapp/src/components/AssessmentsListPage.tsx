@@ -22,6 +22,10 @@ const AssessmentsListPage = () => {
     setAssessmentList(assessmentListPageExampleData);
   }, []);
 
+  useEffect(() => {
+    // TODO: new row filtering logic should go here.
+  }, [currentStatusTab]);
+
   const handleChangeTab = (
     event: React.SyntheticEvent,
     newCurrentStatusTab: number

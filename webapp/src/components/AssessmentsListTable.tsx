@@ -236,7 +236,7 @@ const AssessmentsListTable = ({
               status={
                 assessment.submissions_summary.assessment_submission_state
               }
-              key={assessment.submissions_summary.assessment_submission_state}
+              key={assessment.program_assessment.id}
             >
               <TableCellWrapper
                 statusTab={currentStatusTab}
