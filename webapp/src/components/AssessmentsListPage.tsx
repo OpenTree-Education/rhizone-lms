@@ -29,7 +29,7 @@ import LockClockOutlinedIcon from '@mui/icons-material/LockClockOutlined';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 
 import { formatDateTime } from '../helpers/dateTime';
-import { assessmentList } from '../assets/data';
+import { assessmentListPageExampleData as assessmentList } from '../assets/data';
 
 enum StatusTab {
   All,
@@ -78,26 +78,26 @@ const TableRowWrapper = (props: TableRowWrapperProps) => {
   }
 };
 
-const renderButtonByStatus = (status: string) => {
+const renderButtonByStatus = (status: string, id: number) => {
+  let buttonLabel;
   switch (status) {
     case 'Active':
-      return (
-        <Button variant="contained" size="small">
-          Start
-        </Button>
-      );
+      buttonLabel = 'Start';
+      break;
     case 'Submitted':
     case 'Graded':
     case 'Unsubmitted':
-      return (
-        <Button variant="contained" size="small">
-          View
-        </Button>
-      );
+      buttonLabel = 'View';
+      break;
     case 'Upcoming':
     default:
-      return null;
   }
+  return (
+    //TODO: use the latest submission id
+    <Button variant="contained" size="small" href={`/assessments/${id}/1`}>
+      {buttonLabel}
+    </Button>
+  );
 };
 
 const renderChipByStatus = (status: string) => {
@@ -163,7 +163,7 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   },
 }));
 
-const AssessmentsPage = () => {
+const AssessmentsListPage = () => {
   const [currentStatusTab, setCurrentStatusTab] = useState(StatusTab.Active);
   const handleChangeTab = (
     event: React.SyntheticEvent,
@@ -367,6 +367,7 @@ const AssessmentsPage = () => {
                 >
                   {(assessment.status === 'Submitted' ||
                     assessment.status === 'Graded') &&
+                    assessment.submittedDate &&
                     formatDateTime(assessment.submittedDate)}
                 </TableCellWrapper>
                 <TableCellWrapper
@@ -396,7 +397,7 @@ const AssessmentsPage = () => {
                   statusTab={currentStatusTab}
                   index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}
                 >
-                  {renderButtonByStatus(assessment.status)}
+                  {renderButtonByStatus(assessment.status, assessment.id)}
                 </TableCellWrapper>
               </TableRowWrapper>
             ))}
@@ -407,4 +408,4 @@ const AssessmentsPage = () => {
   );
 };
 
-export default AssessmentsPage;
+export default AssessmentsListPage;
