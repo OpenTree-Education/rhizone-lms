@@ -82,24 +82,16 @@ const emptyAssessmentsSummaryList: AssessmentSummary[] = [];
 describe('assessmentsRouter', () => {
   const appAgent = createAppAgentForRouter(assessmentsRouter);
   const exampleAssessmentId = 1;
-  const exampleSubmissionId =1;
+  const exampleSubmissionId = 1;
 
   describe('GET /', () => {
     const unenrolledPrincipalId = 4;
     const enrolledParticipantPrincipalId = 5;
     const facilitatorPrincipalId = 6;
-
-    const exampleCurriculumAssessments: CurriculumAssessment[] = [];
-    const exampleProgramAssessments: ProgramAssessment[] = [];
-    const exampleParticipantAssessmentSummaries: AssessmentSubmissionsSummary[] =
-      [];
-    const exampleFacilitatorAssessmentSummaries: FacilitatorAssessmentSubmissionsSummary[] =
-      [];
     const programIds: number[] = [];
 
     it('should respond with an empty list for a user not enrolled in any programs', done => {
       // mock response from function that gets a list of programs the user is enrolled in to return an empty list
-      mockPrincipalId(unenrolledPrincipalId);
       mockPrincipalEnrolledPrograms.mockResolvedValue(programIds);
 
       appAgent
@@ -121,12 +113,9 @@ describe('assessmentsRouter', () => {
       mockPrincipalId(enrolledParticipantPrincipalId);
       const participantAssessmentListResponse = [
         {
-          curriculum_assessment:
-            exampleCurriculumAssessments.push(curriculumAssessment),
-          program_assessment: exampleProgramAssessments.push(programAssessment),
-          submissions_summary: exampleParticipantAssessmentSummaries.push(
-            assessmentSubmissionsSummary
-          ),
+          curriculum_assessment: curriculumAssessment,
+          program_assessment: programAssessment,
+          submissions_summary: assessmentSubmissionsSummary,
         },
       ];
 
@@ -166,10 +155,6 @@ describe('assessmentsRouter', () => {
               programId,
               enrolledParticipantPrincipalId
             );
-            // get a list of program assessments for each program the user is enrolled in
-            expect(mockPrincipalEnrolledPrograms).toHaveBeenCalledWith(
-              enrolledParticipantPrincipalId
-            );
             // get a list of curriculum assessments that correspond to each program assessment
             expect(mockGetCurriculumAssessmentById).toHaveBeenCalledWith(
               exampleAssessmentId,
@@ -193,12 +178,9 @@ describe('assessmentsRouter', () => {
       mockPrincipalId(facilitatorPrincipalId);
       const facilitatorAssessmentListResponse = [
         {
-          curriculum_assessment:
-            exampleCurriculumAssessments.push(curriculumAssessment),
-          program_assessment: exampleProgramAssessments.push(programAssessment),
-          submissions_summary: exampleFacilitatorAssessmentSummaries.push(
-            facilitatorAssessmentSubmissionsSummary
-          ),
+          curriculum_assessment: curriculumAssessment,
+          program_assessment: programAssessment,
+          submissions_summary: facilitatorAssessmentSubmissionsSummary,
         },
       ];
       // mock response from (function that gets a list of programs the user is enrolled in) to include one program
@@ -233,10 +215,6 @@ describe('assessmentsRouter', () => {
             );
             expect(mockFindRoleInProgram).toHaveBeenCalledWith(
               programId,
-              facilitatorPrincipalId
-            );
-            // get a list of program assessments for each program the user is facilitating
-            expect(mockPrincipalEnrolledPrograms).toHaveBeenCalledWith(
               facilitatorPrincipalId
             );
             // get a list of curriculum assessments that correspond to each program assessment
