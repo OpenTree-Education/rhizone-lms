@@ -176,13 +176,13 @@ const AssessmentDetailPage = () => {
 
     if (answerId) {
       assessmentWithUpdatedResponses.submission.responses!.find(
-        q => q.question_id === questionId
+        response => response.question_id === questionId
       )!.answer_id = answerId;
       setAssessment(assessmentWithUpdatedResponses);
     }
 
     assessmentWithUpdatedResponses.submission.responses!.find(
-      q => q.question_id === questionId
+      response => response.question_id === questionId
     )!.response = responseText;
     setAssessment(assessmentWithUpdatedResponses);
 

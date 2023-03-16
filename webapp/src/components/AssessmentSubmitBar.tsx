@@ -96,7 +96,7 @@ const AssessmentSubmitBar = ({
         <ListItem>
           <Box sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
             {assessment.curriculum_assessment
-              .questions!.sort(q => q.sort_order)
+              .questions!.sort(question => question.sort_order)
               .map(question => (
                 <StyledNumChip
                   sx={{ marginLeft: '1px', marginBottom: '3px' }}
