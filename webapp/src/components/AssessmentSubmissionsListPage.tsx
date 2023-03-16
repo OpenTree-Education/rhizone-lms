@@ -21,11 +21,11 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
-    textAlign: 'center'
+    textAlign: 'center',
   },
 }));
 
@@ -73,31 +73,29 @@ const submissionsExample = [
     opened_at: '2023-03-15 07:45:00',
     submitted_at: '2023-03-15 08:15:00',
   },
-]
-
+];
 
 const AssessmentSubmissionsListPage = () => {
   const { assessmentId } = useParams();
   const assessmentIdNumber = Number(assessmentId);
 
-  const [isMentor, setIsMentor] = useState(false)
+  const [isMentor, setIsMentor] = useState(false);
   const [assessment, setAssessment] = useState<SubmittedAssessment>();
 
-  const filteredSubmissions = () => {
-    if (!isMentor) {
-      return submissionsExample.filter(sub => sub.principal_id === 3)
-    }
-    return submissionsExample
-  }
-
-
   useEffect(() => {
+    const filteredSubmissions = () => {
+      if (!isMentor) {
+        return submissionsExample.filter(sub => sub.principal_id === 3);
+      }
+      return submissionsExample;
+    };
+
     setAssessment({
       curriculum_assessment:
         assessmentDetailPageExampleData.curriculum_assessment,
       program_assessment: assessmentDetailPageExampleData.program_assessment,
 
-      submissions: filteredSubmissions()
+      submissions: filteredSubmissions(),
     });
   }, [isMentor]);
 
@@ -181,19 +179,20 @@ const AssessmentSubmissionsListPage = () => {
           <ButtonWrapper />
         </Grid>
         <Grid item xs={12} md={12}>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={isMentor}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setIsMentor(event.target.checked)
-                }}
-                name="isMentor" />
-            }
-            label="Mentor mode"
-          />
-        </FormGroup>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={isMentor}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    setIsMentor(event.target.checked);
+                  }}
+                  name="isMentor"
+                />
+              }
+              label="Mentor mode"
+            />
+          </FormGroup>
         </Grid>
       </Grid>
     </Container>
