@@ -21,8 +21,11 @@ import {
 jest.mock('../../services/assessmentService');
 
 const mockPrincipalEnrolledPrograms = jest.mocked(principalEnrolledPrograms);
-const mockGetAssessmentsForProgram = jest.mocked(getAssessmentsForProgram);
+const mockGetProgramIdByProgramAssessmentId = jest.mocked(
+  getProgramIdByProgramAssessmentId
+);
 const mockFindRoleInProgram = jest.mocked(findRoleInProgram);
+const mockGetAssessmentsForProgram = jest.mocked(getAssessmentsForProgram);
 const mockGetCurriculumAssessmentById = jest.mocked(
   getCurriculumAssessmentById
 );
@@ -31,10 +34,6 @@ const mockGetAssessmentSubmissionsSummary = jest.mocked(
 );
 const mockGetFacilitatorAssessmentSubmissionsSummary = jest.mocked(
   getFacilitatorAssessmentSubmissionsSummary
-);
-
-const mockGetProgramIdByProgramAssessmentId = jest.mocked(
-  getProgramIdByProgramAssessmentId
 );
 
 const programAssessmentId = 1;
@@ -118,7 +117,6 @@ describe('assessmentsRouter', () => {
           submissions_summary: assessmentSubmissionsSummary,
         },
       ];
-
       // mock response from (function that gets a list of programs the user is enrolled in) to include one program
       mockPrincipalEnrolledPrograms.mockResolvedValue([4]);
       // mock response from (call a function that returns the permission of the user for each program (participant/facilitator)) to respond with participant for that one program
@@ -155,6 +153,10 @@ describe('assessmentsRouter', () => {
               programId,
               enrolledParticipantPrincipalId
             );
+            //get a list of program assessments for each program the user is enrolled in) to respond with a list of program assessments
+            expect(mockGetAssessmentsForProgram).toHaveBeenCalledWith(
+              programId
+            );
             // get a list of curriculum assessments that correspond to each program assessment
             expect(mockGetCurriculumAssessmentById).toHaveBeenCalledWith(
               exampleAssessmentId,
@@ -162,9 +164,6 @@ describe('assessmentsRouter', () => {
               false
             );
             // call a (mock) function that gets the participant assessment summary for each program assessment where the user is a participant of that program
-            expect(mockGetAssessmentsForProgram).toHaveBeenCalledWith(
-              programId
-            );
             expect(mockGetAssessmentSubmissionsSummary).toHaveBeenCalledWith(
               programAssessmentId,
               enrolledParticipantPrincipalId
@@ -217,6 +216,8 @@ describe('assessmentsRouter', () => {
               programId,
               facilitatorPrincipalId
             );
+            //get a list of program assessments for each program the user is enrolled in) to respond with a list of program assessments
+            expect(mockGetAssessmentsForProgram).toBeCalledWith(programId);
             // get a list of curriculum assessments that correspond to each program assessment
             expect(mockGetCurriculumAssessmentById).toHaveBeenCalledWith(
               exampleAssessmentId,
