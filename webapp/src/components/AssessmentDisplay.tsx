@@ -35,7 +35,18 @@ const AssessmentDisplay = ({
   }, [assessment.submission.assessment_submission_state]);
 
   if (typeof assessment.curriculum_assessment.questions === 'undefined') {
-    return <></>;
+    return (
+      <Card
+        sx={{
+          margin: '1em 2em',
+        }}
+      >
+        <Alert severity="error">
+          <AlertTitle>Sorry!</AlertTitle>
+          This assessment contains no questions.
+        </Alert>
+      </Card>
+    );
   }
 
   return (
@@ -59,8 +70,8 @@ const AssessmentDisplay = ({
           </Alert>
         </Card>
       </Grid>
-      {assessment.curriculum_assessment.questions
-        .sort(q => q.sort_order)
+      {assessment.curriculum_assessment
+        .questions!.sort(q => q.sort_order)
         .map(question => (
           <Grid item key={question.id} xs={10} sx={{ margin: '1em auto' }}>
             <AssessmentQuestionCard

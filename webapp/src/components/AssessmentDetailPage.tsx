@@ -181,12 +181,11 @@ const AssessmentDetailPage = () => {
       setAssessment(assessmentWithUpdatedResponses);
     }
 
-    if (responseText) {
-      assessmentWithUpdatedResponses.submission.responses!.find(
-        q => q.question_id === questionId
-      )!.response = responseText;
-      setAssessment(assessmentWithUpdatedResponses);
-    }
+    assessmentWithUpdatedResponses.submission.responses!.find(
+      q => q.question_id === questionId
+    )!.response = responseText;
+    setAssessment(assessmentWithUpdatedResponses);
+
     setNumOfAnsweredQuestions(
       assessmentWithUpdatedResponses.submission.responses!.filter(
         a => Number.isInteger(a.answer_id) || typeof a.response !== 'undefined'
@@ -219,8 +218,8 @@ const AssessmentDetailPage = () => {
   if (
     !Number.isInteger(assessmentIdNumber) ||
     !Number.isInteger(submissionIdNumber) ||
-    assessmentIdNumber < 0 ||
-    submissionIdNumber < 0
+    assessmentIdNumber < 1 ||
+    submissionIdNumber < 1
   ) {
     return (
       <Alert severity="error">

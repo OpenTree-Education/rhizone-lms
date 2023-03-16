@@ -97,17 +97,17 @@ const AssessmentSubmitBar = ({
           <Box sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
             {assessment.curriculum_assessment
               .questions!.sort(q => q.sort_order)
-              .map(q => (
+              .map(question => (
                 <StyledNumChip
                   sx={{ marginLeft: '1px', marginBottom: '3px' }}
-                  label={q.sort_order}
-                  key={q.id}
+                  label={question.sort_order}
+                  key={question.id}
                   color={`${
                     assessment.submission.responses!.find(
-                      a => a.question_id === q.id
+                      a => a.question_id === question.id
                     )!.answer_id ||
                     assessment.submission.responses!.find(
-                      a => a.question_id === q.id
+                      a => a.question_id === question.id
                     )!.response
                       ? 'primary'
                       : 'default'

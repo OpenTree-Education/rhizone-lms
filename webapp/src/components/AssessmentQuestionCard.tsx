@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   TextField,
   FormControlLabel,
@@ -31,7 +31,7 @@ const AssessmentQuestionCard = ({
   handleUpdatedResponse,
   disabled,
 }: QuestionCardProps) => {
-  const [singleChoiceValue, setSingleChoiceValue] = React.useState(
+  const [singleChoiceValue, setSingleChoiceValue] = useState(
     submissionResponse.answer_id ? submissionResponse.answer_id : 0
   );
   const handleChangeSingleChoice = (event: SelectChangeEvent) => {
@@ -39,7 +39,7 @@ const AssessmentQuestionCard = ({
     handleUpdatedResponse(assessmentQuestion.id!, Number(event.target.value));
   };
 
-  const [responseTextValue, setResponseTextValue] = React.useState(
+  const [responseTextValue, setResponseTextValue] = useState(
     submissionResponse.response ? submissionResponse.response : ''
   );
 
@@ -64,18 +64,18 @@ const AssessmentQuestionCard = ({
             value={singleChoiceValue}
             onChange={handleChangeSingleChoice}
           >
-            {assessmentQuestion.answers?.map(a => (
-              <React.Fragment key={a.id}>
+            {assessmentQuestion.answers?.map(answer => (
+              <React.Fragment key={answer.id}>
                 <FormControlLabel
                   control={<Radio disabled={disabled} />}
-                  value={a.id}
-                  key={a.id}
-                  label={a.title}
-                  checked={submissionResponse.answer_id === a.id}
+                  value={answer.id}
+                  key={answer.id}
+                  label={answer.title}
+                  checked={submissionResponse.answer_id === answer.id}
                 />
-                {a.description && (
+                {answer.description && (
                   <Typography variant="caption" sx={{ marginLeft: '3em' }}>
-                    ({a.description})
+                    ({answer.description})
                   </Typography>
                 )}{' '}
               </React.Fragment>
@@ -92,11 +92,13 @@ const AssessmentQuestionCard = ({
             value={singleChoiceValue === 0 ? '' : singleChoiceValue.toString()}
             disabled={disabled}
           >
-            {question.answers?.map(a => (
-              <MenuItem value={a.id} key={a.id}>
-                {a.title}
-                {a.description && (
-                  <Typography variant="caption">({a.description})</Typography>
+            {question.answers?.map(answer => (
+              <MenuItem value={answer.id} key={answer.id}>
+                {answer.title}
+                {answer.description && (
+                  <Typography variant="caption">
+                    ({answer.description})
+                  </Typography>
                 )}
               </MenuItem>
             ))}

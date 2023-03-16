@@ -94,7 +94,7 @@ const renderButtonByStatus = (status: string, id: number) => {
   }
   return (
     //TODO: use the latest submission id
-    <Button variant="contained" size="small" href={`/assessments/${id}/0`}>
+    <Button variant="contained" size="small" href={`/assessments/${id}/1`}>
       {buttonLabel}
     </Button>
   );
