@@ -82,11 +82,17 @@ describe('assessmentsRouter', () => {
       mockFindRoleInProgram.mockResolvedValue({ title: 'participant' });
       appAgent
         .delete(`/${assessmentId}`)
-        .expect(401, errorEnvelope('Unauthorized user.'), err => {
-          expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(1);
-          expect(mockFindRoleInProgram).toHaveBeenCalledWith(principalId, 2);
-          done(err);
-        });
+        .expect(
+          401,
+          errorEnvelope('The requester does not have access to the resource.'),
+          err => {
+            expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
+              1
+            );
+            expect(mockFindRoleInProgram).toHaveBeenCalledWith(principalId, 2);
+            done(err);
+          }
+        );
     });
   });
 
