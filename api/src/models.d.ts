@@ -160,10 +160,16 @@ export interface AssessmentSubmission {
   responses?: AssessmentResponse[];
 }
 
-export interface SubmittedAssessment {
+export interface AssessmentWithSubmissions {
   curriculum_assessment: CurriculumAssessment;
   program_assessment: ProgramAssessment;
   submissions: AssessmentSubmission[];
+}
+
+export interface SubmittedAssessment {
+  curriculum_assessment: CurriculumAssessment;
+  program_assessment: ProgramAssessment;
+  submission: AssessmentSubmission;
 }
 
 export interface ProgramParticipantCompletionSummary {
