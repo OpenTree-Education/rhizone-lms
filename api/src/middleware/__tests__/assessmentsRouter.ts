@@ -81,13 +81,69 @@ describe('assessmentsRouter', () => {
   });
 
   describe('GET /:assessmentId/submissions/:submissionId', () => {
+    const facilitatorPrincipalId = 3;
+    const participantPrincipalId = 2;
+    const programAssessmentId = 1;
+    const submissionId = 1;
+    const curriculumAssessmentId = 1;
+    const curriculumAssessment = {
+      id: curriculumAssessmentId,
+      title: 'Assignment 1: React',
+      description: 'Your assignment for week 1 learning.',
+      max_score: 10,
+      max_num_submissions: 3,
+      time_limit: 120,
+      curriculum_id: 3,
+      activity_id: 97,
+      principal_id: participantPrincipalId,
+      questions: [
+        {
+          id: 1,
+          assessment_id: curriculumAssessmentId,
+          title: 'What is React?',
+          description: '',
+          question_type: 'single choice',
+          answers: [
+            {
+              id: 1,
+              question_id: 1,
+              title: 'A relational database management system',
+              description: '',
+              sort_order: 1,
+            },
+          ],
+          max_score: 1,
+          sort_order: 1,
+        },
+      ],
+    };
+    const programAssessment = {
+      id: programAssessmentId,
+      program_id: 1,
+      assessment_id: curriculumAssessmentId,
+      available_after: '2023-02-06',
+      due_date: '2023-02-10',
+    };
+    const assessmentSubmissionInProgress = {
+      id: 2,
+      assessment_id: programAssessmentId,
+      principal_id: participantPrincipalId,
+      assessment_submission_state: 'In Progress',
+      opened_at: '2023-02-09 12:00:00',
+      submitted_at: '2023-02-09 13:23:45',
+      responses: [
+        {
+          id: 1,
+          answer_id: 1,
+          assessment_id: 1,
+          submission_id: 2,
+          question_id: 1,
+        },
+      ],
+    };
+
     it("should show a facilitator the full submission information for a participant's ungraded submitted assessment, including the correct answers", done => {
-      const facilitatorPrincipalId = 3;
-      const participantPrincipalId = 2;
-      const programAssessmentId = 1;
-      const submissionId = 1;
-      const curriculumAssessmentId = 1;
-      const curriculumAssessment = {
+      const curriculumAssessmentWithCorrectAnswer = {
         id: curriculumAssessmentId,
         title: 'Assignment 1: React',
         description: 'Your assignment for week 1 learning.',
@@ -120,14 +176,6 @@ describe('assessmentsRouter', () => {
           },
         ],
       };
-      const programAssessment = {
-        id: programAssessmentId,
-        program_id: 1,
-        assessment_id: curriculumAssessmentId,
-        available_after: '2023-02-06',
-        due_date: '2023-02-10',
-      };
-
       const assessmentSubmission = {
         id: 2,
         assessment_id: programAssessmentId,
@@ -147,7 +195,7 @@ describe('assessmentsRouter', () => {
       };
 
       const response: SubmittedAssessment = {
-        curriculum_assessment: curriculumAssessment,
+        curriculum_assessment: curriculumAssessmentWithCorrectAnswer,
         program_assessment: programAssessment,
         submission: assessmentSubmission,
       };
@@ -155,15 +203,26 @@ describe('assessmentsRouter', () => {
       mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
         { program_id: programAssessment.program_id },
       ]);
-      mockFindRoleInProgram.mockResolvedValue({ title: 'facilitator' });
+      mockFindRoleInProgram.mockResolvedValue({
+        title: 'facilitator',
+      });
       mockProgramAssessmentById.mockResolvedValue([programAssessment]);
-      mockGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
+      mockGetCurriculumAssessmentById.mockResolvedValue(
+        curriculumAssessmentWithCorrectAnswer
+      );
       mockSubmissionDetails.mockResolvedValue([assessmentSubmission]);
       mockPrincipalId(facilitatorPrincipalId);
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
 
         .expect(200, itemEnvelope(response), err => {
+          expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
+            programAssessmentId
+          );
+          expect(mockFindRoleInProgram).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            programAssessment.program_id
+          );
           expect(mockProgramAssessmentById).toHaveBeenCalledWith(
             programAssessmentId
           );
@@ -171,11 +230,6 @@ describe('assessmentsRouter', () => {
             programAssessmentId,
             true,
             true
-          );
-
-          expect(mockFindRoleInProgram).toHaveBeenCalledWith(
-            facilitatorPrincipalId,
-            programAssessment.program_id
           );
           expect(mockSubmissionDetails).toHaveBeenCalledWith(
             programAssessmentId,
@@ -187,71 +241,10 @@ describe('assessmentsRouter', () => {
     });
 
     it('should show a participant their submission information for an in-progress assessment without including the correct answers', done => {
-      const facilitatorPrincipalId = 3;
-      const participantPrincipalId = 2;
-      const programAssessmentId = 1;
-      const submissionId = 1;
-      const curriculumAssessmentId = 1;
-      const curriculumAssessment = {
-        id: curriculumAssessmentId,
-        title: 'Assignment 1: React',
-        description: 'Your assignment for week 1 learning.',
-        max_score: 10,
-        max_num_submissions: 3,
-        time_limit: 120,
-        curriculum_id: 3,
-        activity_id: 97,
-        principal_id: participantPrincipalId,
-        questions: [
-          {
-            id: 1,
-            assessment_id: curriculumAssessmentId,
-            title: 'What is React?',
-            description: '',
-            question_type: 'single choice',
-            answers: [
-              {
-                id: 1,
-                question_id: 1,
-                title: 'A relational database management system',
-                description: '',
-                sort_order: 1,
-              },
-            ],
-            max_score: 1,
-            sort_order: 1,
-          },
-        ],
-      };
-      const programAssessment = {
-        id: programAssessmentId,
-        program_id: 1,
-        assessment_id: curriculumAssessmentId,
-        available_after: '2023-02-06',
-        due_date: '2023-02-10',
-      };
-
-      const assessmentSubmission = {
-        id: 2,
-        assessment_id: programAssessmentId,
-        principal_id: participantPrincipalId,
-        assessment_submission_state: 'In Progress',
-        opened_at: '2023-02-09 12:00:00',
-        submitted_at: '2023-02-09 13:23:45',
-        responses: [
-          {
-            id: 1,
-            answer_id: 1,
-            assessment_id: 1,
-            submission_id: 2,
-            question_id: 1,
-          },
-        ],
-      };
       const response: SubmittedAssessment = {
         curriculum_assessment: curriculumAssessment,
         program_assessment: programAssessment,
-        submission: assessmentSubmission,
+        submission: assessmentSubmissionInProgress,
       };
 
       mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
@@ -260,12 +253,19 @@ describe('assessmentsRouter', () => {
       mockFindRoleInProgram.mockResolvedValue({ title: 'participant' });
       mockProgramAssessmentById.mockResolvedValue([programAssessment]);
       mockGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
-      mockSubmissionDetails.mockResolvedValue([assessmentSubmission]);
+      mockSubmissionDetails.mockResolvedValue([assessmentSubmissionInProgress]);
       mockPrincipalId(participantPrincipalId);
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
 
         .expect(200, itemEnvelope(response), err => {
+          expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
+            programAssessmentId
+          );
+          expect(mockFindRoleInProgram).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            programAssessment.program_id
+          );
           expect(mockProgramAssessmentById).toHaveBeenCalledWith(
             programAssessmentId
           );
@@ -273,11 +273,6 @@ describe('assessmentsRouter', () => {
             programAssessmentId,
             true,
             false
-          );
-
-          expect(mockFindRoleInProgram).toHaveBeenCalledWith(
-            facilitatorPrincipalId,
-            programAssessment.program_id
           );
           expect(mockSubmissionDetails).toHaveBeenCalledWith(
             programAssessmentId,
@@ -289,12 +284,7 @@ describe('assessmentsRouter', () => {
     });
 
     it('should show a participant their submission information for an ungraded submitted assessment without including the correct answers', done => {
-      const facilitatorPrincipalId = 3;
-      const participantPrincipalId = 2;
-      const programAssessmentId = 1,
-        submissionId = 1;
-      const curriculumAssessmentId = 1;
-      const curriculumAssessment = {
+      const curriculumAssessmentWithoutCorrectAnswer = {
         id: curriculumAssessmentId,
         title: 'Assignment 1: React',
         description: 'Your assignment for week 1 learning.',
@@ -324,13 +314,6 @@ describe('assessmentsRouter', () => {
             sort_order: 1,
           },
         ],
-      };
-      const programAssessment = {
-        id: programAssessmentId,
-        program_id: 1,
-        assessment_id: curriculumAssessmentId,
-        available_after: '2023-02-06',
-        due_date: '2023-02-10',
       };
 
       const assessmentSubmission = {
@@ -351,7 +334,7 @@ describe('assessmentsRouter', () => {
         ],
       };
       const response: SubmittedAssessment = {
-        curriculum_assessment: curriculumAssessment,
+        curriculum_assessment: curriculumAssessmentWithoutCorrectAnswer,
         program_assessment: programAssessment,
         submission: assessmentSubmission,
       };
@@ -361,13 +344,22 @@ describe('assessmentsRouter', () => {
       ]);
       mockFindRoleInProgram.mockResolvedValue({ title: 'participant' });
       mockProgramAssessmentById.mockResolvedValue([programAssessment]);
-      mockGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
+      mockGetCurriculumAssessmentById.mockResolvedValue(
+        curriculumAssessmentWithoutCorrectAnswer
+      );
       mockSubmissionDetails.mockResolvedValue([assessmentSubmission]);
       mockPrincipalId(participantPrincipalId);
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
 
         .expect(200, itemEnvelope(response), err => {
+          expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
+            programAssessmentId
+          );
+          expect(mockFindRoleInProgram).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            programAssessment.program_id
+          );
           expect(mockProgramAssessmentById).toHaveBeenCalledWith(
             programAssessmentId
           );
@@ -375,11 +367,6 @@ describe('assessmentsRouter', () => {
             programAssessmentId,
             true,
             false
-          );
-
-          expect(mockFindRoleInProgram).toHaveBeenCalledWith(
-            facilitatorPrincipalId,
-            programAssessment.program_id
           );
           expect(mockSubmissionDetails).toHaveBeenCalledWith(
             programAssessmentId,
@@ -391,12 +378,7 @@ describe('assessmentsRouter', () => {
     });
 
     it('should show a participant their submission information for a graded submitted assessment including the correct answers', done => {
-      const facilitatorPrincipalId = 3;
-      const participantPrincipalId = 2;
-      const programAssessmentId = 1,
-        submissionId = 1;
-      const curriculumAssessmentId = 1;
-      const curriculumAssessment = {
+      const curriculumAssessmentWithCorrectAnswer = {
         id: curriculumAssessmentId,
         title: 'Assignment 1: React',
         description: 'Your assignment for week 1 learning.',
@@ -429,15 +411,7 @@ describe('assessmentsRouter', () => {
           },
         ],
       };
-      const programAssessment = {
-        id: programAssessmentId,
-        program_id: 1,
-        assessment_id: curriculumAssessmentId,
-        available_after: '2023-02-06',
-        due_date: '2023-02-10',
-      };
-
-      const assessmentSubmission = {
+      const assessmentSubmissionGraded = {
         id: 2,
         assessment_id: programAssessmentId,
         principal_id: participantPrincipalId,
@@ -456,29 +430,41 @@ describe('assessmentsRouter', () => {
         ],
       };
       const response: SubmittedAssessment = {
-        curriculum_assessment: curriculumAssessment,
+        curriculum_assessment: curriculumAssessmentWithCorrectAnswer,
         program_assessment: programAssessment,
-        submission: assessmentSubmission,
+        submission: assessmentSubmissionGraded,
       };
-
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        { program_id: programAssessment.program_id },
+      ]);
+      mockFindRoleInProgram.mockResolvedValue({ title: 'participant' });
+      mockProgramAssessmentById.mockResolvedValue([programAssessment]);
+      mockGetCurriculumAssessmentById.mockResolvedValue(
+        curriculumAssessmentWithCorrectAnswer
+      );
+      mockSubmissionDetails.mockResolvedValue([assessmentSubmissionGraded]);
       mockPrincipalId(participantPrincipalId);
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
 
         .expect(200, itemEnvelope(response), err => {
+          expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
+            programAssessmentId
+          );
           expect(mockProgramAssessmentById).toHaveBeenCalledWith(
             programAssessmentId
           );
+          expect(mockFindRoleInProgram).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            programAssessment.program_id
+          );
+
           expect(mockGetCurriculumAssessmentById).toHaveBeenCalledWith(
             programAssessmentId,
             true,
             true
           );
 
-          expect(mockFindRoleInProgram).toHaveBeenCalledWith(
-            facilitatorPrincipalId,
-            programAssessment.program_id
-          );
           expect(mockSubmissionDetails).toHaveBeenCalledWith(
             programAssessmentId,
             submissionId,
@@ -489,17 +475,20 @@ describe('assessmentsRouter', () => {
     });
 
     it('should respond with a bad request error if given an invalid assessment id', done => {
-      const programAssessmentId = 'test',
-        submissionId = 1;
-
+      const programAssessmentId = 'test';
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
-        .expect(400, done);
+        .expect(
+          400,
+          errorEnvelope(
+            'The request could not be completed with the given parameters.'
+          ),
+          done
+        );
     });
 
-    it('should respond with a NotFoundError if the assessment ID was not found in the database', done => {
-      const programAssessmentId = 7,
-        submissionId = 1;
+    it('should respond with a NotFoundError if the assessment id was not found in the database', done => {
+      const programAssessmentId = 7;
 
       mockGetProgramIdByProgramAssessmentId.mockResolvedValue([]);
       appAgent
@@ -517,25 +506,97 @@ describe('assessmentsRouter', () => {
     });
 
     it('should respond with a bad request error if given an invalid submission id ', done => {
-      const programAssessmentId = 1,
-        submissionId = 'test';
+      const submissionId = 'test';
 
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
-        .expect(400, done);
+
+        .expect(
+          400,
+          errorEnvelope(
+            'The request could not be completed with the given parameters.'
+          ),
+          done
+        );
     });
 
-    it('should respond with a NotFoundError if the submission ID was not found in the database ', done => {
-      const programAssessmentId = 1,
-        submissionId = 8;
+    it('should respond with a NotFoundError if the submission id was not found in the database ', done => {
+      const submissionId = 8;
 
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        { program_id: programAssessment.program_id },
+      ]);
+      mockFindRoleInProgram.mockResolvedValue({ title: 'participant' });
+      mockProgramAssessmentById.mockResolvedValue([programAssessment]);
+      mockGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
       mockSubmissionDetails.mockResolvedValue([]);
+      mockPrincipalId(participantPrincipalId);
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
         .expect(
           404,
           errorEnvelope('The requested resource does not exist.'),
           err => {
+            expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
+              programAssessmentId
+            );
+            expect(mockFindRoleInProgram).toHaveBeenCalledWith(
+              facilitatorPrincipalId,
+              programAssessment.program_id
+            );
+            expect(mockProgramAssessmentById).toHaveBeenCalledWith(
+              programAssessmentId
+            );
+            expect(mockGetCurriculumAssessmentById).toHaveBeenCalledWith(
+              programAssessmentId,
+              true,
+              false
+            );
+            expect(mockSubmissionDetails).toHaveBeenCalledWith(
+              programAssessmentId,
+              submissionId,
+              true
+            );
+
+            done(err);
+          }
+        );
+    });
+
+    it('should respond with an Unauthorized Error if the logged-in principal id is not the same as the principal id of the submission id and is not the principal id of the program facilitator', done => {
+      const loggedPrincipalId = 4;
+
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        { program_id: programAssessment.program_id },
+      ]);
+      mockFindRoleInProgram.mockResolvedValue({ title: 'participant' });
+      mockProgramAssessmentById.mockResolvedValue([programAssessment]);
+      mockGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
+
+      mockSubmissionDetails.mockResolvedValue([assessmentSubmissionInProgress]);
+
+      mockPrincipalId(loggedPrincipalId);
+      appAgent
+        .get(`/${programAssessmentId}/submissions/${submissionId}`)
+        .expect(
+          401,
+          errorEnvelope('The requester does not have access to the resource.'),
+          err => {
+            expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
+              programAssessmentId
+            );
+            expect(mockFindRoleInProgram).toHaveBeenCalledWith(
+              facilitatorPrincipalId,
+              programAssessment.program_id
+            );
+            expect(mockProgramAssessmentById).toHaveBeenCalledWith(
+              programAssessmentId
+            );
+            expect(mockGetCurriculumAssessmentById).toHaveBeenCalledWith(
+              programAssessmentId,
+              true,
+              false
+            );
             expect(mockSubmissionDetails).toHaveBeenCalledWith(
               programAssessmentId,
               submissionId,
@@ -546,54 +607,16 @@ describe('assessmentsRouter', () => {
         );
     });
 
-    it('should respond with an UnauthorizedError if the logged-in principal ID is not the same as the principal ID of the submission ID and is not the principal ID of the program facilitator', done => {
-      const loggedPrincipalId = 4;
-      const participantPrincipalId = 2;
-      const programAssessmentId = 1;
-      const submissionId = 1;
-
-      const assessmentSubmission = {
-        id: 2,
-        assessment_id: programAssessmentId,
-        principal_id: participantPrincipalId,
-        assessment_submission_state: 'Submitted',
-        opened_at: '2023-02-09 12:00:00',
-        submitted_at: '2023-02-09 13:23:45',
-        responses: [
-          {
-            id: 1,
-            answer_id: 1,
-            assessment_id: 1,
-            submission_id: 2,
-            question_id: 1,
-          },
-        ],
-      };
-
-      mockSubmissionDetails.mockResolvedValue([assessmentSubmission]);
-
-      mockPrincipalId(loggedPrincipalId);
+    it('should respond with an internal server error if a database error occurs', done => {
+      mockGetProgramIdByProgramAssessmentId.mockRejectedValue(new Error());
       appAgent
         .get(`/${programAssessmentId}/submissions/${submissionId}`)
-        .expect(401, errorEnvelope('Unauthorized user.'), err => {
-          expect(mockSubmissionDetails).toHaveBeenCalledWith(
-            programAssessmentId,
-            submissionId,
-            true
+        .expect(500, errorEnvelope('Internal server error.'), err => {
+          expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
+            programAssessmentId
           );
           done(err);
         });
-    });
-
-    it('should respond with an internal server error if a database error occurs', done => {
-      const programAssessmentId = 1,
-        submissionId = 1;
-      mockSubmissionDetails.mockRejectedValue(new Error());
-      appAgent;
-
-      appAgent
-        .get(`/${programAssessmentId}/submissions/${submissionId}`)
-        .expect(500, done);
     });
   });
 
