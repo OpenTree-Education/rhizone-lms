@@ -62,6 +62,7 @@ const TableRowWrapper = (props: TableRowWrapperProps) => {
   }
 };
 
+let upcom: boolean;
 const renderButtonByStatus = (status: string, id: number) => {
   let buttonLabel;
   switch (status) {
@@ -76,12 +77,14 @@ const renderButtonByStatus = (status: string, id: number) => {
     case 'Upcoming':
     default:
   }
-  return (
-    //TODO: use the latest submission id
-    <Button variant="contained" size="small" href={`/assessments/${id}/0`}>
-      {buttonLabel}
-    </Button>
-  );
+  if (status !== 'Upcoming') {
+    return (
+      //TODO: use the latest submission id
+      <Button variant="contained" size="small" href={`/assessments/${id}/0`}>
+        {buttonLabel}
+      </Button>
+    );
+  }
 };
 
 const renderChipByStatus = (status: string) => {
