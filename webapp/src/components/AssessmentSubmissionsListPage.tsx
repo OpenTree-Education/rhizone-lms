@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-
 import { styled } from '@mui/material/styles';
 import { useParams } from 'react-router-dom';
+import { FormGroup, FormControlLabel, Switch } from '@mui/material';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
@@ -21,9 +21,11 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
+    textAlign: 'center'
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
+    textAlign: 'center'
   },
 }));
 
@@ -37,38 +39,67 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
+const submissionsExample = [
+  {
+    id: 17,
+    assessment_id: 1,
+    principal_id: 3,
+    assessment_submission_state: 'Graded',
+    score: 7,
+    opened_at: '2023-03-15 01:23:45',
+    submitted_at: '2023-03-15 02:32:54',
+  },
+  {
+    id: 18,
+    assessment_id: 1,
+    principal_id: 3,
+    assessment_submission_state: 'Submitted',
+    opened_at: '2023-03-15 07:45:00',
+    submitted_at: '2023-03-15 08:15:00',
+  },
+  {
+    id: 19,
+    assessment_id: 1,
+    principal_id: 4,
+    assessment_submission_state: 'Submitted',
+    opened_at: '2023-03-15 07:45:00',
+    submitted_at: '2023-03-15 08:15:00',
+  },
+  {
+    id: 20,
+    assessment_id: 1,
+    principal_id: 5,
+    assessment_submission_state: 'Submitted',
+    opened_at: '2023-03-15 07:45:00',
+    submitted_at: '2023-03-15 08:15:00',
+  },
+]
+
+
 const AssessmentSubmissionsListPage = () => {
   const { assessmentId } = useParams();
   const assessmentIdNumber = Number(assessmentId);
 
+  const [isMentor, setIsMentor] = useState(false)
   const [assessment, setAssessment] = useState<SubmittedAssessment>();
+
+  const filteredSubmissions = () => {
+    if (!isMentor) {
+      return submissionsExample.filter(sub => sub.principal_id === 3)
+    }
+    return submissionsExample
+  }
+
 
   useEffect(() => {
     setAssessment({
       curriculum_assessment:
         assessmentDetailPageExampleData.curriculum_assessment,
       program_assessment: assessmentDetailPageExampleData.program_assessment,
-      submissions: [
-        {
-          id: 17,
-          assessment_id: 1,
-          principal_id: 3,
-          assessment_submission_state: 'Graded',
-          score: 7,
-          opened_at: '2023-03-15 01:23:45',
-          submitted_at: '2023-03-15 02:32:54',
-        },
-        {
-          id: 18,
-          assessment_id: 1,
-          principal_id: 3,
-          assessment_submission_state: 'Submitted',
-          opened_at: '2023-03-15 07:45:00',
-          submitted_at: '2023-03-15 08:15:00',
-        },
-      ],
+
+      submissions: filteredSubmissions()
     });
-  }, []);
+  }, [isMentor]);
 
   if (!assessment || typeof assessment.curriculum_assessment === 'undefined') {
     return (
@@ -145,10 +176,25 @@ const AssessmentSubmissionsListPage = () => {
             </Table>
           </TableContainer>
         </Grid>
-      </Grid>
 
-      <Grid item xs={12} md={12}>
-        <ButtonWrapper />
+        <Grid item xs={12} md={12}>
+          <ButtonWrapper />
+        </Grid>
+        <Grid item xs={12} md={12}>
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={isMentor}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setIsMentor(event.target.checked)
+                }}
+                name="isMentor" />
+            }
+            label="Mentor mode"
+          />
+        </FormGroup>
+        </Grid>
       </Grid>
     </Container>
   );
