@@ -18,13 +18,38 @@ const AssessmentsListPage = () => {
   const [currentStatusTab, setCurrentStatusTab] = useState(StatusTab.Active);
   const [assessmentList, setAssessmentList] = useState<AssessmentSummary[]>([]);
 
-  useEffect(() => {
-    setAssessmentList(assessmentListPageExampleData);
-  }, []);
+  // useEffect(() => {
+  //   setAssessmentList(assessmentListPageExampleData);
+  // }, []);
+
+  // useEffect(() => {
+  //   // TODO: new row filtering logic should go here.
+  //   // const [assessmentList, setAssessmentList] = useState<AssessmentSummary[]>([]); allow filter
+  // }, [currentStatusTab]);
 
   useEffect(() => {
-    // TODO: new row filtering logic should go here.
-  }, [currentStatusTab]);
+    setCurrentStatusTab(currentStatusTab);
+    if (currentStatusTab === 0)
+      // All Assessments
+      setAssessmentList(assessmentListPageExampleData);
+    else if (currentStatusTab === 2)
+      // Past Assessments
+      setAssessmentList(
+        assessmentListPageExampleData.filter(
+          assessment =>
+            assessment.submissions_summary.assessment_submission_state ===
+            'Graded'
+        )
+      );
+    else
+      setAssessmentList(
+        assessmentListPageExampleData.filter(
+          assessment =>
+            assessment.submissions_summary.assessment_submission_state ===
+            StatusTab[currentStatusTab]
+        )
+      );
+  }, [currentStatusTab, assessmentListPageExampleData]);
 
   const handleChangeTab = (
     event: React.SyntheticEvent,
@@ -69,7 +94,7 @@ const AssessmentsListPage = () => {
       />
       <AssessmentsListTable
         currentStatusTab={currentStatusTab}
-        matchingAssessmentList={assessmentList}
+        matchingAssessmentList={assessmentList} //it goes  only the rows filtered
       />
     </Container>
   );
