@@ -153,7 +153,9 @@ const AssessmentSubmissionsListPage = () => {
                   <StyledTableCell>Submitted At</StyledTableCell>
                   <StyledTableCell>Score</StyledTableCell>
                   <StyledTableCell>Action</StyledTableCell>
-                  {isMentor? <StyledTableCell>Student Id</StyledTableCell> : null}
+                  {isMentor ? (
+                    <StyledTableCell>Student Id</StyledTableCell>
+                  ) : null}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -185,7 +187,11 @@ const AssessmentSubmissionsListPage = () => {
                         Review
                       </Button>
                     </StyledTableCell>
-                    {isMentor? <StyledTableCell>{submission.principal_id}</StyledTableCell> : null}
+                    {isMentor ? (
+                      <StyledTableCell>
+                        {submission.principal_id}
+                      </StyledTableCell>
+                    ) : null}
                   </StyledTableRow>
                 ))}
               </TableBody>
@@ -193,7 +199,13 @@ const AssessmentSubmissionsListPage = () => {
           </TableContainer>
         </Grid>
 
-        <Grid item xs={12} md={12} container sx={{ justifyContent: 'flex-end' }}>
+        <Grid
+          item
+          xs={12}
+          md={12}
+          container
+          sx={{ justifyContent: 'flex-end' }}
+        >
           <ButtonWrapper />
         </Grid>
       </Grid>
