@@ -257,29 +257,6 @@ export const getAssessmentSubmissions = async (
   principalId: number,
   assessmentId: number
 ): Promise<AssessmentSubmissionsSummary> => {
-  const [
-    highestState,
-    mostRecentSubmittedDate,
-    totalNumSubmissions,
-    highestScore,
-  ] = await Promise.all([
-    getHighestState(principalId),
-    getMostRecentSubmittedDate(principalId),
-    getTotalNumSubmissions(principalId),
-    getHighestScore(principalId, assessmentId),
-  ]);
-
-  return {
-    principal_id: principalId,
-    highest_state: String(highestState),
-    most_recent_submitted_date: String(mostRecentSubmittedDate),
-    total_num_submissions: Number(totalNumSubmissions),
-    highest_score: Number(highestScore),
-  };
-};
-
-// *******  Helpers for AssessmentSubmissionsSummary  **************//
-export const getHighestState = async (principalId: number) => {
   const [highestState] = await db<string>('assessment_submission')
     .select('assessment_submission_states_title')
     .join(
@@ -292,34 +269,28 @@ export const getHighestState = async (principalId: number) => {
   if (!highestState) {
     return null;
   }
-  return [highestState];
-};
 
-export const getMostRecentSubmittedDate = async (principalId: number) => {
-  return await db<string>('assessment_submissions')
+  const [mostRecentSubmittedDate] = await db<string>('assessment_submissions')
     .select('id', 'submitted_at')
     .where('principal_id', principalId)
     .orderBy('submitted_at', 'desc')
     .limit(1);
-};
-
-export const getTotalNumSubmissions = async (principalId: number) => {
-  return await db<number>('assessment_submissions')
+  const [totalNumSubmissions] = await db<number>('assessment_submissions')
     .count('id')
     .where('principal_id', principalId);
-};
-
-export const getHighestScore = async (
-  principalId: number,
-  assessmentId: number
-) => {
-  return await db<number>('assessment_submissions')
+  const [highestScore] = await db<number>('assessment_submissions')
     .count('id')
     .where('principal_id', principalId)
     .andWhere('assesment_id', assessmentId);
-};
-// *******  end of helpers for Helpers for AssessmentSubmissionsSummary **************//
 
+  return {
+    principal_id: principalId,
+    highest_state: String(highestState),
+    most_recent_submitted_date: String(mostRecentSubmittedDate),
+    total_num_submissions: Number(totalNumSubmissions),
+    highest_score: Number(highestScore),
+  };
+};
 /**
  * a function to returns the role of the participant in a given program
  *
