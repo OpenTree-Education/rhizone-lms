@@ -8,6 +8,10 @@ import {
   getCurriculumAssessmentById,
   getAssessmentsSummary,
   getCurriculumAssessmentBasedOnRole,
+  findRoleInProgram,
+  getAssessmentsForProgram,
+  principalEnrolledPrograms,
+  getAssessmentSubmissionsSummary,
 } from '../services/assessmentService';
 import { AssessmentSummary } from '../models';
 
@@ -17,19 +21,65 @@ const assessmentsRouter = Router();
 // Outgoing:
 // - participant: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for their submissions to this program assessment
 // - facilitator: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for all submissions to this program assessment
-assessmentsRouter.get('/', async (req, res, next) => {
-  const { principalId } = req.session;
+// assessmentsRouter.get('/', async (req, res, next) => {
+//   const { principalId } = req.session;
 
-  let assessments: AssessmentSummary[];
-  try {
-    assessments = await getAssessmentsSummary(principalId);
-  } catch (error) {
-    next(error);
-    return;
-  }
+//   let assessments: AssessmentSummary[];
+//   // try {
+//   //   assessments = await getAssessmentsSummary(principalId);
+//   // } catch (error) {
+//   //   next(error);
+//   //   return;
+//   // }
+//   let principalEnrolledProgramsId;
+//   try {
+//     principalEnrolledProgramsId = await principalEnrolledPrograms(principalId);
+//   } catch (error) {
+//     next(error);
+//     return;
+//   }
+//   let role;
+//   try {
+//     role = await findRoleInProgram(principalId, principalEnrolledProgramsId[0]);
+//   } catch (error) {
+//     next(error);
+//     if (role.title === 'facilitator') return 'facilitator';
+//     else return 'participant';
+//   }
 
-  res.json(collectionEnvelope(assessments, assessments.length));
-});
+//   let programAssessmentList;
+//   try {
+//     programAssessmentList = await getAssessmentsForProgram(
+//       principalEnrolledProgramsId[0]
+//     );
+//   } catch (error) {
+//     next(error);
+//     return;
+//   }
+//   let curriculumAssessment;
+//   try {
+//     curriculumAssessment = await getCurriculumAssessmentById(
+//       programAssessmentList.forEach(el => el.assessment_id),
+//       false,
+//       false
+//     );
+//   } catch (error) {
+//     next(error);
+//     return;
+//   }
+//   let assessmentSubmissionSummary;
+//   try {
+//     assessmentSubmissionSummary = await getAssessmentSubmissionsSummary(
+//       programAssessmentList.id,
+//       principalId
+//     );
+//   } catch (error) {
+//     next(error);
+//     return;
+//   }
+
+//   res.json(collectionEnvelope(assessments, assessments.length));
+// });
 
 // TODO: fixed function
 // assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
