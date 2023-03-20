@@ -51,9 +51,10 @@ const mockDeleteAssessmentById = jest.mocked(deleteAssessmentById);
 const programAssessmentId = 1;
 const curriculumAssessmentId = 1;
 const participantId = 2;
-const curriculumAssessment: CurriculumAssessment = {
+const curriculumAssessmentTest: CurriculumAssessment = {
   id: curriculumAssessmentId,
   title: 'Assignment 1: React',
+  assessment_type: 'test',
   description: 'Your assignment for week 1 learning.',
   max_score: 10,
   max_num_submissions: 3,
@@ -63,7 +64,7 @@ const curriculumAssessment: CurriculumAssessment = {
   principal_id: participantId,
 };
 
-const programAssessment: ProgramAssessment = {
+const programAssessmentTest: ProgramAssessment = {
   id: programAssessmentId,
   program_id: 1,
   assessment_id: curriculumAssessmentId,
@@ -120,8 +121,8 @@ describe('assessmentsRouter', () => {
       mockPrincipalId(enrolledParticipantPrincipalId);
       const participantAssessmentListResponse = [
         {
-          curriculum_assessment: curriculumAssessment,
-          program_assessment: programAssessment,
+          curriculum_assessment: curriculumAssessmentTest,
+          program_assessment: programAssessmentTest,
           submissions_summary: assessmentSubmissionsSummary,
         },
       ];
@@ -130,9 +131,11 @@ describe('assessmentsRouter', () => {
       // mock response from (call a function that returns the permission of the user for each program (participant/facilitator)) to respond with participant for that one program
       mockFindRoleInProgram.mockResolvedValue({ title: 'participant' });
       // mock response from (get a list of program assessments for each program the user is enrolled in) to respond with a list of program assessments
-      mockGetAssessmentsForProgram.mockResolvedValue([programAssessment]);
+      mockGetAssessmentsForProgram.mockResolvedValue([programAssessmentTest]);
       // mock responses from (get a list of curriculum assessments that correspond to each program assessment) to respond with the corresponding curriculum assessment for each program assessment in that previous list
-      mockGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
+      mockGetCurriculumAssessmentById.mockResolvedValue(
+        curriculumAssessmentTest
+      );
       // mock responses from (call a (mock) function that gets the participant assessment summary for each program assessment where the user is a participant of that program) to respond with the assessment summary for every program assessment that participant has submitted for previously
       mockGetAssessmentSubmissionsSummary.mockResolvedValue(
         assessmentSubmissionsSummary
@@ -161,13 +164,13 @@ describe('assessmentsRouter', () => {
             );
             // get a list of curriculum assessments that correspond to each program assessment
             expect(mockGetCurriculumAssessmentById).toHaveBeenCalledWith(
-              programAssessment.assessment_id,
+              programAssessmentTest.assessment_id,
               false,
               false
             );
             // call a (mock) function that gets the participant assessment summary for each program assessment where the user is a participant of that program
             expect(mockGetAssessmentSubmissionsSummary).toHaveBeenCalledWith(
-              programAssessment.id,
+              programAssessmentTest.id,
               enrolledParticipantPrincipalId
             );
             done(err);
@@ -179,8 +182,8 @@ describe('assessmentsRouter', () => {
       mockPrincipalId(facilitatorPrincipalId);
       const facilitatorAssessmentListResponse = [
         {
-          curriculum_assessment: curriculumAssessment,
-          program_assessment: programAssessment,
+          curriculum_assessment: curriculumAssessmentTest,
+          program_assessment: programAssessmentTest,
           submissions_summary: facilitatorAssessmentSubmissionsSummary,
         },
       ];
@@ -189,9 +192,11 @@ describe('assessmentsRouter', () => {
       // mock response from (call a function that returns the permission of the user for each program (participant/facilitator)) to respond with facilitator for that one program
       mockFindRoleInProgram.mockResolvedValue({ title: 'facilitator' });
       // mock response from (get a list of program assessments for each program the user is enrolled in) to respond with a list of program assessments
-      mockGetAssessmentsForProgram.mockResolvedValue([programAssessment]);
+      mockGetAssessmentsForProgram.mockResolvedValue([programAssessmentTest]);
       // mock responses from (get a list of curriculum assessments that correspond to each program assessment) to respond with the corresponding curriculum assessment for each program assessment in that previous list
-      mockGetCurriculumAssessmentById.mockResolvedValue(curriculumAssessment);
+      mockGetCurriculumAssessmentById.mockResolvedValue(
+        curriculumAssessmentTest
+      );
       // mock responses from (call a (mock) function that gets the facilitator assessment summary for each program assessment where the user is a facilitator of that program) to respond with the assessment summary for all participants for each program assessment
       mockGetFacilitatorAssessmentSubmissionsSummary.mockResolvedValue(
         facilitatorAssessmentSubmissionsSummary
@@ -220,7 +225,7 @@ describe('assessmentsRouter', () => {
             );
             // get a list of curriculum assessments that correspond to each program assessment
             expect(mockGetCurriculumAssessmentById).toHaveBeenCalledWith(
-              programAssessment.assessment_id,
+              programAssessmentTest.assessment_id,
               false,
               false
             );
@@ -228,7 +233,7 @@ describe('assessmentsRouter', () => {
             expect(
               mockGetFacilitatorAssessmentSubmissionsSummary
             ).toHaveBeenCalledWith(
-              programAssessment.id,
+              programAssessmentTest.id,
               facilitatorPrincipalId
             );
             done(err);
@@ -318,6 +323,7 @@ describe('assessmentsRouter', () => {
     const curriculumAssessment = {
       id: curriculumAssessmentId,
       title: 'Assignment 1: React',
+      assessment_type: 'test',
       description: 'Your assignment for week 1 learning.',
       max_score: 10,
       max_num_submissions: 3,
@@ -375,6 +381,7 @@ describe('assessmentsRouter', () => {
       const curriculumAssessmentWithCorrectAnswer = {
         id: curriculumAssessmentId,
         title: 'Assignment 1: React',
+        assessment_type: 'test',
         description: 'Your assignment for week 1 learning.',
         max_score: 10,
         max_num_submissions: 1,
@@ -516,6 +523,7 @@ describe('assessmentsRouter', () => {
       const curriculumAssessmentWithoutCorrectAnswer = {
         id: curriculumAssessmentId,
         title: 'Assignment 1: React',
+        assessment_type: 'test',
         description: 'Your assignment for week 1 learning.',
         max_score: 10,
         max_num_submissions: 3,
@@ -610,6 +618,7 @@ describe('assessmentsRouter', () => {
       const curriculumAssessmentWithCorrectAnswer = {
         id: curriculumAssessmentId,
         title: 'Assignment 1: React',
+        assessment_type: 'test',
         description: 'Your assignment for week 1 learning.',
         max_score: 10,
         max_num_submissions: 3,
