@@ -160,6 +160,7 @@ export interface Question {
 export interface CurriculumAssessment {
   id?: number;
   title: string;
+  assessment_type: string;
   description?: string;
   max_score: number;
   max_num_submissions: number;
@@ -220,6 +221,12 @@ export interface AssessmentSubmission {
   opened_at: string;
   submitted_at?: string;
   responses?: AssessmentResponse[];
+}
+
+export interface OpenedAssessment {
+  curriculum_assessment: CurriculumAssessment;
+  program_assessment: ProgramAssessment;
+  submission: AssessmentSubmission;
 }
 
 export interface SubmittedAssessment {

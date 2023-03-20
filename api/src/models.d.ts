@@ -97,6 +97,7 @@ export interface Question {
 export interface CurriculumAssessment {
   id?: number;
   title: string;
+  assessment_type: string;
   description?: string;
   max_score: number;
   max_num_submissions: number;
