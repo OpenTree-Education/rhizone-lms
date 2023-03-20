@@ -17,24 +17,22 @@ export enum StatusTab {
 const AssessmentsListPage = () => {
   const [currentStatusTab, setCurrentStatusTab] = useState(StatusTab.Active);
   const [assessmentList, setAssessmentList] = useState<AssessmentSummary[]>([]);
+  const [assessmentListSubset, setAssessmentListSubset] = useState<
+    AssessmentSummary[]
+  >([]);
 
-  // useEffect(() => {
-  //   setAssessmentList(assessmentListPageExampleData);
-  // }, []);
-
-  // useEffect(() => {
-  //   // TODO: new row filtering logic should go here.
-  //   // const [assessmentList, setAssessmentList] = useState<AssessmentSummary[]>([]); allow filter
-  // }, [currentStatusTab]);
+  useEffect(() => {
+    setAssessmentList(assessmentListPageExampleData);
+  }, []);
 
   useEffect(() => {
     setCurrentStatusTab(currentStatusTab);
     if (currentStatusTab === 0)
       // All Assessments
-      setAssessmentList(assessmentListPageExampleData);
+      setAssessmentListSubset(assessmentListPageExampleData);
     else if (currentStatusTab === 2)
       // Past Assessments
-      setAssessmentList(
+      setAssessmentListSubset(
         assessmentListPageExampleData.filter(
           assessment =>
             assessment.submissions_summary.assessment_submission_state ===
@@ -42,14 +40,14 @@ const AssessmentsListPage = () => {
         )
       );
     else
-      setAssessmentList(
+      setAssessmentListSubset(
         assessmentListPageExampleData.filter(
           assessment =>
             assessment.submissions_summary.assessment_submission_state ===
             StatusTab[currentStatusTab]
         )
       );
-  }, [currentStatusTab, assessmentListPageExampleData]);
+  }, [currentStatusTab]);
 
   const handleChangeTab = (
     event: React.SyntheticEvent,
@@ -94,7 +92,7 @@ const AssessmentsListPage = () => {
       />
       <AssessmentsListTable
         currentStatusTab={currentStatusTab}
-        matchingAssessmentList={assessmentList} //it goes  only the rows filtered
+        matchingAssessmentList={assessmentList}
       />
     </Container>
   );
