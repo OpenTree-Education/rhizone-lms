@@ -113,7 +113,7 @@ const AssessmentSubmissionsListPage = () => {
       assessment.curriculum_assessment.max_num_submissions >
         assessment.submissions.length
     ) {
-      return <Button variant="contained">Take a quiz!</Button>;
+      return <Button variant="contained">New Submission</Button>;
     }
     return null;
   };
@@ -124,6 +124,22 @@ const AssessmentSubmissionsListPage = () => {
         <Grid item xs={12} md={6}>
           <h1>{assessment.curriculum_assessment.title}</h1>
           <p>{assessment.curriculum_assessment.description}</p>
+        </Grid>
+        <Grid item xs={12} md={6} container sx={{ justifyContent: 'flex-end' }}>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={isMentor}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    setIsMentor(event.target.checked);
+                  }}
+                  name="isMentor"
+                />
+              }
+              label="Mentor mode"
+            />
+          </FormGroup>
         </Grid>
 
         <Grid item xs={12} md={12}>
@@ -137,6 +153,7 @@ const AssessmentSubmissionsListPage = () => {
                   <StyledTableCell>Submitted At</StyledTableCell>
                   <StyledTableCell>Score</StyledTableCell>
                   <StyledTableCell>Action</StyledTableCell>
+                  {isMentor? <StyledTableCell>Student Id</StyledTableCell> : null}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -168,6 +185,7 @@ const AssessmentSubmissionsListPage = () => {
                         Review
                       </Button>
                     </StyledTableCell>
+                    {isMentor? <StyledTableCell>{submission.principal_id}</StyledTableCell> : null}
                   </StyledTableRow>
                 ))}
               </TableBody>
@@ -175,24 +193,8 @@ const AssessmentSubmissionsListPage = () => {
           </TableContainer>
         </Grid>
 
-        <Grid item xs={12} md={12}>
+        <Grid item xs={12} md={12} container sx={{ justifyContent: 'flex-end' }}>
           <ButtonWrapper />
-        </Grid>
-        <Grid item xs={12} md={12}>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={isMentor}
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    setIsMentor(event.target.checked);
-                  }}
-                  name="isMentor"
-                />
-              }
-              label="Mentor mode"
-            />
-          </FormGroup>
         </Grid>
       </Grid>
     </Container>
