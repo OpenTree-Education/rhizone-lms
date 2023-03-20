@@ -13,7 +13,6 @@ import { AssessmentSummary } from '../models';
 
 const assessmentsRouter = Router();
 
-// Shows a list of all assessments
 // Incoming: nothing expected
 // Outgoing:
 // - participant: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for their submissions to this program assessment
