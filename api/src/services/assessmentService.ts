@@ -489,8 +489,7 @@ export const submissionDetails = async (
     .where({ assessment_id: assessmentId });
 
   if (isResponsesIncluded) {
-    const assessmentSubmissionIds =
-      assessmentSubmissionByProgramAssessmentId.map(element => element.id);
+    //const assessmentSubmissionIds =   assessmentSubmissionByProgramAssessmentId.map(element => element.id);
     const responses = await db<AssessmentResponse>('assessment_responses')
       .select('*')
       .where({ submission_id: submissionId });

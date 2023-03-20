@@ -1,6 +1,19 @@
-import { itemEnvelope, errorEnvelope } from '../responseEnvelope';
-import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
+import { itemEnvelope, errorEnvelope, errorEnvelope } from '../responseEnvelope';
+import { createAppAgentForRouter, mockPrincipalId, mockPrincipalId } from '../routerTestUtils';
 import assessmentsRouter from '../assessmentsRouter';
+jest.mock('../../services/assessmentService.ts');
+
+import {
+  findRoleInProgram,
+  getProgramIdByProgramAssessmentId,
+  deleteAssessmentById,
+} from '../../services/assessmentService';
+
+const mockFindRoleInProgram = jest.mocked(findRoleInProgram);
+const mockGetProgramIdByProgramAssessmentId = jest.mocked(
+  getProgramIdByProgramAssessmentId
+);
+const mockDeleteAssessmentById = jest.mocked(deleteAssessmentById);
 import {
   getProgramIdByProgramAssessmentId,
   findRoleInProgram,
@@ -70,13 +83,38 @@ describe('assessmentsRouter', () => {
   });
 
   describe('DELETE /:assessmentId', () => {
-    it('should delete an assessment in the system', done => {
-      const response = { behaviour: '“Deletes” an assessment in the system' };
+    it('should delete a program assessment in the system if logged-in user is facilitator of that program', done => {
+      const principalId = 3;
+      const assessmentId = 1;
+      mockPrincipalId(principalId);
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([2]);
+      mockFindRoleInProgram.mockResolvedValue({ title: 'facilitator' });
+      appAgent.delete(`/${assessmentId}`).expect(204, null, err => {
+        expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(1);
+        expect(mockFindRoleInProgram).toHaveBeenCalledWith(principalId, 2);
+        expect(mockDeleteAssessmentById).toHaveBeenCalledWith(1);
+        done(err);
+      });
+    });
+    it('should return an error if logged-in user is not a facilitator of that program', done => {
+      const principalId = 4;
+      const assessmentId = 1;
+      mockPrincipalId(principalId);
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([2]);
+      mockFindRoleInProgram.mockResolvedValue({ title: 'participant' });
       appAgent
-        .delete(`/${exampleAssessmentId}`)
-        .expect(200, itemEnvelope(response), err => {
-          done(err);
-        });
+        .delete(`/${assessmentId}`)
+        .expect(
+          401,
+          errorEnvelope('The requester does not have access to the resource.'),
+          err => {
+            expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
+              1
+            );
+            expect(mockFindRoleInProgram).toHaveBeenCalledWith(principalId, 2);
+            done(err);
+          }
+        );
     });
   });
 
