@@ -16,6 +16,8 @@ import {
   getAssessmentSubmissions,
   getFacilitatorAssessmentSubmissionsSummary,
   deleteAssessmentById,
+  createNewOpenedSubmission,
+  getSubmissionById,
 } from '../../services/assessmentService';
 
 import {
@@ -25,6 +27,7 @@ import {
   AssessmentSummary,
   ProgramAssessment,
   SubmittedAssessment,
+  AssessmentSubmission,
 } from '../../../src/models';
 
 jest.mock('../../services/assessmentService');
@@ -46,11 +49,15 @@ const mockGetProgramIdByProgramAssessmentId = jest.mocked(
 );
 const mockProgramAssessmentById = jest.mocked(programAssessmentById);
 const mockSubmissionDetails = jest.mocked(submissionDetails);
+const mockCreateNewSubmission = jest.mocked(createNewOpenedSubmission);
+const mockGetSubmissionById = jest.mocked(getSubmissionById);
+
 const mockDeleteAssessmentById = jest.mocked(deleteAssessmentById);
 
 const programAssessmentId = 1;
 const curriculumAssessmentId = 1;
 const participantId = 2;
+const facilitatorId = 3;
 const curriculumAssessmentTest: CurriculumAssessment = {
   id: curriculumAssessmentId,
   title: 'Assignment 1: React',
@@ -870,11 +877,128 @@ describe('assessmentsRouter', () => {
   });
 
   describe('GET /:assessmentId/submissions/new', () => {
-    it('should create a new draft submission', done => {
-      const response = { behaviour: 'Creates a new draft submission' };
+    it('should return an error if logged-in user is a facilitator', done => {
+      mockPrincipalId(facilitatorId);
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        { program_id: programAssessmentTest.program_id },
+      ]);
+      mockFindRoleInProgram.mockResolvedValue({ title: 'Facilitator' });
       appAgent
-        .get(`/${exampleAssessmentId}/submissions/new`)
+        .get(`/${programAssessmentId}/submissions/new`)
+        .expect(
+          403,
+          errorEnvelope('The requester does not have access to the resource.'),
+          err => {
+            expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
+              programAssessmentId
+            );
+            expect(mockFindRoleInProgram).toHaveBeenCalledWith(
+              facilitatorId,
+              programAssessmentTest.program_id
+            );
+            done(err);
+          }
+        );
+    });
+
+    it('should respond with a NotFoundError if the assessment id was not found in the database', done => {
+      const programAssessmentNotFoundId = 0;
+      mockPrincipalId(participantId);
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        { program_id: programAssessmentTest.program_id },
+      ]);
+      mockFindRoleInProgram.mockResolvedValue({ title: 'Participant' });
+      mockProgramAssessmentById.mockResolvedValue([]);
+
+      appAgent
+        .get(`/${programAssessmentNotFoundId}/submissions/new`)
+        .expect(
+          404,
+          errorEnvelope('The requested resource does not exist.'),
+          err => {
+            expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
+              programAssessmentId
+            );
+            expect(mockFindRoleInProgram).toHaveBeenCalledWith(
+              facilitatorId,
+              programAssessmentTest.program_id
+            );
+            expect(mockProgramAssessmentById).toHaveBeenCalledWith(
+              programAssessmentNotFoundId
+            );
+            done(err);
+          }
+        );
+    });
+
+    it('should respond with a bad request error if given an invalid assessment id', done => {
+      const programAssessmentInvalidId = 'test';
+      appAgent
+        .get(`/${programAssessmentInvalidId}/submissions/new`)
+        .expect(
+          400,
+          errorEnvelope(
+            'The request could not be completed with the given parameters.'
+          ),
+          done
+        );
+    });
+
+    it('should return a participant newly "Opened" submission without including the correct answers', done => {
+      const assessmentSubmissionNew: AssessmentSubmission = {
+        id: 2,
+        assessment_id: programAssessmentId,
+        principal_id: participantId,
+        assessment_submission_state: 'Opened',
+        opened_at: '2023-02-09 12:00:00',
+      };
+
+      const response: SubmittedAssessment = {
+        curriculum_assessment: curriculumAssessmentTest,
+        program_assessment: programAssessmentTest,
+        submission: assessmentSubmissionNew,
+      };
+
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        { program_id: programAssessmentTest.program_id },
+      ]);
+      mockFindRoleInProgram.mockResolvedValue({ title: 'Participant' });
+      mockProgramAssessmentById.mockResolvedValue([programAssessmentTest]);
+      mockGetCurriculumAssessmentById.mockResolvedValue(
+        curriculumAssessmentTest
+      );
+      mockCreateNewSubmission.mockResolvedValue({
+        id: assessmentSubmissionNew.id,
+      });
+      mockGetSubmissionById.mockResolvedValue([assessmentSubmissionNew]);
+
+      mockPrincipalId(participantId);
+      appAgent
+        .get(`/${programAssessmentId}/submissions/new`)
+
         .expect(200, itemEnvelope(response), err => {
+          expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
+            programAssessmentId
+          );
+          expect(mockFindRoleInProgram).toHaveBeenCalledWith(
+            participantId,
+            programAssessmentTest.program_id
+          );
+          expect(mockProgramAssessmentById).toHaveBeenCalledWith(
+            programAssessmentId
+          );
+          expect(mockGetCurriculumAssessmentById).toHaveBeenCalledWith(
+            programAssessmentTest.assessment_id,
+            true,
+            false
+          );
+          expect(mockCreateNewSubmission).toHaveBeenCalledWith(
+            programAssessmentId,
+            participantId
+          );
+          expect(mockGetSubmissionById).toHaveBeenCalledWith(
+            assessmentSubmissionNew.id
+          );
           done(err);
         });
     });

@@ -5,7 +5,7 @@ import {
   createAssessment,
   updateAssessmentById,
   deleteAssessmentById,
-  getCurriculumAssessmentById,
+  // getCurriculumAssessmentById,
   getAssessmentsSummary,
   getCurriculumAssessmentBasedOnRole,
 } from '../services/assessmentService';

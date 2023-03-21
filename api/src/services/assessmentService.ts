@@ -583,6 +583,19 @@ export const deleteAssessmentById = async (assessmentId: number) => {
  */
 
 /**
+ * (GET /assessments/:id/submission/:id) Get a submission by its id
+ * @param {number} submissionId
+ * @returns {AssessmentSubmission} - the requested submission
+ */
+export const getSubmissionById = async (submissionId: number) => {
+  //TODO select actual attributes and join state table
+  const submission = await db<AssessmentSubmission>('assessment_submissions')
+    .select()
+    .where('id', submissionId);
+  return submission;
+};
+
+/**
  * (PUT /assessments/:id/submission/:id) Submits their answers
  * for this submission/
  * Submits comments for the submission.
@@ -593,8 +606,23 @@ export const deleteAssessmentById = async (assessmentId: number) => {
 /** (GET /assessments/:id/submission/new) Creates a new (draft)
  * submission (which starts the timer) and returns the questions
  * and possible answers and the submission ID number/
- *
+ * @param {number} programAssessmentId
+ * @param {number} principalId
+ * @returns {number} - Newly created submission id
  */
+export const createNewOpenedSubmission = async (
+  programAssessmentId: number,
+  principalId: number
+) => {
+  let submissionId: number;
+  await db.transaction(async trx => {
+    [submissionId] = await trx('assessment_submissions').insert({
+      assessment_id: programAssessmentId,
+      principal_id: principalId,
+    }); //TODO insert with actual attributes
+  });
+  return { id: submissionId };
+};
 
 /**
  * A function that update assessment by ID
