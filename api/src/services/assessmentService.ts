@@ -49,6 +49,7 @@ export const getAssessmentsSummary = async (
 
   for (const assessmentSummary of assessmentsSummaryList) {
     for (const programAssessment of assessmentSummary['program_assessment']) {
+      // ???? question about structure of response
       const matchingCurriculumAssessmentId = programAssessment.assessment_id;
 
       assessmentsSummaryList[listIndex].curriculum_assessment =
@@ -457,8 +458,7 @@ export const submissionDetails = async (
     .where({ assessment_id: assessmentId });
 
   if (isResponsesIncluded) {
-    const assessmentSubmissionIds =
-      assessmentSubmissionByProgramAssessmentId.map(element => element.id);
+    //const assessmentSubmissionIds =   assessmentSubmissionByProgramAssessmentId.map(element => element.id);
     const responses = await db<AssessmentResponse>('assessment_responses')
       .select('*')
       .where({ submission_id: submissionId });

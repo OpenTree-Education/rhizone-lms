@@ -6,14 +6,14 @@ import {
   updateAssessmentById,
   deleteAssessmentById,
   getCurriculumAssessmentById,
-  getAssessmentsSummary,
+  // getAssessmentsSummary,
   getCurriculumAssessmentBasedOnRole,
   findRoleInProgram,
   getAssessmentsForProgram,
   principalEnrolledPrograms,
   getAssessmentSubmissionsSummary,
+  getFacilitatorAssessmentSubmissionsSummary,
 } from '../services/assessmentService';
-import { AssessmentSummary } from '../models';
 
 const assessmentsRouter = Router();
 
@@ -21,65 +21,77 @@ const assessmentsRouter = Router();
 // Outgoing:
 // - participant: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for their submissions to this program assessment
 // - facilitator: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for all submissions to this program assessment
-// assessmentsRouter.get('/', async (req, res, next) => {
-//   const { principalId } = req.session;
 
-//   let assessments: AssessmentSummary[];
-//   // try {
-//   //   assessments = await getAssessmentsSummary(principalId);
-//   // } catch (error) {
-//   //   next(error);
-//   //   return;
-//   // }
-//   let principalEnrolledProgramsId;
-//   try {
-//     principalEnrolledProgramsId = await principalEnrolledPrograms(principalId);
-//   } catch (error) {
-//     next(error);
-//     return;
-//   }
-//   let role;
-//   try {
-//     role = await findRoleInProgram(principalId, principalEnrolledProgramsId[0]);
-//   } catch (error) {
-//     next(error);
-//     if (role.title === 'facilitator') return 'facilitator';
-//     else return 'participant';
-//   }
+assessmentsRouter.get('/', async (req, res, next) => {
+  // let assessments: AssessmentSummary[];
 
-//   let programAssessmentList;
-//   try {
-//     programAssessmentList = await getAssessmentsForProgram(
-//       principalEnrolledProgramsId[0]
-//     );
-//   } catch (error) {
-//     next(error);
-//     return;
-//   }
-//   let curriculumAssessment;
-//   try {
-//     curriculumAssessment = await getCurriculumAssessmentById(
-//       programAssessmentList.forEach(el => el.assessment_id),
-//       false,
-//       false
-//     );
-//   } catch (error) {
-//     next(error);
-//     return;
-//   }
-//   let assessmentSubmissionSummary;
-//   try {
-//     assessmentSubmissionSummary = await getAssessmentSubmissionsSummary(
-//       programAssessmentList.id,
-//       principalId
-//     );
-//   } catch (error) {
-//     next(error);
-//     return;
-//   }
+  const { principalId } = req.session;
 
-//   res.json(collectionEnvelope(assessments, assessments.length));
-// });
+  try {
+    const programIds = await principalEnrolledPrograms(principalId);
+    const emptyAssessmentsSummaryList: [] = [];
+
+    if (programIds.length === 0) {
+      res.json(collectionEnvelope(emptyAssessmentsSummaryList, 0));
+    } else {
+      const participantAssessmentListResponse = [];
+      const facilitatorAssessmentListResponse = [];
+
+      for (const programId of programIds) {
+        const roleInProgram = await findRoleInProgram(principalId, programId);
+        const [programAssessments] = await getAssessmentsForProgram(programId);
+
+        for (const programAssessment of [programAssessments]) {
+          const curriculumAssessment = await getCurriculumAssessmentById(
+            programAssessment.assessment_id,
+            false,
+            false
+          );
+
+          let assessmentSubmissionsSummary;
+          let facilitatorAssessmentSubmissionsSummary;
+
+          if (roleInProgram.title === 'participant') {
+            assessmentSubmissionsSummary =
+              await getAssessmentSubmissionsSummary(
+                programAssessment.id,
+                principalId
+              );
+
+            participantAssessmentListResponse.push({
+              curriculum_assessment: curriculumAssessment,
+              program_assessment: programAssessment,
+              submissions_summary: assessmentSubmissionsSummary,
+            });
+          }
+
+          if (roleInProgram.title === 'facilitator') {
+            facilitatorAssessmentSubmissionsSummary =
+              await getFacilitatorAssessmentSubmissionsSummary(
+                programAssessment.id,
+                programId
+              );
+
+            facilitatorAssessmentListResponse.push({
+              curriculum_assessment: curriculumAssessment,
+              program_assessment: programAssessment,
+              submissions_summary: facilitatorAssessmentSubmissionsSummary,
+            });
+          }
+        }
+      }
+
+      const assessments = [
+        ...participantAssessmentListResponse,
+        ...facilitatorAssessmentListResponse,
+      ];
+      res.json(collectionEnvelope(assessments, assessments.length));
+    }
+  } catch (error) {
+    next(error);
+    return;
+  }
+});
 
 // TODO: fixed function
 // assessmentsRouter.get('/:assessmentId', async (req, res, next) => {
