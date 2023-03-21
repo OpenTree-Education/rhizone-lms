@@ -48,22 +48,21 @@ export const getAssessmentsSummary = async (
   let listIndex = 0;
 
   for (const assessmentSummary of assessmentsSummaryList) {
-    const matchingCurriculumAssessmentId =
-      assessmentSummary['program_assessment'].assessment_id;
+    for (const programAssessment of assessmentSummary['program_assessment']) {
+      const matchingCurriculumAssessmentId = programAssessment.assessment_id;
 
-    assessmentsSummaryList[listIndex].curriculum_assessment =
-      await getCurriculumAssessmentById(matchingCurriculumAssessmentId);
-    if (principalPermissionsForPrograms[listIndex] === 'facilitator') {
-      assessmentsSummaryList[listIndex].submissions_summary =
-        await getAssessmentSubmissionsSummary(
-          assessmentSummary['program_assessment'].id
-        );
-    } else if (principalPermissionsForPrograms[listIndex] === 'participant') {
-      assessmentsSummaryList[listIndex].submissions_summary =
-        await getAssessmentSubmissionsSummary(
-          assessmentSummary['program_assessment'].id,
-          principalId
-        );
+      assessmentsSummaryList[listIndex].curriculum_assessment =
+        await getCurriculumAssessmentById(matchingCurriculumAssessmentId);
+      if (principalPermissionsForPrograms[listIndex] === 'facilitator') {
+        assessmentsSummaryList[listIndex].submissions_summary =
+          await getAssessmentSubmissionsSummary(programAssessment.id);
+      } else if (principalPermissionsForPrograms[listIndex] === 'participant') {
+        assessmentsSummaryList[listIndex].submissions_summary =
+          await getAssessmentSubmissionsSummary(
+            programAssessment.id,
+            principalId
+          );
+      }
     }
 
     listIndex++;
@@ -85,8 +84,6 @@ export const getAssessmentSubmissionsSummary = async (
 ): Promise<
   AssessmentSubmissionsSummary | FacilitatorAssessmentSubmissionsSummary
 > => {
-  // TODO: make it as a function within this function
-
   const programId = await getProgramIdByProgramAssessmentId(
     programAssessmentId
   );
@@ -119,9 +116,9 @@ export const getProgramIdByProgramAssessmentId = async (
     .where({ id: programAssessmentId });
 };
 /**
- * a function that returns assessment summary that needed for getAssessmentsSummary function
+ * a function that returns list of program IDs based on given proncipalId
  * @param {number} principalId - The restrict result to programs with which the user is associated
- * @returns {} program_id //????????
+ * @returns {enrolledProgramsList} list of program IDs
  *
  */
 export const principalEnrolledPrograms = async (principalId: number) => {
@@ -148,13 +145,13 @@ export const principalEnrolledPrograms = async (principalId: number) => {
  */
 export const getAssessmentsForProgram = async (
   programId: number
-): Promise<ProgramAssessment> => {
+): Promise<ProgramAssessment[]> => {
   const [matchingProgramAssessment] = await db<ProgramAssessment>(
     'program_assessments'
   )
     .select('*')
     .where({ program_id: programId });
-  return matchingProgramAssessment;
+  return [matchingProgramAssessment];
 };
 //TODO: test this function with postman
 /**
