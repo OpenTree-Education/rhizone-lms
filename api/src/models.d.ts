@@ -132,10 +132,10 @@ export interface FacilitatorAssessmentSubmissionsSummary {
 
 export interface AssessmentSummary {
   curriculum_assessment: CurriculumAssessment;
-  program_assessment: ProgramAssessment;
+  program_assessment: ProgramAssessment[];
   submissions_summary:
-    | AssessmentSubmissionsSummary
-    | FacilitatorAssessmentSubmissionsSummary;
+    | AssessmentSubmissionsSummary[]
+    | FacilitatorAssessmentSubmissionsSummary[];
 }
 
 export interface AssessmentResponse {
