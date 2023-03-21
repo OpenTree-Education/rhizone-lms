@@ -5,11 +5,21 @@ import {
   createAssessment,
   updateAssessmentById,
   deleteAssessmentById,
-  getCurriculumAssessmentById,
+  getProgramIdByProgramAssessmentId,
   getAssessmentsSummary,
-  getCurriculumAssessmentBasedOnRole,
+  programAssessmentById,
+  findRoleInProgram,
+  getCurriculumAssessmentById,
+  submissionDetails,
+  submissionDetailsBasedOnRequirement,
 } from '../services/assessmentService';
-import { AssessmentSummary } from '../models';
+import {
+  AssessmentSummary,
+  SubmittedAssessment,
+  CurriculumAssessment,
+  ProgramAssessment,
+  AssessmentSubmission,
+} from '../models';
 
 const assessmentsRouter = Router();
 
@@ -289,19 +299,73 @@ assessmentsRouter.get(
         )
       );
     }
-    let listOfAssessmentWithAnswers;
+    let programId;
+    let result;
+    let curriculumAssessment, programAssessment, assessmentSubmission, state;
+
+    const response: SubmittedAssessment = {
+      curriculum_assessment: curriculumAssessment,
+      program_assessment: programAssessment,
+      submission: assessmentSubmission,
+    };
+
     try {
-      listOfAssessmentWithAnswers = await getCurriculumAssessmentBasedOnRole(
+      programId = await getProgramIdByProgramAssessmentId(assessmentIdPrased);
+
+      const role = await findRoleInProgram(
         principalId,
-        assessmentIdPrased,
-        submissionIdPrased
+        programId[0].program_id
       );
+
+      if (role.title === 'Participant') {
+        [programAssessment] = await programAssessmentById(assessmentIdPrased);
+
+        assessmentSubmission = await submissionDetailsBasedOnRequirement(
+          principalId,
+          programAssessment.assesment_id,
+          submissionIdPrased
+        );
+        // assessmentSubmission= await submissionDetails(programAssessment.assessment_id,submissionIdPrased,true);
+        curriculumAssessment = await getCurriculumAssessmentById(
+          programAssessment.assesment_id,
+          true,
+          false
+        );
+      } else if (role.title === 'Facilitator') {
+        [programAssessment] = await programAssessmentById(assessmentIdPrased);
+
+        // assessmentSubmission= await submissionDetailsBasedOnrequirement (principalId,programAssessment.assesment_id,submissionIdPrased);
+        curriculumAssessment = await getCurriculumAssessmentById(
+          programAssessment.assessment_id,
+          true,
+          true
+        );
+        assessmentSubmission = await submissionDetailsBasedOnRequirement(
+          principalId,
+          programAssessment.assessment_id,
+          submissionIdPrased
+        );
+        //  let assessment= await submissionDetails(programAssessment.assessment_id,submissionIdPrased,true);
+      } else {
+        throw console.error('error');
+      }
+
+      // response={
+      //   curriculum_assessment: curriculumAssessment,
+      //   program_assessment: programAssessment,
+      //   submission:assessmentSubmission,
+      // }
+
+      result = {
+        curriculumAssessment,
+        programAssessment,
+        assessmentSubmission,
+      };
     } catch (error) {
       next(error);
       return;
     }
-    res.json(itemEnvelope(listOfAssessmentWithAnswers));
-    // res.json(collectionEnvelope(listOfAssessmentWithAnswers,listOfAssessmentWithAnswers.length));
+    res.json(itemEnvelope(result));
   }
 );
 

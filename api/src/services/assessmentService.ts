@@ -9,6 +9,7 @@ import {
   FacilitatorAssessmentSubmissionsSummary,
   CurriculumAssessment,
   ProgramAssessment,
+  SubmittedAssessment,
   Question,
 } from '../models';
 
@@ -114,7 +115,7 @@ export const getProgramIdByCurriculumAssessmentId = async (
 export const getProgramIdByProgramAssessmentId = async (
   programAssessmentId: number
 ) => {
-  return await db('program_assessment')
+  return await db('program_assessments')
     .select('program_id')
     .where({ id: programAssessmentId });
 };
@@ -280,18 +281,20 @@ export const getAssessmentSubmissions = async (
 
 // *******  Helpers for AssessmentSubmissionsSummary  **************//
 export const getHighestState = async (principalId: number) => {
-  const [highestState] = await db<string>('assessment_submission')
-    .select('assessment_submission_states_title')
+  // console.log("o",principalId)
+  const [highestState] = await db<string>('assessment_submissions')
+    .select('assessment_submission_states.title')
     .join(
-      'assessment_submission_states_title',
-      'assessment_submission_states_title.id',
-      'assessment_submission_states_title_id'
+      'assessment_submission_states',
+      'assessment_submission_states.id',
+      'assessment_submission_state_id'
     )
     .where('principal_id', principalId)
-    .orderBy('assessment_submission_states_title', 'desc');
+    .orderBy('assessment_submission_states.id', 'desc');
   if (!highestState) {
     return null;
   }
+  // console.log("higest",highestState)
   return [highestState];
 };
 
@@ -340,28 +343,8 @@ export const findRoleInProgram = async (
       'program_participants.role_id'
     )
     .where({ principal_id: principalId, program_id: programId });
+  // console.log("roleName",roleName)
   return roleName;
-};
-export const getCurriculumAssessmentBasedOnRole = async (
-  principalId: number,
-  assessmentId: number,
-  submissionId: number
-) => {
-  const role = await db('program_participants')
-    .select('role_id')
-    .where({ principal_id: principalId });
-
-  console.log('role', role[0].role_id);
-  if (role[0].role_id === 1) {
-    const res = await getCurriculumAssessmentById(assessmentId, true, false);
-
-    const res2 = await submissionDetails(assessmentId, submissionId, true);
-    const summary = { res: [res], res2: [res2] };
-
-    return summary;
-  } else {
-    return getCurriculumAssessmentById(assessmentId, true, false);
-  }
 };
 
 /**
@@ -407,7 +390,7 @@ export const getCurriculumAssessmentById = async (
       question => question.assessment_id === curriculumAssessmentDetails.id
     );
   }
-  console.log([curriculumAssessmentDetails]);
+
   return curriculumAssessmentDetails;
 };
 
@@ -427,7 +410,7 @@ export const getQuestionsByCurriculumAssessmentId = async (
   const questions = await db<Question>('assessment_questions')
     .select('*')
     .where({ assessment_id: assessmentId });
-  console.log('questions', questions);
+  // console.log('questions', questions);
   //'id', 'title', 'description', 'correct_answer_id'
   if (isAnswersIncluded == true) {
     const questionIds = questions.map(element => element.id);
@@ -466,6 +449,7 @@ export const programAssessmentById = async (programAssessmentId: number) => {
       'updated_at'
     )
     .where({ id: programAssessmentId });
+  // console.log("prog",findProgramAssessmentById)
   return findProgramAssessmentById;
 };
 
@@ -478,14 +462,14 @@ export const programAssessmentById = async (programAssessmentId: number) => {
  * @returns {<AssessmentSubmission[]>} - A list of assessment submissions in the db
  */
 export const submissionDetails = async (
-  assessmentId: number,
+  assessmentId: number, //note
   submissionId: number,
   isResponsesIncluded: boolean
-) => {
+): Promise<AssessmentSubmission[]> => {
   const assessmentSubmissionByProgramAssessmentId = await db(
     'assessment_submissions'
   )
-    .select('id')
+    .select('*')
     .where({ assessment_id: assessmentId });
 
   if (isResponsesIncluded) {
@@ -504,6 +488,7 @@ export const submissionDetails = async (
   }
   // console.log("test2",assessmentSubmissionByProgramAssessmentId)
   // console.log("test",assessmentId,assessmentSubmissionByProgramAssessmentId)
+  console.log('responseSumbiton', assessmentSubmissionByProgramAssessmentId);
   return assessmentSubmissionByProgramAssessmentId;
 };
 
@@ -776,4 +761,48 @@ export const listSubmissions = async (assessmentId: number) => {
     )
     .where({ assessment_id: assessmentId });
   return matchingAssessment;
+};
+
+export const submissionDetailsBasedOnRequirement = async (
+  principalId: number,
+  assessmentId: number,
+  submissionId: number
+): Promise<AssessmentSubmission[]> => {
+  let responses,
+    result: any = {};
+  const assessmentSubmissionWithState = await db<AssessmentSubmission[]>(
+    'assessment_submissions'
+  )
+    .select('*', 'assessment_submission_states.title')
+    .join(
+      'assessment_submission_states',
+      'assessment_submission_states.id',
+      'assessment_submission_state_id'
+    )
+    .where({ assessment_id: assessmentId, principal_id: principalId });
+
+  if (assessmentSubmissionWithState[0].title === 'Graded') {
+    responses = await db<AssessmentResponse>('assessment_responses')
+      .select('*')
+      .where({ assessment_id: assessmentId, submission_id: submissionId });
+  } else if (assessmentSubmissionWithState[0].title === 'Submitted') {
+    responses = await db<AssessmentResponse>('assessment_responses')
+      .select(
+        'id',
+        'assessment_id',
+        'submission_id',
+        'question_id',
+        'answer_id',
+        'response',
+        'created_at',
+        'updated_at'
+      )
+      .where({ submission_id: submissionId });
+  } else {
+    return null;
+  }
+
+  result = await { assessmentSubmissionWithState, responses: responses };
+
+  return result;
 };
