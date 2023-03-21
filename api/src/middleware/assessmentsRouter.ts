@@ -11,82 +11,65 @@ import {
   findRoleInProgram,
   getAssessmentsForProgram,
   principalEnrolledPrograms,
-  getAssessmentSubmissionsSummary,
+  getParticipantAssessmentSubmissionsSummary,
   getFacilitatorAssessmentSubmissionsSummary,
 } from '../services/assessmentService';
+import { AssessmentSummary } from '../models';
 
 const assessmentsRouter = Router();
-
-// Incoming: nothing expected
-// Outgoing:
-// - participant: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for their submissions to this program assessment
-// - facilitator: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for all submissions to this program assessment
-
 assessmentsRouter.get('/', async (req, res, next) => {
-  // let assessments: AssessmentSummary[];
-
   const { principalId } = req.session;
 
   try {
     const programIds = await principalEnrolledPrograms(principalId);
-    const emptyAssessmentsSummaryList: [] = [];
+    const assessmentsSummaryList: AssessmentSummary[] = [];
 
-    if (programIds.length === 0 || principalId !== principalId) {
-      res.json(collectionEnvelope(emptyAssessmentsSummaryList, 0));
-    } else {
-      const participantAssessmentListResponse = [];
-      const facilitatorAssessmentListResponse = [];
+    if (programIds.length === 0) {
+      res.json(collectionEnvelope(assessmentsSummaryList, 0));
+      return;
+    }
 
-      for (const programId of programIds) {
-        const roleInProgram = await findRoleInProgram(principalId, programId);
-        const [programAssessments] = await getAssessmentsForProgram(programId);
+    for (const programId of programIds) {
+      const roleInProgram = await findRoleInProgram(principalId, programId);
+      const programAssessments = await getAssessmentsForProgram(programId);
 
-        for (const programAssessment of [programAssessments]) {
-          const curriculumAssessment = await getCurriculumAssessmentById(
-            programAssessment.assessment_id,
-            false,
-            false
-          );
-
-          let assessmentSubmissionsSummary;
-          let facilitatorAssessmentSubmissionsSummary;
-
-          if (roleInProgram.title === 'participant') {
-            assessmentSubmissionsSummary =
-              await getAssessmentSubmissionsSummary(
+      for (const programAssessment of programAssessments) {
+        if (roleInProgram === 'participant') {
+          assessmentsSummaryList.push({
+            curriculum_assessment: await getCurriculumAssessmentById(
+              programAssessment.assessment_id,
+              false,
+              false
+            ),
+            program_assessment: programAssessment,
+            submissions_summary:
+              await getParticipantAssessmentSubmissionsSummary(
                 programAssessment.assessment_id,
                 principalId
-              );
+              ),
+          });
+        }
 
-            participantAssessmentListResponse.push({
-              curriculum_assessment: curriculumAssessment,
-              program_assessment: programAssessment,
-              submissions_summary: assessmentSubmissionsSummary,
-            });
-          }
-
-          if (roleInProgram.title === 'facilitator') {
-            facilitatorAssessmentSubmissionsSummary =
+        if (roleInProgram === 'facilitator') {
+          assessmentsSummaryList.push({
+            curriculum_assessment: await getCurriculumAssessmentById(
+              programAssessment.assessment_id,
+              false,
+              false
+            ),
+            program_assessment: programAssessment,
+            submissions_summary:
               await getFacilitatorAssessmentSubmissionsSummary(
-                programAssessment.assessment_id,
-                principalId
-              );
-
-            facilitatorAssessmentListResponse.push({
-              curriculum_assessment: curriculumAssessment,
-              program_assessment: programAssessment,
-              submissions_summary: facilitatorAssessmentSubmissionsSummary,
-            });
-          }
+                programAssessment.assessment_id
+              ),
+          });
         }
       }
-
-      const assessments = [
-        ...participantAssessmentListResponse,
-        ...facilitatorAssessmentListResponse,
-      ];
-      res.json(collectionEnvelope(assessments, assessments.length));
     }
+
+    res.json(
+      collectionEnvelope(assessmentsSummaryList, assessmentsSummaryList.length)
+    );
   } catch (error) {
     next(error);
     return;
@@ -368,12 +351,12 @@ assessmentsRouter.get('/', async (req, res, next) => {
 
 // Incoming: AssessmentSubmission (with 'responses') (but participants shouldn't be allowed to update their scores or update their answers after it's been submitt)
 // Outgoing: AssessmentSubmission (with 'responses')
-assessmentsRouter.put(
-  '/:assessmentId/submissions/:submissionId',
-  (req, res) => {
-    const response = { behaviour: 'Updates the state of a submission' };
-    res.status(200).json(itemEnvelope(response));
-  }
-);
+// assessmentsRouter.put(
+//   '/:assessmentId/submissions/:submissionId',
+//   (req, res) => {
+//     const response = { behaviour: 'Updates the state of a submission' };
+//     res.status(200).json(itemEnvelope(response));
+//   }
+// );
 
 export default assessmentsRouter;

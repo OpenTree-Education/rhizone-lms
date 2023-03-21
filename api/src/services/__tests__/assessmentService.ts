@@ -1,7 +1,6 @@
 // import {
 //   AssessmentSubmissionsSummary,
 //   FacilitatorAssessmentSubmissionsSummary,
-//   AssessmentSubmission,
 //   CurriculumAssessment,
 //   AssessmentSummary,
 //   ProgramAssessment,
@@ -9,9 +8,6 @@
 // import {
 //   findRoleInProgram,
 //   principalEnrolledPrograms,
-//   getAssessmentsForProgram,
-//   getCurriculumAssessmentById,
-//   getAssessmentSubmissionsSummary,
 //   getProgramIdByCurriculumAssessmentId,
 // } from '../assessmentService';
 // import { mockQuery } from '../mockDb';
@@ -26,6 +22,7 @@
 // const curriculumAssessment: CurriculumAssessment = {
 //   id: curriculumAssessmentId,
 //   title: 'Assignment 1: React',
+//   assessment_type: 'test',
 //   description: 'Your assignment for week 1 learning.',
 //   max_score: 10,
 //   max_num_submissions: 3,
@@ -95,52 +92,50 @@
 //   program_assessment: assessmentsSummaryList,
 // };
 
-// const mockFindRoleInProgram = jest.mocked(findRoleInProgram); /// ??????
-
 // describe('principalEnrolledPrograms', () => {
-// it('when principalEnrolledPrograms than returns enrolled program IDs', async () => {
-//       const principalId = 3;
-//       mockQuery(
-//         'select `program_id` from `program_participants` where `principal_id` = ?',
-//         [principalId],
-//         [programId]
-//       );
-//       expect(await principalEnrolledPrograms(principalId)).toEqual([programId]);
-//     });
-//   })
+//   it('when principalEnrolledPrograms than returns enrolled program IDs', async () => {
+//     const principalId = 3;
+//     mockQuery(
+//       'select `program_id` from `program_participants` where `principal_id` = ?',
+//       [principalId],
+//       [programId]
+//     );
+//     expect(await principalEnrolledPrograms(principalId)).toEqual([programId]);
+//   });
+// });
 
-//   describe('getAssessmentsForProgram', () => {
-//     it('returns matching program assessment with given program ID', async () => {
-//       const programId = 2;
-//       const [matchingProgramAssessment]: ProgramAssessment[] = [
-//         programAssessment,
-//       ];
-//       mockQuery(
-//         'select `id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `program_id` = ?',
-//         [programId],
-//         [matchingProgramAssessment]
-//       );
-//       expect(await principalEnrolledPrograms(programId)).toEqual(
-//         [matchingProgramAssessment]
-//       );
-//     });
-//   })
+// describe('getAssessmentsForProgram', () => {
+//   it('returns matching program assessment with given program ID', async () => {
+//     const programId = 2;
+//     const [matchingProgramAssessment]: ProgramAssessment[] = [
+//       programAssessment,
+//     ];
+//     mockQuery(
+//       'select `id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `program_id` = ?',
+//       [programId],
+//       [matchingProgramAssessment]
+//     );
+//     expect(await principalEnrolledPrograms(programId)).toEqual([
+//       matchingProgramAssessment,
+//     ]);
+//   });
+// });
 
 // describe('findRoleInProgram', () => {
-//     it('returns the role of the participant in a given program', async () => {
-//       const principalId = 1;
-//       const enrolledProgramId = 3;
-//       const roleName = 'facilitator'
-//       mockQuery(
-//         'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
-//         [principalId, enrolledProgramId],
-//         [roleName]
-//       );
-//       expect(await findRoleInProgram(principalId, enrolledProgramId)).toEqual(
-//         roleName
-//       );
-//     });
+//   it('returns the role of the participant in a given program', async () => {
+//     const principalId = 1;
+//     const enrolledProgramId = 3;
+//     const roleName = 'facilitator';
+//     mockQuery(
+//       'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
+//       [principalId, enrolledProgramId],
+//       [roleName]
+//     );
+//     expect(await findRoleInProgram(principalId, enrolledProgramId)).toEqual(
+//       roleName
+//     );
 //   });
+// });
 
 // describe('getProgramIdByCurriculumAssessmentId', () => {
 //   it('returns the role of the participant in a given program', async () => {
