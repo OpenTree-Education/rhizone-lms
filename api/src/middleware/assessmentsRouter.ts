@@ -11,15 +11,8 @@ import {
   findRoleInProgram,
   getCurriculumAssessmentById,
   submissionDetails,
-  submissionDetailsBasedOnRequirement,
 } from '../services/assessmentService';
-import {
-  AssessmentSummary,
-  SubmittedAssessment,
-  CurriculumAssessment,
-  ProgramAssessment,
-  AssessmentSubmission,
-} from '../models';
+import { AssessmentSummary, SubmittedAssessment } from '../models';
 
 const assessmentsRouter = Router();
 
@@ -256,19 +249,19 @@ assessmentsRouter.delete('/:assessmentId', async (req, res, next) => {
 //   const response = { behaviour: 'Creates a new draft submission' };
 //   const { principalId } = req.session;
 //   const { assessmentId, submissionId } = req.params;
-//   const assessmentIdPrased = Number(assessmentId);
-//   const submissionIdPrased = Number(submissionId);
+//   const assessmentIdParsed = Number(assessmentId);
+//   const submissionIdParsed = Number(submissionId);
 //   let new_submission= [];
-//   if (!Number.isInteger(assessmentIdPrased) || assessmentIdPrased < 1) {
+//   if (!Number.isInteger(assessmentIdParsed) || assessmentIdParsed < 1) {
 
 //       new BadRequestError(
-//         `"${assessmentIdPrased}" is not a valid participant id.`
+//         `"${assessmentIdParsed}" is not a valid participant id.`
 //       );
 //   }
-//   if (!Number.isInteger(submissionIdPrased) || submissionIdPrased < 1) {
+//   if (!Number.isInteger(submissionIdParsed) || submissionIdParsed < 1) {
 
 //       new BadRequestError(
-//         `"${submissionIdPrased}" is not a valid participant id.`
+//         `"${submissionIdParsed}" is not a valid participant id.`
 //       );
 //   }
 
@@ -281,27 +274,26 @@ assessmentsRouter.delete('/:assessmentId', async (req, res, next) => {
 assessmentsRouter.get(
   '/:assessmentId/submissions/:submissionId',
   async (req, res, next) => {
-    const { principalId } = req.session;
     const { assessmentId, submissionId } = req.params;
-    const assessmentIdPrased = Number(assessmentId);
-    const submissionIdPrased = Number(submissionId);
-    if (!Number.isInteger(assessmentIdPrased) || assessmentIdPrased < 1) {
+    const assessmentIdParsed = Number(assessmentId);
+    const submissionIdParsed = Number(submissionId);
+    if (!Number.isInteger(assessmentIdParsed) || assessmentIdParsed < 1) {
       next(
         new BadRequestError(
-          `"${assessmentIdPrased}" is not a valid participant id.`
+          `"${assessmentIdParsed}" is not a valid participant id.`
         )
       );
     }
-    if (!Number.isInteger(submissionIdPrased) || submissionIdPrased < 1) {
+    if (!Number.isInteger(submissionIdParsed) || submissionIdParsed < 1) {
       next(
         new BadRequestError(
-          `"${submissionIdPrased}" is not a valid participant id.`
+          `"${submissionIdParsed}" is not a valid participant id.`
         )
       );
     }
     let programId;
-    let result;
-    let curriculumAssessment, programAssessment, assessmentSubmission, state;
+
+    let curriculumAssessment, programAssessment, assessmentSubmission;
 
     const response: SubmittedAssessment = {
       curriculum_assessment: curriculumAssessment,
@@ -310,62 +302,57 @@ assessmentsRouter.get(
     };
 
     try {
-      programId = await getProgramIdByProgramAssessmentId(assessmentIdPrased);
+      programId = await getProgramIdByProgramAssessmentId(assessmentIdParsed);
 
-      const role = await findRoleInProgram(
-        principalId,
-        programId[0].program_id
+      const role = await findRoleInProgram(2, programId[0].program_id);
+      response.program_assessment = await programAssessmentById(
+        assessmentIdParsed
       );
 
       if (role.title === 'Participant') {
-        [programAssessment] = await programAssessmentById(assessmentIdPrased);
-
-        assessmentSubmission = await submissionDetailsBasedOnRequirement(
-          principalId,
-          programAssessment.assesment_id,
-          submissionIdPrased
-        );
-        // assessmentSubmission= await submissionDetails(programAssessment.assessment_id,submissionIdPrased,true);
-        curriculumAssessment = await getCurriculumAssessmentById(
-          programAssessment.assesment_id,
+        response.submission = await submissionDetails(
+          submissionIdParsed,
           true,
           false
         );
-      } else if (role.title === 'Facilitator') {
-        [programAssessment] = await programAssessmentById(assessmentIdPrased);
 
-        // assessmentSubmission= await submissionDetailsBasedOnrequirement (principalId,programAssessment.assesment_id,submissionIdPrased);
-        curriculumAssessment = await getCurriculumAssessmentById(
-          programAssessment.assessment_id,
+        if (response.submission.assessment_submission_state === 'Graded') {
+          response.curriculum_assessment = await getCurriculumAssessmentById(
+            response.program_assessment.assessment_id,
+            true,
+            true,
+            true
+          );
+        } else if (
+          response.submission.assessment_submission_state === 'Submitted'
+        ) {
+          response.curriculum_assessment = await getCurriculumAssessmentById(
+            response.program_assessment.assessment_id,
+            true,
+            false,
+            false
+          );
+        } else {
+        }
+      } else if (role.title === 'Facilitator') {
+        response.submission = await submissionDetails(
+          submissionIdParsed,
           true,
           true
         );
-        assessmentSubmission = await submissionDetailsBasedOnRequirement(
-          principalId,
-          programAssessment.assessment_id,
-          submissionIdPrased
+        response.curriculum_assessment = await getCurriculumAssessmentById(
+          response.program_assessment.assessment_id,
+          true,
+          true
         );
-        //  let assessment= await submissionDetails(programAssessment.assessment_id,submissionIdPrased,true);
       } else {
         throw console.error('error');
       }
-
-      // response={
-      //   curriculum_assessment: curriculumAssessment,
-      //   program_assessment: programAssessment,
-      //   submission:assessmentSubmission,
-      // }
-
-      result = {
-        curriculumAssessment,
-        programAssessment,
-        assessmentSubmission,
-      };
     } catch (error) {
       next(error);
       return;
     }
-    res.json(itemEnvelope(result));
+    res.json(itemEnvelope(response));
   }
 );
 

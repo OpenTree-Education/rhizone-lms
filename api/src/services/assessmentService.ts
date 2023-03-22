@@ -187,7 +187,11 @@ export const getCurriculumAssessment = async (
 
   if (includeQuestions === true) {
     curriculumAssessmentDetails.questions =
-      await getQuestionsByCurriculumAssessmentId(assessmentId, includeAnswers);
+      await getQuestionsByCurriculumAssessmentId(
+        assessmentId,
+        includeAnswers,
+        true
+      );
   }
   return curriculumAssessmentDetails;
 };
@@ -294,7 +298,6 @@ export const getHighestState = async (principalId: number) => {
   if (!highestState) {
     return null;
   }
-  // console.log("higest",highestState)
   return [highestState];
 };
 
@@ -343,7 +346,7 @@ export const findRoleInProgram = async (
       'program_participants.role_id'
     )
     .where({ principal_id: principalId, program_id: programId });
-  // console.log("roleName",roleName)
+
   return roleName;
 };
 
@@ -358,10 +361,10 @@ export const findRoleInProgram = async (
  */
 
 export const getCurriculumAssessmentById = async (
-  // curriculumAssessmentId: number,
   assessmentId: number,
   isQuestionsIncluded?: boolean,
-  isAnswersIncluded?: boolean
+  isAnswersIncluded?: boolean,
+  isSubmited?: boolean
 ): Promise<CurriculumAssessment> => {
   const [curriculumAssessmentDetails] = await db<CurriculumAssessment>(
     'curriculum_assessments'
@@ -380,15 +383,22 @@ export const getCurriculumAssessmentById = async (
     )
     .where('id', assessmentId);
 
-  if (isQuestionsIncluded == true) {
-    const questions = await getQuestionsByCurriculumAssessmentId(
-      assessmentId,
-      isAnswersIncluded
-    );
-
-    curriculumAssessmentDetails.questions = questions.filter(
-      question => question.assessment_id === curriculumAssessmentDetails.id
-    );
+  if (isQuestionsIncluded === true) {
+    if (isSubmited === true) {
+      curriculumAssessmentDetails.questions =
+        await getQuestionsByCurriculumAssessmentId(
+          assessmentId,
+          isAnswersIncluded,
+          true
+        );
+    } else {
+      curriculumAssessmentDetails.questions =
+        await getQuestionsByCurriculumAssessmentId(
+          assessmentId,
+          isAnswersIncluded,
+          false
+        );
+    }
   }
 
   return curriculumAssessmentDetails;
@@ -405,25 +415,26 @@ export const getCurriculumAssessmentById = async (
 
 export const getQuestionsByCurriculumAssessmentId = async (
   assessmentId: number,
-  isAnswersIncluded: boolean
+  isAnswersIncluded: boolean,
+  isNotGraded: boolean
 ) => {
   const questions = await db<Question>('assessment_questions')
     .select('*')
     .where({ assessment_id: assessmentId });
-  // console.log('questions', questions);
-  //'id', 'title', 'description', 'correct_answer_id'
-  if (isAnswersIncluded == true) {
-    const questionIds = questions.map(element => element.id);
-    const answers = await db<Answer>('assessment_answers')
-      .select('*')
-      .whereIn('question_id', questionIds);
 
-    questions.forEach(
-      question =>
-        (question.answers = answers.filter(
-          answer => answer.question_id === question.id
-        ))
-    );
+  if (isNotGraded === false) {
+    questions.forEach(question => {
+      question.correct_answer_id = null;
+    });
+  }
+
+  if (isAnswersIncluded === true) {
+    const answer = await db<Answer>('assessment_answers')
+      .select('*')
+      .where('question_id', questions[0].id);
+    questions.filter(question => {
+      question.id = answer[0].question_id;
+    });
   }
 
   return questions;
@@ -435,8 +446,10 @@ export const getQuestionsByCurriculumAssessmentId = async (
  * @param {number} programAssessmentId - The assessment ID for the specified assessment
  *
  */
-export const programAssessmentById = async (programAssessmentId: number) => {
-  const findProgramAssessmentById = await db<ProgramAssessment>(
+export const programAssessmentById = async (
+  programAssessmentId: number
+): Promise<ProgramAssessment> => {
+  const [findProgramAssessmentById] = await db<ProgramAssessment>(
     'program_assessments'
   )
     .select(
@@ -449,7 +462,7 @@ export const programAssessmentById = async (programAssessmentId: number) => {
       'updated_at'
     )
     .where({ id: programAssessmentId });
-  // console.log("prog",findProgramAssessmentById)
+
   return findProgramAssessmentById;
 };
 
@@ -462,34 +475,38 @@ export const programAssessmentById = async (programAssessmentId: number) => {
  * @returns {<AssessmentSubmission[]>} - A list of assessment submissions in the db
  */
 export const submissionDetails = async (
-  assessmentId: number, //note
   submissionId: number,
-  isResponsesIncluded: boolean
-): Promise<AssessmentSubmission[]> => {
-  const assessmentSubmissionByProgramAssessmentId = await db(
-    'assessment_submissions'
-  )
-    .select('*')
-    .where({ assessment_id: assessmentId });
+  isResponsesIncluded: boolean,
+  isFacilitator?: boolean
+): Promise<AssessmentSubmission> => {
+  const [assessmentSubmission] = await db('assessment_submissions')
+    .select(
+      '*',
+      'assessment_submission_states.title as assessment_submission_state'
+    )
+    .join(
+      'assessment_submission_states',
+      'assessment_submission_states.id',
+      'assessment_submission_state_id'
+    )
+    .where({ 'assessment_submissions.id': submissionId });
 
   if (isResponsesIncluded) {
-    const assessmentSubmissionIds =
-      assessmentSubmissionByProgramAssessmentId.map(element => element.id);
-    const responses = await db<AssessmentResponse>('assessment_responses')
+    assessmentSubmission.responses = await db<AssessmentResponse>(
+      'assessment_responses'
+    )
       .select('*')
       .where({ submission_id: submissionId });
-
-    assessmentSubmissionByProgramAssessmentId.forEach(
-      assessment =>
-        (assessment.responses = responses.filter(
-          response => response.submission_id === assessment.id
-        ))
-    );
   }
-  // console.log("test2",assessmentSubmissionByProgramAssessmentId)
-  // console.log("test",assessmentId,assessmentSubmissionByProgramAssessmentId)
-  console.log('responseSumbiton', assessmentSubmissionByProgramAssessmentId);
-  return assessmentSubmissionByProgramAssessmentId;
+
+  if (
+    isFacilitator === false &&
+    !(assessmentSubmission.assessment_submission_state === 'Graded')
+  ) {
+    assessmentSubmission.score = null;
+  }
+
+  return assessmentSubmission;
 };
 
 //** service functions for router **/
@@ -761,48 +778,4 @@ export const listSubmissions = async (assessmentId: number) => {
     )
     .where({ assessment_id: assessmentId });
   return matchingAssessment;
-};
-
-export const submissionDetailsBasedOnRequirement = async (
-  principalId: number,
-  assessmentId: number,
-  submissionId: number
-): Promise<AssessmentSubmission[]> => {
-  let responses,
-    result: any = {};
-  const assessmentSubmissionWithState = await db<AssessmentSubmission[]>(
-    'assessment_submissions'
-  )
-    .select('*', 'assessment_submission_states.title')
-    .join(
-      'assessment_submission_states',
-      'assessment_submission_states.id',
-      'assessment_submission_state_id'
-    )
-    .where({ assessment_id: assessmentId, principal_id: principalId });
-
-  if (assessmentSubmissionWithState[0].title === 'Graded') {
-    responses = await db<AssessmentResponse>('assessment_responses')
-      .select('*')
-      .where({ assessment_id: assessmentId, submission_id: submissionId });
-  } else if (assessmentSubmissionWithState[0].title === 'Submitted') {
-    responses = await db<AssessmentResponse>('assessment_responses')
-      .select(
-        'id',
-        'assessment_id',
-        'submission_id',
-        'question_id',
-        'answer_id',
-        'response',
-        'created_at',
-        'updated_at'
-      )
-      .where({ submission_id: submissionId });
-  } else {
-    return null;
-  }
-
-  result = await { assessmentSubmissionWithState, responses: responses };
-
-  return result;
 };
