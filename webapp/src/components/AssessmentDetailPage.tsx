@@ -183,12 +183,14 @@ const AssessmentDetailPage = () => {
 
     assessmentWithUpdatedResponses.submission.responses!.find(
       response => response.question_id === questionId
-    )!.response = responseText;
+    )!.response_text = responseText;
     setAssessment(assessmentWithUpdatedResponses);
 
     setNumOfAnsweredQuestions(
       assessmentWithUpdatedResponses.submission.responses!.filter(
-        a => Number.isInteger(a.answer_id) || typeof a.response !== 'undefined'
+        a =>
+          Number.isInteger(a.answer_id) ||
+          typeof a.response_text !== 'undefined'
       ).length
     );
   };
