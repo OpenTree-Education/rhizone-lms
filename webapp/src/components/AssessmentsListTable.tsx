@@ -27,42 +27,12 @@ interface TableCellWrapperProps {
   index: number[];
   statusTab: number;
 }
-interface TableRowWrapperProps {
-  children?: React.ReactNode;
-  statusTab: number;
-  status: string;
-}
 
 const TableCellWrapper = (props: TableCellWrapperProps) => {
   const { children, statusTab, index } = props;
   return index.includes(statusTab) ? <TableCell>{children}</TableCell> : null;
 };
 
-const TableRowWrapper = (props: TableRowWrapperProps) => {
-  const { children, status, statusTab } = props;
-  if (statusTab === StatusTab.All) {
-    return <TableRow>{children}</TableRow>;
-  }
-  switch (status) {
-    case 'Active':
-      return statusTab === StatusTab.Active ? (
-        <TableRow>{children}</TableRow>
-      ) : null;
-    case 'Upcoming':
-      return statusTab === StatusTab.Upcoming ? (
-        <TableRow>{children}</TableRow>
-      ) : null;
-    case 'Submitted':
-    case 'Graded':
-    case 'Unsubmitted':
-    default:
-      return statusTab === StatusTab.Past ? (
-        <TableRow>{children}</TableRow>
-      ) : null;
-  }
-};
-
-let upcom: boolean;
 const renderButtonByStatus = (status: string, id: number) => {
   let buttonLabel;
   switch (status) {
@@ -72,6 +42,9 @@ const renderButtonByStatus = (status: string, id: number) => {
     case 'Submitted':
     case 'Graded':
     case 'Unsubmitted':
+      buttonLabel = 'View';
+      break;
+    case 'Expired':
       buttonLabel = 'View';
       break;
     case 'Upcoming':
@@ -128,7 +101,7 @@ const renderChipByStatus = (status: string) => {
           label="Upcoming"
         />
       );
-    case 'Unsubmitted':
+    case 'Expired':
       return (
         <Chip
           variant="outlined"
@@ -234,13 +207,7 @@ const AssessmentsListTable = ({
         </TableHead>
         <TableBody>
           {matchingAssessmentList.map(assessment => (
-            <TableRowWrapper
-              statusTab={currentStatusTab}
-              status={
-                assessment.submissions_summary.assessment_submission_state
-              }
-              key={assessment.program_assessment.id}
-            >
+            <TableRow key={assessment.program_assessment.id}>
               <TableCellWrapper
                 statusTab={currentStatusTab}
                 index={[
@@ -278,7 +245,9 @@ const AssessmentsListTable = ({
                 {(assessment.submissions_summary.assessment_submission_state ===
                   'Submitted' ||
                   assessment.submissions_summary.assessment_submission_state ===
-                    'Graded') &&
+                    'Graded' ||
+                  assessment.submissions_summary.assessment_submission_state ===
+                    'Passed') &&
                   formatDateTime(
                     assessment.submissions_summary.most_recent_submitted_date
                   )}
@@ -319,7 +288,7 @@ const AssessmentsListTable = ({
                     assessment.program_assessment.id
                   )}
               </TableCellWrapper>
-            </TableRowWrapper>
+            </TableRow>
           ))}
         </TableBody>
       </Table>

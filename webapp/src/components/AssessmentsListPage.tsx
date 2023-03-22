@@ -26,28 +26,31 @@ const AssessmentsListPage = () => {
   }, []);
 
   useEffect(() => {
-    setCurrentStatusTab(currentStatusTab);
     if (currentStatusTab === 0)
       // All Assessments
-      setAssessmentListSubset(assessmentListPageExampleData);
+      setAssessmentListSubset(assessmentList);
     else if (currentStatusTab === 2)
       // Past Assessments
       setAssessmentListSubset(
-        assessmentListPageExampleData.filter(
+        assessmentList.filter(
           assessment =>
             assessment.submissions_summary.assessment_submission_state ===
-            'Graded'
+              'Graded' ||
+            assessment.submissions_summary.assessment_submission_state ===
+              'Submitted' ||
+            assessment.submissions_summary.assessment_submission_state ===
+              'Expired'
         )
       );
     else
       setAssessmentListSubset(
-        assessmentListPageExampleData.filter(
+        assessmentList.filter(
           assessment =>
             assessment.submissions_summary.assessment_submission_state ===
             StatusTab[currentStatusTab]
         )
       );
-  }, [currentStatusTab]);
+  }, [currentStatusTab, assessmentList]);
 
   const handleChangeTab = (
     event: React.SyntheticEvent,
@@ -92,7 +95,7 @@ const AssessmentsListPage = () => {
       />
       <AssessmentsListTable
         currentStatusTab={currentStatusTab}
-        matchingAssessmentList={assessmentList}
+        matchingAssessmentList={assessmentListSubset}
       />
     </Container>
   );
