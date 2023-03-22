@@ -6,27 +6,26 @@ import {
   updateAssessmentById,
   deleteAssessmentById,
   getProgramIdByProgramAssessmentId,
-  getAssessmentsSummary,
-  programAssessmentById,
   findRoleInProgram,
-  getCurriculumAssessmentById,
+  programAssessmentById,
   submissionDetails,
+  getCurriculumAssessmentById
+  
 } from '../services/assessmentService';
-import { AssessmentSummary, SubmittedAssessment } from '../models';
+import { AssessmentWithSummary,Assessment, SavedAssessment,AssessmentSubmission } from '../models';
 
 const assessmentsRouter = Router();
 
-// Shows a list of all assessments
 // Incoming: nothing expected
 // Outgoing:
 // - participant: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for their submissions to this program assessment
 // - facilitator: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for all submissions to this program assessment
 assessmentsRouter.get('/', async (req, res, next) => {
-  const { principalId } = req.session;
+  // const { principalId } = req.session;
 
-  let assessments: AssessmentSummary[];
+  let assessments: AssessmentWithSummary[];
   try {
-    assessments = await getAssessmentsSummary(principalId);
+    // assessments = await getAssessmentsSummary(principalId);
   } catch (error) {
     next(error);
     return;
@@ -293,18 +292,19 @@ assessmentsRouter.get(
     }
     let programId;
 
-    let curriculumAssessment, programAssessment, assessmentSubmission;
+    let curriculumAssessment, programAssessment, AssessmentSubmitted,role;
 
-    const response: SubmittedAssessment = {
+    const response: SavedAssessment = {
       curriculum_assessment: curriculumAssessment,
       program_assessment: programAssessment,
-      submission: assessmentSubmission,
+      submission: AssessmentSubmitted ,
+       principal_program_role:role
     };
 
     try {
       programId = await getProgramIdByProgramAssessmentId(assessmentIdParsed);
 
-      const role = await findRoleInProgram(2, programId[0].program_id);
+       role = await findRoleInProgram(2, programId[0].program_id);
       response.program_assessment = await programAssessmentById(
         assessmentIdParsed
       );
