@@ -8,7 +8,6 @@ import {
   FacilitatorAssessmentSubmissionsSummary,
   CurriculumAssessment,
   ProgramAssessment,
-  SubmittedAssessment,
   Question,
 } from '../models';
 
@@ -109,14 +108,21 @@ export const getProgramIdByCurriculumAssessmentId = async (
     .select('program_id')
     .where({ assessment_id: curriculumAssessmentId });
 };
-
 export const getProgramIdByProgramAssessmentId = async (
-  programAssessmentId: number
-) => {
-  return await db('program_assessments')
+  assessmentId: number
+): Promise<number> => {
+  const [programId] = await db<number>('program_assessment')
     .select('program_id')
-    .where({ id: programAssessmentId });
+    .where('assessment_id', assessmentId);
+  return programId as number;
 };
+// export const getProgramIdByProgramAssessmentId = async (
+//   programAssessmentId: number
+// ) : Promise<number>=> {
+//   return await db('program_assessments')
+//     .select('program_id')
+//     .where({ id: programAssessmentId });
+// };
 /**
  * a function that returns list of program IDs based on given proncipalId
  * @param {number} principalId - The restrict result to programs with which the user is associated

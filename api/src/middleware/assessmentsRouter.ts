@@ -9,10 +9,9 @@ import {
   findRoleInProgram,
   programAssessmentById,
   submissionDetails,
-  getCurriculumAssessmentById
-  
+  getCurriculumAssessmentById,
 } from '../services/assessmentService';
-import { AssessmentWithSummary,Assessment, SavedAssessment,AssessmentSubmission } from '../models';
+import { AssessmentWithSummary, SavedAssessment } from '../models';
 
 const assessmentsRouter = Router();
 
@@ -273,6 +272,7 @@ assessmentsRouter.delete('/:assessmentId', async (req, res, next) => {
 assessmentsRouter.get(
   '/:assessmentId/submissions/:submissionId',
   async (req, res, next) => {
+    const { principalId } = req.session;
     const { assessmentId, submissionId } = req.params;
     const assessmentIdParsed = Number(assessmentId);
     const submissionIdParsed = Number(submissionId);
@@ -292,19 +292,19 @@ assessmentsRouter.get(
     }
     let programId;
 
-    let curriculumAssessment, programAssessment, AssessmentSubmitted,role;
+    let curriculumAssessment, programAssessment, AssessmentSubmitted, role;
 
     const response: SavedAssessment = {
       curriculum_assessment: curriculumAssessment,
       program_assessment: programAssessment,
-      submission: AssessmentSubmitted ,
-       principal_program_role:role
+      submission: AssessmentSubmitted,
+      principal_program_role: role,
     };
 
     try {
       programId = await getProgramIdByProgramAssessmentId(assessmentIdParsed);
 
-       role = await findRoleInProgram(2, programId[0].program_id);
+      role = await findRoleInProgram(principalId, programId);
       response.program_assessment = await programAssessmentById(
         assessmentIdParsed
       );

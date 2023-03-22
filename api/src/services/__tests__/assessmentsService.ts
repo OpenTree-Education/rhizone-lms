@@ -20,7 +20,7 @@ describe('assessmentsService', () => {
       mockQuery(
         'select `program_id` from `program_assessments` where `id` = ?',
         [programAssessmentId],
-        [{ program_id: programId }]
+        [programId]
       );
 
       expect(
@@ -73,7 +73,15 @@ describe('assessmentsService', () => {
       const isAnswersIncluded = true;
 
       const facilitatorPrincipalId = 3;
-
+      const test = {
+        id: 1,
+        assessment_id: 1,
+        principal_id: facilitatorPrincipalId,
+        assessment_submission_state: 'Graded',
+        score: 1,
+        opened_at: '2023-02-09 12:00:00',
+        submitted_at: '2023-02-09 13:23:45',
+      };
       const assessmentSubmissionGraded = {
         id: 1,
         assessment_id: 1,
@@ -95,7 +103,8 @@ describe('assessmentsService', () => {
       mockQuery(
         'select *, `assessment_submission_states`.`title` as `assessment_submission_state` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submission_states`.`id` = `assessment_submission_state_id` where `assessment_submissions`.`id` = ?'[
           submissionId
-        ]
+        ],
+        [test]
       );
       mockQuery(
         'select * from `assessment_responses` where `submission_id` = ?'[
@@ -117,6 +126,18 @@ describe('assessmentsService', () => {
       // const questionId = 1;
       const facilitatorPrincipalId = 3;
       const curriculumAssessmentId = 1;
+      const test = {
+        id: curriculumAssessmentId,
+        title: 'Assignment 1: React',
+        assessment_type: 'test',
+        description: 'Your assignment for week 1 learning.',
+        max_score: 10,
+        max_num_submissions: 1,
+        time_limit: 120,
+        curriculum_id: 3,
+        activity_id: 97,
+        principal_id: facilitatorPrincipalId,
+      };
       const curriculumAssessmentWithCorrectAnswer = {
         id: curriculumAssessmentId,
         title: 'Assignment 1: React',
@@ -154,11 +175,11 @@ describe('assessmentsService', () => {
       mockQuery(
         'select `id`, `title`, `max_score`, `max_num_submissions`, `time_limit`, `curriculum_id`, `activity_id`, `principal_id`, `created_at`, `updated_at` from `curriculum_assessments` where `id` = ?',
         [assessmentId],
-        curriculumAssessmentWithCorrectAnswer
+        [test]
       );
       mockQuery(
         'select * from `assessment_questions` where `assessment_id` = ?',
-        [curriculumAssessmentWithCorrectAnswer.questions[0].assessment_id]
+        [test.id]
       );
       mockQuery(
         'select * from `assessment_answers` where `assessment_id` = ?',

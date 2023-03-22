@@ -393,9 +393,9 @@ describe('assessmentsRouter', () => {
 
   describe('DELETE /:assessmentId', () => {
     it('should delete a program assessment in the system if logged-in user is facilitator of that program', done => {
-      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
-        exampleProgramAssessment.program_id,
-      ]);
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue(
+        exampleProgramAssessment.program_id
+      );
       mockFindRoleInProgram.mockResolvedValue('Facilitator');
 
       mockPrincipalId(facilitatorPrincipalId);
@@ -417,9 +417,9 @@ describe('assessmentsRouter', () => {
     });
 
     it('should return an error if logged-in user is not a facilitator of that program', done => {
-      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
-        exampleProgramAssessment.program_id,
-      ]);
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue(
+        exampleProgramAssessment.program_id
+      );
       mockFindRoleInProgram.mockResolvedValue('Participant');
 
       mockPrincipalId(participantPrincipalId);
@@ -821,7 +821,9 @@ describe('assessmentsRouter', () => {
     it('should update the state of a submission', done => {
       const response = { behaviour: 'Updates the state of a submission' };
       appAgent
-        .put(`/${exampleAssessmentId}/submissions/${exampleSubmissionId}`)
+        .put(
+          `/${exampleProgramAssessment.id}/submissions/${exampleAssessmentSubmissionSubmitted.id}`
+        )
         .expect(200, itemEnvelope(response), err => {
           done(err);
         });
@@ -832,7 +834,7 @@ describe('assessmentsRouter', () => {
     it('should create a new draft submission', done => {
       const response = { behaviour: 'Creates a new draft submission' };
       appAgent
-        .get(`/${exampleAssessmentId}/submissions/new`)
+        .get(`/${exampleProgramAssessment.id}/submissions/new`)
         .expect(200, itemEnvelope(response), err => {
           done(err);
         });
