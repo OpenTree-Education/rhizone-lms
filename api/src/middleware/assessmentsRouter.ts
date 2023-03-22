@@ -2,19 +2,12 @@ import { Router } from 'express';
 import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
 // import { BadRequestError, ValidationError } from './httpErrors';
 import {
-  // createAssessment,
-  // updateAssessmentById,
-  // deleteAssessmentById,
-  getCurriculumAssessmentById,
-  // getAssessmentsSummary,
-  // getCurriculumAssessmentBasedOnRole,
-  findRoleInProgram,
-  getAssessmentsForProgram,
-  principalEnrolledPrograms,
-  getParticipantAssessmentSubmissionsSummary,
-  getFacilitatorAssessmentSubmissionsSummary,
+  createAssessment,
+  updateAssessmentById,
+  deleteAssessmentById,
+  getCurriculumAssessmentBasedOnRole,
 } from '../services/assessmentService';
-import { AssessmentSummary } from '../models';
+import { AssessmentWithSummary } from '../models';
 
 const assessmentsRouter = Router();
 assessmentsRouter.get('/', async (req, res, next) => {
@@ -22,7 +15,7 @@ assessmentsRouter.get('/', async (req, res, next) => {
 
   try {
     const programIds = await principalEnrolledPrograms(principalId);
-    const assessmentsSummaryList: AssessmentSummary[] = [];
+    const assessmentsSummaryList: AssessmentWithSummary[] = [];
 
     if (programIds.length === 0) {
       res.json(collectionEnvelope(assessmentsSummaryList, 0));

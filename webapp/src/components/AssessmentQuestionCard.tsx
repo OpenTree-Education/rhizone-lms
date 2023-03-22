@@ -36,17 +36,20 @@ const AssessmentQuestionCard = ({
   );
   const handleChangeSingleChoice = (event: SelectChangeEvent) => {
     setSingleChoiceValue(Number(event.target.value));
-    handleUpdatedResponse(assessmentQuestion.id!, Number(event.target.value));
+    handleUpdatedResponse(
+      Number(assessmentQuestion.id),
+      Number(event.target.value)
+    );
   };
 
   const [responseTextValue, setResponseTextValue] = useState(
-    submissionResponse.response ? submissionResponse.response : ''
+    submissionResponse.response_text ? submissionResponse.response_text : ''
   );
 
   const handleChangeText = (event: React.ChangeEvent<HTMLInputElement>) => {
     setResponseTextValue(event.target.value);
     handleUpdatedResponse(
-      assessmentQuestion.id!,
+      Number(assessmentQuestion.id),
       undefined,
       event.target.value === '' ? undefined : event.target.value
     );
@@ -93,7 +96,7 @@ const AssessmentQuestionCard = ({
             disabled={disabled}
           >
             {question.answers?.map(answer => (
-              <MenuItem value={answer.id} key={answer.id}>
+              <MenuItem value={Number(answer.id)} key={Number(answer.id)}>
                 {answer.title}
                 {answer.description && (
                   <Typography variant="caption">
