@@ -22,9 +22,9 @@ import {
   CurriculumAssessment,
   AssessmentSubmissionsSummary,
   FacilitatorAssessmentSubmissionsSummary,
-  AssessmentSummary,
+  AssessmentWithSummary,
   ProgramAssessment,
-  SubmittedAssessment,
+  SavedAssessment,
 } from '../../../src/models';
 
 jest.mock('../../services/assessmentService');
@@ -86,7 +86,7 @@ const facilitatorAssessmentSubmissionsSummary: FacilitatorAssessmentSubmissionsS
     num_ungraded_submissions: 2,
   };
 
-const emptyAssessmentsSummaryList: AssessmentSummary[] = [];
+const emptyAssessmentsSummaryList: AssessmentWithSummary[] = [];
 
 describe('assessmentsRouter', () => {
   const appAgent = createAppAgentForRouter(assessmentsRouter);
@@ -247,6 +247,7 @@ describe('assessmentsRouter', () => {
       appAgent.get('/').expect(500, done);
     });
   });
+
   describe('POST /', () => {
     it('should create a new assessment', done => {
       const response = { behaviour: 'Creates a new assessment' };
@@ -292,6 +293,7 @@ describe('assessmentsRouter', () => {
         done(err);
       });
     });
+
     it('should return an error if logged-in user is not a facilitator of that program', done => {
       const principalId = 4;
       const assessmentId = 1;
@@ -430,10 +432,11 @@ describe('assessmentsRouter', () => {
         ],
       };
 
-      const response: SubmittedAssessment = {
+      const response: SavedAssessment = {
         curriculum_assessment: curriculumAssessmentWithCorrectAnswer,
         program_assessment: programAssessment,
         submission: assessmentSubmission,
+        principal_program_role: 'facilitator',
       };
 
       mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
@@ -477,10 +480,11 @@ describe('assessmentsRouter', () => {
     });
 
     it('should show a participant their submission information for an in-progress assessment without including the correct answers', done => {
-      const response: SubmittedAssessment = {
+      const response: SavedAssessment = {
         curriculum_assessment: curriculumAssessment,
         program_assessment: programAssessment,
         submission: assessmentSubmissionInProgress,
+        principal_program_role: 'participant',
       };
 
       mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
@@ -570,10 +574,11 @@ describe('assessmentsRouter', () => {
           },
         ],
       };
-      const response: SubmittedAssessment = {
+      const response: SavedAssessment = {
         curriculum_assessment: curriculumAssessmentWithoutCorrectAnswer,
         program_assessment: programAssessment,
         submission: assessmentSubmission,
+        principal_program_role: 'participant',
       };
 
       mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
@@ -667,10 +672,11 @@ describe('assessmentsRouter', () => {
           },
         ],
       };
-      const response: SubmittedAssessment = {
+      const response: SavedAssessment = {
         curriculum_assessment: curriculumAssessmentWithCorrectAnswer,
         program_assessment: programAssessment,
         submission: assessmentSubmissionGraded,
+        principal_program_role: 'participant',
       };
       mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
         { program_id: programAssessment.program_id },
