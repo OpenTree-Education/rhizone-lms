@@ -1,4 +1,4 @@
-import { OpenedAssessment } from '../types/api';
+import { SavedAssessment } from '../types/api';
 
 export enum SubmissionStatus {
   Submitted = 'Submitted',
@@ -112,7 +112,7 @@ export const assessmentListPageExampleData = [
   },
 ];
 
-export const assessmentDetailPageExampleData: OpenedAssessment = {
+export const assessmentDetailPageExampleData: SavedAssessment = {
   curriculum_assessment: {
     id: 2,
     title: 'SQL Quiz',
@@ -260,4 +260,5 @@ export const assessmentDetailPageExampleData: OpenedAssessment = {
     assessment_submission_state: 'Opened',
     opened_at: new Date().toISOString().slice(0, 19).replace('T', ' ') + 'Z',
   },
+  principal_program_role: 'participant',
 };
