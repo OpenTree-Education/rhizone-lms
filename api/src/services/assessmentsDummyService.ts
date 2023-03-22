@@ -132,7 +132,7 @@ export const insertToAssessmentSubmissions = async (
       matchingAsssessmentSubmissionsRows[0].id,
       response.question_id,
       response.answer_id,
-      response.response,
+      response.response_text,
       response.score,
       response.grader_response
     );
@@ -168,7 +168,7 @@ export const insertToAssessmentResponses = async (
   submissionId: number,
   questionId: number,
   answerId?: number,
-  response?: string,
+  responseText?: string,
   score?: number,
   graderResponse?: string
 ): Promise<AssessmentResponse> => {
@@ -180,7 +180,7 @@ export const insertToAssessmentResponses = async (
     await db(`assessment_responses`)
       .update({
         answer_id: answerId,
-        response: response,
+        response: responseText,
         score: score,
         grader_response: graderResponse,
       })
@@ -191,7 +191,7 @@ export const insertToAssessmentResponses = async (
       submission_id: submissionId,
       question_id: questionId,
       answer_id: answerId,
-      response: response,
+      response: responseText,
       score: score,
       grader_response: graderResponse,
     });
@@ -207,7 +207,7 @@ export const insertToAssessmentResponses = async (
     submission_id: submissionId,
     question_id: questionId,
     answer_id: answerId,
-    response: response,
+    response_text: responseText,
     score: score,
     grader_response: graderResponse,
   };

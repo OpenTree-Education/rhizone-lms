@@ -5,11 +5,9 @@ import {
   createAssessment,
   updateAssessmentById,
   deleteAssessmentById,
-  // getCurriculumAssessmentById,
-  getAssessmentsSummary,
   getCurriculumAssessmentBasedOnRole,
 } from '../services/assessmentService';
-import { AssessmentSummary } from '../models';
+import { AssessmentWithSummary } from '../models';
 
 const assessmentsRouter = Router();
 
@@ -18,11 +16,11 @@ const assessmentsRouter = Router();
 // - participant: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for their submissions to this program assessment
 // - facilitator: CurriculumAssessment (not including 'questions' member), ProgramAssessment, and AssessmentSubmissionsSummary for all submissions to this program assessment
 assessmentsRouter.get('/', async (req, res, next) => {
-  const { principalId } = req.session;
+  // const { principalId } = req.session;
 
-  let assessments: AssessmentSummary[];
+  let assessments: AssessmentWithSummary[];
   try {
-    assessments = await getAssessmentsSummary(principalId);
+    // assessments = await getAssessmentsSummary(principalId);
   } catch (error) {
     next(error);
     return;
