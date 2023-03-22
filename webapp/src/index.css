@@ -35,3 +35,7 @@ code {
     font-size: 0.75rem;
   }
 }
+
+.editor-display-box {
+  min-width: 600px;
+}
