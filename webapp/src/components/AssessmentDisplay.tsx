@@ -2,11 +2,11 @@ import React, { useRef, useEffect } from 'react';
 
 import { Alert, AlertTitle, Card, Grid } from '@mui/material';
 
-import { OpenedAssessment } from '../types/api.d';
+import { SavedAssessment } from '../types/api.d';
 import AssessmentQuestionCard from './AssessmentQuestionCard';
 
 interface AssessmentsDisplayProps {
-  assessment: OpenedAssessment;
+  assessment: SavedAssessment;
   handleUpdatedResponse: (
     questionId: number,
     answerId?: number,

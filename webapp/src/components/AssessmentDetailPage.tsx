@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 
 import { assessmentDetailPageExampleData } from '../assets/data';
-import { OpenedAssessment, AssessmentResponse } from '../types/api';
+import { AssessmentResponse, SavedAssessment } from '../types/api';
 
 import AssessmentMetadataBar from './AssessmentMetadataBar';
 import AssessmentDisplay from './AssessmentDisplay';
@@ -33,7 +33,7 @@ const AssessmentDetailPage = () => {
   //   assessment => assessment.id === assessmentIdNumber
   // );
 
-  const [assessment, setAssessment] = useState<OpenedAssessment>();
+  const [assessment, setAssessment] = useState<SavedAssessment>();
   const [numOfAnsweredQuestions, setNumOfAnsweredQuestions] = useState(0);
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
   const [endTime, setEndTime] = useState<Date | null>(null);
