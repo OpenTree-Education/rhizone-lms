@@ -4,7 +4,7 @@ import {
   Answer,
   AssessmentResponse,
   AssessmentSubmission,
-  AssessmentSubmissionsSummary,
+  ParticipantAssessmentSubmissionsSummary,
   FacilitatorAssessmentSubmissionsSummary,
   CurriculumAssessment,
   ProgramAssessment,
@@ -82,7 +82,8 @@ export const getAssessmentSubmissionsSummary = async (
   programAssessmentId: number,
   principalId?: number
 ): Promise<
-  AssessmentSubmissionsSummary | FacilitatorAssessmentSubmissionsSummary
+  | ParticipantAssessmentSubmissionsSummary
+  | FacilitatorAssessmentSubmissionsSummary
 > => {
   const programId = await getProgramIdByProgramAssessmentId(
     programAssessmentId
@@ -253,7 +254,7 @@ export const getTotalNumSubmissons = async (
 export const getAssessmentSubmissions = async (
   principalId: number,
   assessmentId: number
-): Promise<AssessmentSubmissionsSummary> => {
+): Promise<ParticipantAssessmentSubmissionsSummary> => {
   const [highestState] = await db<string>('assessment_submission')
     .select('assessment_submission_states_title')
     .join(
@@ -345,8 +346,8 @@ export const getCurriculumAssessmentBasedOnRole = async (
 export const getCurriculumAssessmentById = async (
   // curriculumAssessmentId: number,
   assessmentId: number,
-  isQuestionsIncluded?: boolean,
-  isAnswersIncluded?: boolean
+  questionsAndAllAnswersIncluded?: boolean,
+  questionsAndCorrectAnswersIncluded?: boolean
 ): Promise<CurriculumAssessment> => {
   const [curriculumAssessmentDetails] = await db<CurriculumAssessment>(
     'curriculum_assessments'
@@ -365,10 +366,10 @@ export const getCurriculumAssessmentById = async (
     )
     .where('id', assessmentId);
 
-  if (isQuestionsIncluded == true) {
+  if (questionsAndAllAnswersIncluded == true) {
     const questions = await getQuestionsByCurriculumAssessmentId(
       assessmentId,
-      isAnswersIncluded
+      questionsAndCorrectAnswersIncluded
     );
 
     curriculumAssessmentDetails.questions = questions.filter(
@@ -390,14 +391,14 @@ export const getCurriculumAssessmentById = async (
 
 export const getQuestionsByCurriculumAssessmentId = async (
   assessmentId: number,
-  isAnswersIncluded: boolean
+  includeCorrectAnswers: boolean
 ) => {
   const questions = await db<Question>('assessment_questions')
     .select('*')
     .where({ assessment_id: assessmentId });
   console.log('questions', questions);
   //'id', 'title', 'description', 'correct_answer_id'
-  if (isAnswersIncluded == true) {
+  if (includeCorrectAnswers === true) {
     const questionIds = questions.map(element => element.id);
     const answers = await db<Answer>('assessment_answers')
       .select('*')
