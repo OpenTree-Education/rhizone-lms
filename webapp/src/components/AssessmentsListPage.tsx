@@ -29,7 +29,7 @@ import LockClockOutlinedIcon from '@mui/icons-material/LockClockOutlined';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 
 import { formatDateTime } from '../helpers/dateTime';
-import { assessmentList } from '../assets/dataAssessment';
+import { assessmentListPageExampleData as assessmentList } from '../assets/data';
 
 enum StatusTab {
   All,
@@ -78,26 +78,26 @@ const TableRowWrapper = (props: TableRowWrapperProps) => {
   }
 };
 
-const renderButtonByStatus = (status: string) => {
+const renderButtonByStatus = (status: string, id: number) => {
+  let buttonLabel;
   switch (status) {
     case 'Active':
-      return (
-        <Button variant="contained" size="small">
-          Start
-        </Button>
-      );
+      buttonLabel = 'Start';
+      break;
     case 'Submitted':
     case 'Graded':
     case 'Unsubmitted':
-      return (
-        <Button variant="contained" size="small">
-          View
-        </Button>
-      );
+      buttonLabel = 'View';
+      break;
     case 'Upcoming':
     default:
-      return null;
   }
+  return (
+    //TODO: use the latest submission id
+    <Button variant="contained" size="small" href={`/assessments/${id}/1`}>
+      {buttonLabel}
+    </Button>
+  );
 };
 
 const renderChipByStatus = (status: string) => {
@@ -163,7 +163,7 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   },
 }));
 
-const AssessmentsPage = () => {
+const AssessmentsListPage = () => {
   const [currentStatusTab, setCurrentStatusTab] = useState(StatusTab.Active);
   const handleChangeTab = (
     event: React.SyntheticEvent,
@@ -215,11 +215,7 @@ const AssessmentsPage = () => {
             icon={
               <StyledBadge
                 badgeContent={
-                  assessmentList.filter(
-                    x =>
-                      x.submissions_summary.assessment_submission_state ===
-                      'Active'
-                  ).length
+                  assessmentList.filter(x => x.status === 'Active').length
                 }
                 color="primary"
               >
@@ -332,10 +328,8 @@ const AssessmentsPage = () => {
             {assessmentList.map(assessment => (
               <TableRowWrapper
                 statusTab={currentStatusTab}
-                status={
-                  assessment.submissions_summary.assessment_submission_state
-                }
-                key={assessment.submissions_summary.id}
+                status={assessment.status}
+                key={assessment.id}
               >
                 <TableCellWrapper
                   statusTab={currentStatusTab}
@@ -346,9 +340,9 @@ const AssessmentsPage = () => {
                     StatusTab.Upcoming,
                   ]}
                 >
-                  <strong>{assessment.curriculum_assessment.title}</strong>
+                  <strong>{assessment.title}</strong>
                   <br />
-                  {assessment.curriculum_assessment.description}
+                  {assessment.description}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
@@ -359,40 +353,34 @@ const AssessmentsPage = () => {
                     StatusTab.Upcoming,
                   ]}
                 >
-                  {assessment.curriculum_assessment.activity_id}
+                  {assessment.type}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
                   index={[StatusTab.All, StatusTab.Active]}
                 >
-                  {formatDateTime(assessment.program_assessment.due_date)}
+                  {formatDateTime(assessment.dueDate)}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
                   index={[StatusTab.Past]}
                 >
-                  {(assessment.submissions_summary
-                    .assessment_submission_state === 'Submitted' ||
-                    assessment.submissions_summary
-                      .assessment_submission_state === 'Graded') &&
-                    formatDateTime(
-                      assessment.submissions_summary.most_recent_submitted_date
-                    )}
+                  {(assessment.status === 'Submitted' ||
+                    assessment.status === 'Graded') &&
+                    assessment.submittedDate &&
+                    formatDateTime(assessment.submittedDate)}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
                   index={[StatusTab.All, StatusTab.Past]}
                 >
-                  {assessment.submissions_summary.highest_score !== -1 &&
-                    assessment.submissions_summary.highest_score}
+                  {assessment.score !== -1 && assessment.score}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
                   index={[StatusTab.Upcoming]}
                 >
-                  {formatDateTime(
-                    assessment.program_assessment.available_after
-                  )}
+                  {formatDateTime(assessment.availableDate)}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
@@ -403,17 +391,13 @@ const AssessmentsPage = () => {
                     StatusTab.Upcoming,
                   ]}
                 >
-                  {renderChipByStatus(
-                    assessment.submissions_summary.assessment_submission_state
-                  )}
+                  {renderChipByStatus(assessment.status)}
                 </TableCellWrapper>
                 <TableCellWrapper
                   statusTab={currentStatusTab}
                   index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}
                 >
-                  {renderButtonByStatus(
-                    assessment.submissions_summary.assessment_submission_state
-                  )}
+                  {renderButtonByStatus(assessment.status, assessment.id)}
                 </TableCellWrapper>
               </TableRowWrapper>
             ))}
@@ -424,4 +408,4 @@ const AssessmentsPage = () => {
   );
 };
 
-export default AssessmentsPage;
+export default AssessmentsListPage;

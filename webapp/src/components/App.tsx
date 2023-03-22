@@ -11,8 +11,10 @@ import ReflectionsPage from './ReflectionsPage';
 import RequireAuth from './RequireAuth';
 import SessionContext from './SessionContext';
 import ProgramsPage from './ProgramsPage';
-import AssessmentsPage from './AssessmentsPage';
+import AssessmentsListPage from './AssessmentsListPage';
+import AssessmentsDetailPage from './AssessmentDetailPage';
 import AssessmentEditorPage from './AssessmentEditorPage';
+
 
 const App = () => {
   const { isAuthenticated } = useContext(SessionContext);
@@ -65,7 +67,15 @@ const App = () => {
             path="/assessments"
             element={
               <RequireAuth>
-                <AssessmentsPage />
+                <AssessmentsListPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/assessments/:assessmentId/:submissionId"
+            element={
+              <RequireAuth>
+                <AssessmentsDetailPage />
               </RequireAuth>
             }
           />
