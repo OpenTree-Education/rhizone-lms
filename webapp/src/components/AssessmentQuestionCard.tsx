@@ -43,7 +43,7 @@ const AssessmentQuestionCard = ({
   };
 
   const [responseTextValue, setResponseTextValue] = useState(
-    submissionResponse.response ? submissionResponse.response : ''
+    submissionResponse.response_text ? submissionResponse.response_text : ''
   );
 
   const handleChangeText = (event: React.ChangeEvent<HTMLInputElement>) => {

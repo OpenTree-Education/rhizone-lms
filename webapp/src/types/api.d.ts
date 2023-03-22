@@ -166,7 +166,7 @@ export interface AssessmentResponse extends Entity {
   submission_id: number;
   question_id: number;
   answer_id?: number;
-  response?: string;
+  response_text?: string;
   score?: number;
   grader_response?: string;
 }
