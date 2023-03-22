@@ -108,7 +108,7 @@ const AssessmentSubmitBar = ({
                     )!.answer_id ||
                     assessment.submission.responses!.find(
                       a => a.question_id === question.id
-                    )!.response
+                    )!.response_text
                       ? 'primary'
                       : 'default'
                   }`}

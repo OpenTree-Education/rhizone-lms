@@ -106,7 +106,7 @@ export interface AssessmentResponse {
   submission_id: number;
   question_id: number;
   answer_id?: number;
-  response?: string;
+  response_text?: string;
   score?: number;
   grader_response?: string;
 }
@@ -122,7 +122,7 @@ export interface AssessmentSubmission {
   responses?: AssessmentResponse[];
 }
 
-export interface AssessmentSubmissionsSummary {
+export interface ParticipantAssessmentSubmissionsSummary {
   principal_id: number;
   highest_state: string;
   total_num_submissions: number;
@@ -165,7 +165,7 @@ interface Assessment {
 }
 
 export interface AssessmentWithSummary extends Assessment {
-  participant_submissions_summary?: AssessmentSubmissionsSummary;
+  participant_submissions_summary?: ParticipantAssessmentSubmissionsSummary;
   facilitator_submissions_summary?: FacilitatorAssessmentSubmissionsSummary;
 }
 
