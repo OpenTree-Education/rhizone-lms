@@ -273,6 +273,7 @@ assessmentsRouter.get(
   '/:assessmentId/submissions/:submissionId',
   async (req, res, next) => {
     const { principalId } = req.session;
+
     const { assessmentId, submissionId } = req.params;
     const assessmentIdParsed = Number(assessmentId);
     const submissionIdParsed = Number(submissionId);
@@ -302,9 +303,10 @@ assessmentsRouter.get(
     };
 
     try {
-      programId = await getProgramIdByProgramAssessmentId(assessmentIdParsed);
+      [programId] = await getProgramIdByProgramAssessmentId(assessmentIdParsed);
 
-      role = await findRoleInProgram(principalId, programId);
+      role = await findRoleInProgram(principalId, programId.program_id);
+      console.log('rer', role);
       response.program_assessment = await programAssessmentById(
         assessmentIdParsed
       );

@@ -108,21 +108,21 @@ export const getProgramIdByCurriculumAssessmentId = async (
     .select('program_id')
     .where({ assessment_id: curriculumAssessmentId });
 };
-export const getProgramIdByProgramAssessmentId = async (
-  assessmentId: number
-): Promise<number> => {
-  const [programId] = await db<number>('program_assessment')
-    .select('program_id')
-    .where('assessment_id', assessmentId);
-  return programId as number;
-};
 // export const getProgramIdByProgramAssessmentId = async (
 //   programAssessmentId: number
-// ) : Promise<number>=> {
-//   return await db('program_assessments')
+// ): Promise<number> => {
+//   const [programId] = await db<number>('program_assessments')
 //     .select('program_id')
-//     .where({ id: programAssessmentId });
+//     .where({ 'id',programAssessmentId });
+//   return programId as number;
 // };
+export const getProgramIdByProgramAssessmentId = async (
+  programAssessmentId: number
+) => {
+  return await db('program_assessments')
+    .select('program_id')
+    .where({ id: programAssessmentId });
+};
 /**
  * a function that returns list of program IDs based on given proncipalId
  * @param {number} principalId - The restrict result to programs with which the user is associated
@@ -312,6 +312,7 @@ export const findRoleInProgram = async (
   principalId: number,
   programId: number
 ) => {
+  console.log('ts', principalId, programId);
   const [roleName] = await db('program_participants')
     .select('program_participant_roles.title')
     .join(
@@ -320,7 +321,7 @@ export const findRoleInProgram = async (
       'program_participants.role_id'
     )
     .where({ principal_id: principalId, program_id: programId });
-
+  console.log('rolr', roleName);
   return roleName;
 };
 
@@ -479,7 +480,7 @@ export const submissionDetails = async (
   ) {
     assessmentSubmission.score = null;
   }
-
+  console.log('faf', assessmentSubmission);
   return assessmentSubmission;
 };
 

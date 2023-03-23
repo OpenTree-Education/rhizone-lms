@@ -393,9 +393,9 @@ describe('assessmentsRouter', () => {
 
   describe('DELETE /:assessmentId', () => {
     it('should delete a program assessment in the system if logged-in user is facilitator of that program', done => {
-      mockGetProgramIdByProgramAssessmentId.mockResolvedValue(
-        exampleProgramAssessment.program_id
-      );
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        exampleProgramAssessment.program_id,
+      ]);
       mockFindRoleInProgram.mockResolvedValue('Facilitator');
 
       mockPrincipalId(facilitatorPrincipalId);
@@ -417,9 +417,9 @@ describe('assessmentsRouter', () => {
     });
 
     it('should return an error if logged-in user is not a facilitator of that program', done => {
-      mockGetProgramIdByProgramAssessmentId.mockResolvedValue(
-        exampleProgramAssessment.program_id
-      );
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        exampleProgramAssessment.program_id,
+      ]);
       mockFindRoleInProgram.mockResolvedValue('Participant');
 
       mockPrincipalId(participantPrincipalId);
@@ -451,9 +451,9 @@ describe('assessmentsRouter', () => {
         principal_program_role: 'Facilitator',
       };
 
-      mockGetProgramIdByProgramAssessmentId.mockResolvedValue(
-        exampleProgramAssessment.id
-      );
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        exampleProgramAssessment.id,
+      ]);
       mockFindRoleInProgram.mockResolvedValue('Facilitator');
       mockProgramAssessmentById.mockResolvedValue(exampleProgramAssessment);
       mockGetCurriculumAssessmentById.mockResolvedValue(
@@ -475,7 +475,7 @@ describe('assessmentsRouter', () => {
           );
           expect(mockFindRoleInProgram).toHaveBeenCalledWith(
             facilitatorPrincipalId,
-            exampleProgramAssessment.program_id
+            [exampleProgramAssessment.program_id]
           );
           expect(mockProgramAssessmentById).toHaveBeenCalledWith(
             exampleProgramAssessment.id
@@ -502,9 +502,9 @@ describe('assessmentsRouter', () => {
         principal_program_role: 'Participant',
       };
 
-      mockGetProgramIdByProgramAssessmentId.mockResolvedValue(
-        exampleProgramAssessment.id
-      );
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        exampleProgramAssessment.id,
+      ]);
       mockFindRoleInProgram.mockResolvedValue('Participant');
       mockProgramAssessmentById.mockResolvedValue(exampleProgramAssessment);
       mockGetCurriculumAssessmentById.mockResolvedValue(
@@ -557,9 +557,9 @@ describe('assessmentsRouter', () => {
         principal_program_role: 'Participant',
       };
 
-      mockGetProgramIdByProgramAssessmentId.mockResolvedValue(
-        exampleProgramAssessment.id
-      );
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        exampleProgramAssessment.id,
+      ]);
       mockFindRoleInProgram.mockResolvedValue('Participant');
       mockProgramAssessmentById.mockResolvedValue(exampleProgramAssessment);
       mockGetCurriculumAssessmentById.mockResolvedValue(
@@ -612,9 +612,9 @@ describe('assessmentsRouter', () => {
         principal_program_role: 'participant',
       };
 
-      mockGetProgramIdByProgramAssessmentId.mockResolvedValue(
-        exampleProgramAssessment.id
-      );
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        exampleProgramAssessment.id,
+      ]);
       mockFindRoleInProgram.mockResolvedValue('Participant');
       mockProgramAssessmentById.mockResolvedValue(exampleProgramAssessment);
       mockGetCurriculumAssessmentById.mockResolvedValue(
@@ -711,9 +711,9 @@ describe('assessmentsRouter', () => {
     it('should respond with a NotFoundError if the submission id was not found in the database ', done => {
       const submissionId = 8;
 
-      mockGetProgramIdByProgramAssessmentId.mockResolvedValue(
-        exampleProgramAssessment.id
-      );
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        exampleProgramAssessment.id,
+      ]);
       mockFindRoleInProgram.mockResolvedValue('Participant');
       mockProgramAssessmentById.mockResolvedValue(exampleProgramAssessment);
       mockGetCurriculumAssessmentById.mockResolvedValue(
@@ -755,9 +755,9 @@ describe('assessmentsRouter', () => {
     });
 
     it('should respond with an Unauthorized Error if the logged-in principal id is not the same as the principal id of the submission id and is not the principal id of the program facilitator', done => {
-      mockGetProgramIdByProgramAssessmentId.mockResolvedValue(
-        exampleProgramAssessment.id
-      );
+      mockGetProgramIdByProgramAssessmentId.mockResolvedValue([
+        exampleProgramAssessment.id,
+      ]);
       mockFindRoleInProgram.mockResolvedValue('Participant');
       mockProgramAssessmentById.mockResolvedValue(exampleProgramAssessment);
       mockGetCurriculumAssessmentById.mockResolvedValue(
