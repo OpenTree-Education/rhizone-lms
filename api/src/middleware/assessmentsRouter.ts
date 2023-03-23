@@ -1,13 +1,24 @@
 import { Router } from 'express';
-import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
+import {
+  itemEnvelope,
+  collectionEnvelope,
+  errorEnvelope,
+} from './responseEnvelope';
 // import { BadRequestError, ValidationError } from './httpErrors';
 import {
   createAssessment,
   updateAssessmentById,
   deleteAssessmentById,
   getCurriculumAssessmentBasedOnRole,
+  principalEnrolledPrograms,
+  findRoleInProgram,
+  getAssessmentsForProgram,
+  getCurriculumAssessmentById,
+  getParticipantAssessmentSubmissionsSummary,
+  getFacilitatorAssessmentSubmissionsSummary,
 } from '../services/assessmentService';
 import { AssessmentWithSummary } from '../models';
+import { BadRequestError } from './httpErrors';
 
 const assessmentsRouter = Router();
 assessmentsRouter.get('/', async (req, res, next) => {
@@ -27,7 +38,7 @@ assessmentsRouter.get('/', async (req, res, next) => {
       const programAssessments = await getAssessmentsForProgram(programId);
 
       for (const programAssessment of programAssessments) {
-        if (roleInProgram === 'participant') {
+        if (roleInProgram === 'Participant') {
           assessmentsSummaryList.push({
             curriculum_assessment: await getCurriculumAssessmentById(
               programAssessment.assessment_id,
@@ -35,15 +46,16 @@ assessmentsRouter.get('/', async (req, res, next) => {
               false
             ),
             program_assessment: programAssessment,
-            submissions_summary:
+            participant_submissions_summary:
               await getParticipantAssessmentSubmissionsSummary(
                 programAssessment.assessment_id,
                 principalId
               ),
+            principal_program_role: roleInProgram,
           });
         }
 
-        if (roleInProgram === 'facilitator') {
+        if (roleInProgram === 'Facilitator') {
           assessmentsSummaryList.push({
             curriculum_assessment: await getCurriculumAssessmentById(
               programAssessment.assessment_id,
@@ -51,10 +63,11 @@ assessmentsRouter.get('/', async (req, res, next) => {
               false
             ),
             program_assessment: programAssessment,
-            submissions_summary:
+            facilitator_submissions_summary:
               await getFacilitatorAssessmentSubmissionsSummary(
                 programAssessment.assessment_id
               ),
+            principal_program_role: roleInProgram,
           });
         }
       }
@@ -65,7 +78,7 @@ assessmentsRouter.get('/', async (req, res, next) => {
     );
   } catch (error) {
     next(error);
-    return;
+    // return res.json(errorEnvelope('Internal server error.'));
   }
 });
 
@@ -256,25 +269,25 @@ assessmentsRouter.get('/', async (req, res, next) => {
 // });
 
 //TODO: logic should be changed to facilitator/participant role based on permission
-// Deletes” an assessment in the system
-// assessmentsRouter.delete('/:assessmentId', async (req, res, next) => {
-//   const { assessmentId } = req.params;
-//   const assessmentIdNum = Number(assessmentId);
+//Deletes” an assessment in the system
+assessmentsRouter.delete('/:assessmentId', async (req, res, next) => {
+  const { assessmentId } = req.params;
+  const assessmentIdNum = Number(assessmentId);
 
-//   if (!Number.isInteger(assessmentIdNum) || assessmentIdNum < 1) {
-//     next(
-//       new BadRequestError(`"${assessmentIdNum}" is not a valid assessment id.`)
-//     );
-//     return;
-//   }
-//   try {
-//     await deleteAssessmentById(assessmentIdNum);
-//   } catch (error) {
-//     next(error);
-//     return;
-//   }
-//   res.status(204).send();
-// });
+  if (!Number.isInteger(assessmentIdNum) || assessmentIdNum < 1) {
+    next(
+      new BadRequestError(`"${assessmentIdNum}" is not a valid assessment id.`)
+    );
+    return;
+  }
+  try {
+    await deleteAssessmentById(assessmentIdNum);
+  } catch (error) {
+    next(error);
+    return;
+  }
+  res.status(204).send();
+});
 //TODO: fixed the router
 // Outgoing:
 // - participants: CurriculumAssessment (with 'questions' and 'answers' but not the correct answers), ProgramAssessment, and a newly-created AssessmentSubmission
