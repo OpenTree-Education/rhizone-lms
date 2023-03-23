@@ -14,6 +14,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
 import { assessmentDetailPageExampleData } from '../assets/data';
+import { renderChipByStatus } from './AssessmentsListPage';
 import { SubmittedAssessment } from '../types/api';
 import { formatDateTime } from '../helpers/dateTime';
 
@@ -147,15 +148,15 @@ const AssessmentSubmissionsListPage = () => {
             <Table>
               <TableHead>
                 <TableRow>
+                  {isMentor ? (
+                    <StyledTableCell>Student Id</StyledTableCell>
+                  ) : null}
                   <StyledTableCell>Submission ID</StyledTableCell>
                   <StyledTableCell>State</StyledTableCell>
                   <StyledTableCell>Opened At</StyledTableCell>
                   <StyledTableCell>Submitted At</StyledTableCell>
                   <StyledTableCell>Score</StyledTableCell>
                   <StyledTableCell>Action</StyledTableCell>
-                  {isMentor ? (
-                    <StyledTableCell>Student Id</StyledTableCell>
-                  ) : null}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -164,11 +165,18 @@ const AssessmentSubmissionsListPage = () => {
                     key={submission.id}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
+                    {isMentor ? (
+                      <StyledTableCell>
+                        {submission.principal_id}
+                      </StyledTableCell>
+                    ) : null}
                     <StyledTableCell component="th" scope="submission">
                       {submission.id}
                     </StyledTableCell>
                     <StyledTableCell>
-                      {submission.assessment_submission_state}
+                      {renderChipByStatus(
+                        submission.assessment_submission_state
+                      )}
                     </StyledTableCell>
                     <StyledTableCell>
                       {formatDateTime(submission.opened_at)}
@@ -179,19 +187,34 @@ const AssessmentSubmissionsListPage = () => {
                     </StyledTableCell>
                     <StyledTableCell>{submission.score}</StyledTableCell>
                     <StyledTableCell>
-                      <Button
-                        variant="contained"
-                        size="small"
-                        href={`/assessments/${assessmentIdNumber}/${submission.id}`}
-                      >
-                        Review
-                      </Button>
+                      {isMentor &&
+                        (submission.assessment_submission_state === 'Graded' ? (
+                          <Button
+                            variant="contained"
+                            size="small"
+                            href={`/assessments/${assessmentIdNumber}/${submission.id}`}
+                          >
+                            View
+                          </Button>
+                        ) : submission.assessment_submission_state ===
+                          'Submitted' ? (
+                          <Button
+                            variant="contained"
+                            size="small"
+                            href={`/assessments/${assessmentIdNumber}/${submission.id}`}
+                          >
+                            Grade
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="contained"
+                            size="small"
+                            href={`/assessments/${assessmentIdNumber}/${submission.id}`}
+                          >
+                            Review
+                          </Button>
+                        ))}
                     </StyledTableCell>
-                    {isMentor ? (
-                      <StyledTableCell>
-                        {submission.principal_id}
-                      </StyledTableCell>
-                    ) : null}
                   </StyledTableRow>
                 ))}
               </TableBody>

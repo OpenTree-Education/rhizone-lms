@@ -100,7 +100,7 @@ const renderButtonByStatus = (status: string, id: number) => {
   );
 };
 
-const renderChipByStatus = (status: string) => {
+export const renderChipByStatus = (status: string) => {
   switch (status) {
     case 'Active':
       return (
