@@ -187,8 +187,8 @@ const AssessmentSubmissionsListPage = () => {
                     </StyledTableCell>
                     <StyledTableCell>{submission.score}</StyledTableCell>
                     <StyledTableCell>
-                      {isMentor &&
-                        (submission.assessment_submission_state === 'Graded' ? (
+                      {isMentor ? (
+                        submission.assessment_submission_state === 'Graded' ? (
                           <Button
                             variant="contained"
                             size="small"
@@ -196,8 +196,7 @@ const AssessmentSubmissionsListPage = () => {
                           >
                             View
                           </Button>
-                        ) : submission.assessment_submission_state ===
-                          'Submitted' ? (
+                        ) : (
                           <Button
                             variant="contained"
                             size="small"
@@ -205,15 +204,16 @@ const AssessmentSubmissionsListPage = () => {
                           >
                             Grade
                           </Button>
-                        ) : (
-                          <Button
-                            variant="contained"
-                            size="small"
-                            href={`/assessments/${assessmentIdNumber}/${submission.id}`}
-                          >
-                            Review
-                          </Button>
-                        ))}
+                        )
+                      ) : (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          href={`/assessments/${assessmentIdNumber}/${submission.id}`}
+                        >
+                          Review
+                        </Button>
+                      )}
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}
