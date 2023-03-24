@@ -1,4 +1,5 @@
 import { Answer, AssessmentResponse, AssessmentSubmission, CurriculumAssessment, FacilitatorAssessmentSubmissionsSummary, ParticipantAssessmentSubmissionsSummary, ProgramAssessment, Question } from '../models';
+import db from './db';
 
 // Helper functions
 
@@ -194,7 +195,25 @@ export const deleteProgramAssessment = async (programAssessmentId: number): Prom
  * @param {number} programAssessmentId - The row ID of the program_assessments table for a given program assessment.
  * @returns {Promise<ProgramAssessment>} The ProgramAssessment representation of that program assessment, or null if no matching program assessment was found.
  */
-export const findProgramAssessment = async (programAssessmentId: number): Promise<ProgramAssessment> => { return; };
+export const findProgramAssessment = async (programAssessmentId: number): Promise<ProgramAssessment> => {
+  const matchingProgramAssessmentsRows = await db('program_assessments').select('program_id', 'assessment_id', 'available_after', 'due_date').where('id', programAssessmentId);
+  
+  if (matchingProgramAssessmentsRows.length === 0) {
+    return null;
+  }
+  
+  const [programAssessmentRow] = matchingProgramAssessmentsRows;
+  
+  const programAssessment: ProgramAssessment = {
+    id: programAssessmentId,
+    program_id: programAssessmentRow.program_id,
+    assessment_id: programAssessmentRow.assessment_id,
+    available_after: programAssessmentRow.available_after,
+    due_date: programAssessmentRow.due_date
+  };
+  
+  return programAssessment;
+};
 
 /**
  * Finds a single program assessment submission by its row ID, if it exists in the assessment_submissions table. Optionally returns the submission's saved responses and the grading information for the submission and its responses.
