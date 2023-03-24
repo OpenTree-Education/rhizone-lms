@@ -9,7 +9,7 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import UpcomingOutlinedIcon from '@mui/icons-material/UpcomingOutlined';
 import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined';
 
-import { AssessmentSummary } from '../types/api';
+import { AssessmentWithSummary } from '../types/api';
 import { StatusTab } from './AssessmentsListPage';
 
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
@@ -20,7 +20,7 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
 }));
 
 interface AssessmentsListTabsProps {
-  assessmentList: AssessmentSummary[];
+  assessmentList: AssessmentWithSummary[];
   currentStatusTab: StatusTab;
   handleChangeTab: (
     event: React.SyntheticEvent,
@@ -51,8 +51,8 @@ const AssessmentsListTabs = ({
               badgeContent={
                 assessmentList.filter(
                   x =>
-                    x.submissions_summary.assessment_submission_state ===
-                    'Active'
+                    x.participant_submissions_summary
+                      .assessment_submission_state === 'Active'
                 ).length
               }
               color="primary"

@@ -19,7 +19,7 @@ import LockClockOutlinedIcon from '@mui/icons-material/LockClockOutlined';
 import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined';
 
 import { formatDateTime } from '../helpers/dateTime';
-import { AssessmentSummary } from '../types/api';
+import { AssessmentWithSummary } from '../types/api';
 import { StatusTab } from './AssessmentsListPage';
 
 interface TableCellWrapperProps {
@@ -116,7 +116,7 @@ const renderChipByStatus = (status: string) => {
 
 interface AssessmentListTableProps {
   currentStatusTab: StatusTab;
-  matchingAssessmentList: AssessmentSummary[];
+  matchingAssessmentList: AssessmentWithSummary[];
 }
 
 const AssessmentsListTable = ({
@@ -240,22 +240,24 @@ const AssessmentsListTable = ({
                 statusTab={currentStatusTab}
                 index={[StatusTab.Past]}
               >
-                {(assessment.submissions_summary.assessment_submission_state ===
-                  'Submitted' ||
-                  assessment.submissions_summary.assessment_submission_state ===
-                    'Graded' ||
-                  assessment.submissions_summary.assessment_submission_state ===
-                    'Expired') &&
+                {(assessment.participant_submissions_summary
+                  .assessment_submission_state === 'Submitted' ||
+                  assessment.participant_submissions_summary
+                    .assessment_submission_state === 'Graded' ||
+                  assessment.participant_submissions_summary
+                    .assessment_submission_state === 'Expired') &&
                   formatDateTime(
-                    assessment.submissions_summary.most_recent_submitted_date
+                    assessment.participant_submissions_summary
+                      .most_recent_submitted_date
                   )}
               </TableCellWrapper>
               <TableCellWrapper
                 statusTab={currentStatusTab}
                 index={[StatusTab.All, StatusTab.Past]}
               >
-                {assessment.submissions_summary.highest_score !== -1 &&
-                  assessment.submissions_summary.highest_score}
+                {assessment.participant_submissions_summary.highest_score !==
+                  -1 &&
+                  assessment.participant_submissions_summary.highest_score}
               </TableCellWrapper>
               <TableCellWrapper
                 statusTab={currentStatusTab}
@@ -273,7 +275,8 @@ const AssessmentsListTable = ({
                 ]}
               >
                 {renderChipByStatus(
-                  assessment.submissions_summary.assessment_submission_state
+                  assessment.participant_submissions_summary
+                    .assessment_submission_state
                 )}
               </TableCellWrapper>
               <TableCellWrapper
@@ -282,8 +285,9 @@ const AssessmentsListTable = ({
               >
                 {assessment.program_assessment.id &&
                   renderButtonByStatus(
-                    assessment.submissions_summary.assessment_submission_state,
-                    assessment.program_assessment.id
+                    assessment.participant_submissions_summary
+                      .assessment_submission_state,
+                    Number(assessment.program_assessment.id)
                   )}
               </TableCellWrapper>
             </TableRow>

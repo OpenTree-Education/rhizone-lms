@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Stack } from '@mui/material';
 
 import { assessmentListPageExampleData } from '../assets/data';
-import { AssessmentSummary } from '../types/api';
+import { AssessmentWithSummary } from '../types/api';
 import AssessmentsListTable from './AssessmentsListTable';
 import AssessmentsListTabs from './AssessmentsListTabs';
 
@@ -16,9 +16,11 @@ export enum StatusTab {
 
 const AssessmentsListPage = () => {
   const [currentStatusTab, setCurrentStatusTab] = useState(StatusTab.Active);
-  const [assessmentList, setAssessmentList] = useState<AssessmentSummary[]>([]);
+  const [assessmentList, setAssessmentList] = useState<AssessmentWithSummary[]>(
+    []
+  );
   const [assessmentListSubset, setAssessmentListSubset] = useState<
-    AssessmentSummary[]
+    AssessmentWithSummary[]
   >([]);
 
   useEffect(() => {
@@ -34,20 +36,20 @@ const AssessmentsListPage = () => {
       setAssessmentListSubset(
         assessmentList.filter(
           assessment =>
-            assessment.submissions_summary.assessment_submission_state ===
-              'Graded' ||
-            assessment.submissions_summary.assessment_submission_state ===
-              'Submitted' ||
-            assessment.submissions_summary.assessment_submission_state ===
-              'Expired'
+            assessment.participant_submissions_summary
+              .assessment_submission_state === 'Graded' ||
+            assessment.participant_submissions_summary
+              .assessment_submission_state === 'Submitted' ||
+            assessment.participant_submissions_summary
+              .assessment_submission_state === 'Expired'
         )
       );
     else
       setAssessmentListSubset(
         assessmentList.filter(
           assessment =>
-            assessment.submissions_summary.assessment_submission_state ===
-            StatusTab[currentStatusTab]
+            assessment.participant_submissions_summary
+              .assessment_submission_state === StatusTab[currentStatusTab]
         )
       );
   }, [currentStatusTab, assessmentList]);

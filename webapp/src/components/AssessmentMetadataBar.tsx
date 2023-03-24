@@ -17,11 +17,11 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 
-import { OpenedAssessment } from '../types/api.d';
+import { SavedAssessment } from '../types/api.d';
 import { formatDateTime } from '../helpers/dateTime';
 
 interface AssessmentMetadataBarProps {
-  assessment: OpenedAssessment;
+  assessment: SavedAssessment;
   endTime: Date;
   secondsRemaining: number | null;
   submissionDisabled: boolean;

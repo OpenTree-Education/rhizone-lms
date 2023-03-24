@@ -2,11 +2,11 @@ import React, { useRef, useEffect } from 'react';
 
 import { Alert, AlertTitle, Card, Grid } from '@mui/material';
 
-import { OpenedAssessment } from '../types/api.d';
+import { SavedAssessment } from '../types/api.d';
 import AssessmentQuestionCard from './AssessmentQuestionCard';
 
 interface AssessmentsDisplayProps {
-  assessment: OpenedAssessment;
+  assessment: SavedAssessment;
   handleUpdatedResponse: (
     questionId: number,
     answerId?: number,
@@ -35,7 +35,18 @@ const AssessmentDisplay = ({
   }, [assessment.submission.assessment_submission_state]);
 
   if (typeof assessment.curriculum_assessment.questions === 'undefined') {
-    return <></>;
+    return (
+      <Card
+        sx={{
+          margin: '1em 2em',
+        }}
+      >
+        <Alert severity="error">
+          <AlertTitle>Sorry!</AlertTitle>
+          This assessment contains no questions.
+        </Alert>
+      </Card>
+    );
   }
 
   return (
@@ -60,7 +71,7 @@ const AssessmentDisplay = ({
         </Card>
       </Grid>
       {assessment.curriculum_assessment.questions
-        .sort(q => q.sort_order)
+        .sort(question => question.sort_order)
         .map(question => (
           <Grid item key={question.id} xs={10} sx={{ margin: '1em auto' }}>
             <AssessmentQuestionCard
