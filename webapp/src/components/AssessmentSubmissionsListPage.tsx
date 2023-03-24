@@ -15,7 +15,7 @@ import Paper from '@mui/material/Paper';
 
 import { assessmentDetailPageExampleData } from '../assets/data';
 import { renderChipByStatus } from './AssessmentsListPage';
-import { SubmittedAssessment } from '../types/api';
+import { AssessmentWithSubmissions } from '../types/api';
 import { formatDateTime } from '../helpers/dateTime';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -80,12 +80,12 @@ const AssessmentSubmissionsListPage = () => {
   const { assessmentId } = useParams();
   const assessmentIdNumber = Number(assessmentId);
 
-  const [isMentor, setIsMentor] = useState(false);
-  const [assessment, setAssessment] = useState<SubmittedAssessment>();
+  const [isFacilitator, setIsFacilitator] = useState(false);
+  const [assessment, setAssessment] = useState<AssessmentWithSubmissions>();
 
   useEffect(() => {
     const filteredSubmissions = () => {
-      if (!isMentor) {
+      if (!isFacilitator) {
         return submissionsExample.filter(sub => sub.principal_id === 3);
       }
       return submissionsExample;
@@ -97,8 +97,9 @@ const AssessmentSubmissionsListPage = () => {
       program_assessment: assessmentDetailPageExampleData.program_assessment,
 
       submissions: filteredSubmissions(),
+      principal_program_role: isFacilitator ? 'Facilitator' : 'Participant',
     });
-  }, [isMentor]);
+  }, [isFacilitator]);
 
   if (!assessment || typeof assessment.curriculum_assessment === 'undefined') {
     return (
@@ -131,14 +132,14 @@ const AssessmentSubmissionsListPage = () => {
             <FormControlLabel
               control={
                 <Switch
-                  checked={isMentor}
+                  checked={isFacilitator}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    setIsMentor(event.target.checked);
+                    setIsFacilitator(event.target.checked);
                   }}
-                  name="isMentor"
+                  name="isFacilitator"
                 />
               }
-              label="Mentor mode"
+              label="Facilitator mode"
             />
           </FormGroup>
         </Grid>
@@ -148,8 +149,8 @@ const AssessmentSubmissionsListPage = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  {isMentor ? (
-                    <StyledTableCell>Student Id</StyledTableCell>
+                  {isFacilitator ? (
+                    <StyledTableCell>Participant ID</StyledTableCell>
                   ) : null}
                   <StyledTableCell>Submission ID</StyledTableCell>
                   <StyledTableCell>State</StyledTableCell>
@@ -165,7 +166,7 @@ const AssessmentSubmissionsListPage = () => {
                     key={submission.id}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
-                    {isMentor ? (
+                    {isFacilitator ? (
                       <StyledTableCell>
                         {submission.principal_id}
                       </StyledTableCell>
@@ -187,7 +188,7 @@ const AssessmentSubmissionsListPage = () => {
                     </StyledTableCell>
                     <StyledTableCell>{submission.score}</StyledTableCell>
                     <StyledTableCell>
-                      {isMentor ? (
+                      {isFacilitator ? (
                         submission.assessment_submission_state === 'Graded' ? (
                           <Button
                             variant="contained"
