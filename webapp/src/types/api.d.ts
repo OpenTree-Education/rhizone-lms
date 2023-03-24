@@ -136,8 +136,13 @@ export interface ParticipantActivityForProgram {
   participant_activities: ParticipantActivityCompletionStatus[];
 }
 
-export interface Answer {
-  id?: number;
+export interface ProgramParticipantCompletionSummary {
+  program: Program;
+  principal_id: number;
+  total_score: number;
+}
+
+export interface Answer extends Entity {
   question_id?: number;
   title: string;
   description?: string;
@@ -145,8 +150,7 @@ export interface Answer {
   correct_answer?: boolean;
 }
 
-export interface Question {
-  id?: number;
+export interface Question extends Entity {
   assessment_id?: number;
   title: string;
   description?: string;
@@ -157,8 +161,41 @@ export interface Question {
   sort_order: number;
 }
 
-export interface CurriculumAssessment {
-  id?: number;
+export interface AssessmentResponse extends Entity {
+  assessment_id: number;
+  submission_id: number;
+  question_id: number;
+  answer_id?: number;
+  response_text?: string;
+  score?: number;
+  grader_response?: string;
+}
+
+export interface AssessmentSubmission extends Entity {
+  assessment_id: number;
+  principal_id: number;
+  assessment_submission_state: string;
+  score?: number;
+  opened_at: string;
+  submitted_at?: string;
+  responses?: AssessmentResponse[];
+}
+
+export interface AssessmentSubmissionsSummary {
+  principal_id: number;
+  highest_state: string;
+  total_num_submissions: number;
+  most_recent_submitted_date?: string;
+  highest_score?: number;
+}
+
+export interface FacilitatorAssessmentSubmissionsSummary {
+  num_participants_with_submissions: number;
+  num_program_participants: number;
+  num_ungraded_submissions: number;
+}
+
+export interface CurriculumAssessment extends Entity {
   title: string;
   assessment_type: string;
   description?: string;
@@ -171,72 +208,28 @@ export interface CurriculumAssessment {
   questions?: Question[];
 }
 
-export interface AssessmentSubmissionsSummary {
-  principal_id: number;
-  highest_state: string;
-  most_recent_submitted_date: string;
-  total_num_submissions: number;
-  highest_score?: number;
-}
-
-export interface ProgramAssessment {
-  id?: number;
+export interface ProgramAssessment extends Entity {
   program_id: number;
   assessment_id?: number;
   available_after: string;
   due_date: string;
 }
 
-export interface FacilitatorAssessmentSubmissionsSummary {
-  num_participants_with_submissions: number;
-  num_program_participants: number;
-  num_ungraded_submissions: number;
-}
-
-export interface AssessmentSummary {
+interface Assessment {
   curriculum_assessment: CurriculumAssessment;
   program_assessment: ProgramAssessment;
-  submissions_summary:
-    | AssessmentSubmissionsSummary
-    | FacilitatorAssessmentSubmissionsSummary;
+  principal_program_role: string;
 }
 
-export interface AssessmentResponse {
-  id?: number;
-  assessment_id: number;
-  submission_id: number;
-  question_id: number;
-  answer_id?: number;
-  response?: string;
-  score?: number;
-  grader_response?: string;
+export interface AssessmentWithSummary extends Assessment {
+  participant_submissions_summary?: AssessmentSubmissionsSummary;
+  facilitator_submissions_summary?: FacilitatorAssessmentSubmissionsSummary;
 }
 
-export interface AssessmentSubmission {
-  id?: number;
-  assessment_id: number;
-  principal_id: number;
-  assessment_submission_state: string;
-  score?: number;
-  opened_at: string;
-  submitted_at?: string;
-  responses?: AssessmentResponse[];
-}
-
-export interface OpenedAssessment {
-  curriculum_assessment: CurriculumAssessment;
-  program_assessment: ProgramAssessment;
+export interface SavedAssessment extends Assessment {
   submission: AssessmentSubmission;
 }
 
-export interface SubmittedAssessment {
-  curriculum_assessment: CurriculumAssessment;
-  program_assessment: ProgramAssessment;
+export interface AssessmentWithSubmissions extends Assessment {
   submissions: AssessmentSubmission[];
-}
-
-export interface ProgramParticipantCompletionSummary {
-  program: Program;
-  principal_id: number;
-  total_score: number;
 }

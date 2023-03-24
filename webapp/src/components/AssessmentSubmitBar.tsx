@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 
-import { OpenedAssessment } from '../types/api.d';
+import { SavedAssessment, Question } from '../types/api.d';
 
 const LinearProgressWithLabel = (
   numOfAnsweredQuestions: number,
@@ -46,7 +46,7 @@ const StyledNumChip = styled(Chip)(() => ({
 }));
 
 interface AssessmentSubmitBarProps {
-  assessment: OpenedAssessment;
+  assessment: SavedAssessment;
   numOfAnsweredQuestions: number;
   setShowSubmitDialog: Dispatch<SetStateAction<boolean>>;
   submitButtonDisabled: boolean;
@@ -96,8 +96,8 @@ const AssessmentSubmitBar = ({
         <ListItem>
           <Box sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
             {assessment.curriculum_assessment
-              .questions!.sort(question => question.sort_order)
-              .map(question => (
+              .questions!.sort((question: Question) => question.sort_order)
+              .map((question: Question) => (
                 <StyledNumChip
                   sx={{ marginLeft: '1px', marginBottom: '3px' }}
                   label={question.sort_order}
@@ -108,7 +108,7 @@ const AssessmentSubmitBar = ({
                     )!.answer_id ||
                     assessment.submission.responses!.find(
                       a => a.question_id === question.id
-                    )!.response
+                    )!.response_text
                       ? 'primary'
                       : 'default'
                   }`}
