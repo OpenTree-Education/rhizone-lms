@@ -9,7 +9,7 @@ import {
   findRoleInProgram,
   principalEnrolledPrograms,
   getAssessmentsForProgram,
-} from '../assessmentService';
+} from '../assessmentService.ts.old';
 import { mockQuery } from '../mockDb';
 
 const principalId = 3;

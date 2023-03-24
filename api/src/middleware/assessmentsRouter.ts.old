@@ -16,18 +16,26 @@ import {
   getCurriculumAssessmentById,
   getParticipantAssessmentSubmissionsSummary,
   getFacilitatorAssessmentSubmissionsSummary,
-} from '../services/assessmentService';
+} from '../services/assessmentService.ts.old';
 import { AssessmentWithSummary } from '../models';
 import { BadRequestError } from './httpErrors';
 
 const assessmentsRouter = Router();
 assessmentsRouter.get('/', async (req, res, next) => {
+  
   const { principalId } = req.session;
+
+   if (!Number.isInteger(principalId) || principalId < 1) {
+      next(
+        new BadRequestError(`"${principalId}" is not a valid participant id.`)
+      );
+      return
+    }
 
   try {
     const programIds = await principalEnrolledPrograms(principalId);
     const assessmentsSummaryList: AssessmentWithSummary[] = [];
-
+  
     if (programIds.length === 0) {
       res.json(collectionEnvelope(assessmentsSummaryList, 0));
       return;
@@ -78,7 +86,6 @@ assessmentsRouter.get('/', async (req, res, next) => {
     );
   } catch (error) {
     next(error);
-    // return res.json(errorEnvelope('Internal server error.'));
   }
 });
 

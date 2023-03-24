@@ -81,11 +81,12 @@ export const getAssessmentSubmissionsSummary = async (
 export const getProgramIdByProgramAssessmentId = async (
   assessmentId: number
 ): Promise<number> => {
-  const [programId] = await db<number>('program_assessment')
-    .select('program_id')
-    .where('assessment_id', assessmentId);
-  return programId as number;
+  const [programId] = await db('program_assessments') 
+    .where('id', assessmentId)
+    .select('program_id');
+  return programId.program_id as number;
 };
+
 
 /**
  * a function that returns list of program IDs based on given principalId
@@ -97,7 +98,9 @@ export const principalEnrolledPrograms = async (principalId: number) => {
   const enrolledProgramsList = await db('program_participants')
     .select('program_id')
     .where({ principal_id: principalId });
+    console.log(enrolledProgramsList)
   return enrolledProgramsList;
+  
   // .map(
   //   enrolledProgram => enrolledProgram.program_id //???? why we should map
   // );
@@ -185,7 +188,6 @@ export const getFacilitatorAssessmentSubmissionsSummary = async (
 };
 
 // *******  Helpers for FacilitatorAssessmentSubmissionsSummary  **************//
-
 /**
  *
  * A function that returns the number of program participants for a given program assessment ID.
@@ -296,13 +298,17 @@ export const findRoleInProgram = async (
   programId: number
 ) => {
   const [roleName] = await db('program_participants')
-    .select('program_participant_roles.title')
+  .where({ principal_id: principalId, program_id: programId })
     .join(
       'program_participant_roles',
       'program_participant_roles.id',
       'program_participants.role_id'
     )
-    .where({ principal_id: principalId, program_id: programId });
+     .select('program_participant_roles.title')
+     if (roleName && Object.keys(roleName).includes("title")) {
+      return 
+     }
+
   return roleName.title ?? null;
 };
 
@@ -406,24 +412,40 @@ export const getQuestionsByCurriculumAssessmentId = async (
  * @param {number} programAssessmentId - The assessment ID for the specified program assessment
  *
  */
-export const programAssessmentById = async (
+export const programAssessment = async (
   programAssessmentId: number
-): Promise<ProgramAssessment> => {
-  const [findProgramAssessmentById] = await db<ProgramAssessment>(
-    'program_assessments'
-  )
-    .select(
-      'id',
-      'program_id',
-      'assessment_id',
-      'available_after',
-      'due_date',
-      'created_at',
-      'updated_at'
-    )
-    .where({ id: programAssessmentId });
-  return findProgramAssessmentById;
+): Promise<ProgramAssessment | null> => {
+  const matchingProgramAssessment = await findProgramAssessment(programAssessmentId)
+  return matchingProgramAssessment ?? null;
 };
+
+
+/**
+ * Fetches a single program assessment from the database, or null if not found.
+ *
+ * @param {number} programAssessmentId - The row ID of the program_assessments table for a given program assessment
+ * @returns {ProgramAssessment | null} - The ProgramAssessment representation of that program assessment, or null if it was not found.
+ */
+export const findProgramAssessment = async (programAssessmentId: number): Promise<ProgramAssessment | null> => {
+  const matchingProgramAssessmentsRows = await db('program_assessments').select('program_id', 'assessment_id', 'available_after', 'due_date').where('id', programAssessmentId);
+  
+  if (matchingProgramAssessmentsRows.length === 0) {
+    return null;
+  }
+  
+  const [programAssessmentRow] = matchingProgramAssessmentsRows;
+  
+  const programAssessment: ProgramAssessment = {
+    id: programAssessmentId,
+    program_id: programAssessmentRow.program_id,
+    assessment_id: programAssessmentRow.assessment_id,
+    available_after: programAssessmentRow.available_after,
+    due_date: programAssessmentRow.due_date
+  };
+  
+  return programAssessment;
+};
+
 
 /**
  * A function to return details about your own submissions or all participants' submissions,
@@ -466,7 +488,6 @@ export const submissionDetails = async (
  * @param {number} principalId - restrict result to programs with which the user is associated
  * @returns {CurriculumAssessment}
  */
-
 export const listAssessmentsByParticipant = async (principalId: number) => {
   const assessmentsList = await db<CurriculumAssessment>(
     'curriculum_assessments'
