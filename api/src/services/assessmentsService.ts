@@ -1,6 +1,14 @@
-import { Answer, AssessmentDetails, AssessmentResponse, AssessmentSubmission, CurriculumAssessment, FacilitatorAssessmentSubmissionsSummary, ParticipantAssessmentSubmissionsSummary, ProgramAssessment, Question } from '../models';
+import { Answer, AssessmentResponse, AssessmentSubmission, CurriculumAssessment, FacilitatorAssessmentSubmissionsSummary, ParticipantAssessmentSubmissionsSummary, ProgramAssessment, Question } from '../models';
 
 // Helper functions
+
+/**
+ * Determines whether or not a specific program assessment submission has expired and is no longer allowed to be updated by the participant.
+ * 
+ * @param assessmentSubmissionId - The row ID of the assessment_submissions table for a given program assessment submission.
+ * @returns {Promise<boolean>} If true, a participant should be prevented from submitting any updates to their program assessment submission, other than to mark it as "Expired" instead of "Opened" or "In Progress".
+ */
+const assessmentSubmissionExpired = async (assessmentSubmissionId: number): Promise<boolean> => { return; }
 
 /**
  * Calculates the total number of participants in a program that have started or completed *any* submission for a given program assessment.
@@ -80,7 +88,7 @@ const listAssessmentQuestionAnswers = async (questionId: number, correctAnswersI
 /**
  * Lists all questions of a given curriculum assessment. Based on specified boolean parameter, will also return metadata indicating the correct answer option. Note that for free response questions, this function will not return any answers unless correctAnswersIncluded is set to true.
  *
- * @param {number} curriculumAssessmentId - The row ID of the curriculum_assessments table for a given program assessment.
+ * @param {number} curriculumAssessmentId - The row ID of the curriculum_assessments table for a given curriculum assessment.
  * @param {boolean} [correctAnswersIncluded] - Optional specifier to determine whether or not the correct answer information should be included or removed from the return value.
  * @returns {Promise<Question[]>} An array of Question objects, including or omitting the correct answer metadata as specified.
  */
@@ -89,7 +97,7 @@ const listAssessmentQuestions = async (curriculumAssessmentId: number, correctAn
 /**
  * Lists all responses from a given assessment submission by a program participant. Based on specified boolean parameter, will also include the score and any grader response as well.
  *
- * @param {number} submissionId - The row ID of the assessment_submissions table for a given program assessment.
+ * @param {number} submissionId - The row ID of the assessment_submissions table for a given program assessment submission.
  * @param {boolean} [gradingsIncluded] - Optional specifier to determine whether or not the grading information (score, grader response) should be included or removed from the return value.
  * @returns {Promise<AssessmentResponse[]>} An array of AssessmentResponse objects, including or omitting the grading information as specified.
  */
@@ -123,128 +131,146 @@ const updateSubmissionResponse = async (assessmentResponse: AssessmentResponse):
 // Callable from router
 
 /**
+ * Gathers the relevant information for constructing a FacilitatorAssessmentSubmissionsSummary for a given program assessment.
  *
- *
- * @param {number} programAssessmentId -
- * @returns {Promise<FacilitatorAssessmentSubmissionsSummary>}
+ * @param {number} programAssessmentId - The row ID of the program_assessments table for a given program assessment.
+ * @returns {Promise<FacilitatorAssessmentSubmissionsSummary>} The program assessment submissions summary information for use by a program facilitator.
  */
 export const constructFacilitatorAssessmentSummary = async (programAssessmentId: number): Promise<FacilitatorAssessmentSubmissionsSummary> => { return; };
 
 /**
+ * Gathers the relevant information for constructing a ParticipantAssessmentSubmissionsSummary for a given participant principal ID and a given program assessment.
  *
- *
- * @param {number} participantPrincipalId -
- * @param {number} programAssessmentId -
- * @returns {Promise<ParticipantAssessmentSubmissionsSummary>}
+ * @param {number} participantPrincipalId - The row ID of the principals table that corresponds with a given program participant.
+ * @param {number} programAssessmentId - The row ID of the program_assessments table for a given program assessment.
+ * @returns {Promise<ParticipantAssessmentSubmissionsSummary>} The program assessment submissions summary information for use by a program participant.
  */
 export const constructParticipantAssessmentSummary = async (participantPrincipalId: number, programAssessmentId: number): Promise<ParticipantAssessmentSubmissionsSummary> => { return; };
 
 /**
+ * Begins a new program assessment submission for a program participant, if they have not exceeded the maximum number of allowed submissions for that assessment and no other assessment submissions are in progress by that program participant for that program assessment.
  *
- *
- * @param {AssessmentDetails} assessmentDetails -
- * @returns {Promise<AssessmentDetails>}
+ * @param {number} participantPrincipalId - The row ID of the principals table that corresponds with a given program participant.
+ * @param {number} programAssessmentId - The row ID of the program_assessments table for a given program assessment.
+ * @returns {Promise<AssessmentSubmission>} An AssessmentSubmission object constructed from the inserted row in the assessment_submissions table.
  */
-export const createAssessment = async (assessmentDetails: AssessmentDetails): Promise<AssessmentDetails> => { return; };
+export const createAssessmentSubmission = async (participantPrincipalId: number, programAssessmentId: number): Promise<AssessmentSubmission> => { return; };
 
 /**
+ * Creates a new curriculum assessment in the curriculum_assessments table, linked with a given curriculum activity.
  *
- *
- * @param {AssessmentSubmission} assessmentSubmission -
- * @returns {Promise<AssessmentSubmission>}
+ * @param {CurriculumAssessment} curriculumAssessment - The CurriculumAssessment object for the new curriculum assessment data to be inserted.
+ * @returns {Promise<CurriculumAssessment>} The updated CurriculumAssessment object that was handed to us, but with row ID specified.
  */
-export const createAssessmentSubmission = async (assessmentSubmission: AssessmentSubmission): Promise<AssessmentSubmission> => { return; };
+export const createCurriculumAssessment = async (curriculumAssessment: CurriculumAssessment): Promise<CurriculumAssessment> => { return; };
 
 /**
+ * Creates a new program assessment in the program_assessments table, linked with a given curriculum assessment.
  *
+ * @param {ProgramAssessment} programAssessment - The ProgramAssessment object for the new program assessment data to be inserted.
+ * @returns {Promise<ProgramAssessment>} The updated ProgramAssessment object that was handed to us, but with row ID specified.
+ */
+export const createProgramAssessment = async (programAssessment: ProgramAssessment): Promise<ProgramAssessment> => { return; };
+
+/**
+ * Deletes a given curriculum assessment, all associated program assessments, and all associated questions and answers for a given curriculum assessment. This function fails to execute if there has ever been an assessment submission for the questions and answers in this curriculum assessment.
  *
- * @param {number} curriculumAssessmentId -
- * @returns {Promise<void>}
+ * @param {number} curriculumAssessmentId - The row ID of the curriculum_assessments table for a given curriculum assessment.
+ * @returns {Promise<void>} Returns nothing if the deletion was successful.
  */
 export const deleteCurriculumAssessment = async (curriculumAssessmentId: number): Promise<void> => { return; };
 
 /**
+ * Deletes a given program assessment, but leaves the curriculum assessment, its questions, and its answers intact. This function fails to execute if there has ever been an assessment submission for this program assessment by a program participant.
  *
- *
- * @param {number} programAssessmentId -
- * @returns {Promise<void>}
+ * @param {number} programAssessmentId - The row ID of the program_assessments table for a given program assessment.
+ * @returns {Promise<void>} Returns nothing if the deletion was successful.
  */
 export const deleteProgramAssessment = async (programAssessmentId: number): Promise<void> => { return; };
 
 /**
+ * Finds a single program assessment by its row ID, if it exists in the program_assessments table.
  *
- *
- * @param {number} programAssessmentId -
- * @returns {Promise<ProgramAssessment | null>}
+ * @param {number} programAssessmentId - The row ID of the program_assessments table for a given program assessment.
+ * @returns {Promise<ProgramAssessment>} The ProgramAssessment representation of that program assessment, or null if no matching program assessment was found.
  */
-export const findProgramAssessment = async (programAssessmentId: number): Promise<ProgramAssessment | null> => { return; };
+export const findProgramAssessment = async (programAssessmentId: number): Promise<ProgramAssessment> => { return; };
 
 /**
+ * Finds a single program assessment submission by its row ID, if it exists in the assessment_submissions table. Optionally returns the submission's saved responses and the grading information for the submission and its responses.
  *
- *
- * @param {number} assessmentSubmissionId -
- * @param {boolean} [responsesIncluded] -
- * @param {boolean} [gradesIncluded] -
- * @returns {Promise<AssessmentSubmission | null>}
+ * @param {number} assessmentSubmissionId - The row ID of the assessment_submissions table for a given program assessment submission.
+ * @param {boolean} [responsesIncluded] - Optional specifier to determine whether or not the assessment responses will be included in the returned object.
+ * @param {boolean} [gradesIncluded] - Optional specifier to override the default grading information return behavior, such as if a program facilitator was retrieving the assessment submission. If this parameter is not specified, the default behavior will take over: the grading information will only be released if the assessment submission is in the "Graded" state.
+ * @returns {Promise<AssessmentSubmission>} The AssessmentSubmission representation of that program assessment submission, or null if no matching program assessment submission was found.
  */
-export const getAssessmentSubmission = async (assessmentSubmissionId: number, responsesIncluded?: boolean, gradesIncluded?: boolean): Promise<AssessmentSubmission | null> => { return; };
+export const getAssessmentSubmission = async (assessmentSubmissionId: number, responsesIncluded?: boolean, gradesIncluded?: boolean): Promise<AssessmentSubmission> => { return; };
 
 /**
+ * Finds a single curriculum assessment by its row ID, if it exists in the curriculum_assessments table. Optionally returns the questions and all answer options, such as when a participant is creating or viewing an assessment submission, and the questions and correct answers, such as when a participant is viewing a graded submission or a facilitator is grading a submission.
  *
- *
- * @param {number} curriculumAssessmentId -
- * @param {boolean} [questionsAndAllAnswersIncluded] -
- * @param {boolean} [questionsAndCorrectAnswersIncluded] -
- * @returns {Promise<CurriculumAssessment | null>}
+ * @param {number} curriculumAssessmentId - The row ID of the curriculum_assessments table for a given curriculum assessment.
+ * @param {boolean} [questionsAndAllAnswersIncluded] - Optional specifier to determine whether or not the questions and all answer options will be included in the returned object.
+ * @param {boolean} [questionsAndCorrectAnswersIncluded] - Optional specifier to determine whether or not the correct answer information for the curriculum assessment questions will be included in the returned object.
+ * @returns {Promise<CurriculumAssessment>} The CurriculumAssessment representation of that curriculum assessment, or null if no matching curriculum assessment was found.
  */
-export const getCurriculumAssessment = async (curriculumAssessmentId: number, questionsAndAllAnswersIncluded?: boolean,  questionsAndCorrectAnswersIncluded?: boolean): Promise<CurriculumAssessment | null> => { return; };
+export const getCurriculumAssessment = async (curriculumAssessmentId: number, questionsAndAllAnswersIncluded?: boolean, questionsAndCorrectAnswersIncluded?: boolean): Promise<CurriculumAssessment> => { return; };
 
 /**
+ * Retrieves the string representation of a principal's role for a given program: "Facilitator" for a program facilitator, "Participant" for a program participant, or null if not enrolled in the specified program.
  *
- *
- * @param {number} principalId -
- * @param {number} programId -
- * @returns {Promise<string | null>}
+ * @param {number} principalId - The row ID of the principals table that corresponds with a given program member.
+ * @param {number} programId - The row ID of the programs table for a given program.
+ * @returns {Promise<string>} The string value of a principal's role in a given program, or null if they are not enrolled as a participant or facilitating that program.
  */
-export const getPrincipalProgramRole = async (principalId: number, programId: number): Promise<string | null> => { return null; };
+export const getPrincipalProgramRole = async (principalId: number, programId: number): Promise<string> => { return; };
 
 /**
+ * Lists all submissions by a program participant for a given program assessment, if any. Does not include responses for those submissions.
  *
- *
- * @param {number} participantPrincipalId -
- * @param {number} programAssessmentId -
- * @returns {Promise<AssessmentSubmission[]>}
+ * @param {number} participantPrincipalId - The row ID of the principals table that corresponds with a given program participant.
+ * @param {number} programAssessmentId - The row ID of the program_assessments table for a given program assessment.
+ * @returns {Promise<AssessmentSubmission[]>} An array of AssessmentSubmission objects constructed from matching program assessment submissions, if any, not including their responses.
  */
 export const listParticipantProgramAssessmentSubmissions = async (participantPrincipalId: number, programAssessmentId: number): Promise<AssessmentSubmission[]> => { return []; };
 
 /**
+ * Lists all row IDs of programs for which a principal is either enrolled as a participant or is designated as facilitator.
  *
- *
- * @param {number} principalId -
- * @returns {Promise<number[]>}
+ * @param {number} principalId - The row ID of the principals table that corresponds with a given program member.
+ * @returns {Promise<number[]>} An array of row IDs for all matching programs for which the user is enrolled or is facilitating.
  */
 export const listPrincipalEnrolledProgramIds = async (principalId: number): Promise<number[]> => { return []; };
 
 /**
+ * Lists all available program assessments for a given program.
  *
- *
- * @param {number} programId -
- * @returns {Promise<ProgramAssessment[]>}
+ * @param {number} programId - The row ID of the programs table for a given program.
+ * @returns {Promise<ProgramAssessment[]>} An array of the ProgramAssessment objects constructed from matching program assessments, if any.
  */
 export const listProgramAssessments = async (programId: number): Promise<ProgramAssessment[]> => { return []; };
 
 /**
+ * Updates a program assessment submission for a program participant, if their time has not expired, or updates a program assessment submission by the facilitator, if optional parameter passed is true. If the submission is expired and the function is not passed true for facilitatorOverride, the only update allowed will be to mark a program assessment submission "Expired" instead of "Opened" or "In Progress".
  *
- *
- * @param {AssessmentDetails} assessmentDetails -
- * @returns {Promise<AssessmentDetails>}
+ * @param {AssessmentSubmission} assessmentSubmission - The updated program assessment submission information, including responses.
+ * @param {boolean} [facilitatorOverride] - Optional specifier for when the program facilitator is the one updating a program assessment submission, skipping the submission expiration check.
+ * @returns {Promise<AssessmentSubmission>} An AssessmentSubmission object constructed from the updated row in the assessment_submissions table.
  */
-export const updateAssessment = async (assessmentDetails: AssessmentDetails): Promise<AssessmentDetails> => { return; };
+export const updateAssessmentSubmission = async (assessmentSubmission: AssessmentSubmission, facilitatorOverride?: boolean): Promise<AssessmentSubmission> => { return; };
 
 /**
+ * Updates an existing curriculum assessment, its metadata, and its associated questions and answers if given.
  *
- *
- * @param {AssessmentSubmission} assessmentSubmission -
- * @returns {Promise<AssessmentSubmission>}
+ * @param {CurriculumAssessment} curriculumAssessment - The updated curriculum assessment information with which to update the corresponding database data.
+ * @returns {Promise<CurriculumAssessment>} The updated CurriculumAssessment object that was handed to us, if update was successful.
  */
-export const updateAssessmentSubmission = async (assessmentSubmission: AssessmentSubmission): Promise<AssessmentSubmission> => { return; };
+export const updateCurriculumAssessment = async (curriculumAssessment: CurriculumAssessment): Promise<CurriculumAssessment> => { return; };
+
+/**
+ * Updates an existing program assessment in the program_assessments table.
+ *
+ * @param {ProgramAssessment} programAssessment - The updated program assessment information with which to update the corresponding database data.
+ * @returns {Promise<ProgramAssessment>} The updated ProgramAssessment object that was handed to us, if update was successful.
+ */
+export const updateProgramAssessment = async (programAssessment: CurriculumAssessment): Promise<ProgramAssessment> => { return; };

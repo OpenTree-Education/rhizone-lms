@@ -3,14 +3,15 @@ import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
 
 import assessmentsRouter from '../assessmentsRouter';
 
-import { constructFacilitatorAssessmentSummary, constructParticipantAssessmentSummary, createAssessment, createAssessmentSubmission, deleteCurriculumAssessment, deleteProgramAssessment, findProgramAssessment, getAssessmentSubmission, getCurriculumAssessment, getPrincipalProgramRole, listParticipantProgramAssessmentSubmissions, listPrincipalEnrolledProgramIds, listProgramAssessments, updateAssessment, updateAssessmentSubmission } from '../../services/assessmentsService';
+import { constructFacilitatorAssessmentSummary, constructParticipantAssessmentSummary, createAssessmentSubmission, createCurriculumAssessment, createProgramAssessment, deleteCurriculumAssessment, deleteProgramAssessment, findProgramAssessment, getAssessmentSubmission, getCurriculumAssessment, getPrincipalProgramRole, listParticipantProgramAssessmentSubmissions, listPrincipalEnrolledProgramIds, listProgramAssessments, updateAssessmentSubmission, updateCurriculumAssessment, updateProgramAssessment } from '../../services/assessmentsService';
 
 jest.mock('../../services/assessmentsService');
 
 const mockConstructFacilitatorAssessmentSummary = jest.mocked(constructFacilitatorAssessmentSummary);
 const mockConstructParticipantAssessmentSummary = jest.mocked(constructParticipantAssessmentSummary);
-const mockCreateAssessment = jest.mocked(createAssessment);
 const mockCreateAssessmentSubmission = jest.mocked(createAssessmentSubmission);
+const mockCreateCurriculumAssessment = jest.mocked(createCurriculumAssessment);
+const mockCreateProgramAssessment = jest.mocked(createProgramAssessment);
 const mockDeleteCurriculumAssessment = jest.mocked(deleteCurriculumAssessment);
 const mockDeleteProgramAssessment = jest.mocked(deleteProgramAssessment);
 const mockFindProgramAssessment = jest.mocked(findProgramAssessment);
@@ -20,8 +21,9 @@ const mockGetPrincipalProgramRole = jest.mocked(getPrincipalProgramRole);
 const mockListParticipantProgramAssessmentSubmissions = jest.mocked(listParticipantProgramAssessmentSubmissions);
 const mockListPrincipalEnrolledProgramIds = jest.mocked(listPrincipalEnrolledProgramIds);
 const mockListProgramAssessments = jest.mocked(listProgramAssessments);
-const mockUpdateAssessment = jest.mocked(updateAssessment);
 const mockUpdateAssessmentSubmission = jest.mocked(updateAssessmentSubmission);
+const mockUpdateCurriculumAssessment = jest.mocked(updateCurriculumAssessment);
+const mockUpdateProgramAssessment = jest.mocked(updateProgramAssessment);
 
 describe('assessmentsRouter', () => {
   const appAgent = createAppAgentForRouter(assessmentsRouter);

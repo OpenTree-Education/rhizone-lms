@@ -1,15 +1,17 @@
 import { mockQuery } from '../mockDb';
 
-import { constructFacilitatorAssessmentSummary, constructParticipantAssessmentSummary, createAssessment, createAssessmentSubmission, deleteCurriculumAssessment, deleteProgramAssessment, findProgramAssessment, getAssessmentSubmission, getCurriculumAssessment, getPrincipalProgramRole, listParticipantProgramAssessmentSubmissions, listPrincipalEnrolledProgramIds, listProgramAssessments, updateAssessment, updateAssessmentSubmission } from '../assessmentsService';
+import { constructFacilitatorAssessmentSummary, constructParticipantAssessmentSummary, createAssessmentSubmission, createCurriculumAssessment, createProgramAssessment, deleteCurriculumAssessment, deleteProgramAssessment, findProgramAssessment, getAssessmentSubmission, getCurriculumAssessment, getPrincipalProgramRole, listParticipantProgramAssessmentSubmissions, listPrincipalEnrolledProgramIds, listProgramAssessments, updateAssessmentSubmission, updateCurriculumAssessment, updateProgramAssessment } from '../assessmentsService';
 
 describe('assessmentsService', () => {
   describe('constructFacilitatorAssessmentSummary', () => {});
 
   describe('constructParticipantAssessmentSummary', () => {});
 
-  describe('createAssessment', () => {});
-
   describe('createAssessmentSubmission', () => {});
+
+  describe('createCurriculumAssessment', () => {});
+
+  describe('createProgramAssessment', () => {});
 
   describe('deleteCurriculumAssessment', () => {});
 
@@ -29,7 +31,9 @@ describe('assessmentsService', () => {
 
   describe('listProgramAssessments', () => {});
 
-  describe('updateAssessment', () => {});
-
   describe('updateAssessmentSubmission', () => {});
+
+  describe('updateCurriculumAssessment', () => {});
+
+  describe('updateProgramAssessment', () => {});
 });
