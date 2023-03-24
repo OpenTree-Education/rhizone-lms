@@ -102,7 +102,7 @@ const listAssessmentQuestions = async (curriculumAssessmentId: number, correctAn
  * @param {boolean} [gradingsIncluded] - Optional specifier to determine whether or not the grading information (score, grader response) should be included or removed from the return value.
  * @returns {Promise<AssessmentResponse[]>} An array of AssessmentResponse objects, including or omitting the grading information as specified.
  */
-const listSubmissionResponses = async (submissionId: number): Promise<AssessmentResponse[]> => { return []; };
+const listSubmissionResponses = async (submissionId: number, gradingsIncluded?: boolean): Promise<AssessmentResponse[]> => { return []; };
 
 /**
  * Updates an existing curriculum assessment question with new answer options or new metadata.
@@ -220,10 +220,34 @@ export const findProgramAssessment = async (programAssessmentId: number): Promis
  *
  * @param {number} assessmentSubmissionId - The row ID of the assessment_submissions table for a given program assessment submission.
  * @param {boolean} [responsesIncluded] - Optional specifier to determine whether or not the assessment responses will be included in the returned object.
- * @param {boolean} [gradesIncluded] - Optional specifier to override the default grading information return behavior, such as if a program facilitator was retrieving the assessment submission. If this parameter is not specified, the default behavior will take over: the grading information will only be released if the assessment submission is in the "Graded" state.
+ * @param {boolean} [gradingsIncluded] - Optional specifier to override the default grading information return behavior, such as if a program facilitator was retrieving the assessment submission. If this parameter is not specified, the default behavior will take over: the grading information will only be released if the assessment submission is in the "Graded" state.
  * @returns {Promise<AssessmentSubmission>} The AssessmentSubmission representation of that program assessment submission, or null if no matching program assessment submission was found.
  */
-export const getAssessmentSubmission = async (assessmentSubmissionId: number, responsesIncluded?: boolean, gradesIncluded?: boolean): Promise<AssessmentSubmission> => { return; };
+export const getAssessmentSubmission = async (assessmentSubmissionId: number, responsesIncluded?: boolean, gradingsIncluded?: boolean): Promise<AssessmentSubmission> => {
+  const matchingAssessmentSubmissionsRows = await db('assessment_submissions').join('assessment_submission_states', 'assessment_submissions.assessment_submission_state_id', 'assessment_submission_states.id').select('assessment_id', 'principal_id', 'assessment_submission_states.title as assessment_submission_state', 'score', 'opened_at', 'submitted_at').where('assessment_submissions.id', assessmentSubmissionId);
+  
+  if (matchingAssessmentSubmissionsRows.length === 0) {
+    return null;
+  }
+  
+  const [assessmentSubmissionRow] = matchingAssessmentSubmissionsRows;
+  
+  const assessmentSubmission: AssessmentSubmission = {
+    id: assessmentSubmissionId,
+    assessment_id: assessmentSubmissionRow.assessment_id,
+    principal_id: assessmentSubmissionRow.principal_id,
+    assessment_submission_state: assessmentSubmissionRow.assessment_submission_state,
+    score: assessmentSubmissionRow.score,
+    opened_at: assessmentSubmissionRow.opened_at,
+    submitted_at: assessmentSubmissionRow.submitted_at
+  };
+
+  if (responsesIncluded) {
+    assessmentSubmission.responses = await listSubmissionResponses(assessmentSubmissionId, gradingsIncluded);
+  }
+  
+  return assessmentSubmission;
+};
 
 /**
  * Finds a single curriculum assessment by its row ID, if it exists in the curriculum_assessments table. Optionally returns the questions and all answer options, such as when a participant is creating or viewing an assessment submission, and the questions and correct answers, such as when a participant is viewing a graded submission or a facilitator is grading a submission.
