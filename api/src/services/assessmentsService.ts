@@ -257,7 +257,45 @@ export const getAssessmentSubmission = async (assessmentSubmissionId: number, re
  * @param {boolean} [questionsAndCorrectAnswersIncluded] - Optional specifier to determine whether or not the correct answer information for the curriculum assessment questions will be included in the returned object.
  * @returns {Promise<CurriculumAssessment>} The CurriculumAssessment representation of that curriculum assessment, or null if no matching curriculum assessment was found.
  */
-export const getCurriculumAssessment = async (curriculumAssessmentId: number, questionsAndAllAnswersIncluded?: boolean, questionsAndCorrectAnswersIncluded?: boolean): Promise<CurriculumAssessment> => { return; };
+export const getCurriculumAssessment = async (curriculumAssessmentId: number, questionsAndAllAnswersIncluded?: boolean, questionsAndCorrectAnswersIncluded?: boolean): Promise<CurriculumAssessment> => { 
+  const matchingCurriculumAssessmentRows = await db(
+    'curriculum_assessments'
+  ).select(
+    'title',
+    'assessment_type',
+    'max_score',
+    'max_num_submissions',
+    'time_limit',
+    'curriculum_id',
+    'activity_id',
+    'principal_id',
+  ).where('id', curriculumAssessmentId);
+  
+  if (matchingCurriculumAssessmentRows.length === 0) {
+    return null;
+  }
+
+  const [matchingCurriculumAssessment] = matchingCurriculumAssessmentRows;
+
+  const curriculumAssessment: CurriculumAssessment = {
+    id: curriculumAssessmentId,
+    title: matchingCurriculumAssessment.title,
+    assessment_type: matchingCurriculumAssessment.assessment_type,
+    description: matchingCurriculumAssessment.description,
+    max_score: matchingCurriculumAssessment.max_score,
+    max_num_submissions: matchingCurriculumAssessment.max_num_submissions,
+    time_limit: matchingCurriculumAssessment.time_limit,
+    curriculum_id: matchingCurriculumAssessment.curriculum_id,
+    activity_id: matchingCurriculumAssessment.activity_id,
+    principal_id: matchingCurriculumAssessment.principal_id,
+  }
+
+  if (questionsAndAllAnswersIncluded === true) {
+    curriculumAssessment.questions = await listAssessmentQuestions(curriculumAssessmentId, questionsAndCorrectAnswersIncluded);
+  }
+
+  return curriculumAssessment;
+};
 
 /**
  * Retrieves the string representation of a principal's role for a given program: "Facilitator" for a program facilitator, "Participant" for a program participant, or null if not enrolled in the specified program.
