@@ -20,7 +20,7 @@ assessmentsRouter.put('/curriculum/:curriculumAssessmentId', async (req, res, ne
 // Delete an existing CurriculumAssessment
 assessmentsRouter.delete('/curriculum/:curriculumAssessmentId', async (req, res, next) => { res.json();});
 
-// Get details of a specific AssessmentWithSubmissions
+// Get a specific AssessmentDetails
 assessmentsRouter.get('/program/:programAssessmentId', async (req, res, next) => { res.json();});
 // Create a new ProgramAssessment
 assessmentsRouter.post('/program', async (req, res, next) => { res.json();});
@@ -29,10 +29,12 @@ assessmentsRouter.put('/program/:programAssessmentId', async (req, res, next) =>
 // Delete an existing ProgramAssessment
 assessmentsRouter.delete('/program/:programAssessmentId', async (req, res, next) => { res.json();});
 
+// Get an AssessmentWithSubmissions
+assessmentsRouter.get('/program/:programAssessmentId/submissions', async (req, res, next) => { res.json();});
 // Start a new AssessmentSubmission
-assessmentsRouter.get('/program/:programAssessmentId/newSubmission', async (req, res, next) => { res.json();});
+assessmentsRouter.get('/program/:programAssessmentId/submissions/new', async (req, res, next) => { res.json();});
 
-// Get details of a specific AssessmentSubmission
+// Get details of a specific SavedAssessment
 assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
   // get the principal row ID number
   const { principalId } = req.session;

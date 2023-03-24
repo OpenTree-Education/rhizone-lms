@@ -40,7 +40,8 @@ describe('assessmentsRouter', () => {
   describe('PUT /program/:programAssessmentId', () => {});
   describe('DELETE /program/:programAssessmentId', () => {});
 
-  describe('GET /program/:programAssessmentId/newSubmission', () => {});
+  describe('GET /program/:programAssessmentId/submissions', () => {});
+  describe('GET /program/:programAssessmentId/submissions/new', () => {});
 
   describe('GET /submissions/:submissionId', () => {});
   describe('PUT /submissions/:submissionId', () => {});
