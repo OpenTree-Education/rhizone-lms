@@ -102,7 +102,30 @@ const listAssessmentQuestions = async (curriculumAssessmentId: number, correctAn
  * @param {boolean} [gradingsIncluded] - Optional specifier to determine whether or not the grading information (score, grader response) should be included or removed from the return value.
  * @returns {Promise<AssessmentResponse[]>} An array of AssessmentResponse objects, including or omitting the grading information as specified.
  */
-const listSubmissionResponses = async (submissionId: number, gradingsIncluded?: boolean): Promise<AssessmentResponse[]> => { return []; };
+const listSubmissionResponses = async (submissionId: number, gradingsIncluded?: boolean): Promise<AssessmentResponse[]> => {
+  const matchingAssessmentSubmissionsRows = await db('assessment_responses')
+  .select('id','assessment_id','question_id','answer_id','response_text','score','grader_response')
+  .where('submission_id', submissionId);
+  
+  if (matchingAssessmentSubmissionsRows.length === 0) {
+    return null;
+  }
+
+  const assessmentSubmissions: AssessmentResponse[] = matchingAssessmentSubmissionsRows.map((assessmentSubmissionsRow) => {
+    return {
+      id: assessmentSubmissionsRow.id,
+      assessment_id: assessmentSubmissionsRow.asssessment_id,
+      submission_id: submissionId,
+      question_id: assessmentSubmissionsRow.question_id,
+      answer_id: assessmentSubmissionsRow.answer_id,
+      response_text: (gradingsIncluded === true) && assessmentSubmissionsRow.response_text,
+      score: (gradingsIncluded === true) && assessmentSubmissionsRow.score,
+      grader_response: assessmentSubmissionsRow.grader_response,
+    }
+  });
+
+  return assessmentSubmissions;
+};
 
 /**
  * Updates an existing curriculum assessment question with new answer options or new metadata.
@@ -187,7 +210,14 @@ export const deleteCurriculumAssessment = async (curriculumAssessmentId: number)
  * @param {number} programAssessmentId - The row ID of the program_assessments table for a given program assessment.
  * @returns {Promise<void>} Returns nothing if the deletion was successful.
  */
-export const deleteProgramAssessment = async (programAssessmentId: number): Promise<void> => { return; };
+//export const deleteProgramAssessment = async (programAssessmentId: number): Promise<void> => { return; };
+
+export const deleteProgramAssessment = async (programAssessmentId: number): Promise<void> => { 
+  const matchingProgramAssessmentsRows = await db('program_assessments').select('program_id', 'assessment_id', 'available_after', 'due_date').where('id', programAssessmentId);
+  
+  if (matchingProgramAssessmentsRows.length === 0) {
+    return null;
+  }};
 
 /**
  * Finds a single program assessment by its row ID, if it exists in the program_assessments table.
