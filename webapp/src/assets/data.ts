@@ -114,7 +114,7 @@ export const assessmentListPageExampleData: AssessmentSummary[] = [
       highest_state: '10',
       most_recent_submitted_date: '2023-03-02',
       total_num_submissions: 1,
-      highest_score: 10,
+      highest_score: 0,
       assessment_submission_state: 'Expired',
     },
   },

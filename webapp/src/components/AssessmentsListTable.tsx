@@ -42,8 +42,6 @@ const renderButtonByStatus = (status: string, id: number) => {
     case 'Submitted':
     case 'Graded':
     case 'Unsubmitted':
-      buttonLabel = 'View';
-      break;
     case 'Expired':
       buttonLabel = 'View';
       break;
@@ -108,7 +106,7 @@ const renderChipByStatus = (status: string) => {
           color="error"
           size="small"
           icon={<CancelOutlinedIcon />}
-          label="Unsubmitted"
+          label="Expired"
         />
       );
     default:
@@ -247,7 +245,7 @@ const AssessmentsListTable = ({
                   assessment.submissions_summary.assessment_submission_state ===
                     'Graded' ||
                   assessment.submissions_summary.assessment_submission_state ===
-                    'Passed') &&
+                    'Expired') &&
                   formatDateTime(
                     assessment.submissions_summary.most_recent_submitted_date
                   )}
