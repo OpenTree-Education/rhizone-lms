@@ -266,7 +266,24 @@ export const getCurriculumAssessment = async (curriculumAssessmentId: number, qu
  * @param {number} programId - The row ID of the programs table for a given program.
  * @returns {Promise<string>} The string value of a principal's role in a given program, or null if they are not enrolled as a participant or facilitating that program.
  */
-export const getPrincipalProgramRole = async (principalId: number, programId: number): Promise<string> => { return; };
+export const getPrincipalProgramRole = async (principalId: number, programId: number): Promise<string> => {
+  const matchingRoleRows = await db('program_participants')
+    .select('program_participant_roles.title')
+    .join(
+      'program_participant_roles',
+      'program_participant_roles.id',
+      'program_participants.role_id'
+    )
+    .where({ principal_id: principalId, program_id: programId });
+
+  if (matchingRoleRows.length === 0) {
+    return null;
+  }
+
+  const [matchingRole] = matchingRoleRows;
+
+  return matchingRole.title;
+};
 
 /**
  * Lists all submissions by a program participant for a given program assessment, if any. Does not include responses for those submissions.
