@@ -17,23 +17,51 @@ const assessmentSubmissionExpired = async (assessmentSubmissionId: number): Prom
  * @param {number} programAssessmentId - The row ID of the program_assessments table for a given program assessment.
  * @returns {Promise<number>} The number of program participants with one or more submissions for that program assessment.
  */
-const calculateNumParticipantsWithSubmissions = async (programAssessmentId: number): Promise<number> => { return; };
+const calculateNumParticipantsWithSubmissions = async (programAssessmentId: number): Promise<number> => { 
+  const [numParticipantsWithSubmissions] = await db('assessment_submissions')
+    .whereNotNull('assessment_submission_state_id')
+    .andWhere('assessment_id', programAssessmentId)
+    .count({ count: 'id' });
 
+    if (numParticipantsWithSubmissions === 0) {
+    return null;
+  }
+  return numParticipantsWithSubmissions as number;
+}
 /**
  * Calculates the total number of participants enrolled in a program, excluding any program facilitators.
  *
  * @param {number} programId - The row ID of the programs table for a given program.
  * @returns {Promise<number>} The number of program participants in that program.
  */
-const calculateNumProgramParticipants = async (programId: number): Promise<number> => { return; };
-
+const calculateNumProgramParticipants = async (programId: number): Promise<number> => { 
+  const [numProgramParticipants] = await db('program_participants')
+    .where('program_id', programId)
+    .andWhere('role_id', 2)
+    .count({ count: 'id' }); 
+  
+  if (numProgramParticipants === 0) {
+    return null;
+  }
+    return numProgramParticipants as number;
+}
 /**
  * Calculates the total number of assessment submissions that have yet to be graded for a given program assessment.
  *
  * @param {number} programAssessmentId - The row ID of the program_assessments table for a given program assessment.
  * @returns {Promise<number>} The number of assessment submissions that have been submitted but not graded.
  */
-const calculateNumUngradedSubmissions = async (programAssessmentId: number): Promise<number> => { return; };
+const calculateNumUngradedSubmissions = async (programAssessmentId: number): Promise<number> => { 
+  const [numUngradedSubmissions] = await db('assessment_submissions')
+    .where('assessment_id', programAssessmentId)
+    .andWhere('score', null)
+    .count({ count: 'id' })
+
+    if (numUngradedSubmissions === 0) {
+    return null;
+  }
+  return numUngradedSubmissions as number;
+}
 
 /**
  * Inserts a question for an existing curriculum assessment into the assessment_questions table.
@@ -93,8 +121,48 @@ const listAssessmentQuestionAnswers = async (questionId: number, correctAnswersI
  * @param {boolean} [correctAnswersIncluded] - Optional specifier to determine whether or not the correct answer information should be included or removed from the return value.
  * @returns {Promise<Question[]>} An array of Question objects, including or omitting the correct answer metadata as specified.
  */
-const listAssessmentQuestions = async (curriculumAssessmentId: number, correctAnswersIncluded?: boolean): Promise<Question[]> => { return []; };
+const listAssessmentQuestions = async (curriculumAssessmentId: number, correctAnswersIncluded?: boolean): Promise<Question[]> => { 
+  
+  const matchinglistAssessmentQuestionsRows = await db('assessment_questions')
+    .join('assessment_question_types', 'assessment_questions.question_type_id', 'assessment_question_types.id' )
+    .select('id', 'title', 'description', 'assessment_question_types.title as question_type', 'correct_answer_id', 'max_score', 'sort_order')
+    .where({ assessment_id: curriculumAssessmentId });
 
+  if (matchinglistAssessmentQuestionsRows.length === 0) {
+    return null;
+  }
+
+  const questionIds = matchinglistAssessmentQuestionsRows.map(element => element.id);
+
+  const listAssessmentAnswers = await db('assessment_answers')
+    .select('*')
+    .whereIn('question_id', questionIds);
+
+  matchinglistAssessmentQuestionsRows
+    .filter(question => question.question_type === 'single choice' || correctAnswersIncluded === true)
+    .forEach(
+      question =>
+        (question.answers = listAssessmentAnswers.filter(
+          answer => answer.question_id === question.id
+        ))
+    );
+
+  const listAssessmentQuestions: Question[] = matchinglistAssessmentQuestionsRows.map((assessmentQuestionRow) => {
+    return {
+      id: assessmentQuestionRow.id, 
+      assessment_id: curriculumAssessmentId,
+      title: assessmentQuestionRow.title,
+      description: assessmentQuestionRow.description,
+      question_type: assessmentQuestionRow.question_type,
+      answers: assessmentQuestionRow.answers as Answer[], 
+      correct_answer_id: (correctAnswersIncluded === true) && assessmentQuestionRow.correct_answer_id,
+      max_score: assessmentQuestionRow.max_score,
+      sort_order: assessmentQuestionRow.sort_order
+      } 
+  })
+  
+  return listAssessmentQuestions; 
+};
 /**
  * Lists all responses from a given assessment submission by a program participant. Based on specified boolean parameter, will also include the score and any grader response as well.
  *
