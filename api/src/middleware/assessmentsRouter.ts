@@ -1,38 +1,97 @@
 import { Router } from 'express';
 
-import { BadRequestError, NotFoundError, UnauthorizedError } from './httpErrors';
-import { itemEnvelope, errorEnvelope, collectionEnvelope } from './responseEnvelope';
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+} from './httpErrors';
+import {
+  itemEnvelope,
+  errorEnvelope,
+  collectionEnvelope,
+} from './responseEnvelope';
 
 import { SavedAssessment } from '../models';
-import { findProgramAssessment, getAssessmentSubmission, getCurriculumAssessment, getPrincipalProgramRole } from '../services/assessmentsService';
+import {
+  findProgramAssessment,
+  getAssessmentSubmission,
+  getCurriculumAssessment,
+  getPrincipalProgramRole,
+} from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
 
 // List all AssessmentWithSummary to which the user has access
-assessmentsRouter.get('/', async (req, res, next) => { res.json();});
+assessmentsRouter.get('/', async (req, res, next) => {
+  res.json();
+});
 
 // Get details of a specific CurriculumAssessment
-assessmentsRouter.get('/curriculum/:curriculumAssessmentId', async (req, res, next) => { res.json();});
+assessmentsRouter.get(
+  '/curriculum/:curriculumAssessmentId',
+  async (req, res, next) => {
+    res.json();
+  }
+);
 // Create a new CurriculumAssessment
-assessmentsRouter.post('/curriculum', async (req, res, next) => { res.json(); });
+assessmentsRouter.post('/curriculum', async (req, res, next) => {
+  res.json();
+});
 // Update an existing CurriculumAssessment
-assessmentsRouter.put('/curriculum/:curriculumAssessmentId', async (req, res, next) => { res.json();});
+assessmentsRouter.put(
+  '/curriculum/:curriculumAssessmentId',
+  async (req, res, next) => {
+    res.json();
+  }
+);
 // Delete an existing CurriculumAssessment
-assessmentsRouter.delete('/curriculum/:curriculumAssessmentId', async (req, res, next) => { res.json();});
+assessmentsRouter.delete(
+  '/curriculum/:curriculumAssessmentId',
+  async (req, res, next) => {
+    res.json();
+  }
+);
 
 // Get a specific AssessmentDetails
-assessmentsRouter.get('/program/:programAssessmentId', async (req, res, next) => { res.json();});
+assessmentsRouter.get(
+  '/program/:programAssessmentId',
+  async (req, res, next) => {
+    res.json();
+  }
+);
 // Create a new ProgramAssessment
-assessmentsRouter.post('/program', async (req, res, next) => { res.json();});
+assessmentsRouter.post('/program', async (req, res, next) => {
+  res.json();
+});
 // Update an existing ProgramAssessment
-assessmentsRouter.put('/program/:programAssessmentId', async (req, res, next) => { res.json();});
+assessmentsRouter.put(
+  '/program/:programAssessmentId',
+  async (req, res, next) => {
+    res.json();
+  }
+);
 // Delete an existing ProgramAssessment
-assessmentsRouter.delete('/program/:programAssessmentId', async (req, res, next) => { res.json();});
+assessmentsRouter.delete(
+  '/program/:programAssessmentId',
+  async (req, res, next) => {
+    res.json();
+  }
+);
 
 // Get an AssessmentWithSubmissions
-assessmentsRouter.get('/program/:programAssessmentId/submissions', async (req, res, next) => { res.json();});
+assessmentsRouter.get(
+  '/program/:programAssessmentId/submissions',
+  async (req, res, next) => {
+    res.json();
+  }
+);
 // Start a new AssessmentSubmission
-assessmentsRouter.get('/program/:programAssessmentId/submissions/new', async (req, res, next) => { res.json();});
+assessmentsRouter.get(
+  '/program/:programAssessmentId/submissions/new',
+  async (req, res, next) => {
+    res.json();
+  }
+);
 
 // Get details of a specific SavedAssessment
 assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
@@ -54,7 +113,10 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
   }
 
   // get the assessment submission and responses
-  const assessmentSubmission = await getAssessmentSubmission(submissionIdParsed, true);
+  const assessmentSubmission = await getAssessmentSubmission(
+    submissionIdParsed,
+    true
+  );
 
   // if the assessment submission is null/falsy, that means there's no matching
   // assessment submission. send an error back to the user.
@@ -72,7 +134,10 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
   const programAssessment = await findProgramAssessment(programAssessmentId);
 
   // get the principal program role
-  const programRole = await getPrincipalProgramRole(principalId, programAssessment.program_id);
+  const programRole = await getPrincipalProgramRole(
+    principalId,
+    programAssessment.program_id
+  );
 
   // if the program role is null/falsy, that means the user is not enrolled in
   // the program. send an error back to the user.
@@ -88,7 +153,7 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
   // also, if the program role is "Participant" and the principal ID of the
   // AssessmentSubmission doesn't match the logged-in principal ID, we should
   // return an error to the user.
-  if (programRole === "Participant") {
+  if (programRole === 'Participant') {
     if (principalId !== assessmentSubmission.principal_id) {
       next(
         new UnauthorizedError(
@@ -106,17 +171,23 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
   // if the program role is facilitator, we should always return the correct
   // answers. otherwise, return the correct answers only if the submission has
   // been graded.
-  const includeQuestionsAndCorrectAnswers = (programRole === "Facilitator" || assessmentSubmission.assessment_submission_state === "Graded");
+  const includeQuestionsAndCorrectAnswers =
+    programRole === 'Facilitator' ||
+    assessmentSubmission.assessment_submission_state === 'Graded';
 
   // get the curriculum assessment
-  const curriculumAssessment = await getCurriculumAssessment(programAssessment.assessment_id, includeQuestionsAndAllAnswers, includeQuestionsAndCorrectAnswers);
+  const curriculumAssessment = await getCurriculumAssessment(
+    programAssessment.assessment_id,
+    includeQuestionsAndAllAnswers,
+    includeQuestionsAndCorrectAnswers
+  );
 
   // let's construct our return value
   const assessmentWithSubmission: SavedAssessment = {
     curriculum_assessment: curriculumAssessment,
     program_assessment: programAssessment,
     principal_program_role: programRole,
-    submission: assessmentSubmission
+    submission: assessmentSubmission,
   };
 
   // let's return that to the user
@@ -125,6 +196,8 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
 });
 
 // Update details of a specific AssessmentSubmission
-assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => { res.json();});
+assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
+  res.json();
+});
 
 export default assessmentsRouter;
