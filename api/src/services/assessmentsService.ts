@@ -18,7 +18,7 @@ const assessmentSubmissionExpired = async (assessmentSubmissionId: number): Prom
  * @returns {Promise<number>} The number of program participants with one or more submissions for that program assessment.
  */
 const calculateNumParticipantsWithSubmissions = async (programAssessmentId: number): Promise<number> => { 
-  const [numParticipantsWithSubmissions] = await db<number>('assessment_submissions')
+  const [numParticipantsWithSubmissions] = await db('assessment_submissions')
     .whereNotNull('assessment_submission_state_id')
     .andWhere('assessment_id', programAssessmentId)
     .count({ count: 'id' });
@@ -35,8 +35,8 @@ const calculateNumParticipantsWithSubmissions = async (programAssessmentId: numb
  * @param {number} programId - The row ID of the programs table for a given program.
  * @returns {Promise<number>} The number of program participants in that program.
  */
-const calculateNumProgramParticipants = async (programId: number): Promise<number> => { 
-  const [numProgramParticipants] = await db<number>('program_participants')
+const calculateNumProgramParticipants = async (programId: number): Promise<number> => {  ////????
+  const [numProgramParticipants] = await db('program_participants')
     .where('program_id', programId)
     .andWhere('role_id', 2)
     .count({ count: 'id' }); 
@@ -54,16 +54,15 @@ const calculateNumProgramParticipants = async (programId: number): Promise<numbe
  * @returns {Promise<number>} The number of assessment submissions that have been submitted but not graded.
  */
 const calculateNumUngradedSubmissions = async (programAssessmentId: number): Promise<number> => { 
-  const [numUngradedSubmissions] = await db<number>('assessment_submissions')
+  const [numUngradedSubmissions] = await db('assessment_submissions')
     .where('assessment_id', programAssessmentId)
     .andWhere('score', null)
-    .count({ count: '*' });
+    .count({ count: 'id' });
 
     if (numUngradedSubmissions === 0) {
     return null;
   }
   return numUngradedSubmissions as number;}
-
 
 /**
  * Inserts a question for an existing curriculum assessment into the assessment_questions table.
@@ -166,10 +165,6 @@ const listAssessmentQuestions = async (curriculumAssessmentId: number, correctAn
   return listAssessmentQuestions; 
 };
 
-
-
-
-
 /**
  * Lists all responses from a given assessment submission by a program participant. Based on specified boolean parameter, will also include the score and any grader response as well.
  *
@@ -212,7 +207,24 @@ const updateSubmissionResponse = async (assessmentResponse: AssessmentResponse):
  * @param {number} programAssessmentId - The row ID of the program_assessments table for a given program assessment.
  * @returns {Promise<FacilitatorAssessmentSubmissionsSummary>} The program assessment submissions summary information for use by a program facilitator.
  */
-export const constructFacilitatorAssessmentSummary = async (programAssessmentId: number): Promise<FacilitatorAssessmentSubmissionsSummary> => { return; };
+export const constructFacilitatorAssessmentSummary = async (programAssessmentId: number): Promise<FacilitatorAssessmentSubmissionsSummary> => { 
+  
+  const numParticipantsWithSubmissions = await calculateNumParticipantsWithSubmissions(
+    programAssessmentId
+  );
+  const numProgramParticipants = await calculateNumProgramParticipants(
+    programAssessmentId
+  ); // ???? it should take programId
+  const numUngradedSubmissions = await calculateNumUngradedSubmissions(
+    programAssessmentId
+  );
+
+  return {
+    num_participants_with_submissions: numParticipantsWithSubmissions,
+    num_program_participants: numProgramParticipants,
+    num_ungraded_submissions: numUngradedSubmissions,
+  };
+}
 
 /**
  * Gathers the relevant information for constructing a ParticipantAssessmentSubmissionsSummary for a given participant principal ID and a given program assessment.
@@ -221,7 +233,51 @@ export const constructFacilitatorAssessmentSummary = async (programAssessmentId:
  * @param {number} programAssessmentId - The row ID of the program_assessments table for a given program assessment.
  * @returns {Promise<ParticipantAssessmentSubmissionsSummary>} The program assessment submissions summary information for use by a program participant.
  */
-export const constructParticipantAssessmentSummary = async (participantPrincipalId: number, programAssessmentId: number): Promise<ParticipantAssessmentSubmissionsSummary> => { return; };
+export const constructParticipantAssessmentSummary = async (participantPrincipalId: number, programAssessmentId: number): Promise<ParticipantAssessmentSubmissionsSummary> => { 
+  
+  const [highestState] = await db('assessment_submission')
+    .select('assessment_submission_states_title')
+    .join(
+      'assessment_submission_states_title',
+      'assessment_submission_states_title.id',
+      'assessment_submission_states_title_id'
+    )
+    .where('principal_id', participantPrincipalId)
+    .orderBy('assessment_submission_states_title', 'desc');
+  if (!highestState) {
+    return null;
+  }
+
+  const [mostRecentSubmittedDate] = await db('assessment_submissions')
+    .select('id', 'submitted_at')
+    .where('principal_id', programAssessmentId)
+    .orderBy('submitted_at', 'desc')
+    .limit(1);
+  if (!mostRecentSubmittedDate) {
+    return null;
+  }
+  const [totalNumSubmissions] = await db('assessment_submissions')
+    .count('id')
+    .where('principal_id', participantPrincipalId);
+    if (!totalNumSubmissions) {
+    return null;
+  }
+  const [highestScore] = await db('assessment_submissions')
+    .count('id')
+    .where('principal_id', participantPrincipalId)
+    .andWhere('assesment_id', programAssessmentId);
+    if (!highestScore) {
+    return null;
+  }
+
+  return {
+    principal_id: programAssessmentId,
+    highest_state: String(highestState),
+    most_recent_submitted_date: String(mostRecentSubmittedDate),
+    total_num_submissions: Number(totalNumSubmissions),
+    highest_score: Number(highestScore),
+  };
+}
 
 /**
  * Begins a new program assessment submission for a program participant, if they have not exceeded the maximum number of allowed submissions for that assessment and no other assessment submissions are in progress by that program participant for that program assessment.
