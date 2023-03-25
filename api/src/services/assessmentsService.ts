@@ -124,9 +124,9 @@ const listAssessmentQuestionAnswers = async (questionId: number, correctAnswersI
 const listAssessmentQuestions = async (curriculumAssessmentId: number, correctAnswersIncluded?: boolean): Promise<Question[]> => { 
   
   const matchinglistAssessmentQuestionsRows = await db('assessment_questions')
-    .join('assessment_question_types', 'assessment_questions.question_type_id', 'assessment_question_types.id' )
-    .select('id', 'title', 'description', 'assessment_question_types.title as question_type', 'correct_answer_id', 'max_score', 'sort_order')
-    .where({ assessment_id: curriculumAssessmentId });
+    .join('assessment_question_types', 'assessment_questions.question_type_id', 'assessment_question_types.id')
+    .select('assessment_questions.id', 'assessment_questions.title', 'description', 'assessment_question_types.title as question_type', 'correct_answer_id', 'max_score', 'sort_order')
+    .where( 'assessment_questions.assessment_id', curriculumAssessmentId );
 
   if (matchinglistAssessmentQuestionsRows.length === 0) {
     return null;
@@ -137,6 +137,7 @@ const listAssessmentQuestions = async (curriculumAssessmentId: number, correctAn
   const listAssessmentAnswers = await db('assessment_answers')
     .select('*')
     .whereIn('question_id', questionIds);
+    console.log(listAssessmentAnswers)
 
   matchinglistAssessmentQuestionsRows
     .filter(question => question.question_type === 'single choice' || correctAnswersIncluded === true)
