@@ -101,6 +101,7 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
   // get and parse the assessment submission row ID number
   // error out if we were passed an invalid assessment submission row ID number
   const { submissionId } = req.params;
+
   const submissionIdParsed = Number(submissionId);
 
   if (!Number.isInteger(submissionIdParsed) || submissionIdParsed < 1) {
@@ -131,6 +132,7 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
 
   // get the program assessment, which should be guaranteed to exist.
   const programAssessmentId = assessmentSubmission.assessment_id;
+
   const programAssessment = await findProgramAssessment(programAssessmentId);
 
   // get the principal program role
@@ -141,6 +143,7 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
 
   // if the program role is null/falsy, that means the user is not enrolled in
   // the program. send an error back to the user.
+
   if (!programRole) {
     next(
       new UnauthorizedError(
@@ -153,6 +156,7 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
   // also, if the program role is "Participant" and the principal ID of the
   // AssessmentSubmission doesn't match the logged-in principal ID, we should
   // return an error to the user.
+
   if (programRole === 'Participant') {
     if (principalId !== assessmentSubmission.principal_id) {
       next(
