@@ -11,20 +11,93 @@ import {
   collectionEnvelope,
 } from './responseEnvelope';
 
-import { SavedAssessment } from '../models';
+import { AssessmentWithSummary, SavedAssessment } from '../models';
 import {
   findProgramAssessment,
   getAssessmentSubmission,
   getCurriculumAssessment,
   getPrincipalProgramRole,
+  listPrincipalEnrolledProgramIds,
 } from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
 
 // List all AssessmentWithSummary to which the user has access
-assessmentsRouter.get('/', async (req, res, next) => {
-  res.json();
-});
+// assessmentsRouter.get('/', async (req, res, next) => {
+  
+//   const { principalId } = req.session;
+
+//    if (!Number.isInteger(principalId) || principalId < 1) {
+//       next(
+//         new BadRequestError(`"${principalId}" is not a valid participant id.`)
+//       );
+//       return
+//     }
+
+//   try {
+//     const programIds = await listPrincipalEnrolledProgramIds(principalId);
+//     const assessmentsSummaryList: AssessmentWithSummary[] = [];
+  
+//     if (programIds.length === 0) {
+//       res.json(collectionEnvelope(assessmentsSummaryList, 0));
+//       return;
+//     }
+
+//     for (const programId of programIds) {
+//       const roleInProgram = await getPrincipalProgramRole(principalId, programId);
+//       const programAssessments = await findProgramAssessment(programId);
+
+//       for (const programAssessment of programAssessments) {
+//         if (roleInProgram === 'Participant') {
+//           assessmentsSummaryList.push({
+//             curriculum_assessment: await getCurriculumAssessment(
+//               programAssessment.assessment_id,
+//               false,
+//               false
+//             ),
+//             program_assessment: programAssessment,
+//             participant_submissions_summary:
+//               await constructParticipantAssessmentSubmissionsSummary(
+//                 programAssessment.assessment_id,
+//                 principalId
+//               ),
+//             principal_program_role: roleInProgram,
+//           });
+//         }
+
+//         if (roleInProgram === 'Facilitator') {
+//           assessmentsSummaryList.push({
+//             curriculum_assessment: await getCurriculumAssessment(
+//               programAssessment.assessment_id,
+//               false,
+//               false
+//             ),
+//             program_assessment: programAssessment,
+//             facilitator_submissions_summary:
+//               await getFacilitatorAssessmentSubmissionsSummary(
+//                 programAssessment.assessment_id
+//               ),
+//             principal_program_role: roleInProgram,
+//           });
+//         }
+//       }
+//     }
+
+//     res.json(
+//       collectionEnvelope(assessmentsSummaryList, assessmentsSummaryList.length)
+//     );
+//   } catch (error) {
+//     next(error);
+//   }
+// });
+
+assessmentsRouter.get(
+  '/test',
+  async (req, res, next) => {
+    // const test = await listAssessmentQuestions(1, true);
+    res.json(test);
+  }
+);
 
 // Get details of a specific CurriculumAssessment
 assessmentsRouter.get(
@@ -201,3 +274,7 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
 });
 
 export default assessmentsRouter;
+function getParticipantAssessmentSubmissionsSummary(assessment_id: any, principalId: number): import("../models").ParticipantAssessmentSubmissionsSummary | PromiseLike<import("../models").ParticipantAssessmentSubmissionsSummary> {
+  throw new Error('Function not implemented.');
+}
+

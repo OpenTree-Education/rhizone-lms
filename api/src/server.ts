@@ -10,7 +10,7 @@ import helmet from 'helmet';
 import Rollbar from 'rollbar';
 import { Server } from 'socket.io';
 
-import assessmentsRouter from './middleware/assessmentsRouter.ts.old';
+import assessmentsRouter from './middleware/assessmentsRouter';
 import authRouter from './middleware/authRouter';
 import competenciesRouter from './middleware/competenciesRouter';
 import docsRouter from './middleware/docsRouter';
