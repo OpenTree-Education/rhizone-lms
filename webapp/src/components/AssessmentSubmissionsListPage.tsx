@@ -5,6 +5,7 @@ import { FormGroup, FormControlLabel, Switch } from '@mui/material';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
@@ -14,7 +15,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
 import { assessmentDetailPageExampleData } from '../assets/data';
-import { renderChipByStatus } from './AssessmentsListPage';
+import { renderChipByStatus } from './AssessmentsListTable';
 import { AssessmentWithSubmissions } from '../types/api';
 import { formatDateTime } from '../helpers/dateTime';
 
@@ -123,28 +124,36 @@ const AssessmentSubmissionsListPage = () => {
   return (
     <Container>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={9}>
           <h1>{assessment.curriculum_assessment.title}</h1>
           <p>{assessment.curriculum_assessment.description}</p>
         </Grid>
-        <Grid item xs={12} md={6} container sx={{ justifyContent: 'flex-end' }}>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={isFacilitator}
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    setIsFacilitator(event.target.checked);
-                  }}
-                  name="isFacilitator"
-                />
-              }
-              label="Facilitator mode"
-            />
-          </FormGroup>
+        <Grid item xs={3}>
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            alignItems="flex-end"
+            spacing={2}
+            sx={{ height: '100%' }}
+          >
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={isFacilitator}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      setIsFacilitator(event.target.checked);
+                    }}
+                    name="isFacilitator"
+                  />
+                }
+                label="Facilitator mode"
+              />
+            </FormGroup>
+          </Stack>
         </Grid>
 
-        <Grid item xs={12} md={12}>
+        <Grid item xs={12}>
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -223,14 +232,15 @@ const AssessmentSubmissionsListPage = () => {
           </TableContainer>
         </Grid>
 
-        <Grid
-          item
-          xs={12}
-          md={12}
-          container
-          sx={{ justifyContent: 'flex-end' }}
-        >
-          <ButtonWrapper />
+        <Grid item xs={12} sx={{ justifyContent: 'flex-end' }}>
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            alignItems="flex-end"
+            spacing={2}
+          >
+            <ButtonWrapper />
+          </Stack>
         </Grid>
       </Grid>
     </Container>

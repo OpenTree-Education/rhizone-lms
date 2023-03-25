@@ -64,6 +64,15 @@ const Navbar = () => {
             <PeopleIcon />
           </IconButton>
         </Tooltip>
+
+        <Tooltip title="Alternative Assess">
+          <Link to="/assess">
+            <IconButton sx={{ mr: 1 }}>
+              <AssessmentIcon />
+            </IconButton>
+          </Link>
+        </Tooltip>
+
         <Button
           component="a"
           href={`${process.env.REACT_APP_API_ORIGIN}/auth/logout`}
