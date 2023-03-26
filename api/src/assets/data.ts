@@ -97,14 +97,14 @@ export const exampleFacilitatorAssessmentSubmissionsSummary: FacilitatorAssessme
 
 export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
   id: 2,
-  assessment_id: 1,
+  assessment_id: exampleProgramAssessment.id,
   principal_id: participantPrincipalId,
   assessment_submission_state: 'In Progress',
   opened_at: '2023-02-09 12:00:00',
   responses: [
     {
       id: 1,
-      assessment_id: 1,
+      assessment_id: exampleProgramAssessment.id,
       submission_id: 2,
       question_id: 1,
       answer_id: 1,
