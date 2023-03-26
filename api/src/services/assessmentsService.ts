@@ -425,7 +425,7 @@ export const findProgramAssessment = async (
   if (matchingProgramAssessmentsRows.length === 0) {
     return null;
   }
-
+  console.log('matchingProgramAssessmentsRows', matchingProgramAssessmentsRows);
   const [programAssessmentRow] = matchingProgramAssessmentsRows;
 
   const programAssessment: ProgramAssessment = {
@@ -435,6 +435,7 @@ export const findProgramAssessment = async (
     available_after: programAssessmentRow.available_after,
     due_date: programAssessmentRow.due_date,
   };
+  console.log('programAssessment', programAssessment);
 
   return programAssessment;
 };
@@ -449,8 +450,7 @@ export const findProgramAssessment = async (
  */
 export const getAssessmentSubmission = async (
   assessmentSubmissionId: number,
-  responsesIncluded?: boolean,
-  gradingsIncluded?: boolean
+  responsesIncluded?: boolean
 ): Promise<AssessmentSubmission> => {
   const matchingAssessmentSubmissionsRows = await db('assessment_submissions')
     .join(
@@ -486,12 +486,21 @@ export const getAssessmentSubmission = async (
   };
 
   if (responsesIncluded) {
-    assessmentSubmission.responses = await listSubmissionResponses(
-      assessmentSubmissionId,
-      gradingsIncluded
-    );
+    let gradingsIncluded = false;
+    if (assessmentSubmission.assessment_submission_state !== 'Graded') {
+      assessmentSubmission.responses = await listSubmissionResponses(
+        assessmentSubmissionId,
+        gradingsIncluded
+      );
+    } else {
+      gradingsIncluded = true;
+      assessmentSubmission.responses = await listSubmissionResponses(
+        assessmentSubmissionId,
+        true
+      );
+    }
   }
-
+  console.log('rer', assessmentSubmission);
   return assessmentSubmission;
 };
 
@@ -510,15 +519,36 @@ export const getCurriculumAssessment = async (
 ): Promise<CurriculumAssessment> => {
   const matchingCurriculumAssessmentRows = await db('curriculum_assessments')
     .select(
-      'title',
-      'max_score',
-      'max_num_submissions',
-      'time_limit',
-      'curriculum_id',
-      'activity_id',
-      'principal_id'
+      'curriculum_assessments.title',
+      'curriculum_assessments.max_score',
+      'curriculum_assessments.max_num_submissions',
+      'curriculum_assessments.time_limit',
+      'curriculum_assessments.curriculum_id',
+      'curriculum_assessments.activity_id',
+      'curriculum_assessments.principal_id'
     )
-    .where('id', curriculumAssessmentId);
+    .join('activities', 'curriculum_assessments.curriculum_id', 'activities.id')
+    .where('curriculum_assessments.id', curriculumAssessmentId);
+  console.log(
+    'matchingCurriculumAssessmentRows',
+    matchingCurriculumAssessmentRows
+  );
+  const assessmentType = await db('activity_types')
+    .select('activity_types.title')
+    .join('activities', 'activities.activity_type_id', 'activity_types.id')
+    .where('activities.id', matchingCurriculumAssessmentRows[0].activity_id);
+  // console.log("title",title)
+  // const matchingCurriculumAssessmentRows = await db('curriculum_assessments')
+  //   .select(
+  //     'title',
+  //     'max_score',
+  //     'max_num_submissions',
+  //     'time_limit',
+  //     'curriculum_id',
+  //     'activity_id',
+  //     'principal_id'
+  //   )
+  //   .where('id', curriculumAssessmentId);
 
   if (matchingCurriculumAssessmentRows.length === 0) {
     return null;
@@ -529,7 +559,7 @@ export const getCurriculumAssessment = async (
   const curriculumAssessment: CurriculumAssessment = {
     id: curriculumAssessmentId,
     title: matchingCurriculumAssessment.title,
-    assessment_type: null,
+    assessment_type: assessmentType[0].title,
     description: matchingCurriculumAssessment.description,
     max_score: matchingCurriculumAssessment.max_score,
     max_num_submissions: matchingCurriculumAssessment.max_num_submissions,
@@ -572,9 +602,10 @@ export const getPrincipalProgramRole = async (
   if (matchingRoleRows.length === 0) {
     return null;
   }
-
+  console.log('matchingRoleRows', matchingRoleRows);
   const [matchingRole] = matchingRoleRows;
-
+  console.log('matching', matchingRole);
+  console.log('o', matchingRole.title);
   return matchingRole.title;
 };
 

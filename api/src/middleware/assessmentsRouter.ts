@@ -118,7 +118,7 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
     submissionIdParsed,
     true
   );
-
+  console.log('asseerr', assessmentSubmission);
   // if the assessment submission is null/falsy, that means there's no matching
   // assessment submission. send an error back to the user.
   if (!assessmentSubmission) {
@@ -134,12 +134,13 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
   const programAssessmentId = assessmentSubmission.assessment_id;
 
   const programAssessment = await findProgramAssessment(programAssessmentId);
-
+  console.log('programAssessmenttest', programAssessment);
   // get the principal program role
   const programRole = await getPrincipalProgramRole(
     principalId,
     programAssessment.program_id
   );
+  console.log('programRole', programRole);
 
   // if the program role is null/falsy, that means the user is not enrolled in
   // the program. send an error back to the user.
@@ -185,7 +186,7 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
     includeQuestionsAndAllAnswers,
     includeQuestionsAndCorrectAnswers
   );
-
+  console.log('curriculumAssessment', curriculumAssessment);
   // let's construct our return value
   const assessmentWithSubmission: SavedAssessment = {
     curriculum_assessment: curriculumAssessment,
