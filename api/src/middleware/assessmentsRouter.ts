@@ -5,11 +5,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from './httpErrors';
-import {
-  itemEnvelope,
-  errorEnvelope,
-  collectionEnvelope,
-} from './responseEnvelope';
+import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
 
 import { SavedAssessment } from '../models';
 import {
