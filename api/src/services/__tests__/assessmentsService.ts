@@ -43,91 +43,71 @@ describe('assessmentsService', () => {
     it('should get assessment submission based on given submission id', async () => {
       const assessmentSubmissionId = 1;
       const responsesIncluded = true;
-      // const gradingsIncluded = true;
-      const ficlitatorPrincipalId = 3;
-      const assessmentSubmissionRow = {
-        id: 1,
-        assessment_id: 1,
-        principal_id: ficlitatorPrincipalId,
+      const gradingsIncluded = true;
+
+      const assessmentSubmissionsRow = {
+        assessment_id: 2,
+        principal_id: 30,
         assessment_submission_state: 'Graded',
-        score: 1,
+        score: 10,
         opened_at: '2023-02-09 12:00:00',
         submitted_at: '2023-02-09 13:23:45',
       };
-      const assessmentSubmissionGraded = [
-        {
-          id: 1,
-          assessment_id: 1,
-          principal_id: ficlitatorPrincipalId,
-          assessment_submission_state: 'Graded',
-          score: 1,
-          opened_at: '2023-02-09 12:00:00',
-          submitted_at: '2023-02-09 13:23:45',
-          responses: [
-            {
-              id: 1,
-              answer_id: 1,
-              assessment_id: 1,
-              submission_id: 2,
-              question_id: 1,
-              response: null as string,
-              score: null as number,
-              grader_response: null as string,
-            },
-          ],
-        },
-      ];
-      const assessmentResponseMatchRow = [
-        {
-          id: 1,
-          answer_id: 1,
-          assessment_id: 1,
-          submission_id: 2,
-          question_id: 1,
-          response: null as string,
-          score: null as number,
-          grader_response: null as string,
-        },
-      ];
-      const assessmentSubmission: AssessmentSubmission = {
-        id: assessmentSubmissionId,
-        assessment_id: assessmentSubmissionRow.assessment_id,
-        principal_id: assessmentSubmissionRow.principal_id,
-        assessment_submission_state:
-          assessmentSubmissionRow.assessment_submission_state,
-        score: assessmentSubmissionRow.score,
-        opened_at: assessmentSubmissionRow.opened_at,
-        submitted_at: assessmentSubmissionRow.submitted_at,
+
+      const assessmentResponsesRow = {
+        id: 15,
+        assessment_id: 2,
+        question_id: 1,
+        answer_id: 1,
+        response: null as string,
+        score: 1,
+        grader_response: null as string,
       };
-      const [response] = assessmentSubmissionGraded[0].responses;
-      //  const  response = {
-      //       id: assessmentResponseMatchRow[0].id,
-      //       assessment_id: assessmentResponseMatchRow[0].assessment_id,
-      //       submission_id: assessmentSubmissionId,
-      //       question_id: assessmentResponseMatchRow[0].question_id,
-      //       answer_id: assessmentResponseMatchRow[0].answer_id,
-      //       response_text:assessmentResponseMatchRow[0].response,
-      //       score:  assessmentResponseMatchRow[0].score,
-      //       grader_response: assessmentResponseMatchRow[0].grader_response,
-      //     };
+
+      const assessmentSubmissionGraded: AssessmentSubmission = {
+        id: assessmentSubmissionId,
+        assessment_id: 2,
+        principal_id: 30,
+        assessment_submission_state: 'Graded',
+        score: 10,
+        opened_at: '2023-02-09 12:00:00',
+        submitted_at: '2023-02-09 13:23:45',
+        responses: [
+          {
+            id: 15,
+            assessment_id: 2,
+            submission_id: assessmentSubmissionId,
+            question_id: 1,
+            answer_id: 1,
+            response_text: null,
+            score: 1,
+            grader_response: null,
+          },
+        ],
+      };
+
       mockQuery(
-        'select `assessment_id`, `principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` =?',
+        'select `assessment_id`, `principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
         [assessmentSubmissionId],
-        assessmentSubmissionRow
+        [assessmentSubmissionsRow]
       );
 
       mockQuery(
-        'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` =?',
-        [assessmentSubmissionId, response.question_id],
-
-        response
+        'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
+        [assessmentSubmissionId],
+        [assessmentResponsesRow]
       );
 
       expect(
-        await getAssessmentSubmission(assessmentSubmissionId, responsesIncluded)
+        await getAssessmentSubmission(
+          assessmentSubmissionId,
+          responsesIncluded,
+          gradingsIncluded
+        )
       ).toEqual(assessmentSubmissionGraded);
     });
   });
+
   describe('findProgramAssessment', () => {
     it('should select program id form program_assessments for  a given programAssessmentId', async () => {
       const exampleProgramAssessmentId = 4;
@@ -158,6 +138,7 @@ describe('assessmentsService', () => {
       );
     });
   });
+
   describe('getPrincipalProgramRole', () => {
     it('should find a role based on principal id and program id ', async () => {
       const principalId = 2;
