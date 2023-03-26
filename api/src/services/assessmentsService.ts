@@ -748,6 +748,34 @@ export const listProgramAssessments = async (
 };
 
 /**
+ * Removes any possible grading information from an assessment submission in
+ * cases when we don't want to return that information to the requester.
+ *
+ * @param {AssessmentSubmission} assessmentSubmissionWithGrades - An
+ *   AssessmentSubmission possibly containing grading information.
+ * @returns {AssessmentSubmission} The updated object with any possible grading
+ *   information removed, without harming the original object.
+ */
+export const removeGradingInformation = (
+  assessmentSubmissionWithGrades: AssessmentSubmission
+): AssessmentSubmission => {
+  const gradeRemovedResponses = assessmentSubmissionWithGrades.responses.map(
+    response => {
+      const gradeRemovedResponse = structuredClone(response);
+      delete gradeRemovedResponse.score;
+      delete gradeRemovedResponse.grader_response;
+      return gradeRemovedResponse;
+    }
+  );
+
+  const gradeRemovedSubmission = { ...assessmentSubmissionWithGrades };
+  delete gradeRemovedSubmission.score;
+  gradeRemovedSubmission.responses = gradeRemovedResponses;
+
+  return gradeRemovedSubmission;
+};
+
+/**
  * Updates a program assessment submission for a program participant, if their
  * time has not expired, or updates a program assessment submission by the
  * facilitator, if optional parameter passed is true. If the submission is
