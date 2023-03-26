@@ -486,21 +486,34 @@ export const getAssessmentSubmission = async (
   };
 
   if (responsesIncluded) {
-    let gradingsIncluded = false;
     if (assessmentSubmission.assessment_submission_state !== 'Graded') {
       assessmentSubmission.responses = await listSubmissionResponses(
         assessmentSubmissionId,
-        gradingsIncluded
+        false
       );
     } else {
-      gradingsIncluded = true;
       assessmentSubmission.responses = await listSubmissionResponses(
         assessmentSubmissionId,
         true
       );
     }
+
+    return assessmentSubmission;
+    // let gradingsIncluded = false;
+    // if (assessmentSubmission.assessment_submission_state === 'Graded') {
+    //   assessmentSubmission.responses = await listSubmissionResponses(
+    //     assessmentSubmissionId,
+    //     true
+    //   );
+    // } else {
+    //   gradingsIncluded = true;
+    //   assessmentSubmission.responses = await listSubmissionResponses(
+    //     assessmentSubmissionId,
+    //     true
+    //   );
+    // }
   }
-  console.log('rer', assessmentSubmission);
+  console.log('assessmentSubmission', assessmentSubmission);
   return assessmentSubmission;
 };
 
@@ -529,15 +542,15 @@ export const getCurriculumAssessment = async (
     )
     .join('activities', 'curriculum_assessments.curriculum_id', 'activities.id')
     .where('curriculum_assessments.id', curriculumAssessmentId);
-  console.log(
-    'matchingCurriculumAssessmentRows',
-    matchingCurriculumAssessmentRows
-  );
+  // console.log(
+  //   'matchingCurriculumAssessmentRows',
+  //   matchingCurriculumAssessmentRows
+  // );
   const assessmentType = await db('activity_types')
     .select('activity_types.title')
     .join('activities', 'activities.activity_type_id', 'activity_types.id')
     .where('activities.id', matchingCurriculumAssessmentRows[0].activity_id);
-  // console.log("title",title)
+
   // const matchingCurriculumAssessmentRows = await db('curriculum_assessments')
   //   .select(
   //     'title',
@@ -602,10 +615,10 @@ export const getPrincipalProgramRole = async (
   if (matchingRoleRows.length === 0) {
     return null;
   }
-  console.log('matchingRoleRows', matchingRoleRows);
+  // console.log('matchingRoleRows', matchingRoleRows);
   const [matchingRole] = matchingRoleRows;
-  console.log('matching', matchingRole);
-  console.log('o', matchingRole.title);
+  // console.log('matching', matchingRole);
+
   return matchingRole.title;
 };
 
