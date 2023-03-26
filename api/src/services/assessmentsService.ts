@@ -621,19 +621,23 @@ export const getCurriculumAssessment = async (
   questionsAndAllAnswersIncluded?: boolean,
   questionsAndCorrectAnswersIncluded?: boolean
 ): Promise<CurriculumAssessment> => {
-  // removed assessment_type from query and in return put the value null until
-  // update db
   const matchingCurriculumAssessmentRows = await db('curriculum_assessments')
     .select(
-      'title',
-      'max_score',
-      'max_num_submissions',
-      'time_limit',
-      'curriculum_id',
-      'activity_id',
-      'principal_id'
+      'curriculum_assessments.title',
+      'curriculum_assessments.max_score',
+      'curriculum_assessments.max_num_submissions',
+      'curriculum_assessments.time_limit',
+      'curriculum_assessments.curriculum_id',
+      'curriculum_assessments.activity_id',
+      'curriculum_assessments.principal_id'
     )
-    .where('id', curriculumAssessmentId);
+    .join('activities', 'curriculum_assessments.curriculum_id', 'activities.id')
+    .where('curriculum_assessments.id', curriculumAssessmentId);
+
+  const assessmentType = await db('activity_types')
+    .select('activity_types.title')
+    .join('activities', 'activities.activity_type_id', 'activity_types.id')
+    .where('activities.id', matchingCurriculumAssessmentRows[0].activity_id);
 
   if (matchingCurriculumAssessmentRows.length === 0) {
     return null;
@@ -644,7 +648,7 @@ export const getCurriculumAssessment = async (
   const curriculumAssessment: CurriculumAssessment = {
     id: curriculumAssessmentId,
     title: matchingCurriculumAssessment.title,
-    assessment_type: null,
+    assessment_type: assessmentType[0].title,
     description: matchingCurriculumAssessment.description,
     max_score: matchingCurriculumAssessment.max_score,
     max_num_submissions: matchingCurriculumAssessment.max_num_submissions,
@@ -693,8 +697,9 @@ export const getPrincipalProgramRole = async (
   if (matchingRoleRows.length === 0) {
     return null;
   }
-
+  // console.log('matchingRoleRows', matchingRoleRows);
   const [matchingRole] = matchingRoleRows;
+  // console.log('matching', matchingRole);
 
   return matchingRole.title;
 };
