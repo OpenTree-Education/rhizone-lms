@@ -11,6 +11,13 @@ export const unenrolledPrincipalId = 31;
 export const otherParticipantPrincipalId = 32;
 export const facilitatorPrincipalId = 300;
 
+export const exampleProgramParticipantRoleParticipantRow = {
+  title: 'Participant',
+};
+export const exampleProgramParticipantRoleFacilitatorRow = {
+  title: 'Facilitator',
+};
+
 export const exampleCurriculumAssessment: CurriculumAssessment = {
   id: 12,
   title: 'Assignment 1: React',
@@ -71,6 +78,13 @@ export const exampleCurriculumAssessmentWithCorrectAnswers: CurriculumAssessment
     ],
   };
 
+export const exampleProgramAssessmentsRow = {
+  program_id: 1,
+  assessment_id: 12,
+  available_after: '2023-02-06',
+  due_date: '2023-02-10',
+};
+
 export const exampleProgramAssessment: ProgramAssessment = {
   id: 15,
   program_id: 1,
@@ -127,16 +141,37 @@ export const exampleAssessmentSubmissionSubmitted: AssessmentSubmission = {
   ],
 };
 
-export const exampleAssessmentSubmissionGraded = {
+export const assessmentSubmissionsRowGraded = {
+  assessment_id: exampleProgramAssessment.id,
+  principal_id: participantPrincipalId,
+  assessment_submission_state: 'Graded',
+  score: 4,
+  opened_at: '2023-02-09 12:00:00',
+  submitted_at: '2023-02-09 13:23:45',
+};
+
+export const assessmentResponsesRowGraded = {
+  id: 1,
+  assessment_id: exampleProgramAssessment.id,
+  submission_id: 2,
+  question_id: 1,
+  answer_id: 1,
+  response: null as string,
+  score: 1,
+  grader_response: 'Well done!',
+};
+
+export const exampleAssessmentSubmissionGraded: AssessmentSubmission = {
   ...exampleAssessmentSubmissionSubmitted,
   assessment_submission_state: 'Graded',
-  score: 1,
+  score: 4,
   responses: [
     {
       id: 1,
       assessment_id: exampleProgramAssessment.id,
       submission_id: 2,
       question_id: 1,
+      response_text: null,
       answer_id: 1,
       score: 1,
       grader_response: 'Well done!',

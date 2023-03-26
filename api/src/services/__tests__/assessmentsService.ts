@@ -25,6 +25,17 @@ import {
   AssessmentSubmission,
   AssessmentWithRole,
 } from '../../models';
+import {
+  assessmentResponsesRowGraded,
+  assessmentSubmissionsRowGraded,
+  exampleAssessmentSubmissionGraded,
+  exampleProgramAssessment,
+  exampleProgramAssessmentsRow,
+  exampleProgramParticipantRoleFacilitatorRow,
+  exampleProgramParticipantRoleParticipantRow,
+  facilitatorPrincipalId,
+  participantPrincipalId,
+} from '../../assets/data';
 
 describe('assessmentsService', () => {
   describe('constructFacilitatorAssessmentSummary', () => {});
@@ -42,62 +53,21 @@ describe('assessmentsService', () => {
   describe('deleteProgramAssessment', () => {});
 
   describe('getAssessmentSubmission', () => {
-    it('should get assessment submission based on given submission id', async () => {
-      const assessmentSubmissionId = 1;
+    it('should get assessment submission based on given submission ID', async () => {
+      const assessmentSubmissionId = exampleAssessmentSubmissionGraded.id;
       const responsesIncluded = true;
       const gradingsIncluded = true;
-
-      const assessmentSubmissionsRow = {
-        assessment_id: 2,
-        principal_id: 30,
-        assessment_submission_state: 'Graded',
-        score: 10,
-        opened_at: '2023-02-09 12:00:00',
-        submitted_at: '2023-02-09 13:23:45',
-      };
-
-      const assessmentResponsesRow = {
-        id: 15,
-        assessment_id: 2,
-        question_id: 1,
-        answer_id: 1,
-        response: null as string,
-        score: 1,
-        grader_response: null as string,
-      };
-
-      const assessmentSubmissionGraded: AssessmentSubmission = {
-        id: assessmentSubmissionId,
-        assessment_id: 2,
-        principal_id: 30,
-        assessment_submission_state: 'Graded',
-        score: 10,
-        opened_at: '2023-02-09 12:00:00',
-        submitted_at: '2023-02-09 13:23:45',
-        responses: [
-          {
-            id: 15,
-            assessment_id: 2,
-            submission_id: assessmentSubmissionId,
-            question_id: 1,
-            answer_id: 1,
-            response_text: null,
-            score: 1,
-            grader_response: null,
-          },
-        ],
-      };
 
       mockQuery(
         'select `assessment_id`, `principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
         [assessmentSubmissionId],
-        [assessmentSubmissionsRow]
+        [assessmentSubmissionsRowGraded]
       );
 
       mockQuery(
         'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
         [assessmentSubmissionId],
-        [assessmentResponsesRow]
+        [assessmentResponsesRowGraded]
       );
 
       expect(
@@ -106,60 +76,53 @@ describe('assessmentsService', () => {
           responsesIncluded,
           gradingsIncluded
         )
-      ).toEqual(assessmentSubmissionGraded);
+      ).toEqual(exampleAssessmentSubmissionGraded);
     });
   });
 
   describe('findProgramAssessment', () => {
-    it('should select program id form program_assessments for  a given programAssessmentId', async () => {
-      const exampleProgramAssessmentId = 4;
-      const matchingProgramAssessmentsRows = [
-        {
-          program_id: 1,
-          assessment_id: 3,
-          available_after: '2023-03-23 01:23:45',
-          due_date: '2023-03-23 01:23:45',
-        },
-      ];
-
-      const exampleProgramAssessment: ProgramAssessment = {
-        id: exampleProgramAssessmentId,
-        program_id: matchingProgramAssessmentsRows[0].program_id,
-        assessment_id: matchingProgramAssessmentsRows[0].assessment_id,
-        available_after: matchingProgramAssessmentsRows[0].available_after,
-        due_date: matchingProgramAssessmentsRows[0].due_date,
-      };
+    it('should get program assessment for a given program assessment ID', async () => {
       mockQuery(
         'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
-        [exampleProgramAssessmentId],
-        matchingProgramAssessmentsRows
+        [exampleProgramAssessment.id],
+        [exampleProgramAssessmentsRow]
       );
 
-      expect(await findProgramAssessment(exampleProgramAssessmentId)).toEqual(
+      expect(await findProgramAssessment(exampleProgramAssessment.id)).toEqual(
         exampleProgramAssessment
       );
     });
   });
 
   describe('getPrincipalProgramRole', () => {
-    it('should find a role based on principal id and program id ', async () => {
-      const principalId = 2;
-      const programId = 2;
-      // const name = 'Participant';
-      const role = [{ title: 'Facilitator' }];
-
-      const principalRole = {
-        principal_program_role: 'Participant',
-      };
+    it('should return the correct role for a facilitator based on principal ID and program ID', async () => {
       mockQuery(
         'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
-        [principalId, programId],
-        role
+        [facilitatorPrincipalId, exampleProgramAssessment.program_id],
+        [exampleProgramParticipantRoleFacilitatorRow]
       );
 
-      expect(await getPrincipalProgramRole(principalId, programId)).toEqual(
-        principalRole.principal_program_role
+      expect(
+        await getPrincipalProgramRole(
+          facilitatorPrincipalId,
+          exampleProgramAssessment.program_id
+        )
+      ).toEqual('Facilitator');
+    });
+
+    it('should return the correct role for a participant based on principal ID and program ID', async () => {
+      mockQuery(
+        'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
+        [participantPrincipalId, exampleProgramAssessment.program_id],
+        [exampleProgramParticipantRoleParticipantRow]
       );
+
+      expect(
+        await getPrincipalProgramRole(
+          participantPrincipalId,
+          exampleProgramAssessment.program_id
+        )
+      ).toEqual('Participant');
     });
   });
 

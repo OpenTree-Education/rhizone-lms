@@ -289,48 +289,18 @@ describe('assessmentsRouter', () => {
         );
     });
 
-    // it('should respond with a bad request error if given an invalid assessment id', done => {
-    //   const programAssessmentId = 'test';
-    //   appAgent
-    //     .get(
-    //       `/submissions/${exampleAssessmentSubmissionSubmitted.id}`
-    //     )
-    //     .expect(
-    //       400,
-    //       errorEnvelope(
-    //         'The request could not be completed with the given parameters.'
-    //       ),
-    //       done
-    //     );
-    // });
-
-    // it('should respond with a NotFoundError if the assessment id was not found in the database', done => {
-    //   const programAssessmentId = 7;
-
-    //   mockGetProgramIdByProgramAssessmentId.mockResolvedValue(null);
-    //   appAgent
-    //     .get(
-    //       `/submissions/${exampleAssessmentSubmissionSubmitted.id}`
-    //     )
-    //     .expect(
-    //       404,
-    //       errorEnvelope('The requested resource does not exist.'),
-    //       err => {
-    //         expect(mockGetProgramIdByProgramAssessmentId).toHaveBeenCalledWith(
-    //           programAssessmentId
-    //         );
-    //         done(err);
-    //       }
-    //     );
-    // });
-
-    it('should respond with a bad request error if given an invalid submission id ', done => {
+    it('should respond with a BadRequestError if given an invalid submission ID', done => {
       const submissionId = 'test';
 
-      appAgent.get(`/submissions/${submissionId}`).expect(400, done);
-      // .expect(400, errorEnvelope(
-      //   'The request could not be completed with the given parameters.'
-      // )  ,done);
+      appAgent
+        .get(`/submissions/${submissionId}`)
+        .expect(
+          400,
+          errorEnvelope(
+            `"${Number(submissionId)}" is not a valid submission ID.`
+          ),
+          done
+        );
     });
 
     it('should respond with a NotFoundError if the submission id was not found in the database ', done => {
@@ -398,5 +368,6 @@ describe('assessmentsRouter', () => {
       appAgent.get(`/submissions/${submissionId}`).expect(500, done);
     });
   });
+
   describe('PUT /submissions/:submissionId', () => {});
 });
