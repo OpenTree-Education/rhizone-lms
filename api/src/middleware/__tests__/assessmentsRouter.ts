@@ -7,20 +7,15 @@ import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
 
 import { SavedAssessment } from '../../models';
 import {
-  exampleCurriculumAssessment,
-  exampleCurriculumAssessmentWithQuestions,
   exampleCurriculumAssessmentWithCorrectAnswers,
   exampleProgramAssessment,
-  exampleParticipantAssessmentSubmissionsSummary,
-  exampleFacilitatorAssessmentSubmissionsSummary,
-  exampleAssessmentSubmissionInProgress,
   exampleAssessmentSubmissionSubmitted,
-  exampleAssessmentSubmissionGraded,
-  administratorPrincipalId,
-  participantPrincipalId,
-  unenrolledPrincipalId,
-  otherParticipantPrincipalId,
   facilitatorPrincipalId,
+  exampleCurriculumAssessmentWithQuestions,
+  exampleAssessmentSubmissionInProgress,
+  participantPrincipalId,
+  exampleAssessmentSubmissionGraded,
+  otherParticipantPrincipalId,
 } from '../../assets/data';
 import {
   constructFacilitatorAssessmentSummary,

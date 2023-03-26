@@ -21,11 +21,6 @@ import {
 } from '../assessmentsService';
 
 import {
-  ProgramAssessment,
-  AssessmentSubmission,
-  AssessmentWithRole,
-} from '../../models';
-import {
   assessmentResponsesRowGraded,
   assessmentSubmissionsRowGraded,
   exampleAssessmentSubmissionGraded,
