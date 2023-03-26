@@ -19,11 +19,13 @@ import {
   updateCurriculumAssessment,
   updateProgramAssessment,
 } from '../assessmentsService';
+
 import {
   ProgramAssessment,
   AssessmentSubmission,
   AssessmentWithRole,
-} from '../../models.d';
+} from '../../models';
+
 describe('assessmentsService', () => {
   describe('constructFacilitatorAssessmentSummary', () => {});
 
