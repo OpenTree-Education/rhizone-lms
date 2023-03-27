@@ -1,4 +1,44 @@
-import { AssessmentWithSummary, SavedAssessment } from '../types/api';
+import {
+  AssessmentSubmission,
+  AssessmentWithSummary,
+  SavedAssessment,
+} from '../types/api';
+
+export const submissionsExample: AssessmentSubmission[] = [
+  {
+    id: 17,
+    assessment_id: 1,
+    principal_id: 3,
+    assessment_submission_state: 'Graded',
+    score: 7,
+    opened_at: '2023-03-15 01:23:45',
+    submitted_at: '2023-03-15 02:32:54',
+  },
+  {
+    id: 18,
+    assessment_id: 1,
+    principal_id: 3,
+    assessment_submission_state: 'Submitted',
+    opened_at: '2023-03-15 07:45:00',
+    submitted_at: '2023-03-15 08:15:00',
+  },
+  {
+    id: 19,
+    assessment_id: 1,
+    principal_id: 4,
+    assessment_submission_state: 'Submitted',
+    opened_at: '2023-03-15 07:45:00',
+    submitted_at: '2023-03-15 08:15:00',
+  },
+  {
+    id: 20,
+    assessment_id: 1,
+    principal_id: 5,
+    assessment_submission_state: 'Submitted',
+    opened_at: '2023-03-15 07:45:00',
+    submitted_at: '2023-03-15 08:15:00',
+  },
+];
 
 export const assessmentListPageExampleData: AssessmentWithSummary[] = [
   {
@@ -23,11 +63,10 @@ export const assessmentListPageExampleData: AssessmentWithSummary[] = [
     },
     participant_submissions_summary: {
       principal_id: 2,
-      highest_state: '10',
+      highest_state: 'Graded',
       most_recent_submitted_date: '2023-03-09',
       total_num_submissions: 1,
       highest_score: 10,
-      assessment_submission_state: 'Graded',
     },
     principal_program_role: 'Participant',
   },
@@ -53,11 +92,10 @@ export const assessmentListPageExampleData: AssessmentWithSummary[] = [
     },
     participant_submissions_summary: {
       principal_id: 2,
-      highest_state: '??',
+      highest_state: 'Active',
       most_recent_submitted_date: '',
       total_num_submissions: 0,
       highest_score: -1,
-      assessment_submission_state: 'Active',
     },
     principal_program_role: 'Participant',
   },
@@ -83,11 +121,9 @@ export const assessmentListPageExampleData: AssessmentWithSummary[] = [
     },
     participant_submissions_summary: {
       principal_id: 2,
-      highest_state: ' ',
-      most_recent_submitted_date: ' ',
+      highest_state: 'Upcoming',
       total_num_submissions: 1,
       highest_score: -1,
-      assessment_submission_state: 'Upcoming',
     },
     principal_program_role: 'Participant',
   },
@@ -113,11 +149,10 @@ export const assessmentListPageExampleData: AssessmentWithSummary[] = [
     },
     participant_submissions_summary: {
       principal_id: 2,
-      highest_state: '10',
+      highest_state: 'Expired',
       most_recent_submitted_date: '2023-03-02',
       total_num_submissions: 1,
       highest_score: 0,
-      assessment_submission_state: 'Expired',
     },
     principal_program_role: 'Participant',
   },
@@ -143,11 +178,10 @@ export const assessmentListPageExampleData: AssessmentWithSummary[] = [
     },
     participant_submissions_summary: {
       principal_id: 2,
-      highest_state: '10',
+      highest_state: 'Submitted',
       most_recent_submitted_date: '2023-03-20',
       total_num_submissions: 1,
       highest_score: 10,
-      assessment_submission_state: 'Submitted',
     },
     principal_program_role: 'Participant',
   },
@@ -292,7 +326,7 @@ export const assessmentDetailPageExampleData: SavedAssessment = {
     program_id: 2,
     assessment_id: 2,
     available_after: '2023-02-06 00:00:00',
-    due_date: '2023-03-24 00:00:00',
+    due_date: '2023-03-31 00:00:00',
   },
   submission: {
     id: 17,

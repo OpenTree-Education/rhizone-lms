@@ -190,7 +190,6 @@ export const listAssessmentQuestions = async (
   const listAssessmentAnswers = await db('assessment_answers')
     .select('*')
     .whereIn('question_id', questionIds);
-  console.log(listAssessmentAnswers);
 
   matchinglistAssessmentQuestionsRows
     .filter(
@@ -544,10 +543,15 @@ export const getCurriculumAssessment = async (
 
   const [matchingCurriculumAssessment] = matchingCurriculumAssessmentRows;
 
+  const [assessmentType] = await db('activity_types')
+    .select('activity_types.title')
+    .join('activities', 'activities.activity_type_id', 'activity_types.id')
+    .where('activities.id', matchingCurriculumAssessment.activity_id);
+
   const curriculumAssessment: CurriculumAssessment = {
     id: curriculumAssessmentId,
     title: matchingCurriculumAssessment.title,
-    assessment_type: matchingCurriculumAssessment.assessment_type,
+    assessment_type: assessmentType.title,
     description: matchingCurriculumAssessment.description,
     max_score: matchingCurriculumAssessment.max_score,
     max_num_submissions: matchingCurriculumAssessment.max_num_submissions,
@@ -590,6 +594,7 @@ export const getPrincipalProgramRole = async (
   if (matchingRoleRows.length === 0) {
     return null;
   }
+
   const [matchingRole] = matchingRoleRows;
 
   return matchingRole.title;
