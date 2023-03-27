@@ -316,15 +316,16 @@ export const constructParticipantAssessmentSummary = async (
   participantPrincipalId: number,
   programAssessmentId: number
 ): Promise<ParticipantAssessmentSubmissionsSummary> => {
-  const [highestState] = await db('assessment_submission')
-    .select('assessment_submission_states_title')
+  const [highestState] = await db('assessment_submissions')
+    .select('assessment_submission_states.title')
     .join(
-      'assessment_submission_states_title',
-      'assessment_submission_states_title.id',
-      'assessment_submission_states_title_id'
+      'assessment_submission_states',
+      'assessment_submission_states.id',
+      'assessment_submissions.assessment_submission_state_id'
     )
-    .where('principal_id', participantPrincipalId)
-    .orderBy('assessment_submission_states_title', 'desc');
+    .where('assessment_submissions.principal_id', participantPrincipalId)
+    .andWhere('assessment_submissions.assessment_id', programAssessmentId)
+    .orderBy('assessment_submissions.assessment_submission_state_id', 'desc');
   if (!highestState) {
     return null;
   }
@@ -512,12 +513,23 @@ export const getAssessmentSubmission = async (
 };
 
 /**
- * Finds a single curriculum assessment by its row ID, if it exists in the curriculum_assessments table. Optionally returns the questions and all answer options, such as when a participant is creating or viewing an assessment submission, and the questions and correct answers, such as when a participant is viewing a graded submission or a facilitator is grading a submission.
+ * Finds a single curriculum assessment by its row ID, if it exists in the
+ * curriculum_assessments table. Optionally returns the questions and all answer
+ * options, such as when a participant is creating or viewing an assessment
+ * submission, and the questions and correct answers, such as when a participant
+ * is viewing a graded submission or a facilitator is grading a submission.
  *
- * @param {number} curriculumAssessmentId - The row ID of the curriculum_assessments table for a given curriculum assessment.
- * @param {boolean} [questionsAndAllAnswersIncluded] - Optional specifier to determine whether or not the questions and all answer options will be included in the returned object.
- * @param {boolean} [questionsAndCorrectAnswersIncluded] - Optional specifier to determine whether or not the correct answer information for the curriculum assessment questions will be included in the returned object.
- * @returns {Promise<CurriculumAssessment>} The CurriculumAssessment representation of that curriculum assessment, or null if no matching curriculum assessment was found.
+ * @param {number} curriculumAssessmentId - The row ID of the
+ *   curriculum_assessments table for a given curriculum assessment.
+ * @param {boolean} [questionsAndAllAnswersIncluded] - Optional specifier to
+ *   determine whether or not the questions and all answer options will be
+ *   included in the returned object.
+ * @param {boolean} [questionsAndCorrectAnswersIncluded] - Optional specifier to
+ *   determine whether or not the correct answer information for the curriculum
+ *   assessment questions will be included in the returned object.
+ * @returns {Promise<CurriculumAssessment>} The CurriculumAssessment
+ *   representation of that curriculum assessment, or null if no matching
+ *   curriculum assessment was found.
  */
 export const getCurriculumAssessment = async (
   curriculumAssessmentId: number,
@@ -526,16 +538,16 @@ export const getCurriculumAssessment = async (
 ): Promise<CurriculumAssessment> => {
   const matchingCurriculumAssessmentRows = await db('curriculum_assessments')
     .select(
-      'title',
-      'assessment_type',
-      'max_score',
-      'max_num_submissions',
-      'time_limit',
-      'curriculum_id',
-      'activity_id',
-      'principal_id'
+      'curriculum_assessments.title',
+      'curriculum_assessments.max_score',
+      'curriculum_assessments.max_num_submissions',
+      'curriculum_assessments.time_limit',
+      'curriculum_assessments.curriculum_id',
+      'curriculum_assessments.activity_id',
+      'curriculum_assessments.principal_id'
     )
-    .where('id', curriculumAssessmentId);
+    .join('activities', 'curriculum_assessments.curriculum_id', 'activities.id')
+    .where('curriculum_assessments.id', curriculumAssessmentId);
 
   if (matchingCurriculumAssessmentRows.length === 0) {
     return null;
@@ -626,12 +638,15 @@ export const listPrincipalEnrolledProgramIds = async (
     .select('program_id')
     .where({ principal_id: principalId });
 
-  enrolledProgramsList.map(enrolledProgram => enrolledProgram.program_id);
   if (enrolledProgramsList.length === 0) {
     return null;
   }
 
-  return enrolledProgramsList;
+  const programList: number[] = enrolledProgramsList.map(
+    enrolledProgram => enrolledProgram.program_id
+  );
+
+  return programList;
 };
 
 /**

@@ -66,8 +66,8 @@ assessmentsRouter.get('/', async (req, res, next) => {
             program_assessment: programAssessment,
             participant_submissions_summary:
               await constructParticipantAssessmentSummary(
-                programAssessment.assessment_id,
-                principalId
+                principalId,
+                programAssessment.assessment_id
               ),
             principal_program_role: roleInProgram,
           });
@@ -100,7 +100,7 @@ assessmentsRouter.get('/', async (req, res, next) => {
 });
 
 assessmentsRouter.get('/test', async (req, res, next) => {
-  const test = await listPrincipalEnrolledProgramIds(2);
+  const test = await getCurriculumAssessment(2);
   res.json(test);
 });
 
