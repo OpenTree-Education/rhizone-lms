@@ -52,18 +52,19 @@ assessmentsRouter.get(
     }
 
     const { principalId } = req.session;
-    const programId = await getProgramIdByProgramAssessmentId(
-      curriculumAssessmentIdParsed
-    );
-    const programIdParsed = Number(programId);
-    const programRole = await getPrincipalProgramRole(
-      principalId,
-      programIdParsed
-    );
-    if (!programRole || programRole === 'Participant') {
+    const matchingProgramAssessments =
+      await facilitatorProgramAssessmentsForCurriculumAssessment(
+        principalId,
+        curriculumAssessmentIdParsed
+      );
+
+    // If there are no matching program assessments with this curriculum ID,
+    // then we are not facilitator of any programs where we can modify this
+    // CurriculumAssessment, so let's return an error to the user.
+    if (matchingProgramAssessments.length === 0) {
       next(
         new UnauthorizedError(
-          `Could not access curriculum assessmentId with ID ${curriculumAssessmentIdParsed}.`
+          `Not allowed to access curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
         )
       );
       return;
