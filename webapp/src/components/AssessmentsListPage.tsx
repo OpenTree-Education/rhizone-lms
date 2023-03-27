@@ -36,20 +36,20 @@ const AssessmentsListPage = () => {
       setAssessmentListSubset(
         assessmentList.filter(
           assessment =>
-            assessment.participant_submissions_summary
-              .assessment_submission_state === 'Graded' ||
-            assessment.participant_submissions_summary
-              .assessment_submission_state === 'Submitted' ||
-            assessment.participant_submissions_summary
-              .assessment_submission_state === 'Expired'
+            assessment.participant_submissions_summary.highest_state ===
+              'Graded' ||
+            assessment.participant_submissions_summary.highest_state ===
+              'Submitted' ||
+            assessment.participant_submissions_summary.highest_state ===
+              'Expired'
         )
       );
     else
       setAssessmentListSubset(
         assessmentList.filter(
           assessment =>
-            assessment.participant_submissions_summary
-              .assessment_submission_state === StatusTab[currentStatusTab]
+            assessment.participant_submissions_summary.highest_state ===
+            StatusTab[currentStatusTab]
         )
       );
   }, [currentStatusTab, assessmentList]);

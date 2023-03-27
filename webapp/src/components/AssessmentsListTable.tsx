@@ -240,12 +240,12 @@ const AssessmentsListTable = ({
                 statusTab={currentStatusTab}
                 index={[StatusTab.Past]}
               >
-                {(assessment.participant_submissions_summary
-                  .assessment_submission_state === 'Submitted' ||
-                  assessment.participant_submissions_summary
-                    .assessment_submission_state === 'Graded' ||
-                  assessment.participant_submissions_summary
-                    .assessment_submission_state === 'Expired') &&
+                {(assessment.participant_submissions_summary.highest_state ===
+                  'Submitted' ||
+                  assessment.participant_submissions_summary.highest_state ===
+                    'Graded' ||
+                  assessment.participant_submissions_summary.highest_state ===
+                    'Expired') &&
                   formatDateTime(
                     assessment.participant_submissions_summary
                       .most_recent_submitted_date
@@ -275,8 +275,7 @@ const AssessmentsListTable = ({
                 ]}
               >
                 {renderChipByStatus(
-                  assessment.participant_submissions_summary
-                    .assessment_submission_state
+                  assessment.participant_submissions_summary.highest_state
                 )}
               </TableCellWrapper>
               <TableCellWrapper
@@ -285,8 +284,7 @@ const AssessmentsListTable = ({
               >
                 {assessment.program_assessment.id &&
                   renderButtonByStatus(
-                    assessment.participant_submissions_summary
-                      .assessment_submission_state,
+                    assessment.participant_submissions_summary.highest_state,
                     Number(assessment.program_assessment.id)
                   )}
               </TableCellWrapper>

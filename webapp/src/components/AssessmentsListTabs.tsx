@@ -51,8 +51,7 @@ const AssessmentsListTabs = ({
               badgeContent={
                 assessmentList.filter(
                   x =>
-                    x.participant_submissions_summary
-                      .assessment_submission_state === 'Active'
+                    x.participant_submissions_summary.highest_state === 'Active'
                 ).length
               }
               color="primary"
