@@ -13,6 +13,8 @@ import {
   getAssessmentSubmission,
   getCurriculumAssessment,
   getPrincipalProgramRole,
+  updateProgramAssessment
+  
 } from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
@@ -63,7 +65,25 @@ assessmentsRouter.post('/program', async (req, res, next) => {
 assessmentsRouter.put(
   '/program/:programAssessmentId',
   async (req, res, next) => {
-    res.json();
+    const {programAssessmentId} = req.params;
+    const {principalId} = req.session;
+    const { completed } = req.body;
+    const programAssessmentIdParsed = Number(programAssessmentId);
+    if (!Number.isInteger(programAssessmentIdParsed) || programAssessmentIdParsed < 1) {
+      next(new BadRequestError(`"${programAssessmentIdParsed}" is not a valid program id.`));
+      return;
+    }
+    let updatedPrgramAssessment;
+   try{
+    updatedPrgramAssessment = await updateProgramAssessment
+
+   }catch (error) {
+      next(error);
+      return;
+   }
+
+   res.status(201).json(itemEnvelope(updatedPrgramAssessment));
+
   }
 );
 // Delete an existing ProgramAssessment
