@@ -810,13 +810,47 @@ export const updateAssessmentSubmission = async (
  * @param {CurriculumAssessment} curriculumAssessment - The updated curriculum
  *   assessment information with which to update the corresponding database
  *   data.
+ * @param {number} curriculumId - the id for the unique curriculum
+ * @param {number} activityId - the id for the unique activity
+ * @param {number} principalId - the unique id for the user
  * @returns {Promise<CurriculumAssessment>} The updated CurriculumAssessment
  *   object that was handed to us, if update was successful.
  */
 export const updateCurriculumAssessment = async (
-  curriculumAssessment: CurriculumAssessment
-): Promise<CurriculumAssessment> => {
-  return;
+  curriculumAssessments: CurriculumAssessment,
+  title: string,
+  description: string,
+  maxScore: number,
+  maxNumSubmissions: number,
+  timeLimit: number,
+  curriculumId: number,
+  activityId: number,
+  principalId: number,
+) => {
+  await db('curriculum_assessments')
+    .insert({
+      curriculum_assessments: curriculumAssessments,
+      title: title,
+      description: description,
+      max_score: maxScore,
+      max_num_submissions: maxNumSubmissions,
+      time_limit: timeLimit,
+      curriculum_id: curriculumId,
+      activity_id: activityId,
+      principal_id: principalId
+    })
+
+  const [curriculumAssessment] = await db("curriculum_assessments")
+    .select('id')
+    .where({
+      curriculum_id: curriculumId,
+      activity_id: activityId,
+      principal_id: principalId
+    });
+
+  return{
+    curriculumAssessmentId: curriculumAssessment.id,
+  };
 };
 
 /**
