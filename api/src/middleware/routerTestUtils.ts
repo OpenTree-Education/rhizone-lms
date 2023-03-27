@@ -4,6 +4,7 @@ import express, { NextFunction, Request, Response, Router } from 'express';
 import expressSession from 'express-session';
 import { Server, Socket } from 'socket.io';
 import { SuperAgent, SuperAgentRequest } from 'superagent';
+import { handleErrors } from './errorHandlingMiddleware';
 
 declare module 'supertest' {
   interface SuperTest<T extends SuperAgentRequest> extends SuperAgent<T> {
@@ -44,5 +45,6 @@ export const createAppAgentForRouter = (router: Router): SuperAgentTest => {
     next();
   });
   app.use(router);
+  app.use(handleErrors(() => null));
   return agent(server);
 };
