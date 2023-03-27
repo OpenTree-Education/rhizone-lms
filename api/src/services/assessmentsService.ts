@@ -13,10 +13,14 @@ import db from './db';
 // Helper functions
 
 /**
- * Determines whether or not a specific program assessment submission has expired and is no longer allowed to be updated by the participant.
+ * Determines whether or not a specific program assessment submission has
+ * expired and is no longer allowed to be updated by the participant.
  *
- * @param assessmentSubmissionId - The row ID of the assessment_submissions table for a given program assessment submission.
- * @returns {Promise<boolean>} If true, a participant should be prevented from submitting any updates to their program assessment submission, other than to mark it as "Expired" instead of "Opened" or "In Progress".
+ * @param assessmentSubmissionId - The row ID of the assessment_submissions
+ *   table for a given program assessment submission.
+ * @returns {Promise<boolean>} If true, a participant should be prevented from
+ *   submitting any updates to their program assessment submission, other than
+ *   to mark it as "Expired" instead of "Opened" or "In Progress".
  */
 const assessmentSubmissionExpired = async (
   assessmentSubmissionId: number
@@ -293,7 +297,7 @@ const listSubmissionResponses = async (
       'assessment_id',
       'question_id',
       'answer_id',
-      'response_text',
+      'response',
       'score',
       'grader_response'
     )
@@ -620,16 +624,16 @@ export const getCurriculumAssessment = async (
 ): Promise<CurriculumAssessment> => {
   const matchingCurriculumAssessmentRows = await db('curriculum_assessments')
     .select(
-      'title',
-      'assessment_type',
-      'max_score',
-      'max_num_submissions',
-      'time_limit',
-      'curriculum_id',
-      'activity_id',
-      'principal_id'
+      'curriculum_assessments.title',
+      'curriculum_assessments.max_score',
+      'curriculum_assessments.max_num_submissions',
+      'curriculum_assessments.time_limit',
+      'curriculum_assessments.curriculum_id',
+      'curriculum_assessments.activity_id',
+      'curriculum_assessments.principal_id'
     )
-    .where('id', curriculumAssessmentId);
+    .join('activities', 'curriculum_assessments.curriculum_id', 'activities.id')
+    .where('curriculum_assessments.id', curriculumAssessmentId);
 
   if (matchingCurriculumAssessmentRows.length === 0) {
     return null;
