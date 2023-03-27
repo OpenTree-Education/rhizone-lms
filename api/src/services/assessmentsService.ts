@@ -240,7 +240,6 @@ const listAssessmentQuestions = async (
   const listAssessmentAnswers = await db('assessment_answers')
     .select('id', 'question_id', 'title', 'description', 'sort_order')
     .whereIn('question_id', questionIds);
-  console.log(listAssessmentAnswers);
 
   matchinglistAssessmentQuestionsRows
     .filter(
@@ -634,21 +633,21 @@ export const getCurriculumAssessment = async (
     .join('activities', 'curriculum_assessments.curriculum_id', 'activities.id')
     .where('curriculum_assessments.id', curriculumAssessmentId);
 
-  const assessmentType = await db('activity_types')
-    .select('activity_types.title')
-    .join('activities', 'activities.activity_type_id', 'activity_types.id')
-    .where('activities.id', matchingCurriculumAssessmentRows[0].activity_id);
-
   if (matchingCurriculumAssessmentRows.length === 0) {
     return null;
   }
 
   const [matchingCurriculumAssessment] = matchingCurriculumAssessmentRows;
 
+  const [assessmentType] = await db('activity_types')
+    .select('activity_types.title')
+    .join('activities', 'activities.activity_type_id', 'activity_types.id')
+    .where('activities.id', matchingCurriculumAssessment.activity_id);
+
   const curriculumAssessment: CurriculumAssessment = {
     id: curriculumAssessmentId,
     title: matchingCurriculumAssessment.title,
-    assessment_type: assessmentType[0].title,
+    assessment_type: assessmentType.title,
     description: matchingCurriculumAssessment.description,
     max_score: matchingCurriculumAssessment.max_score,
     max_num_submissions: matchingCurriculumAssessment.max_num_submissions,
@@ -697,9 +696,8 @@ export const getPrincipalProgramRole = async (
   if (matchingRoleRows.length === 0) {
     return null;
   }
-  // console.log('matchingRoleRows', matchingRoleRows);
+
   const [matchingRole] = matchingRoleRows;
-  // console.log('matching', matchingRole);
 
   return matchingRole.title;
 };
