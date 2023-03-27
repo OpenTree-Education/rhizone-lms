@@ -30,6 +30,13 @@ import {
   exampleProgramParticipantRoleParticipantRow,
   facilitatorPrincipalId,
   participantPrincipalId,
+  matchingCurriculumAssessmentRows,
+  curriculumAssessmentId,
+  matchinglistAssessmentQuestionsRows,
+  matchinglistAssessmentQuestionsRow,
+  istAssessmentAnswers,
+  assessmenttype,
+  matchingCurriculumAssessmentRowsWithType,
 } from '../../assets/data';
 
 describe('assessmentsService', () => {
@@ -123,71 +130,29 @@ describe('assessmentsService', () => {
 
   describe('getCurriculumAssessment', () => {
     it('should select curriculum assessment based on given programAssessmentId', async () => {
-      const curriculumAssessmentId = 1;
       const questionsAndAllAnswersIncluded = true,
         questionsAndCorrectAnswersIncluded = true;
-      const facilitatorPrincipalId = 3;
 
-      const test = {
-        id: curriculumAssessmentId,
-        title: 'Assignment 1: React',
-        assessment_type: 'test',
-        description: 'Your assignment for week 1 learning.',
-        max_score: 10,
-        max_num_submissions: 1,
-        time_limit: 120,
-        curriculum_id: 3,
-        activity_id: 97,
-        principal_id: facilitatorPrincipalId,
-      };
-      const matchinglistAssessmentQuestionsRows = {
-        id: curriculumAssessmentId,
-        title: 'Assignment 1: React',
-        assessment_type: 'test',
-        description: 'Your assignment for week 1 learning.',
-        max_score: 10,
-        max_num_submissions: 1,
-        time_limit: 120,
-        curriculum_id: 3,
-        activity_id: 97,
-        principal_id: facilitatorPrincipalId,
-        questions: [
-          {
-            id: 1,
-            assessment_id: curriculumAssessmentId,
-            title: 'What is React?',
-            description: '',
-            question_type: 'single choice',
-            answers: [
-              {
-                id: 1,
-                question_id: 1,
-                title: 'A relational database management system',
-                description: '',
-                sort_order: 1,
-                correct_answer: true,
-              },
-            ],
-            correct_answer_id: 1,
-            max_score: 1,
-            sort_order: 1,
-          },
-        ],
-      };
       mockQuery(
-        'select `title`, `max_score`, `max_num_submissions`, `time_limit`, `curriculum_id`, `activity_id`, `principal_id` from `curriculum_assessments` where `id` = ? ',
+        'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
         [curriculumAssessmentId],
-        [test]
+        [matchingCurriculumAssessmentRows]
       );
       mockQuery(
-        'select `assessment_questions`.`id`, `assessment_questions`.`title`, `description`, `assessment_question_types`.`title` as `question_type`, `correct_answer_id`, `max_score`, `sort_order` from `assessment_questions` inner join `assessment_question_types` on `assessment_questions`.`question_type_id` = `assessment_question_types`.`id` where `assessment_questions`.`assessment_id` = ? ',
-        [curriculumAssessmentId],
-        []
+        'select `activity_types`.`title` from `activity_types` inner join `activities` on `activities`.`activity_type_id` = `activity_types`.`id` where `activities`.`id` = ?',
+        [matchingCurriculumAssessmentRows.activity_id],
+        [assessmenttype]
       );
+      mockQuery(
+        'select `assessment_questions`.`id`, `assessment_questions`.`title`, `description`, `assessment_question_types`.`title` as `question_type`, `correct_answer_id`, `max_score`, `sort_order` from `assessment_questions` inner join `assessment_question_types` on `assessment_questions`.`question_type_id` = `assessment_question_types`.`id` where `assessment_questions`.`assessment_id` = ?',
+        [curriculumAssessmentId],
+        [matchinglistAssessmentQuestionsRow]
+      );
+
       mockQuery(
         'select `id`, `question_id`, `title`, `description`, `sort_order` from `assessment_answers` where `question_id` in (?)',
-        [matchinglistAssessmentQuestionsRows.questions[0].id],
-        []
+        [matchinglistAssessmentQuestionsRow.id],
+        [istAssessmentAnswers]
       );
 
       expect(
