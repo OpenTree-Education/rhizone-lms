@@ -36,6 +36,7 @@ import {
   matchinglistAssessmentQuestionsRow,
   istAssessmentAnswers,
   assessmenttype,
+  unenrolledPrincipalId,
 } from '../../assets/data';
 
 describe('assessmentsService', () => {
@@ -52,6 +53,32 @@ describe('assessmentsService', () => {
   describe('deleteCurriculumAssessment', () => {});
 
   describe('deleteProgramAssessment', () => {});
+
+  describe('findProgramAssessment', () => {
+    it('should return a ProgramAssessment for an existing program assessment ID', async () => {
+      mockQuery(
+        'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
+        [exampleProgramAssessment.id],
+        [exampleProgramAssessmentsRow]
+      );
+
+      expect(await findProgramAssessment(exampleProgramAssessment.id)).toEqual(
+        exampleProgramAssessment
+      );
+    });
+
+    it('should return null for a program assessment ID that does not exist', async () => {
+      mockQuery(
+        'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
+        [exampleProgramAssessment.id],
+        []
+      );
+
+      expect(await findProgramAssessment(exampleProgramAssessment.id)).toEqual(
+        null
+      );
+    });
+  });
 
   describe('getAssessmentSubmission', () => {
     it('should get assessment submission based on given submission ID', async () => {
@@ -79,19 +106,21 @@ describe('assessmentsService', () => {
         )
       ).toEqual(exampleAssessmentSubmissionGraded);
     });
-  });
 
-  describe('findProgramAssessment', () => {
-    it('should get program assessment for a given program assessment ID', async () => {
+    it('should return null for a assessment submission ID that does not exist', async () => {
       mockQuery(
-        'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
-        [exampleProgramAssessment.id],
-        [exampleProgramAssessmentsRow]
+        'select `assessment_id`, `principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
+        [exampleAssessmentSubmissionGraded.id],
+        []
       );
 
-      expect(await findProgramAssessment(exampleProgramAssessment.id)).toEqual(
-        exampleProgramAssessment
-      );
+      expect(
+        await getAssessmentSubmission(
+          exampleAssessmentSubmissionGraded.id,
+          true,
+          true
+        )
+      ).toEqual(null);
     });
   });
 
@@ -125,10 +154,25 @@ describe('assessmentsService', () => {
         )
       ).toEqual('Participant');
     });
+
+    it('should return null for a user not enrolled in the program', async () => {
+      mockQuery(
+        'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
+        [unenrolledPrincipalId, exampleProgramAssessment.program_id],
+        []
+      );
+
+      expect(
+        await getPrincipalProgramRole(
+          unenrolledPrincipalId,
+          exampleProgramAssessment.program_id
+        )
+      ).toEqual(null);
+    });
   });
 
   describe('getCurriculumAssessment', () => {
-    it('should select curriculum assessment based on given programAssessmentId', async () => {
+    it('should return a CurriculumAssessment for an existing curriculum assessment ID', async () => {
       const questionsAndAllAnswersIncluded = true,
         questionsAndCorrectAnswersIncluded = true;
 
@@ -161,6 +205,18 @@ describe('assessmentsService', () => {
           questionsAndCorrectAnswersIncluded
         )
       ).toEqual(matchinglistAssessmentQuestionsRows);
+    });
+
+    it('should return null for a curriculum assessment ID that does not exist', async () => {
+      mockQuery(
+        'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
+        [curriculumAssessmentId],
+        []
+      );
+
+      expect(
+        await getCurriculumAssessment(curriculumAssessmentId, true, true)
+      ).toEqual(null);
     });
   });
 

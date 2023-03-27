@@ -633,21 +633,21 @@ export const getCurriculumAssessment = async (
     .join('activities', 'curriculum_assessments.curriculum_id', 'activities.id')
     .where('curriculum_assessments.id', curriculumAssessmentId);
 
-  const assessmentType = await db('activity_types')
-    .select('activity_types.title')
-    .join('activities', 'activities.activity_type_id', 'activity_types.id')
-    .where('activities.id', matchingCurriculumAssessmentRows[0].activity_id);
-
   if (matchingCurriculumAssessmentRows.length === 0) {
     return null;
   }
 
   const [matchingCurriculumAssessment] = matchingCurriculumAssessmentRows;
 
+  const [assessmentType] = await db('activity_types')
+    .select('activity_types.title')
+    .join('activities', 'activities.activity_type_id', 'activity_types.id')
+    .where('activities.id', matchingCurriculumAssessment.activity_id);
+
   const curriculumAssessment: CurriculumAssessment = {
     id: curriculumAssessmentId,
     title: matchingCurriculumAssessment.title,
-    assessment_type: assessmentType[0].title,
+    assessment_type: assessmentType.title,
     description: matchingCurriculumAssessment.description,
     max_score: matchingCurriculumAssessment.max_score,
     max_num_submissions: matchingCurriculumAssessment.max_num_submissions,
