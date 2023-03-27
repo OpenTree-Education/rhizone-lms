@@ -240,7 +240,6 @@ const listAssessmentQuestions = async (
   const listAssessmentAnswers = await db('assessment_answers')
     .select('id', 'question_id', 'title', 'description', 'sort_order')
     .whereIn('question_id', questionIds);
-  console.log(listAssessmentAnswers);
 
   matchinglistAssessmentQuestionsRows
     .filter(
@@ -697,9 +696,8 @@ export const getPrincipalProgramRole = async (
   if (matchingRoleRows.length === 0) {
     return null;
   }
-  // console.log('matchingRoleRows', matchingRoleRows);
+
   const [matchingRole] = matchingRoleRows;
-  // console.log('matching', matchingRole);
 
   return matchingRole.title;
 };

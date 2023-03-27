@@ -186,8 +186,8 @@ describe('assessmentsRouter', () => {
       const participantSubmittedAssessmentSubmission: SavedAssessment = {
         curriculum_assessment: exampleCurriculumAssessmentWithQuestions,
         program_assessment: exampleProgramAssessment,
-        submission: exampleAssessmentSubmissionSubmitted,
         principal_program_role: 'Participant',
+        submission: exampleAssessmentSubmissionSubmitted,
       };
 
       mockGetAssessmentSubmission.mockResolvedValue(
@@ -238,8 +238,8 @@ describe('assessmentsRouter', () => {
       const participantGradedAssessmentSubmission: SavedAssessment = {
         curriculum_assessment: exampleCurriculumAssessmentWithCorrectAnswers,
         program_assessment: exampleProgramAssessment,
-        submission: exampleAssessmentSubmissionGraded,
         principal_program_role: 'Participant',
+        submission: exampleAssessmentSubmissionGraded,
       };
 
       mockGetAssessmentSubmission.mockResolvedValue(
