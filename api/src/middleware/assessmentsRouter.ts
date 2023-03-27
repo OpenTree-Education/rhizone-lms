@@ -38,53 +38,15 @@ assessmentsRouter.post('/curriculum', async (req, res, next) => {
 assessmentsRouter.put(
   '/curriculum/:curriculumAssessmentId',
   async (req, res, next) => {
-    const { principalId } = req.session;
-    const { curriculumId, activityId } = req.body;
-    const { curriculumAssessments,
-      title,
-      description,
-      maxScore,
-      maxNumSubmissions,
-      timeLimit } = req.body;
+    const { curriculumAssessment } = req.body;
 
-    const curriculumIdNum = Number(curriculumId);
-    const activityIdNum = Number(activityId);
-    const maxScoreNum = Number(maxScore);
-    const maxNumSubmissionsNum = Number(maxNumSubmissions);
-
-    if (!Number.isInteger(curriculumIdNum) || curriculumIdNum < 1) {
-      next(new BadRequestError(`"${curriculumIdNum}" is not a valid curriculum id.`));
-      return;
-    }
-
-    if (!Number.isInteger(activityIdNum) || activityIdNum < 1) {
-      next(new BadRequestError(`"${activityId}" is not a valid activity id.`));
-      return;
-    }
-
-    if (!Number.isInteger(maxScoreNum) || maxScoreNum < 1) {
-      next(new BadRequestError(`"${maxScore}" is not a valid score.`));
-      return;
-    }
-
-    if (!Number.isInteger(maxNumSubmissionsNum) || maxNumSubmissionsNum < 1) {
-      next(new BadRequestError(`"${maxScore}" is not a valid number of submissions.`));
-      return;
-    }
+    const getCurriculumAssessment = Number(curriculumAssessment);
 
     let updateExistingCurriculumAssessment;
 
     try {
       updateExistingCurriculumAssessment = await updateCurriculumAssessment(
-        curriculumAssessments,
-        title,
-        description,
-        maxScore,
-        maxNumSubmissions,
-        timeLimit,
-        curriculumId,
-        activityId,
-        principalId,
+        curriculumAssessment,
       );
     } catch (error) {
       next(error);
