@@ -1,4 +1,44 @@
-import { AssessmentWithSummary, SavedAssessment } from '../types/api';
+import {
+  AssessmentSubmission,
+  AssessmentWithSummary,
+  SavedAssessment,
+} from '../types/api';
+
+export const submissionsExample: AssessmentSubmission[] = [
+  {
+    id: 17,
+    assessment_id: 1,
+    principal_id: 3,
+    assessment_submission_state: 'Graded',
+    score: 7,
+    opened_at: '2023-03-15 01:23:45',
+    submitted_at: '2023-03-15 02:32:54',
+  },
+  {
+    id: 18,
+    assessment_id: 1,
+    principal_id: 3,
+    assessment_submission_state: 'Submitted',
+    opened_at: '2023-03-15 07:45:00',
+    submitted_at: '2023-03-15 08:15:00',
+  },
+  {
+    id: 19,
+    assessment_id: 1,
+    principal_id: 4,
+    assessment_submission_state: 'Submitted',
+    opened_at: '2023-03-15 07:45:00',
+    submitted_at: '2023-03-15 08:15:00',
+  },
+  {
+    id: 20,
+    assessment_id: 1,
+    principal_id: 5,
+    assessment_submission_state: 'Submitted',
+    opened_at: '2023-03-15 07:45:00',
+    submitted_at: '2023-03-15 08:15:00',
+  },
+];
 
 export const assessmentListPageExampleData: AssessmentWithSummary[] = [
   {

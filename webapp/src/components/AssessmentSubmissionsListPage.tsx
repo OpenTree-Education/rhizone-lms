@@ -14,7 +14,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
-import { assessmentDetailPageExampleData } from '../assets/data';
+import {
+  assessmentDetailPageExampleData,
+  submissionsExample,
+} from '../assets/data';
 import { renderChipByStatus } from './AssessmentsListTable';
 import { AssessmentWithSubmissions } from '../types/api';
 import { formatDateTime } from '../helpers/dateTime';
@@ -35,47 +38,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
     backgroundColor: theme.palette.action.hover,
   },
-  // hide last border
   '&:last-child td, &:last-child th': {
     border: 0,
   },
 }));
-
-const submissionsExample = [
-  {
-    id: 17,
-    assessment_id: 1,
-    principal_id: 3,
-    assessment_submission_state: 'Graded',
-    score: 7,
-    opened_at: '2023-03-15 01:23:45',
-    submitted_at: '2023-03-15 02:32:54',
-  },
-  {
-    id: 18,
-    assessment_id: 1,
-    principal_id: 3,
-    assessment_submission_state: 'Submitted',
-    opened_at: '2023-03-15 07:45:00',
-    submitted_at: '2023-03-15 08:15:00',
-  },
-  {
-    id: 19,
-    assessment_id: 1,
-    principal_id: 4,
-    assessment_submission_state: 'Submitted',
-    opened_at: '2023-03-15 07:45:00',
-    submitted_at: '2023-03-15 08:15:00',
-  },
-  {
-    id: 20,
-    assessment_id: 1,
-    principal_id: 5,
-    assessment_submission_state: 'Submitted',
-    opened_at: '2023-03-15 07:45:00',
-    submitted_at: '2023-03-15 08:15:00',
-  },
-];
 
 const AssessmentSubmissionsListPage = () => {
   const { assessmentId } = useParams();
