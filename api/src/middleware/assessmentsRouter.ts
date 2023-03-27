@@ -9,7 +9,11 @@ import {
 } from './httpErrors';
 import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
 
-import { CurriculumAssessment, ProgramAssessment, SavedAssessment } from '../models';
+import {
+  CurriculumAssessment,
+  ProgramAssessment,
+  SavedAssessment,
+} from '../models';
 import {
   findProgramAssessment,
   getAssessmentSubmission,
@@ -17,8 +21,7 @@ import {
   getPrincipalProgramRole,
   listPrincipalEnrolledProgramIds,
   listProgramAssessments,
-  updateCurriculumAssessment
-
+  updateCurriculumAssessment,
 } from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
@@ -44,17 +47,20 @@ assessmentsRouter.post('/curriculum', async (req, res, next) => {
 assessmentsRouter.put(
   '/curriculum/:curriculumAssessmentId',
   async (req, res, next) => {
-
     // step 1: get the principal ID number
     const { principalId } = req.session;
 
     // step 2: get the curriculum assessment ID number from the URL parameters
     const { curriculumAssessmentId } = req.params;
 
-    // step 3: parse the curriculum assessment ID number to ensure it's an integer
+    // step 3: parse the curriculum assessment ID number
+    // to ensure it's an integer
     const curriculumAssessmentIdParsed = Number(curriculumAssessmentId);
 
-    if (!Number.isInteger(curriculumAssessmentIdParsed) || curriculumAssessmentIdParsed < 1) {
+    if (
+      !Number.isInteger(curriculumAssessmentIdParsed) ||
+      curriculumAssessmentIdParsed < 1
+    ) {
       next(
         new BadRequestError(
           `"${curriculumAssessmentIdParsed}" is not a valid curriculum assessment ID.`
@@ -63,22 +69,27 @@ assessmentsRouter.put(
       return;
     }
 
-    // step 4: get the curriculum assessment that we receive through the request body
+    // step 4: get the curriculum assessment that we receive
+    // through the request body
     const curriculumAssessmentFromUser = req.body;
 
-    const isACurriculumAssessment = (possibleAssessment: unknown): possibleAssessment is CurriculumAssessment => {
+    const isACurriculumAssessment = (
+      possibleAssessment: unknown
+    ): possibleAssessment is CurriculumAssessment => {
       return (possibleAssessment as CurriculumAssessment).id !== undefined;
-    }
+    };
 
     if (!isACurriculumAssessment(curriculumAssessmentFromUser)) {
-      next(
-        new ValidationError(`Was not given a valid curriculum assessment.`)
-      );
+      next(new ValidationError(`Was not given a valid curriculum assessment.`));
       return;
     }
 
-    // step 5: check to make sure the curriculum assessment already exists because our route is in charge of updating an *existing* curriculum assessment, so error out if the curriculum assessment doesn't exist
-    const curriculumAssessmentExisting = getCurriculumAssessment(curriculumAssessmentIdParsed);
+    // step 5: check to make sure the curriculum assessment already exists
+    // because our route is in charge of updating an *existing* curriculum
+    // assessment, so error out if the curriculum assessment doesn't exist
+    const curriculumAssessmentExisting = getCurriculumAssessment(
+      curriculumAssessmentIdParsed
+    );
 
     if (!curriculumAssessmentExisting) {
       next(
@@ -89,26 +100,31 @@ assessmentsRouter.put(
       return;
     }
 
-    // step 6: make sure the user is the facilitator of a program that uses this curriculum assessment
-    const participatingProgramIds = await listPrincipalEnrolledProgramIds(principalId);
+    // step 6: make sure the user is the facilitator of a program that uses
+    // this curriculum assessment
+    const participatingProgramIds = await listPrincipalEnrolledProgramIds(
+      principalId
+    );
 
     const allFacilitatorProgramAssessments: ProgramAssessment[] = [];
 
     participatingProgramIds.forEach(async programId => {
-      const programRole = await getPrincipalProgramRole(
-        principalId,
-        programId
-      );
+      const programRole = await getPrincipalProgramRole(principalId, programId);
 
-      if (programRole === "Facilitator") {
-        const programAssessmentsForProgram = await listProgramAssessments(programId);
+      if (programRole === 'Facilitator') {
+        const programAssessmentsForProgram = await listProgramAssessments(
+          programId
+        );
         programAssessmentsForProgram.forEach(programAssessment => {
           allFacilitatorProgramAssessments.push(programAssessment);
         });
       }
     });
 
-    const matchingProgramAssessments = allFacilitatorProgramAssessments.filter((programAssessment) => programAssessment.assessment_id === curriculumAssessmentIdParsed);
+    const matchingProgramAssessments = allFacilitatorProgramAssessments.filter(
+      programAssessment =>
+        programAssessment.assessment_id === curriculumAssessmentIdParsed
+    );
 
     // If there are no matching program assessments with this curriculum ID,
     // then we are not facilitator of any programs where we can modify this
@@ -123,11 +139,17 @@ assessmentsRouter.put(
     }
 
     // step 7: update the curriculum assessment, its questions, and its answers
-    const updatedCurriculumAssessment: CurriculumAssessment = await updateCurriculumAssessment(curriculumAssessmentFromUser)
+    const updatedCurriculumAssessment: CurriculumAssessment =
+      await updateCurriculumAssessment(curriculumAssessmentFromUser);
 
-    // step 8: return the updated curriculum assessment to the user, including questions and answers
+    // step 8: return the updated curriculum assessment to the user,
+    // including questions and answers
     if (!updatedCurriculumAssessment) {
-      next(new InternalServerError(`Could not update curriculum assessment with ID ${curriculumAssessmentIdParsed}`));
+      next(
+        new InternalServerError(
+          `Could not update curriculum assessment with ID ${curriculumAssessmentIdParsed}`
+        )
+      );
       return;
     }
 
