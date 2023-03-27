@@ -198,8 +198,6 @@ describe('assessmentsRouter', () => {
       mockGetCurriculumAssessment.mockResolvedValue(
         exampleCurriculumAssessmentWithQuestions
       );
-      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
-      mockGetPrincipalProgramRole.mockResolvedValue('Participant');
 
       mockPrincipalId(participantPrincipalId);
 
@@ -331,7 +329,6 @@ describe('assessmentsRouter', () => {
 
       appAgent
         .get(`/submissions/${exampleAssessmentSubmissionSubmitted.id}`)
-        .set('Accept', 'application/json')
         .expect(
           401,
           errorEnvelope(
@@ -352,6 +349,40 @@ describe('assessmentsRouter', () => {
               exampleProgramAssessment.program_id
             );
 
+            done(err);
+          }
+        );
+    });
+    it('should respond with an Unauthorized Error if logged-in principal id is not enrolled in the program', done => {
+      const programId = 1;
+      mockGetAssessmentSubmission.mockResolvedValue(
+        exampleAssessmentSubmissionSubmitted
+      );
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue(null);
+
+      mockPrincipalId(participantPrincipalId);
+
+      appAgent
+        .get(`/submissions/${exampleAssessmentSubmissionSubmitted.id}`)
+        .expect(
+          401,
+          errorEnvelope(
+            `Could not access submission with ID ${exampleAssessmentSubmissionSubmitted.id}.`
+          ),
+          err => {
+            expect(mockGetAssessmentSubmission).toHaveBeenCalledWith(
+              exampleAssessmentSubmissionSubmitted.id,
+              true
+            );
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.id
+            );
+
+            expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+              participantPrincipalId,
+              programId
+            );
             done(err);
           }
         );
