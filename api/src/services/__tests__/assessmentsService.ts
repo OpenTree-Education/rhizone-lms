@@ -36,7 +36,6 @@ import {
   matchinglistAssessmentQuestionsRow,
   istAssessmentAnswers,
   assessmenttype,
-  matchingCurriculumAssessmentRowsWithType,
 } from '../../assets/data';
 
 describe('assessmentsService', () => {

@@ -18,16 +18,6 @@ export const exampleProgramParticipantRoleFacilitatorRow = {
   title: 'Facilitator',
 };
 export const assessmenttype = { title: 'test' };
-export const matchingCurriculumAssessmentRowsWithType = {
-  title: 'Your assignment for week 1 learning.',
-  assessment_type: assessmenttype.title,
-  max_score: 10,
-  max_num_submissions: 1,
-  time_limit: 120,
-  curriculum_id: 3,
-  activity_id: 97,
-  principal_id: 2,
-};
 export const matchingCurriculumAssessmentRows = {
   title: 'Assignment 1: React',
   description: 'Your assignment for week 1 learning.',
