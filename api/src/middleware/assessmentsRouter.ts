@@ -13,6 +13,8 @@ import {
   getAssessmentSubmission,
   getCurriculumAssessment,
   getPrincipalProgramRole,
+  listParticipantProgramAssessmentSubmissions,
+  createAssessmentSubmission,
 } from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
@@ -85,7 +87,136 @@ assessmentsRouter.get(
 assessmentsRouter.get(
   '/program/:programAssessmentId/submissions/new',
   async (req, res, next) => {
-    res.json();
+    // get the principal row ID number
+    const { principalId } = req.session;
+
+    // get and parse the program assessment row ID number
+    const { programAssessmentId } = req.params;
+
+    const programAssessmentIdParsed = Number(programAssessmentId);
+
+    if (
+      !Number.isInteger(programAssessmentIdParsed) ||
+      programAssessmentIdParsed < 1
+    ) {
+      next(
+        new BadRequestError(
+          `"${programAssessmentIdParsed}" is not a valid program assessment ID.`
+        )
+      );
+      return;
+    }
+
+    try {
+      const programAssessment = await findProgramAssessment(
+        programAssessmentIdParsed
+      );
+
+      if (!programAssessment) {
+        next(
+          new NotFoundError(
+            `Could not find program assessment with ID ${programAssessmentIdParsed}.`
+          )
+        );
+        return;
+      }
+
+      if (new Date(programAssessment.available_after + 'Z') > new Date()) {
+        next(
+          new UnauthorizedError(
+            `Could not create a new submission of an assessment that's not yet available.`
+          )
+        );
+        return;
+      }
+
+      if (new Date(programAssessment.due_date + 'Z') < new Date()) {
+        next(
+          new UnauthorizedError(
+            `Could not create a new submission of an assessment that passed due date.`
+          )
+        );
+        return;
+      }
+
+      const programRole = await getPrincipalProgramRole(
+        principalId,
+        programAssessment.program_id
+      );
+
+      if (!programRole) {
+        next(
+          new UnauthorizedError(
+            `Could not access program accessment with ID ${programAssessmentIdParsed}.`
+          )
+        );
+        return;
+      }
+
+      if (programRole === 'Facilitator') {
+        next(
+          new UnauthorizedError(
+            `Could not create a new submission as a facilitator.`
+          )
+        );
+        return;
+      }
+
+      // for this route as participent, we do not need its answer and correct answers.
+      const includeQuestionsAndAllAnswers = false;
+      const includeQuestionsAndCorrectAnswers = false;
+
+      // get the curriculum assessment
+      const curriculumAssessment = await getCurriculumAssessment(
+        programAssessmentIdParsed,
+        includeQuestionsAndAllAnswers,
+        includeQuestionsAndCorrectAnswers
+      );
+
+      // get the list of the programm assessment submission
+      const assessmentSubmissions =
+        await listParticipantProgramAssessmentSubmissions(
+          principalId,
+          programAssessment.id
+        );
+
+      if (
+        !assessmentSubmissions &&
+        assessmentSubmissions.length >= curriculumAssessment.max_num_submissions
+      ) {
+        next(
+          new UnauthorizedError(
+            `Could not create a new submission becasue it has reach the maximum number of submission.`
+          )
+        );
+        return;
+      }
+
+      if (
+        assessmentSubmissions.some(
+          a =>
+            a.assessment_submission_state === 'Opened' ||
+            a.assessment_submission_state === 'In Progress'
+        )
+      ) {
+        next(
+          new UnauthorizedError(
+            `Could not create a new submission becasue an Opened/In Progress submission alreay exisits.`
+          )
+        );
+        return;
+      }
+
+      const newSubmission = await createAssessmentSubmission(
+        principalId,
+        programAssessmentIdParsed
+      );
+
+      res.json(itemEnvelope(newSubmission));
+    } catch (err) {
+      next(err);
+      return;
+    }
   }
 );
 
