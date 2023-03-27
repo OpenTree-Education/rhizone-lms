@@ -82,6 +82,52 @@ describe('assessmentsRouter', () => {
   describe('PUT /program/:programAssessmentId', () => {});
   describe('DELETE /program/:programAssessmentId', () => {});
 
+  describe('DELETE /program/:programAssessmentId', () => {
+    it('should delete a program assessment in the system if logged-in user is facilitator of that program', done => {
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
+
+      mockPrincipalId(facilitatorPrincipalId);
+      appAgent
+        .delete(`/${exampleProgramAssessment.id}`)
+        .expect(204, null, err => {
+          expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+            exampleProgramAssessment.id
+          );
+          expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            exampleProgramAssessment.program_id
+          );
+          expect(mockDeleteProgramAssessment).toHaveBeenCalledWith(
+            exampleProgramAssessment.id
+          );
+          done(err);
+        });
+    });
+
+    it('should return an error if logged-in user is not a facilitator of that program', done => {
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue('Participant');
+
+      mockPrincipalId(participantPrincipalId);
+      appAgent
+        .delete(`/${exampleProgramAssessment.id}`)
+        .expect(
+          401,
+          errorEnvelope('The requester does not have access to the resource.'),
+          err => {
+          expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+            exampleProgramAssessment.id
+          );
+          expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+            participantPrincipalId,
+            exampleProgramAssessment.program_id
+          );
+          done(err);
+        });
+    });
+  });
+
   describe('GET /program/:programAssessmentId/submissions', () => {});
   describe('GET /program/:programAssessmentId/submissions/new', () => {});
 
