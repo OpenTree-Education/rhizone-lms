@@ -5,7 +5,7 @@ import db from './db';
 
 /**
  * Determines whether or not a specific program assessment submission has expired and is no longer allowed to be updated by the participant.
- * 
+ *
  * @param assessmentSubmissionId - The row ID of the assessment_submissions table for a given program assessment submission.
  * @returns {Promise<boolean>} If true, a participant should be prevented from submitting any updates to their program assessment submission, other than to mark it as "Expired" instead of "Opened" or "In Progress".
  */
@@ -106,7 +106,7 @@ const listSubmissionResponses = async (submissionId: number, gradingsIncluded?: 
   const matchingAssessmentSubmissionsRows = await db('assessment_responses')
   .select('id','assessment_id','question_id','answer_id','response_text','score','grader_response')
   .where('submission_id', submissionId);
-  
+
   if (matchingAssessmentSubmissionsRows.length === 0) {
     return null;
   }
@@ -212,9 +212,9 @@ export const deleteCurriculumAssessment = async (curriculumAssessmentId: number)
  */
 //export const deleteProgramAssessment = async (programAssessmentId: number): Promise<void> => { return; };
 
-export const deleteProgramAssessment = async (programAssessmentId: number): Promise<void> => { 
+export const deleteProgramAssessment = async (programAssessmentId: number): Promise<void> => {
   const matchingProgramAssessmentsRows = await db('program_assessments').select('program_id', 'assessment_id', 'available_after', 'due_date').where('id', programAssessmentId);
-  
+
   if (matchingProgramAssessmentsRows.length === 0) {
     return null;
   }};
@@ -227,13 +227,13 @@ export const deleteProgramAssessment = async (programAssessmentId: number): Prom
  */
 export const findProgramAssessment = async (programAssessmentId: number): Promise<ProgramAssessment> => {
   const matchingProgramAssessmentsRows = await db('program_assessments').select('program_id', 'assessment_id', 'available_after', 'due_date').where('id', programAssessmentId);
-  
+
   if (matchingProgramAssessmentsRows.length === 0) {
     return null;
   }
-  
+
   const [programAssessmentRow] = matchingProgramAssessmentsRows;
-  
+
   const programAssessment: ProgramAssessment = {
     id: programAssessmentId,
     program_id: programAssessmentRow.program_id,
@@ -241,7 +241,7 @@ export const findProgramAssessment = async (programAssessmentId: number): Promis
     available_after: programAssessmentRow.available_after,
     due_date: programAssessmentRow.due_date
   };
-  
+
   return programAssessment;
 };
 
@@ -255,13 +255,13 @@ export const findProgramAssessment = async (programAssessmentId: number): Promis
  */
 export const getAssessmentSubmission = async (assessmentSubmissionId: number, responsesIncluded?: boolean, gradingsIncluded?: boolean): Promise<AssessmentSubmission> => {
   const matchingAssessmentSubmissionsRows = await db('assessment_submissions').join('assessment_submission_states', 'assessment_submissions.assessment_submission_state_id', 'assessment_submission_states.id').select('assessment_id', 'principal_id', 'assessment_submission_states.title as assessment_submission_state', 'score', 'opened_at', 'submitted_at').where('assessment_submissions.id', assessmentSubmissionId);
-  
+
   if (matchingAssessmentSubmissionsRows.length === 0) {
     return null;
   }
-  
+
   const [assessmentSubmissionRow] = matchingAssessmentSubmissionsRows;
-  
+
   const assessmentSubmission: AssessmentSubmission = {
     id: assessmentSubmissionId,
     assessment_id: assessmentSubmissionRow.assessment_id,
@@ -275,7 +275,7 @@ export const getAssessmentSubmission = async (assessmentSubmissionId: number, re
   if (responsesIncluded) {
     assessmentSubmission.responses = await listSubmissionResponses(assessmentSubmissionId, gradingsIncluded);
   }
-  
+
   return assessmentSubmission;
 };
 
@@ -287,7 +287,7 @@ export const getAssessmentSubmission = async (assessmentSubmissionId: number, re
  * @param {boolean} [questionsAndCorrectAnswersIncluded] - Optional specifier to determine whether or not the correct answer information for the curriculum assessment questions will be included in the returned object.
  * @returns {Promise<CurriculumAssessment>} The CurriculumAssessment representation of that curriculum assessment, or null if no matching curriculum assessment was found.
  */
-export const getCurriculumAssessment = async (curriculumAssessmentId: number, questionsAndAllAnswersIncluded?: boolean, questionsAndCorrectAnswersIncluded?: boolean): Promise<CurriculumAssessment> => { 
+export const getCurriculumAssessment = async (curriculumAssessmentId: number, questionsAndAllAnswersIncluded?: boolean, questionsAndCorrectAnswersIncluded?: boolean): Promise<CurriculumAssessment> => {
   const matchingCurriculumAssessmentRows = await db(
     'curriculum_assessments'
   ).select(
@@ -300,7 +300,7 @@ export const getCurriculumAssessment = async (curriculumAssessmentId: number, qu
     'activity_id',
     'principal_id',
   ).where('id', curriculumAssessmentId);
-  
+
   if (matchingCurriculumAssessmentRows.length === 0) {
     return null;
   }
@@ -402,3 +402,23 @@ export const updateCurriculumAssessment = async (curriculumAssessment: Curriculu
  * @returns {Promise<ProgramAssessment>} The updated ProgramAssessment object that was handed to us, if update was successful.
  */
 export const updateProgramAssessment = async (programAssessment: CurriculumAssessment): Promise<ProgramAssessment> => { return; };
+
+
+export const getProgramIdByProgramAssessmentId = async (AssessmentId: number): Promise<number> => {
+  const matchingIdRows = await db('curriculum_assessments')
+    .select('program_assessments.program_id')
+    .join(
+      'program_assessments',
+      'program_assessments.assessment_id',
+      'curriculum_assessments.id'
+    )
+    .where({ id: AssessmentId });
+
+  if (matchingIdRows.length === 0) {
+    return null;
+  }
+
+  const [matchingId] = matchingIdRows;
+
+  return matchingId.id;
+};
