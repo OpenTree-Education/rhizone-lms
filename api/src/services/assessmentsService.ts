@@ -812,7 +812,16 @@ export const updateAssessmentSubmission = async (
 export const updateCurriculumAssessment = async (
   curriculumAssessment: CurriculumAssessment
 ): Promise<CurriculumAssessment> => {
-  return;
+  // need to loop through and call updateAssessmentQuestion for each question that exists;
+  // need to createAssessmentQuestion for each question that does not exist;
+
+  // need to update the curriculum_assessments table with any updated data for the curriculum assessment (refer to DB/model).
+  // assessment_type_id turns into assessment_type. ignore assessment_type.
+
+  // refer to implementation of getCurriculumAssessment for knowledge on joins
+  // (data in two different database tables that relate to one another), differences between database table and data type
+
+  return null;
 };
 
 /**
