@@ -30,7 +30,7 @@ export const matchingCurriculumAssessmentRows = {
 };
 export const curriculumAssessmentId = 1;
 
-export const matchinglistAssessmentQuestionsRows = {
+export const exampleCurriculumAssessmentWithQuestion: CurriculumAssessment = {
   id: curriculumAssessmentId,
   title: 'Assignment 1: React',
   assessment_type: 'test',
@@ -65,7 +65,7 @@ export const matchinglistAssessmentQuestionsRows = {
   ],
 };
 
-export const matchinglistAssessmentQuestionsRow = {
+export const matchingAssessmentQuestionsRow = {
   id: 1,
   title: 'What is React?',
   description: '',
@@ -75,7 +75,7 @@ export const matchinglistAssessmentQuestionsRow = {
   sort_order: 1,
 };
 
-export const istAssessmentAnswers = {
+export const matchingAssessmentAnswersRow = {
   id: 1,
   question_id: 1,
   title: 'A relational database management system',

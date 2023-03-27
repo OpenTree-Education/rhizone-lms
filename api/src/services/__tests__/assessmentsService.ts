@@ -32,9 +32,9 @@ import {
   participantPrincipalId,
   matchingCurriculumAssessmentRows,
   curriculumAssessmentId,
-  matchinglistAssessmentQuestionsRows,
-  matchinglistAssessmentQuestionsRow,
-  istAssessmentAnswers,
+  exampleCurriculumAssessmentWithQuestion,
+  matchingAssessmentQuestionsRow,
+  matchingAssessmentAnswersRow,
   unenrolledPrincipalId,
 } from '../../assets/data';
 
@@ -183,18 +183,18 @@ describe('assessmentsService', () => {
       mockQuery(
         'select `activity_types`.`title` from `activity_types` inner join `activities` on `activities`.`activity_type_id` = `activity_types`.`id` where `activities`.`id` = ?',
         [matchingCurriculumAssessmentRows.activity_id],
-        [{ title: matchinglistAssessmentQuestionsRows.assessment_type }]
+        [{ title: exampleCurriculumAssessmentWithQuestion.assessment_type }]
       );
       mockQuery(
         'select `assessment_questions`.`id`, `assessment_questions`.`title`, `description`, `assessment_question_types`.`title` as `question_type`, `correct_answer_id`, `max_score`, `sort_order` from `assessment_questions` inner join `assessment_question_types` on `assessment_questions`.`question_type_id` = `assessment_question_types`.`id` where `assessment_questions`.`assessment_id` = ?',
         [curriculumAssessmentId],
-        [matchinglistAssessmentQuestionsRow]
+        [matchingAssessmentQuestionsRow]
       );
 
       mockQuery(
         'select `id`, `question_id`, `title`, `description`, `sort_order` from `assessment_answers` where `question_id` in (?)',
-        [matchinglistAssessmentQuestionsRow.id],
-        [istAssessmentAnswers]
+        [matchingAssessmentQuestionsRow.id],
+        [matchingAssessmentAnswersRow]
       );
 
       expect(
@@ -203,7 +203,7 @@ describe('assessmentsService', () => {
           questionsAndAllAnswersIncluded,
           questionsAndCorrectAnswersIncluded
         )
-      ).toEqual(matchinglistAssessmentQuestionsRows);
+      ).toEqual(exampleCurriculumAssessmentWithQuestion);
     });
 
     it('should return null for a curriculum assessment ID that does not exist', async () => {
