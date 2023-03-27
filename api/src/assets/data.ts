@@ -17,7 +17,7 @@ export const exampleProgramParticipantRoleParticipantRow = {
 export const exampleProgramParticipantRoleFacilitatorRow = {
   title: 'Facilitator',
 };
-export const assessmenttype = { title: 'test' };
+
 export const matchingCurriculumAssessmentRows = {
   title: 'Assignment 1: React',
   description: 'Your assignment for week 1 learning.',
