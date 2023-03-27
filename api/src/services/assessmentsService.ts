@@ -284,17 +284,28 @@ const listAssessmentQuestions = async (
  * @returns {Promise<AssessmentResponse[]>} An array of AssessmentResponse
  *   objects, including or omitting the grading information as specified.
  */
-const listSubmissionResponses = async (submissionId: number, gradingsIncluded?: boolean): Promise<AssessmentResponse[]> => {
+const listSubmissionResponses = async (
+  submissionId: number,
+  gradingsIncluded?: boolean
+): Promise<AssessmentResponse[]> => {
   const matchingAssessmentSubmissionsRows = await db('assessment_responses')
-  .select('id','assessment_id','question_id','answer_id','response_text','score','grader_response')
-  .where('submission_id', submissionId);
+    .select(
+      'id',
+      'assessment_id',
+      'question_id',
+      'answer_id',
+      'response_text',
+      'score',
+      'grader_response'
+    )
+    .where('submission_id', submissionId);
 
   if (matchingAssessmentSubmissionsRows.length === 0) {
     return null;
   }
 
   const assessmentSubmissions: AssessmentResponse[] =
-    matchingSubmissionResponsesRows.map(assessmentSubmissionsRow => {
+    matchingAssessmentSubmissionsRows.map(assessmentSubmissionsRow => {
       return {
         id: assessmentSubmissionsRow.id,
         assessment_id: assessmentSubmissionsRow.assessment_id,
@@ -470,8 +481,12 @@ export const deleteCurriculumAssessment = async (
  */
 //export const deleteProgramAssessment = async (programAssessmentId: number): Promise<void> => { return; };
 
-export const deleteProgramAssessment = async (programAssessmentId: number): Promise<void> => {
-  const matchingProgramAssessmentsRows = await db('program_assessments').select('program_id', 'assessment_id', 'available_after', 'due_date').where('id', programAssessmentId);
+export const deleteProgramAssessment = async (
+  programAssessmentId: number
+): Promise<void> => {
+  const matchingProgramAssessmentsRows = await db('program_assessments')
+    .select('program_id', 'assessment_id', 'available_after', 'due_date')
+    .where('id', programAssessmentId);
 
   if (matchingProgramAssessmentsRows.length === 0) {
     return null;
@@ -488,8 +503,12 @@ export const deleteProgramAssessment = async (programAssessmentId: number): Prom
  *   that program assessment, or null if no matching program assessment was
  *   found.
  */
-export const findProgramAssessment = async (programAssessmentId: number): Promise<ProgramAssessment> => {
-  const matchingProgramAssessmentsRows = await db('program_assessments').select('program_id', 'assessment_id', 'available_after', 'due_date').where('id', programAssessmentId);
+export const findProgramAssessment = async (
+  programAssessmentId: number
+): Promise<ProgramAssessment> => {
+  const matchingProgramAssessmentsRows = await db('program_assessments')
+    .select('program_id', 'assessment_id', 'available_after', 'due_date')
+    .where('id', programAssessmentId);
 
   if (matchingProgramAssessmentsRows.length === 0) {
     return null;
@@ -528,8 +547,26 @@ export const findProgramAssessment = async (programAssessmentId: number): Promis
  *   representation of that program assessment submission, or null if no
  *   matching program assessment submission was found.
  */
-export const getAssessmentSubmission = async (assessmentSubmissionId: number, responsesIncluded?: boolean, gradingsIncluded?: boolean): Promise<AssessmentSubmission> => {
-  const matchingAssessmentSubmissionsRows = await db('assessment_submissions').join('assessment_submission_states', 'assessment_submissions.assessment_submission_state_id', 'assessment_submission_states.id').select('assessment_id', 'principal_id', 'assessment_submission_states.title as assessment_submission_state', 'score', 'opened_at', 'submitted_at').where('assessment_submissions.id', assessmentSubmissionId);
+export const getAssessmentSubmission = async (
+  assessmentSubmissionId: number,
+  responsesIncluded?: boolean,
+  gradingsIncluded?: boolean
+): Promise<AssessmentSubmission> => {
+  const matchingAssessmentSubmissionsRows = await db('assessment_submissions')
+    .join(
+      'assessment_submission_states',
+      'assessment_submissions.assessment_submission_state_id',
+      'assessment_submission_states.id'
+    )
+    .select(
+      'assessment_id',
+      'principal_id',
+      'assessment_submission_states.title as assessment_submission_state',
+      'score',
+      'opened_at',
+      'submitted_at'
+    )
+    .where('assessment_submissions.id', assessmentSubmissionId);
 
   if (matchingAssessmentSubmissionsRows.length === 0) {
     return null;
@@ -577,19 +614,23 @@ export const getAssessmentSubmission = async (assessmentSubmissionId: number, re
  *   representation of that curriculum assessment, or null if no matching
  *   curriculum assessment was found.
  */
-export const getCurriculumAssessment = async (curriculumAssessmentId: number, questionsAndAllAnswersIncluded?: boolean, questionsAndCorrectAnswersIncluded?: boolean): Promise<CurriculumAssessment> => {
-  const matchingCurriculumAssessmentRows = await db(
-    'curriculum_assessments'
-  ).select(
-    'title',
-    'assessment_type',
-    'max_score',
-    'max_num_submissions',
-    'time_limit',
-    'curriculum_id',
-    'activity_id',
-    'principal_id',
-  ).where('id', curriculumAssessmentId);
+export const getCurriculumAssessment = async (
+  curriculumAssessmentId: number,
+  questionsAndAllAnswersIncluded?: boolean,
+  questionsAndCorrectAnswersIncluded?: boolean
+): Promise<CurriculumAssessment> => {
+  const matchingCurriculumAssessmentRows = await db('curriculum_assessments')
+    .select(
+      'title',
+      'assessment_type',
+      'max_score',
+      'max_num_submissions',
+      'time_limit',
+      'curriculum_id',
+      'activity_id',
+      'principal_id'
+    )
+    .where('id', curriculumAssessmentId);
 
   if (matchingCurriculumAssessmentRows.length === 0) {
     return null;
@@ -779,4 +820,29 @@ export const updateCurriculumAssessment = async (
  * @returns {Promise<ProgramAssessment>} The updated ProgramAssessment object
  *   that was handed to us, if update was successful.
  */
-export const updateProgramAssessment = async (programAssessment: CurriculumAssessment): Promise<ProgramAssessment> => { return; };
+export const updateProgramAssessment = async (
+  programAssessment: CurriculumAssessment
+): Promise<ProgramAssessment> => {
+  return;
+};
+
+export const getProgramIdByProgramAssessmentId = async (
+  AssessmentId: number
+): Promise<number> => {
+  const matchingIdRows = await db('curriculum_assessments')
+    .select('program_assessments.program_id')
+    .join(
+      'program_assessments',
+      'program_assessments.assessment_id',
+      'curriculum_assessments.id'
+    )
+    .where({ id: AssessmentId });
+
+  if (matchingIdRows.length === 0) {
+    return null;
+  }
+
+  const [matchingId] = matchingIdRows;
+
+  return matchingId.id;
+};

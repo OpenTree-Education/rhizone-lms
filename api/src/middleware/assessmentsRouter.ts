@@ -8,15 +8,66 @@ import {
 import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
 
 import { SavedAssessment } from '../models';
-import { findProgramAssessment, getAssessmentSubmission, getCurriculumAssessment, getPrincipalProgramRole } from '../services/assessmentsService';
+import {
+  findProgramAssessment,
+  getAssessmentSubmission,
+  getCurriculumAssessment,
+  getPrincipalProgramRole,
+  getProgramIdByProgramAssessmentId,
+} from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
 
 // List all AssessmentWithSummary to which the user has access
-assessmentsRouter.get('/', async (req, res, next) => { res.json();});
+assessmentsRouter.get('/', async (req, res, next) => {
+  res.json();
+});
 
 // Get details of a specific CurriculumAssessment
-assessmentsRouter.get('/curriculum/:curriculumAssessmentId', async (req, res, next) => { res.json();});
+assessmentsRouter.get(
+  '/curriculum/:curriculumAssessmentId',
+  async (req, res, next) => {
+    const { curriculumAssessmentId } = req.params;
+    const curriculumAssessmentIdParsed = Number(curriculumAssessmentId);
+    if (
+      !Number.isInteger(curriculumAssessmentIdParsed) ||
+      curriculumAssessmentIdParsed < 1
+    ) {
+      next(
+        new BadRequestError(
+          `"${curriculumAssessmentIdParsed}" is not a valid submission ID.`
+        )
+      );
+      return;
+    }
+
+    const { principalId } = req.session;
+    const programId = await getProgramIdByProgramAssessmentId(
+      curriculumAssessmentIdParsed
+    );
+    const programIdParsed = Number(programId);
+    const programRole = await getPrincipalProgramRole(
+      principalId,
+      programIdParsed
+    );
+    if (!programRole || programRole === 'Participant') {
+      next(
+        new UnauthorizedError(
+          `Could not access curriculum assessmentId with ID ${curriculumAssessmentIdParsed}.`
+        )
+      );
+      return;
+    }
+    const includeQuestionsAndAllAnswers = true;
+    const curriculumAssessment = await getCurriculumAssessment(
+      curriculumAssessmentIdParsed,
+      includeQuestionsAndAllAnswers
+    );
+
+    res.json(itemEnvelope(curriculumAssessment));
+  }
+);
+
 // Create a new CurriculumAssessment
 assessmentsRouter.post('/curriculum', async (req, res, next) => {
   res.json();
@@ -63,7 +114,12 @@ assessmentsRouter.delete(
 );
 
 // Get an AssessmentWithSubmissions
-assessmentsRouter.get('/program/:programAssessmentId/submissions', async (req, res, next) => { res.json();});
+assessmentsRouter.get(
+  '/program/:programAssessmentId/submissions',
+  async (req, res, next) => {
+    res.json();
+  }
+);
 // Start a new AssessmentSubmission
 assessmentsRouter.get(
   '/program/:programAssessmentId/submissions/new',
