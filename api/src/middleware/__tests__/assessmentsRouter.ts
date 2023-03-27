@@ -5,8 +5,18 @@ import {
 } from '../responseEnvelope';
 import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
 
-import assessmentsRouter from '../assessmentsRouter';
-
+import { SavedAssessment } from '../../models';
+import {
+  exampleCurriculumAssessmentWithCorrectAnswers,
+  exampleProgramAssessment,
+  exampleAssessmentSubmissionSubmitted,
+  facilitatorPrincipalId,
+  exampleCurriculumAssessmentWithQuestions,
+  exampleAssessmentSubmissionInProgress,
+  participantPrincipalId,
+  exampleAssessmentSubmissionGraded,
+  otherParticipantPrincipalId,
+} from '../../assets/data';
 import {
   constructFacilitatorAssessmentSummary,
   constructParticipantAssessmentSummary,
@@ -28,18 +38,8 @@ import {
   createNewOpenedSubmission,
   getSubmissionById,
 } from '../../services/assessmentsService';
-import {
-  exampleCurriculumAssessmentWithCorrectAnswers,
-  exampleProgramAssessment,
-  exampleAssessmentSubmissionSubmitted,
-  facilitatorPrincipalId,
-  exampleCurriculumAssessmentWithQuestions,
-  exampleAssessmentSubmissionInProgress,
-  participantPrincipalId,
-  exampleAssessmentSubmissionGraded,
-  otherParticipantPrincipalId,
-} from '../../assets/data';
-import { SavedAssessment } from '../../models';
+
+import assessmentsRouter from '../assessmentsRouter';
 
 jest.mock('../../services/assessmentsService');
 
@@ -188,8 +188,8 @@ describe('assessmentsRouter', () => {
       const participantSubmittedAssessmentSubmission: SavedAssessment = {
         curriculum_assessment: exampleCurriculumAssessmentWithQuestions,
         program_assessment: exampleProgramAssessment,
-        submission: exampleAssessmentSubmissionSubmitted,
         principal_program_role: 'Participant',
+        submission: exampleAssessmentSubmissionSubmitted,
       };
 
       mockGetAssessmentSubmission.mockResolvedValue(
@@ -200,8 +200,6 @@ describe('assessmentsRouter', () => {
       mockGetCurriculumAssessment.mockResolvedValue(
         exampleCurriculumAssessmentWithQuestions
       );
-      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
-      mockGetPrincipalProgramRole.mockResolvedValue('Participant');
 
       mockPrincipalId(participantPrincipalId);
 
@@ -240,8 +238,8 @@ describe('assessmentsRouter', () => {
       const participantGradedAssessmentSubmission: SavedAssessment = {
         curriculum_assessment: exampleCurriculumAssessmentWithCorrectAnswers,
         program_assessment: exampleProgramAssessment,
-        submission: exampleAssessmentSubmissionGraded,
         principal_program_role: 'Participant',
+        submission: exampleAssessmentSubmissionGraded,
       };
 
       mockGetAssessmentSubmission.mockResolvedValue(
@@ -333,7 +331,6 @@ describe('assessmentsRouter', () => {
 
       appAgent
         .get(`/submissions/${exampleAssessmentSubmissionSubmitted.id}`)
-        .set('Accept', 'application/json')
         .expect(
           401,
           errorEnvelope(
@@ -358,6 +355,40 @@ describe('assessmentsRouter', () => {
           }
         );
     });
+    it('should respond with an Unauthorized Error if logged-in principal id is not enrolled in the program', done => {
+      const programId = 1;
+      mockGetAssessmentSubmission.mockResolvedValue(
+        exampleAssessmentSubmissionSubmitted
+      );
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue(null);
+
+      mockPrincipalId(participantPrincipalId);
+
+      appAgent
+        .get(`/submissions/${exampleAssessmentSubmissionSubmitted.id}`)
+        .expect(
+          401,
+          errorEnvelope(
+            `Could not access submission with ID ${exampleAssessmentSubmissionSubmitted.id}.`
+          ),
+          err => {
+            expect(mockGetAssessmentSubmission).toHaveBeenCalledWith(
+              exampleAssessmentSubmissionSubmitted.id,
+              true
+            );
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.id
+            );
+
+            expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+              participantPrincipalId,
+              programId
+            );
+            done(err);
+          }
+        );
+    });
 
     it('should respond with an internal server error if a database error occurs', done => {
       const submissionId = 10;
@@ -365,5 +396,6 @@ describe('assessmentsRouter', () => {
       appAgent.get(`/submissions/${submissionId}`).expect(500, done);
     });
   });
+
   describe('PUT /submissions/:submissionId', () => {});
 });
