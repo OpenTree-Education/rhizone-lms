@@ -18,6 +18,72 @@ export const exampleProgramParticipantRoleFacilitatorRow = {
   title: 'Facilitator',
 };
 
+export const matchingCurriculumAssessmentRows = {
+  title: 'Assignment 1: React',
+  description: 'Your assignment for week 1 learning.',
+  max_score: 10,
+  max_num_submissions: 1,
+  time_limit: 120,
+  curriculum_id: 3,
+  activity_id: 97,
+  principal_id: 300,
+};
+export const curriculumAssessmentId = 1;
+
+export const exampleCurriculumAssessmentWithQuestion: CurriculumAssessment = {
+  id: curriculumAssessmentId,
+  title: 'Assignment 1: React',
+  assessment_type: 'test',
+  description: 'Your assignment for week 1 learning.',
+  max_score: 10,
+  max_num_submissions: 1,
+  time_limit: 120,
+  curriculum_id: 3,
+  activity_id: 97,
+  principal_id: facilitatorPrincipalId,
+  questions: [
+    {
+      id: 1,
+      assessment_id: curriculumAssessmentId,
+      title: 'What is React?',
+      description: '',
+      question_type: 'single choice',
+      answers: [
+        {
+          id: 1,
+          question_id: 1,
+          title: 'A relational database management system',
+          description: '',
+          sort_order: 1,
+          correct_answer: true,
+        },
+      ],
+      correct_answer_id: 1,
+      max_score: 1,
+      sort_order: 1,
+    },
+  ],
+};
+
+export const matchingAssessmentQuestionsRow = {
+  id: 1,
+  title: 'What is React?',
+  description: '',
+  question_type: 'single choice',
+  correct_answer_id: 1,
+  max_score: 1,
+  sort_order: 1,
+};
+
+export const matchingAssessmentAnswersRow = {
+  id: 1,
+  question_id: 1,
+  title: 'A relational database management system',
+  description: '',
+  sort_order: 1,
+  correct_answer: true,
+};
+
 export const exampleCurriculumAssessment: CurriculumAssessment = {
   id: 12,
   title: 'Assignment 1: React',
