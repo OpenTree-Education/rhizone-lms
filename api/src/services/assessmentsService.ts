@@ -813,17 +813,17 @@ export const updateAssessmentSubmission = async (
  */
 export const updateCurriculumAssessment = async (
   curriculumAssessment: CurriculumAssessment,
-  ) => {
-    await db('curriculum_assessments')
-      .insert({
-        curriculum_assessment: curriculumAssessment,
-      })
-  // check if exists
-  // compare what we have to wha
-    return{
-      curriculumAssessmentId: curriculumAssessment.id,
-    };
-  };
+  // need to loop through and call updateAssessmentQuestion for each question that exists;
+  // need to createAssessmentQuestion for each question that does not exist;
+
+  // need to update the curriculum_assessments table with any updated data for the curriculum assessment (refer to DB/model).
+  // assessment_type_id turns into assessment_type. ignore assessment_type.
+
+  // refer to implementation of getCurriculumAssessment for knowledge on joins
+    // (data in two different database tables that relate to one another), differences between database table and data type
+): Promise<CurriculumAssessment> => {
+  return null;
+};
 
 /**
  * Updates an existing program assessment in the program_assessments table.
