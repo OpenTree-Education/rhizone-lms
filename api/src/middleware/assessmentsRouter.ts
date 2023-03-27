@@ -21,6 +21,7 @@ import {
   getPrincipalProgramRole,
   listPrincipalEnrolledProgramIds,
   listProgramAssessments,
+  facilitatorProgramAssessmentsForCurriculumAssessment,
   updateCurriculumAssessment,
 } from '../services/assessmentsService';
 
@@ -102,29 +103,11 @@ assessmentsRouter.put(
 
     // step 6: make sure the user is the facilitator of a program that uses
     // this curriculum assessment
-    const participatingProgramIds = await listPrincipalEnrolledProgramIds(
-      principalId
-    );
-
-    const allFacilitatorProgramAssessments: ProgramAssessment[] = [];
-
-    participatingProgramIds.forEach(async programId => {
-      const programRole = await getPrincipalProgramRole(principalId, programId);
-
-      if (programRole === 'Facilitator') {
-        const programAssessmentsForProgram = await listProgramAssessments(
-          programId
-        );
-        programAssessmentsForProgram.forEach(programAssessment => {
-          allFacilitatorProgramAssessments.push(programAssessment);
-        });
-      }
-    });
-
-    const matchingProgramAssessments = allFacilitatorProgramAssessments.filter(
-      programAssessment =>
-        programAssessment.assessment_id === curriculumAssessmentIdParsed
-    );
+    const matchingProgramAssessments =
+      await facilitatorProgramAssessmentsForCurriculumAssessment(
+        principalId,
+        curriculumAssessmentIdParsed
+      );
 
     // If there are no matching program assessments with this curriculum ID,
     // then we are not facilitator of any programs where we can modify this
@@ -132,7 +115,7 @@ assessmentsRouter.put(
     if (matchingProgramAssessments.length === 0) {
       next(
         new UnauthorizedError(
-          `Could not access curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
+          `Not allowed to make modifications to curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
         )
       );
       return;
@@ -153,7 +136,7 @@ assessmentsRouter.put(
       return;
     }
 
-    res.json(updatedCurriculumAssessment);
+    res.json(itemEnvelope(updatedCurriculumAssessment));
   }
 );
 

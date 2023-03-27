@@ -751,6 +751,51 @@ export const listProgramAssessments = async (
 };
 
 /**
+ * Retrieves all program assessments that a given user is a facilitator for,
+ * matching a given curriculum assessment ID. This is used for routes where we
+ * have a curriculum assessment ID and do not have a way to check if a user is
+ * allowed to make edits to that curriculum assessment.
+ *
+ * @param {number} principalId - The row ID of the principals table for the
+ *   logged-in user.
+ * @param {number} curriculumAssessmentId - The row ID of the
+ *   curriculum_assessments table corresponding to the assessment we will be
+ *   retrieving, modifying, or deleting.
+ * @returns {Promise<ProgramAssessment[]>} An array of the ProgramAssessment
+ *   objects constructed from matching program assessments, if any.
+ */
+export const facilitatorProgramAssessmentsForCurriculumAssessment = async (
+  principalId: number,
+  curriculumAssessmentId: number
+): Promise<ProgramAssessment[]> => {
+  const participatingProgramIds = await listPrincipalEnrolledProgramIds(
+    principalId
+  );
+
+  const allFacilitatorProgramAssessments: ProgramAssessment[] = [];
+
+  participatingProgramIds.forEach(async programId => {
+    const programRole = await getPrincipalProgramRole(principalId, programId);
+
+    if (programRole === 'Facilitator') {
+      const programAssessmentsForProgram = await listProgramAssessments(
+        programId
+      );
+      programAssessmentsForProgram.forEach(programAssessment => {
+        allFacilitatorProgramAssessments.push(programAssessment);
+      });
+    }
+  });
+
+  const matchingProgramAssessments = allFacilitatorProgramAssessments.filter(
+    programAssessment =>
+      programAssessment.assessment_id === curriculumAssessmentId
+  );
+
+  return matchingProgramAssessments;
+};
+
+/**
  * Removes any possible grading information from an assessment submission in
  * cases when we don't want to return that information to the requester.
  *
