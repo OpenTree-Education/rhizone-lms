@@ -114,13 +114,10 @@ describe('assessmentsRouter', () => {
     it('should respond with an Unauthorized Error if the logged-in principal id is not the facilitator', done => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue(null);
-      mockUpdateProgramAssessment.mockResolvedValue(
-        updatedProgramAssessmentsRow
-      );
+
       mockPrincipalId(otherParticipantPrincipalId);
 
       appAgent
-
         .put(`/program/${exampleProgramAssessment.id}`)
         .send(updatedProgramAssessmentsRow)
         .expect(
@@ -136,9 +133,6 @@ describe('assessmentsRouter', () => {
             expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
               otherParticipantPrincipalId,
               exampleProgramAssessment.program_id
-            );
-            mockUpdateProgramAssessment.mockResolvedValue(
-              updatedProgramAssessmentsRow
             );
 
             done(err);
@@ -170,14 +164,10 @@ describe('assessmentsRouter', () => {
 
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
-      mockUpdateProgramAssessment.mockResolvedValue(
-        updatedProgramAssessmentsRow
-      );
 
       mockPrincipalId(otherParticipantPrincipalId);
 
       appAgent
-
         .put(`/program/${exampleProgramAssessment.id}`)
         .send(exampleAssessmentFormUser)
         .expect(
@@ -191,9 +181,6 @@ describe('assessmentsRouter', () => {
             expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
               otherParticipantPrincipalId,
               exampleProgramAssessment.program_id
-            );
-            mockUpdateProgramAssessment.mockResolvedValue(
-              updatedProgramAssessmentsRow
             );
 
             done(err);
