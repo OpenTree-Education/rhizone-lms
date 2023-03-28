@@ -145,13 +145,10 @@ const deleteAssessmentQuestionAnswer = async (
  * @returns {Promise<Answer[]>} An array of Answer options, including or omitting the correct answer metadata as specified.
  */
 const listAssessmentQuestionAnswers = async (
-  questionId: number
+  questionId: number,
+  correctAnswersIncluded?: boolean
 ): Promise<Answer[]> => {
-  const assessmentAnswersList = await db('assessment_answers')
-    .select('id', 'question_id', 'title', 'description', 'sort_order')
-    .where('question_id', questionId);
-
-  return assessmentAnswersList;
+  return [];
 };
 
 /**
@@ -165,7 +162,7 @@ export const listAssessmentQuestions = async (
   curriculumAssessmentId: number,
   correctAnswersIncluded?: boolean
 ): Promise<Question[]> => {
-  const matchingAssessmentQuestionsRows = await db('assessment_questions')
+  const matchinglistAssessmentQuestionsRows = await db('assessment_questions')
     .join(
       'assessment_question_types',
       'assessment_questions.question_type_id',
@@ -182,37 +179,49 @@ export const listAssessmentQuestions = async (
     )
     .where('assessment_questions.assessment_id', curriculumAssessmentId);
 
-  if (matchingAssessmentQuestionsRows.length === 0) {
+  if (matchinglistAssessmentQuestionsRows.length === 0) {
     return null;
   }
 
-  const assessmentQuestions: Question[] = [];
+  const questionIds = matchinglistAssessmentQuestionsRows.map(
+    element => element.id
+  );
 
-  for (const assessmentQuestionsRow of matchingAssessmentQuestionsRows) {
-    const assessmentQuestion: Question = {
-      id: assessmentQuestionsRow.id,
-      assessment_id: curriculumAssessmentId,
-      title: assessmentQuestionsRow.title,
-      description: assessmentQuestionsRow.description,
-      question_type: assessmentQuestionsRow.question_type,
-      max_score: assessmentQuestionsRow.max_score,
-      sort_order: assessmentQuestionsRow.sort_order,
-      answers: await listAssessmentQuestionAnswers(assessmentQuestionsRow.id),
-    };
+  const listAssessmentAnswers = await db('assessment_answers')
+    .select('id', 'question_id', 'title', 'description', 'sort_order')
+    .whereIn('question_id', questionIds);
+  matchinglistAssessmentQuestionsRows
+    .filter(
+      question =>
+        question.question_type === 'single choice' ||
+        correctAnswersIncluded === true
+    )
+    .forEach(
+      question =>
+        (question.answers = listAssessmentAnswers.filter(
+          answer => answer.question_id === question.id
+        ))
+    );
 
-    if (correctAnswersIncluded) {
-      assessmentQuestion.correct_answer_id =
-        assessmentQuestionsRow.correct_answer_id;
-      const correctAnswer = assessmentQuestion.answers.find(
-        answer => answer.id === assessmentQuestionsRow.correct_answer_id
-      );
-      correctAnswer.correct_answer = true;
-    }
+  const listAssessmentQuestions: Question[] =
+    matchinglistAssessmentQuestionsRows.map(assessmentQuestionRow => {
+      return {
+        id: assessmentQuestionRow.id,
+        assessment_id: curriculumAssessmentId,
+        title: assessmentQuestionRow.title,
+        description: assessmentQuestionRow.description,
+        question_type: assessmentQuestionRow.question_type,
+        answers: assessmentQuestionRow.answers as Answer[],
+        correct_answer_id:
+          correctAnswersIncluded === true
+            ? Number(assessmentQuestionRow.correct_answer_id)
+            : null,
+        max_score: assessmentQuestionRow.max_score,
+        sort_order: assessmentQuestionRow.sort_order,
+      };
+    });
 
-    assessmentQuestions.push(assessmentQuestion);
-  }
-
-  return assessmentQuestions;
+  return listAssessmentQuestions;
 };
 
 /**
@@ -360,33 +369,31 @@ export const constructParticipantAssessmentSummary = async (
 
   const [mostRecentSubmittedDate] = await db('assessment_submissions')
     .select('id', 'submitted_at')
-    .where('principal_id', programAssessmentId)
+    .where('principal_id', participantPrincipalId)
     .orderBy('submitted_at', 'desc')
     .limit(1);
   if (!mostRecentSubmittedDate) {
     return null;
   }
+
   const [totalNumSubmissions] = await db('assessment_submissions')
-    .count('id')
-    .where('principal_id', participantPrincipalId);
-  if (!totalNumSubmissions) {
-    return null;
-  }
-  const [highestScore] = await db('assessment_submissions')
-    .count('id')
+    .where('assessment_id', programAssessmentId)
+    .count({ count: 'id' });
+
+  const highestScore = await db('assessment_submissions')
+    .select('score')
     .where('principal_id', participantPrincipalId)
-    .andWhere('assesment_id', programAssessmentId);
-  if (!highestScore) {
-    return null;
-  }
+    .andWhere('assessment_id', programAssessmentId)
+    .orderBy('score', 'desc')
+    .limit(1);
 
   const participantAssessmentSummary: ParticipantAssessmentSubmissionsSummary =
     {
       principal_id: programAssessmentId,
-      highest_state: String(highestState),
-      most_recent_submitted_date: String(mostRecentSubmittedDate),
-      total_num_submissions: Number(totalNumSubmissions),
-      highest_score: Number(highestScore),
+      highest_state: String(highestState.title),
+      most_recent_submitted_date: String(mostRecentSubmittedDate.submitted_at),
+      total_num_submissions: Number(totalNumSubmissions.count),
+      highest_score: Number(highestScore.map(entry => entry.score)),
     };
 
   return participantAssessmentSummary;

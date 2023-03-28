@@ -108,7 +108,7 @@ assessmentsRouter.get('/', async (req, res, next) => {
 });
 
 assessmentsRouter.get('/test', async (req, res, next) => {
-  const test = await listAssessmentQuestions(2);
+  const test = await constructParticipantAssessmentSummary(2, 1);
   res.json(test);
 });
 
