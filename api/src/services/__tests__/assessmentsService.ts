@@ -213,7 +213,7 @@ describe('getCurriculumAssessment', () => {
     const questionIds = [matchingAssessmentQuestionsRow.id];
 
     mockQuery(
-      'select `id`, `question_id`, `title`, `description`, `sort_order` from `assessment_answers` where `question_id` in (?)',
+      'select `id`, `question_id`, `title`, `description`, `sort_order` from `assessment_answers` where `question_id` = ?',
       [questionIds[0]],
       [matchingAssessmentAnswersRow]
     );
@@ -252,7 +252,7 @@ describe('listAssessmentQuestions', () => {
     const questionIds = [matchingAssessmentQuestionsRow.id];
 
     mockQuery(
-      'select `id`, `question_id`, `title`, `description`, `sort_order` from `assessment_answers` where `question_id` in (?)',
+      'select `id`, `question_id`, `title`, `description`, `sort_order` from `assessment_answers` where `question_id` = ?',
       [questionIds[0]],
       [matchingAssessmentAnswersRow]
     );
