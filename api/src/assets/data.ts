@@ -150,12 +150,19 @@ export const exampleProgramAssessmentsRow = {
   available_after: '2023-02-06',
   due_date: '2023-02-10',
 };
+export const updateProgramAssessmentsRow: ProgramAssessment = {
+  id:15,
+  program_id: 1,
+  assessment_id: 12,
+  available_after: '2023-02-06',
+  due_date: '2023-02-10',
+};
 
 export const exampleProgramAssessment: ProgramAssessment = {
   id: 15,
   program_id: 1,
   assessment_id: 12,
-  available_after: '2023-02-06',
+  available_after: '2023-03-06',
   due_date: '2023-02-10',
 };
 

@@ -7,13 +7,15 @@ import {
 } from './httpErrors';
 import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
 
-import { SavedAssessment } from '../models';
+import { SavedAssessment, CurriculumAssessment,ProgramAssessment } from '../models';
 import {
   findProgramAssessment,
   getAssessmentSubmission,
   getCurriculumAssessment,
   getPrincipalProgramRole,
-  updateProgramAssessment
+  updateProgramAssessment,
+   
+
   
 } from '../services/assessmentsService';
 
@@ -67,7 +69,7 @@ assessmentsRouter.put(
   async (req, res, next) => {
     const {programAssessmentId} = req.params;
     const {principalId} = req.session;
-    const { completed } = req.body;
+    const programAssessmentFromUser = req.body;
     const programAssessmentIdParsed = Number(programAssessmentId);
     if (!Number.isInteger(programAssessmentIdParsed) || programAssessmentIdParsed < 1) {
       next(new BadRequestError(`"${programAssessmentIdParsed}" is not a valid program id.`));
@@ -75,7 +77,46 @@ assessmentsRouter.put(
     }
     let updatedPrgramAssessment;
    try{
-    updatedPrgramAssessment = await updateProgramAssessment
+    
+
+    const programAssessment = await findProgramAssessment(programAssessmentIdParsed);
+   console.log("program",programAssessment)
+    // get the principal program role
+    const programRole = await getPrincipalProgramRole(
+      principalId,
+      programAssessment.program_id
+    );
+    
+
+    // if the program role is null/falsy, that means the user is not enrolled in
+    // the program. send an error back to the user.
+    if (!programRole) {
+      next(
+        new UnauthorizedError(
+          `Could not access programAssessment  with ID ${programAssessmentIdParsed}.`
+        )
+      );
+      return;
+    }
+
+
+    const isprogramAssessment = (possibleAssessment: unknown): possibleAssessment is ProgramAssessment => {
+      return (possibleAssessment as ProgramAssessment).id !== undefined;
+    }
+
+    if (!isprogramAssessment(programAssessmentFromUser)) {
+      next(
+        new BadRequestError(`Was not given a valid  program  assessment.`)
+      );
+      return;
+    }
+  
+    updatedPrgramAssessment = await updateProgramAssessment(
+      
+      programAssessmentFromUser
+    );
+    console.log(" updatedPrgramAssessment", updatedPrgramAssessment)
+    
 
    }catch (error) {
       next(error);

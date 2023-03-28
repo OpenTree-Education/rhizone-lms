@@ -48,7 +48,7 @@ const calculateNumParticipantsWithSubmissions = async (
   if (numParticipantsWithSubmissions === 0) {
     return null;
   }
-  return numParticipantsWithSubmissions as number;
+  return numParticipantsWithSubmissions;
 };
 
 /**
@@ -240,6 +240,7 @@ const listAssessmentQuestions = async (
   const listAssessmentAnswers = await db('assessment_answers')
     .select('id', 'question_id', 'title', 'description', 'sort_order')
     .whereIn('question_id', questionIds);
+  console.log(listAssessmentAnswers);
 
   matchinglistAssessmentQuestionsRows
     .filter(
@@ -826,7 +827,14 @@ export const updateCurriculumAssessment = async (
  *   that was handed to us, if update was successful.
  */
 export const updateProgramAssessment = async (
-  programAssessment: CurriculumAssessment
+  programAssessment: ProgramAssessment
 ): Promise<ProgramAssessment> => {
-  return;
+  const numberOfRowsUpdated = await db('program_assessments')
+    .update({
+      available_after: programAssessment.available_after,
+      due_date: programAssessment.due_date,
+    })
+    .where('id', programAssessment.id);
+ 
+  return programAssessment;
 };
