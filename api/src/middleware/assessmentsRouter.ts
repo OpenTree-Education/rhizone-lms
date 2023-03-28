@@ -39,13 +39,6 @@ const assessmentsRouter = Router();
 assessmentsRouter.get('/', async (req, res, next) => {
   const { principalId } = req.session;
 
-  if (!Number.isInteger(principalId) || principalId < 1) {
-    next(
-      new BadRequestError(`"${principalId}" is not a valid participant id.`)
-    );
-    return;
-  }
-
   try {
     const programIds = await listPrincipalEnrolledProgramIds(principalId);
 
