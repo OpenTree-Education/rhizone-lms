@@ -157,7 +157,7 @@ export const exampleParticipantAssessmentSubmissionsSummary: ParticipantAssessme
     highest_state: 'Graded',
     most_recent_submitted_date: '2023-02-09 13:23:45',
     total_num_submissions: 1,
-    highest_score: 10,
+    highest_score: 4,
   };
 
 export const exampleFacilitatorAssessmentSubmissionsSummary: FacilitatorAssessmentSubmissionsSummary =

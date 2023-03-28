@@ -20,7 +20,6 @@ import {
   SavedAssessment,
 } from '../models';
 import {
-  calculateNumProgramParticipants,
   findProgramAssessment,
   getAssessmentSubmission,
   getCurriculumAssessment,

@@ -34,9 +34,8 @@ const calculateNumParticipantsWithSubmissions = async (
   programAssessmentId: number
 ): Promise<number> => {
   const [numParticipantsWithSubmissions] = await db('assessment_submissions')
-    .whereNotNull('assessment_submission_state_id')
-    .andWhere('assessment_id', programAssessmentId)
-    .count({ count: 'id' });
+    .where('assessment_id', programAssessmentId)
+    .countDistinct({ count: 'principal_id' });
 
   return numParticipantsWithSubmissions.count;
 };
@@ -47,7 +46,7 @@ const calculateNumParticipantsWithSubmissions = async (
  * @param {number} programId - The row ID of the programs table for a given program.
  * @returns {Promise<number>} The number of program participants in that program.
  */
-export const calculateNumProgramParticipants = async (
+const calculateNumProgramParticipants = async (
   programId: number
 ): Promise<number> => {
   const [numProgramParticipants] = await db('program_participants')
@@ -353,23 +352,20 @@ export const constructParticipantAssessmentSummary = async (
     )
     .where('assessment_submissions.principal_id', participantPrincipalId)
     .andWhere('assessment_submissions.assessment_id', programAssessmentId)
-    .orderBy('assessment_submissions.assessment_submission_state_id', 'desc');
-  if (!highestState) {
-    return null;
-  }
+    .orderBy('assessment_submissions.assessment_submission_state_id', 'desc')
+    .limit(1);
 
   const [mostRecentSubmittedDate] = await db('assessment_submissions')
-    .select('id', 'submitted_at')
+    .select('submitted_at')
     .where('principal_id', participantPrincipalId)
+    .andWhere('assessment_id', programAssessmentId)
     .orderBy('submitted_at', 'desc')
     .limit(1);
-  if (!mostRecentSubmittedDate) {
-    return null;
-  }
 
-  const [totalNumSubmissions] = await db('assessment_submissions')
-    .where('assessment_id', programAssessmentId)
-    .count({ count: 'id' });
+  const totalNumSubmissions = await listParticipantProgramAssessmentSubmissions(
+    participantPrincipalId,
+    programAssessmentId
+  );
 
   const [highestScore] = await db('assessment_submissions')
     .select('score')
@@ -380,10 +376,10 @@ export const constructParticipantAssessmentSummary = async (
 
   const participantAssessmentSummary: ParticipantAssessmentSubmissionsSummary =
     {
-      principal_id: programAssessmentId,
+      principal_id: participantPrincipalId,
       highest_state: highestState.title,
       most_recent_submitted_date: mostRecentSubmittedDate.submitted_at,
-      total_num_submissions: totalNumSubmissions.count,
+      total_num_submissions: totalNumSubmissions.length,
       highest_score: highestScore.score,
     };
 
@@ -658,7 +654,42 @@ export const listParticipantProgramAssessmentSubmissions = async (
   participantPrincipalId: number,
   programAssessmentId: number
 ): Promise<AssessmentSubmission[]> => {
-  return [];
+  const matchingAssessmentSubmissionsRows = await db('assessment_submissions')
+    .join(
+      'assessment_submission_states',
+      'assessment_submissions.assessment_submission_state_id',
+      'assessment_submission_states.id'
+    )
+    .select(
+      'id',
+      'assessment_submission_states.title as assessment_submission_state',
+      'score',
+      'opened_at',
+      'submitted_at'
+    )
+    .where('assessment_id', programAssessmentId)
+    .andWhere('principal_id', participantPrincipalId);
+
+  if (matchingAssessmentSubmissionsRows.length === 0) {
+    return null;
+  }
+
+  const assessmentSubmissions: AssessmentSubmission[] = [];
+
+  for (const assessmentSubmissionsRow of matchingAssessmentSubmissionsRows) {
+    assessmentSubmissions.push({
+      id: assessmentSubmissionsRow.id,
+      assessment_id: programAssessmentId,
+      principal_id: participantPrincipalId,
+      assessment_submission_state:
+        assessmentSubmissionsRow.assessment_submission_state,
+      score: assessmentSubmissionsRow.score,
+      opened_at: assessmentSubmissionsRow.opened_at,
+      submitted_at: assessmentSubmissionsRow.submitted_at,
+    });
+  }
+
+  return assessmentSubmissions;
 };
 
 /**

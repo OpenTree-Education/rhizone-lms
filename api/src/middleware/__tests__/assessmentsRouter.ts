@@ -230,7 +230,7 @@ describe('assessmentsRouter', () => {
       mockPrincipalId(facilitatorPrincipalId);
 
       appAgent.get('/').expect(500, done);
-    })
+    });
   });
 
   describe('GET /curriculum/:curriculumAssessmentId', () => {});
