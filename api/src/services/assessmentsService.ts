@@ -145,10 +145,13 @@ const deleteAssessmentQuestionAnswer = async (
  * @returns {Promise<Answer[]>} An array of Answer options, including or omitting the correct answer metadata as specified.
  */
 const listAssessmentQuestionAnswers = async (
-  questionId: number,
-  correctAnswersIncluded?: boolean
+  questionId: number
 ): Promise<Answer[]> => {
-  return [];
+  const assessmentAnswersList = await db('assessment_answers')
+    .select('id', 'question_id', 'title', 'description', 'sort_order')
+    .where('question_id', questionId);
+
+  return assessmentAnswersList;
 };
 
 /**
@@ -162,7 +165,7 @@ export const listAssessmentQuestions = async (
   curriculumAssessmentId: number,
   correctAnswersIncluded?: boolean
 ): Promise<Question[]> => {
-  const matchinglistAssessmentQuestionsRows = await db('assessment_questions')
+  const matchingAssessmentQuestionsRows = await db('assessment_questions')
     .join(
       'assessment_question_types',
       'assessment_questions.question_type_id',
@@ -179,49 +182,37 @@ export const listAssessmentQuestions = async (
     )
     .where('assessment_questions.assessment_id', curriculumAssessmentId);
 
-  if (matchinglistAssessmentQuestionsRows.length === 0) {
+  if (matchingAssessmentQuestionsRows.length === 0) {
     return null;
   }
 
-  const questionIds = matchinglistAssessmentQuestionsRows.map(
-    element => element.id
-  );
+  const assessmentQuestions: Question[] = [];
 
-  const listAssessmentAnswers = await db('assessment_answers')
-    .select('id', 'question_id', 'title', 'description', 'sort_order')
-    .whereIn('question_id', questionIds);
-  matchinglistAssessmentQuestionsRows
-    .filter(
-      question =>
-        question.question_type === 'single choice' ||
-        correctAnswersIncluded === true
-    )
-    .forEach(
-      question =>
-        (question.answers = listAssessmentAnswers.filter(
-          answer => answer.question_id === question.id
-        ))
-    );
+  for (const assessmentQuestionsRow of matchingAssessmentQuestionsRows) {
+    const assessmentQuestion: Question = {
+      id: assessmentQuestionsRow.id,
+      assessment_id: curriculumAssessmentId,
+      title: assessmentQuestionsRow.title,
+      description: assessmentQuestionsRow.description,
+      question_type: assessmentQuestionsRow.question_type,
+      max_score: assessmentQuestionsRow.max_score,
+      sort_order: assessmentQuestionsRow.sort_order,
+      answers: await listAssessmentQuestionAnswers(assessmentQuestionsRow.id),
+    };
 
-  const listAssessmentQuestions: Question[] =
-    matchinglistAssessmentQuestionsRows.map(assessmentQuestionRow => {
-      return {
-        id: assessmentQuestionRow.id,
-        assessment_id: curriculumAssessmentId,
-        title: assessmentQuestionRow.title,
-        description: assessmentQuestionRow.description,
-        question_type: assessmentQuestionRow.question_type,
-        answers: assessmentQuestionRow.answers as Answer[],
-        correct_answer_id:
-          correctAnswersIncluded === true
-            ? Number(assessmentQuestionRow.correct_answer_id)
-            : null,
-        max_score: assessmentQuestionRow.max_score,
-        sort_order: assessmentQuestionRow.sort_order,
-      };
-    });
+    if (correctAnswersIncluded) {
+      assessmentQuestion.correct_answer_id =
+        assessmentQuestionsRow.correct_answer_id;
+      const correctAnswer = assessmentQuestion.answers.find(
+        answer => answer.id === assessmentQuestionsRow.correct_answer_id
+      );
+      correctAnswer.correct_answer = true;
+    }
 
-  return listAssessmentQuestions;
+    assessmentQuestions.push(assessmentQuestion);
+  }
+
+  return assessmentQuestions;
 };
 
 /**

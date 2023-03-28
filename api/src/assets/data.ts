@@ -28,7 +28,7 @@ export const matchingCurriculumAssessmentRows = {
   time_limit: 120,
   curriculum_id: 3,
   activity_id: 97,
-  principal_id: 300,
+  principal_id: administratorPrincipalId,
 };
 export const curriculumAssessmentId = 1;
 export const unexpectedCurriculumAssessmentId = 0;
@@ -68,8 +68,22 @@ export const exampleCurriculumAssessmentWithQuestion: CurriculumAssessment = {
   ],
 };
 
+export const exampleCurriculumAssessment: CurriculumAssessment = {
+  id: 12,
+  title: 'Assignment 1: React',
+  assessment_type: 'test',
+  description: 'Your assignment for week 1 learning.',
+  max_score: 10,
+  max_num_submissions: 1,
+  time_limit: 120,
+  curriculum_id: 3,
+  activity_id: 97,
+  principal_id: administratorPrincipalId,
+};
+
 export const matchingAssessmentQuestionsRow = {
   id: 1,
+  assessment_id: exampleCurriculumAssessment.id,
   title: 'What is React?',
   description: '',
   question_type: 'single choice',
@@ -85,19 +99,6 @@ export const matchingAssessmentAnswersRow = {
   description: '',
   sort_order: 1,
   correct_answer: true,
-};
-
-export const exampleCurriculumAssessment: CurriculumAssessment = {
-  id: 12,
-  title: 'Assignment 1: React',
-  assessment_type: 'test',
-  description: 'Your assignment for week 1 learning.',
-  max_score: 10,
-  max_num_submissions: 3,
-  time_limit: 120,
-  curriculum_id: 3,
-  activity_id: 97,
-  principal_id: administratorPrincipalId,
 };
 
 export const exampleCurriculumAssessmentWithQuestions: CurriculumAssessment = {
@@ -122,29 +123,17 @@ export const exampleCurriculumAssessmentWithQuestions: CurriculumAssessment = {
   ],
 };
 
+export const exampleAssessmentQuestions: Question[] = [
+  {
+    ...matchingAssessmentQuestionsRow,
+    answers: [{ ...matchingAssessmentAnswersRow }],
+  },
+];
+
 export const exampleCurriculumAssessmentWithCorrectAnswers: CurriculumAssessment =
   {
     ...exampleCurriculumAssessment,
-    questions: [
-      {
-        id: 1,
-        assessment_id: exampleCurriculumAssessment.id,
-        title: 'What is React?',
-        question_type: 'single choice',
-        answers: [
-          {
-            id: 1,
-            question_id: 1,
-            title: 'A relational database management system',
-            sort_order: 1,
-            correct_answer: true,
-          },
-        ],
-        correct_answer_id: 1,
-        max_score: 1,
-        sort_order: 1,
-      },
-    ],
+    questions: exampleAssessmentQuestions,
   };
 
 export const exampleProgramAssessmentsRow = {
@@ -535,32 +524,3 @@ export const assessmentListPageExampleDataFacilitator: AssessmentWithSummary[] =
       principal_program_role: 'Facilitator',
     },
   ];
-
-export const matchingAssessmentAnswers: Question[] = [
-  {
-    id: 14,
-    assessment_id: 2,
-    title: 'Each table can contain more than one primary key.',
-    description: null,
-    question_type: 'single choice',
-    answers: [
-      {
-        id: 40,
-        question_id: 14,
-        title: 'True',
-        description: null,
-        sort_order: 1,
-      },
-      {
-        id: 41,
-        question_id: 14,
-        title: 'False',
-        description: null,
-        sort_order: 2,
-      },
-    ],
-    correct_answer_id: null,
-    max_score: 1,
-    sort_order: 4,
-  },
-];

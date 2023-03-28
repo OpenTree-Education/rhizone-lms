@@ -41,7 +41,8 @@ import {
   exampleCurriculumAssessment,
   exampleFacilitatorAssessmentSubmissionsSummary,
   unexpectedCurriculumAssessmentId,
-  matchingAssessmentAnswers,
+  exampleAssessmentQuestions,
+  exampleCurriculumAssessmentWithCorrectAnswers,
 } from '../../assets/data';
 
 //   describe('constructFacilitatorAssessmentSummary', (
@@ -195,27 +196,35 @@ describe('getCurriculumAssessment', () => {
 
     mockQuery(
       'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
-      [curriculumAssessmentId],
+      [exampleCurriculumAssessmentWithCorrectAnswers.id],
       [matchingCurriculumAssessmentRows]
     );
     mockQuery(
       'select `activity_types`.`title` from `activity_types` inner join `activities` on `activities`.`activity_type_id` = `activity_types`.`id` where `activities`.`id` = ?',
       [matchingCurriculumAssessmentRows.activity_id],
-      [{ title: exampleCurriculumAssessmentWithQuestion.assessment_type }]
+      [{ title: exampleCurriculumAssessmentWithCorrectAnswers.assessment_type }]
     );
     mockQuery(
       'select `assessment_questions`.`id`, `assessment_questions`.`title`, `description`, `assessment_question_types`.`title` as `question_type`, `correct_answer_id`, `max_score`, `sort_order` from `assessment_questions` inner join `assessment_question_types` on `assessment_questions`.`question_type_id` = `assessment_question_types`.`id` where `assessment_questions`.`assessment_id` = ?',
-      [curriculumAssessmentId],
+      [exampleCurriculumAssessmentWithCorrectAnswers.id],
       [matchingAssessmentQuestionsRow]
+    );
+
+    const questionIds = [matchingAssessmentQuestionsRow.id];
+
+    mockQuery(
+      'select `id`, `question_id`, `title`, `description`, `sort_order` from `assessment_answers` where `question_id` in (?)',
+      [questionIds[0]],
+      [matchingAssessmentAnswersRow]
     );
 
     expect(
       await getCurriculumAssessment(
-        curriculumAssessmentId,
+        exampleCurriculumAssessmentWithCorrectAnswers.id,
         questionsAndAllAnswersIncluded,
         questionsAndCorrectAnswersIncluded
       )
-    ).toEqual(exampleCurriculumAssessmentWithQuestion);
+    ).toEqual(exampleCurriculumAssessmentWithCorrectAnswers);
   });
 
   it('should return null for a curriculum assessment ID that does not exist', async () => {
@@ -233,31 +242,29 @@ describe('getCurriculumAssessment', () => {
 
 describe('listAssessmentQuestions', () => {
   it('should return all questions of a given curriculum assessment based on specified boolean parameter', async () => {
-    const curriculumAssessmentId = 1;
     const answersIncluded = true;
     mockQuery(
       'select `assessment_questions`.`id`, `assessment_questions`.`title`, `description`, `assessment_question_types`.`title` as `question_type`, `correct_answer_id`, `max_score`, `sort_order` from `assessment_questions` inner join `assessment_question_types` on `assessment_questions`.`question_type_id` = `assessment_question_types`.`id` where `assessment_questions`.`assessment_id` = ?',
-      [curriculumAssessmentId],
+      [exampleCurriculumAssessment.id],
       [matchingAssessmentQuestionsRow]
     );
 
-    const questionIds = matchingAssessmentQuestionsRow.map(q => q.id);
+    const questionIds = [matchingAssessmentQuestionsRow.id];
+
     mockQuery(
       'select `id`, `question_id`, `title`, `description`, `sort_order` from `assessment_answers` where `question_id` in (?)',
-      [questionIds],
-      [matchingAssessmentAnswers]
+      [questionIds[0]],
+      [matchingAssessmentAnswersRow]
     );
 
-    const result = await listAssessmentQuestions(curriculumAssessmentId, answersIncluded);
-
-    expect(result).toEqual(matchingAssessmentAnswers);
+    expect(
+      await listAssessmentQuestions(
+        exampleCurriculumAssessment.id,
+        answersIncluded
+      )
+    ).toEqual(exampleAssessmentQuestions);
   });
 });
-
-
-
-
-
 
 describe('listParticipantProgramAssessmentSubmissions', () => {});
 
