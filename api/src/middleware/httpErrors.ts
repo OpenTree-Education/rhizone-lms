@@ -20,6 +20,10 @@ UnauthorizedError.prototype.message =
   'The requester does not have access to the resource.';
 UnauthorizedError.prototype.status = 401;
 
+export class ForbiddenError extends HttpError {}
+ForbiddenError.prototype.message = 'Access to this resource is not allowed.';
+ForbiddenError.prototype.status = 403;
+
 export class ValidationError extends HttpError {}
 ValidationError.prototype.message =
   'The provided data does not meet requirements.';

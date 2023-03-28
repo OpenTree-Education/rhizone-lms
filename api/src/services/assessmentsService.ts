@@ -443,7 +443,7 @@ export const createAssessmentSubmission = async (
     id: newSubmissionId,
     assessment_id: programAssessmentId,
     principal_id: participantPrincipalId,
-    assessment_submission_state:opendStateTitle,
+    assessment_submission_state: opendStateTitle,
     opened_at: openAt,
   };
 

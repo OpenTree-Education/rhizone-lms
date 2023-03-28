@@ -3,6 +3,7 @@ import { Router } from 'express';
 import {
   BadRequestError,
   NotFoundError,
+  ForbiddenError,
   UnauthorizedError,
 } from './httpErrors';
 import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
@@ -163,48 +164,66 @@ assessmentsRouter.get(
       }
 
       // get the curriculum assessment, without its answer and correct answers.
-      const curriculumAssessment = await getCurriculumAssessment(programAssessmentIdParsed);
+      const includeQuestionsAndAllAnswers = true;
+      const includeQuestionsAndCorrectAnswers = false;
+      const curriculumAssessment = await getCurriculumAssessment(
+        programAssessmentIdParsed,
+        includeQuestionsAndAllAnswers,
+        includeQuestionsAndCorrectAnswers
+      );
 
       // get the list of the programm assessment submission
-      const assessmentSubmissions =
+      const existingAssessmentSubmissions =
         await listParticipantProgramAssessmentSubmissions(
           principalId,
           programAssessment.id
         );
 
+      let assessmentSubmission;
       if (
-        assessmentSubmissions &&
-        assessmentSubmissions.length >= curriculumAssessment.max_num_submissions
-      ) {
-        next(
-          new UnauthorizedError(
-            `Could not create a new submission becasue it has reach the maximum number of submission.`
-          )
-        );
-        return;
-      }
-
-      if (assessmentSubmissions &&
-        assessmentSubmissions.some(
+        existingAssessmentSubmissions &&
+        existingAssessmentSubmissions.some(
           a =>
             a.assessment_submission_state === 'Opened' ||
             a.assessment_submission_state === 'In Progress'
         )
       ) {
+        //If the participant has an AssessmentSubmission currently in the "Opened" or "In Progress".
+        //Return that submission.
+        assessmentSubmission = existingAssessmentSubmissions.filter(
+          a =>
+            a.assessment_submission_state === 'Opened' ||
+            a.assessment_submission_state === 'In Progress'
+        )[0];
+      } else if (
+        existingAssessmentSubmissions &&
+        existingAssessmentSubmissions.length >=
+          curriculumAssessment.max_num_submissions
+      ) {
+        //If the participant has no currently "Opened" or "In Progress" submission and reach the submission limit.
+        //Return Forbidden Error.
         next(
-          new UnauthorizedError(
-            `Could not create a new submission becasue an Opened/In Progress submission alreay exisits.`
+          new ForbiddenError(
+            `Could not create a new submission becasue it has reach the maximum number of submissions for thie assessment.`
           )
         );
         return;
+      } else {
+        //Create a new submission
+        assessmentSubmission = await createAssessmentSubmission(
+          principalId,
+          programAssessmentIdParsed
+        );
       }
 
-      const newSubmission = await createAssessmentSubmission(
-        principalId,
-        programAssessmentIdParsed
-      );
+      const assessmentWithSubmission: SavedAssessment = {
+        curriculum_assessment: curriculumAssessment,
+        program_assessment: programAssessment,
+        principal_program_role: programRole,
+        submission: assessmentSubmission,
+      };
 
-      res.json(itemEnvelope(newSubmission));
+      res.json(itemEnvelope(assessmentWithSubmission));
     } catch (err) {
       next(err);
       return;

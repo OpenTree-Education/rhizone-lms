@@ -119,33 +119,45 @@ describe('assessmentsRouter', () => {
     });
     it('should return an error when attempting to create a submission for a program assessment that is not yet available', done => {
       mockPrincipalId(participantPrincipalId);
-      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessmentNotAvailable);
+      mockFindProgramAssessment.mockResolvedValue(
+        exampleProgramAssessmentNotAvailable
+      );
       appAgent
-        .get(`/program/${exampleProgramAssessmentNotAvailable.id}/submissions/new`)
+        .get(
+          `/program/${exampleProgramAssessmentNotAvailable.id}/submissions/new`
+        )
         .expect(
           401,
-          errorEnvelope('The assessment is not yet available for a new submission.'),
+          errorEnvelope(
+            'The assessment is not yet available for a new submission.'
+          ),
           err => {
             expect(mockFindProgramAssessment).toHaveBeenCalledWith(
               exampleProgramAssessmentNotAvailable.id
             );
             done(err);
-        });
+          }
+        );
     });
     it('should return an error when attempting to create a submission when the program assessment due date has passed', done => {
       mockPrincipalId(participantPrincipalId);
-      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessmentPastDue);
+      mockFindProgramAssessment.mockResolvedValue(
+        exampleProgramAssessmentPastDue
+      );
       appAgent
         .get(`/program/${exampleProgramAssessmentPastDue.id}/submissions/new`)
         .expect(
           401,
-          errorEnvelope('The assessment has expired, thus unable to create a new submission.'),
+          errorEnvelope(
+            'The assessment has expired, thus unable to create a new submission.'
+          ),
           err => {
             expect(mockFindProgramAssessment).toHaveBeenCalledWith(
               exampleProgramAssessmentPastDue.id
             );
             done(err);
-        });
+          }
+        );
     });
 
     it('should return an error if logged-in user is not enrolled in the program', done => {
@@ -172,7 +184,7 @@ describe('assessmentsRouter', () => {
     it('should return an error if logged-in user is a facilitator', done => {
       mockPrincipalId(facilitatorPrincipalId);
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
-      mockGetPrincipalProgramRole.mockResolvedValue("Facilitator");
+      mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
       appAgent
         .get(`/program/${exampleProgramAssessment.id}/submissions/new`)
         .expect(
@@ -250,7 +262,7 @@ describe('assessmentsRouter', () => {
     //   });
     //   mockGetSubmissionById.mockResolvedValue([exampleAssessmentSubmissionOpened]);
     //   mockPrincipalId(participantPrincipalId);
-      
+
     //   appAgent
     //     .get(`/program/${exampleProgramAssessment.id}/submissions/new`)
 
@@ -301,7 +313,7 @@ describe('assessmentsRouter', () => {
     //   });
     //   mockGetSubmissionById.mockResolvedValue([exampleAssessmentSubmissionOpened]);
     //   mockPrincipalId(participantPrincipalId);
-      
+
     //   appAgent
     //     .get(`/program/${exampleProgramAssessment.id}/submissions/new`)
 
