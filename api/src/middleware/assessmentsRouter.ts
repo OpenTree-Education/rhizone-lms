@@ -101,7 +101,7 @@ assessmentsRouter.get(
     ) {
       next(
         new BadRequestError(
-          `"${programAssessmentIdParsed}" is not a valid program assessment ID.`
+          `"${programAssessmentId}" is not a valid program assessment ID.`
         )
       );
       return;
@@ -115,7 +115,7 @@ assessmentsRouter.get(
       if (!programAssessment) {
         next(
           new NotFoundError(
-            `Could not find program assessment with ID ${programAssessmentIdParsed}.`
+            `Could not find program assessment(ID ${programAssessmentIdParsed}).`
           )
         );
         return;
@@ -147,7 +147,7 @@ assessmentsRouter.get(
       if (!programRole) {
         next(
           new UnauthorizedError(
-            `Could not access program accessment with ID ${programAssessmentIdParsed}.`
+            `Could not access program accessment(ID ${programAssessmentIdParsed}) without enrollment.`
           )
         );
         return;
@@ -162,16 +162,8 @@ assessmentsRouter.get(
         return;
       }
 
-      // for this route as participent, we do not need its answer and correct answers.
-      const includeQuestionsAndAllAnswers = false;
-      const includeQuestionsAndCorrectAnswers = false;
-
-      // get the curriculum assessment
-      const curriculumAssessment = await getCurriculumAssessment(
-        programAssessmentIdParsed,
-        includeQuestionsAndAllAnswers,
-        includeQuestionsAndCorrectAnswers
-      );
+      // get the curriculum assessment, without its answer and correct answers.
+      const curriculumAssessment = await getCurriculumAssessment(programAssessmentIdParsed);
 
       // get the list of the programm assessment submission
       const assessmentSubmissions =
@@ -181,7 +173,7 @@ assessmentsRouter.get(
         );
 
       if (
-        !assessmentSubmissions &&
+        assessmentSubmissions &&
         assessmentSubmissions.length >= curriculumAssessment.max_num_submissions
       ) {
         next(
@@ -192,7 +184,7 @@ assessmentsRouter.get(
         return;
       }
 
-      if (
+      if (assessmentSubmissions &&
         assessmentSubmissions.some(
           a =>
             a.assessment_submission_state === 'Opened' ||

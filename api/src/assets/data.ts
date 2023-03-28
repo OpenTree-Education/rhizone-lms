@@ -156,9 +156,24 @@ export const exampleProgramAssessment: ProgramAssessment = {
   program_id: 1,
   assessment_id: 12,
   available_after: '2023-02-06',
+  due_date: '2050-02-10',
+};
+
+export const exampleProgramAssessmentPastDue: ProgramAssessment = {
+  id: 15,
+  program_id: 1,
+  assessment_id: 12,
+  available_after: '2023-02-06',
   due_date: '2023-02-10',
 };
 
+export const exampleProgramAssessmentNotAvailable: ProgramAssessment = {
+  id: 15,
+  program_id: 1,
+  assessment_id: 12,
+  available_after: '2050-02-06',
+  due_date: '2050-02-10',
+};
 export const exampleParticipantAssessmentSubmissionsSummary: ParticipantAssessmentSubmissionsSummary =
   {
     principal_id: participantPrincipalId,
