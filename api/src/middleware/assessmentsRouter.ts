@@ -4,15 +4,20 @@ import {
   BadRequestError,
   NotFoundError,
   UnauthorizedError,
+  ValidationError,
 } from './httpErrors';
 import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
 
-import { SavedAssessment } from '../models';
+import { SavedAssessment ,
+  CurriculumAssessment,
+} from '../models';
 import {
   findProgramAssessment,
   getAssessmentSubmission,
   getCurriculumAssessment,
   getPrincipalProgramRole,
+  facilitatorProgramAssessmentsForCurriculumAssessment,
+  deleteCurriculumAssessment,
 } from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
@@ -40,11 +45,40 @@ assessmentsRouter.put(
     res.json();
   }
 );
+
 // Delete an existing CurriculumAssessment
 assessmentsRouter.delete(
   '/curriculum/:curriculumAssessmentId',
   async (req, res, next) => {
-    res.json();
+    const { principalId } = req.session;
+    const { curriculumAssessmentId } = req.params;
+    const curriculumAssessmentIdParsed = Number(curriculumAssessmentId);
+
+    if (!Number.isInteger(curriculumAssessmentIdParsed) || curriculumAssessmentIdParsed < 1 ) {
+      next(new BadRequestError(`"$curriculumAssessmentIdParsed" is not a valid curriculum assessment ID`));
+      return;
+    }
+    
+    try {
+      const curriculumAssessmentExisting = getCurriculumAssessment(curriculumAssessmentIdParsed);
+
+      if (!curriculumAssessmentExisting) {
+        throw new NotFoundError(`Could not find curriculum assessment with ID ${curriculumAssessmentIdParsed}`);
+      }
+  
+      // TODO: get the principal program role
+      const programRole = await getPrincipalProgramRole(principalId, programAssessment.program_id);
+  
+      if (programRole !== "Facilitator") {
+        throw new UnauthorizedError(`Not allowed to make delete to curriculum assessment with ID ${curriculumAssessmentIdParsed}.`);
+      }
+  
+      await (deleteCurriculumAssessment (curriculumAssessmentIdParsed))
+      res.status(204).send();
+    } catch (err) {
+      next(err);
+      return;
+    }
   }
 );
 
@@ -73,6 +107,8 @@ assessmentsRouter.delete(
     res.json();
   }
 );
+
+	
 
 // Get an AssessmentWithSubmissions
 assessmentsRouter.get(
