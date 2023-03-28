@@ -37,7 +37,6 @@ import {
   matchingAssessmentQuestionsRow,
   matchingAssessmentAnswersRow,
   unenrolledPrincipalId,
-  assessmentListPageExampleDataFacilitator,
   exampleCurriculumAssessment,
   exampleFacilitatorAssessmentSubmissionsSummary,
   unexpectedCurriculumAssessmentId,
