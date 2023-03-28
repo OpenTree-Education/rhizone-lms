@@ -543,13 +543,15 @@ export const createCurriculumAssessment = async (
 
   const insertedQuestions: Question[] = [];
 
-  for (const assessmentQuestion of curriculumAssessment.questions) {
-    insertedQuestions.push(
-      await createAssessmentQuestion(
-        insertedCurriculumAssessmentRowId,
-        assessmentQuestion
-      )
-    );
+  if (typeof curriculumAssessment.questions !== 'undefined') {
+    for (const assessmentQuestion of curriculumAssessment.questions) {
+      insertedQuestions.push(
+        await createAssessmentQuestion(
+          insertedCurriculumAssessmentRowId,
+          assessmentQuestion
+        )
+      );
+    }
   }
 
   const updatedCurriculumAssessment: CurriculumAssessment = {
@@ -892,6 +894,10 @@ export const listPrincipalEnrolledProgramIds = async (
     .select('program_id')
     .where({ principal_id: principalId });
 
+  console.log(
+    `enrolledProgramsList: ${JSON.stringify(enrolledProgramsList, null, 2)}`
+  );
+
   if (enrolledProgramsList.length === 0) {
     return null;
   }
@@ -956,11 +962,15 @@ export const facilitatorProgramIdsMatchingCurriculum = async (
     principalId
   );
 
+  if (participatingProgramIds === null) {
+    return [];
+  }
+
   const curriculumPrograms = await listProgramsForCurriculum(curriculumId);
 
   const matchingFacilitatorPrograms: number[] = [];
 
-  participatingProgramIds.forEach(async programId => {
+  for (const programId of participatingProgramIds) {
     const programRole = await getPrincipalProgramRole(principalId, programId);
 
     if (programRole === 'Facilitator') {
@@ -971,7 +981,7 @@ export const facilitatorProgramIdsMatchingCurriculum = async (
         matchingFacilitatorPrograms.push(programId);
       }
     }
-  });
+  }
 
   return matchingFacilitatorPrograms;
 };
