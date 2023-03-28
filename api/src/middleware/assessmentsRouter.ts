@@ -291,7 +291,7 @@ assessmentsRouter.get(
 
       if (new Date(programAssessment.available_after + 'Z') > new Date()) {
         next(
-          new UnauthorizedError(
+          new ForbiddenError(
             `Could not create a new submission of an assessment that's not yet available.`
           )
         );
@@ -300,7 +300,7 @@ assessmentsRouter.get(
 
       if (new Date(programAssessment.due_date + 'Z') < new Date()) {
         next(
-          new UnauthorizedError(
+          new ForbiddenError(
             `Could not create a new submission of an assessment that passed due date.`
           )
         );
