@@ -188,9 +188,8 @@ export const listAssessmentQuestions = async (
   );
 
   const listAssessmentAnswers = await db('assessment_answers')
-    .select('*')
+    .select('id', 'question_id', 'title', 'description', 'sort_order')
     .whereIn('question_id', questionIds);
-
   matchinglistAssessmentQuestionsRows
     .filter(
       question =>
@@ -214,8 +213,9 @@ export const listAssessmentQuestions = async (
         question_type: assessmentQuestionRow.question_type,
         answers: assessmentQuestionRow.answers as Answer[],
         correct_answer_id:
-          correctAnswersIncluded === true &&
-          assessmentQuestionRow.correct_answer_id,
+          correctAnswersIncluded === true
+            ? Number(assessmentQuestionRow.correct_answer_id)
+            : null,
         max_score: assessmentQuestionRow.max_score,
         sort_order: assessmentQuestionRow.sort_order,
       };
@@ -225,17 +225,54 @@ export const listAssessmentQuestions = async (
 };
 
 /**
- * Lists all responses from a given assessment submission by a program participant. Based on specified boolean parameter, will also include the score and any grader response as well.
+ * Lists all responses from a given assessment submission by a program
+ * participant. Based on specified boolean parameter, will also include the
+ * score and any grader response as well.
  *
- * @param {number} submissionId - The row ID of the assessment_submissions table for a given program assessment submission.
- * @param {boolean} [gradingsIncluded] - Optional specifier to determine whether or not the grading information (score, grader response) should be included or removed from the return value.
- * @returns {Promise<AssessmentResponse[]>} An array of AssessmentResponse objects, including or omitting the grading information as specified.
+ * @param {number} submissionId - The row ID of the assessment_submissions table
+ *   for a given program assessment submission.
+ * @param {boolean} [gradingsIncluded] - Optional specifier to determine whether
+ *   or not the grading information (score, grader response) should be included
+ *   or removed from the return value.
+ * @returns {Promise<AssessmentResponse[]>} An array of AssessmentResponse
+ *   objects, including or omitting the grading information as specified.
  */
 const listSubmissionResponses = async (
   submissionId: number,
   gradingsIncluded?: boolean
 ): Promise<AssessmentResponse[]> => {
-  return [];
+  const matchingSubmissionResponsesRows = await db('assessment_responses')
+    .select(
+      'id',
+      'assessment_id',
+      'question_id',
+      'answer_id',
+      'response',
+      'score',
+      'grader_response'
+    )
+    .where('submission_id', submissionId);
+
+  if (matchingSubmissionResponsesRows.length === 0) {
+    return null;
+  }
+
+  const assessmentSubmissions: AssessmentResponse[] =
+    matchingSubmissionResponsesRows.map(assessmentSubmissionsRow => {
+      return {
+        id: assessmentSubmissionsRow.id,
+        assessment_id: assessmentSubmissionsRow.assessment_id,
+        submission_id: submissionId,
+        question_id: assessmentSubmissionsRow.question_id,
+        answer_id: assessmentSubmissionsRow.answer_id,
+        response_text:
+          gradingsIncluded === true && assessmentSubmissionsRow.response,
+        score: gradingsIncluded === true && assessmentSubmissionsRow.score,
+        grader_response: assessmentSubmissionsRow.grader_response,
+      };
+    });
+
+  return assessmentSubmissions;
 };
 
 /**
@@ -415,15 +452,25 @@ export const deleteCurriculumAssessment = async (
 };
 
 /**
- * Deletes a given program assessment, but leaves the curriculum assessment, its questions, and its answers intact. This function fails to execute if there has ever been an assessment submission for this program assessment by a program participant.
+ * Deletes a given program assessment, but leaves the curriculum assessment, its
+ * questions, and its answers intact. This function fails to execute if there
+ * has ever been an assessment submission for this program assessment by a
+ * program participant.
  *
- * @param {number} programAssessmentId - The row ID of the program_assessments table for a given program assessment.
+ * @param {number} programAssessmentId - The row ID of the program_assessments
+ *   table for a given program assessment.
  * @returns {Promise<void>} Returns nothing if the deletion was successful.
  */
 export const deleteProgramAssessment = async (
   programAssessmentId: number
 ): Promise<void> => {
-  return;
+  const matchingProgramAssessmentsRows = await db('program_assessments')
+    .select('program_id', 'assessment_id', 'available_after', 'due_date')
+    .where('id', programAssessmentId);
+
+  if (matchingProgramAssessmentsRows.length === 0) {
+    return null;
+  }
 };
 
 /**
@@ -662,6 +709,21 @@ export const listProgramAssessments = async (
     .select('id', 'assessment_id', 'available_after', 'due_date')
     .where('program_id', programId);
 
+  if (matchingListProgramAssessmentRows.length === 0) {
+    return null;
+  }
+
+  const programAssessments: ProgramAssessment[] =
+    matchingListProgramAssessmentRows.map(programAssessmentRow => ({
+      id: programAssessmentRow.id,
+      program_id: programId,
+      assessment_id: programAssessmentRow.assessment_id,
+      available_after: programAssessmentRow.available_after,
+      due_date: programAssessmentRow.due_date,
+    }));
+  return programAssessments;
+};
+
 /**
  * Retrieves all program assessments that a given user is a facilitator for,
  * matching a given curriculum assessment ID. This is used for routes where we
@@ -705,21 +767,6 @@ export const facilitatorProgramAssessmentsForCurriculumAssessment = async (
   );
 
   return matchingProgramAssessments;
-};
-
-  if (matchingListProgramAssessmentRows.length === 0) {
-    return null;
-  }
-
-  const programAssessments: ProgramAssessment[] =
-    matchingListProgramAssessmentRows.map(programAssessmentRow => ({
-      id: programAssessmentRow.id,
-      program_id: programId,
-      assessment_id: programAssessmentRow.assessment_id,
-      available_after: programAssessmentRow.available_after,
-      due_date: programAssessmentRow.due_date,
-    }));
-  return programAssessments;
 };
 
 /**

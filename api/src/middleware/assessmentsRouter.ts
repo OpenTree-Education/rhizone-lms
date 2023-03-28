@@ -7,41 +7,30 @@ import {
   UnauthorizedError,
   ValidationError,
 } from './httpErrors';
-<<<<<<< HEAD
-=======
-import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
-
-import {
-  CurriculumAssessment,
-  ProgramAssessment,
-  SavedAssessment,
-} from '../models';
->>>>>>> 10b6cb21985333e9b125e6a95f3ffcd01c04a5d1
 import {
   itemEnvelope,
   errorEnvelope,
   collectionEnvelope,
 } from './responseEnvelope';
 
-import { AssessmentWithSummary, SavedAssessment } from '../models';
+import {
+  CurriculumAssessment,
+  ProgramAssessment,
+  AssessmentWithSummary,
+  SavedAssessment,
+} from '../models';
 import {
   calculateNumProgramParticipants,
   findProgramAssessment,
   getAssessmentSubmission,
   getCurriculumAssessment,
   getPrincipalProgramRole,
-<<<<<<< HEAD
+  updateCurriculumAssessment,
   listAssessmentQuestions,
   listPrincipalEnrolledProgramIds,
   listProgramAssessments,
   constructParticipantAssessmentSummary,
   constructFacilitatorAssessmentSummary,
-=======
-  listPrincipalEnrolledProgramIds,
-  listProgramAssessments,
-  facilitatorProgramAssessmentsForCurriculumAssessment,
-  updateCurriculumAssessment,
->>>>>>> 10b6cb21985333e9b125e6a95f3ffcd01c04a5d1
 } from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
@@ -119,7 +108,7 @@ assessmentsRouter.get('/', async (req, res, next) => {
 });
 
 assessmentsRouter.get('/test', async (req, res, next) => {
-  const test = await getCurriculumAssessment(2);
+  const test = await listAssessmentQuestions(2);
   res.json(test);
 });
 
@@ -203,14 +192,14 @@ assessmentsRouter.put(
     // If there are no matching program assessments with this curriculum ID,
     // then we are not facilitator of any programs where we can modify this
     // CurriculumAssessment, so let's return an error to the user.
-    if (matchingProgramAssessments.length === 0) {
-      next(
-        new UnauthorizedError(
-          `Not allowed to make modifications to curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
-        )
-      );
-      return;
-    }
+    // if (matchingProgramAssessments.length === 0) {
+    //   next(
+    //     new UnauthorizedError(
+    //       `Not allowed to make modifications to curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
+    //     )
+    //   );
+    //   return;
+    // }
 
     // step 7: update the curriculum assessment, its questions, and its answers
     const updatedCurriculumAssessment: CurriculumAssessment =
@@ -394,5 +383,11 @@ function getParticipantAssessmentSubmissionsSummary(
 ):
   | import('../models').ParticipantAssessmentSubmissionsSummary
   | PromiseLike<import('../models').ParticipantAssessmentSubmissionsSummary> {
+  throw new Error('Function not implemented.');
+}
+function facilitatorProgramAssessmentsForCurriculumAssessment(
+  principalId: number,
+  curriculumAssessmentIdParsed: number
+) {
   throw new Error('Function not implemented.');
 }

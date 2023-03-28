@@ -5,6 +5,7 @@ import {
   FacilitatorAssessmentSubmissionsSummary,
   AssessmentSubmission,
   AssessmentWithSummary,
+  Question,
 } from '../models';
 export const administratorPrincipalId = 3;
 export const participantPrincipalId = 30;
@@ -30,6 +31,7 @@ export const matchingCurriculumAssessmentRows = {
   principal_id: 300,
 };
 export const curriculumAssessmentId = 1;
+export const unexpectedCurriculumAssessmentId = 0;
 
 export const exampleCurriculumAssessmentWithQuestion: CurriculumAssessment = {
   id: curriculumAssessmentId,
@@ -533,3 +535,32 @@ export const assessmentListPageExampleDataFacilitator: AssessmentWithSummary[] =
       principal_program_role: 'Facilitator',
     },
   ];
+
+export const matchingAssessmentAnswers: Question[] = [
+  {
+    id: 14,
+    assessment_id: 2,
+    title: 'Each table can contain more than one primary key.',
+    description: null,
+    question_type: 'single choice',
+    answers: [
+      {
+        id: 40,
+        question_id: 14,
+        title: 'True',
+        description: null,
+        sort_order: 1,
+      },
+      {
+        id: 41,
+        question_id: 14,
+        title: 'False',
+        description: null,
+        sort_order: 2,
+      },
+    ],
+    correct_answer_id: null,
+    max_score: 1,
+    sort_order: 4,
+  },
+];
