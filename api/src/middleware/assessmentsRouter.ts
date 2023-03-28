@@ -7,11 +7,16 @@ import {
   UnauthorizedError,
   ValidationError,
 } from './httpErrors';
-import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
+import {
+  itemEnvelope,
+  errorEnvelope,
+  collectionEnvelope,
+} from './responseEnvelope';
 
 import {
   CurriculumAssessment,
   ProgramAssessment,
+  AssessmentWithSummary,
   SavedAssessment,
   AssessmentWithSubmissions,
 } from '../models';
@@ -20,11 +25,14 @@ import {
   getAssessmentSubmission,
   getCurriculumAssessment,
   getPrincipalProgramRole,
-  getProgramIdByProgramAssessmentId,
+  listAssessmentQuestions,
   listPrincipalEnrolledProgramIds,
   listProgramAssessments,
-  facilitatorProgramAssessmentsForCurriculumAssessment,
+  constructParticipantAssessmentSummary,
+  constructFacilitatorAssessmentSummary,
+  facilitatorProgramIdsMatchingCurriculum,
   updateCurriculumAssessment,
+  updateProgramAssessment,
   listParticipantProgramAssessmentSubmissions
 } from '../services/assessmentsService';
 
@@ -32,7 +40,68 @@ const assessmentsRouter = Router();
 
 // List all AssessmentWithSummary to which the user has access
 assessmentsRouter.get('/', async (req, res, next) => {
-  res.json();
+  const { principalId } = req.session;
+
+  try {
+    const programIds = await listPrincipalEnrolledProgramIds(principalId);
+
+    const assessmentsSummaryList: AssessmentWithSummary[] = [];
+
+    if (programIds.length === 0) {
+      res.json(collectionEnvelope(assessmentsSummaryList, 0));
+      return;
+    }
+
+    for (const programId of programIds) {
+      const roleInProgram = await getPrincipalProgramRole(
+        principalId,
+        programId
+      );
+      const programAssessments = await listProgramAssessments(programId);
+
+      for (const programAssessment of programAssessments) {
+        if (roleInProgram === 'Participant') {
+          assessmentsSummaryList.push({
+            curriculum_assessment: await getCurriculumAssessment(
+              programAssessment.assessment_id,
+              false,
+              false
+            ),
+            program_assessment: programAssessment,
+            participant_submissions_summary:
+              await constructParticipantAssessmentSummary(
+                principalId,
+                programAssessment.assessment_id
+              ),
+            principal_program_role: roleInProgram,
+          });
+        }
+
+        if (roleInProgram === 'Facilitator') {
+          assessmentsSummaryList.push({
+            curriculum_assessment: await getCurriculumAssessment(
+              programAssessment.assessment_id,
+              false,
+              false
+            ),
+            program_assessment: programAssessment,
+            facilitator_submissions_summary:
+              await constructFacilitatorAssessmentSummary(
+                programAssessment.assessment_id,
+                programId
+              ),
+            principal_program_role: roleInProgram,
+          });
+        }
+      }
+    }
+    res.json(
+      collectionEnvelope(assessmentsSummaryList, assessmentsSummaryList.length)
+    );
+  } catch (error) {
+    next(error);
+    return;
+  }
 });
 
 // Get details of a specific CurriculumAssessment
@@ -133,58 +202,54 @@ assessmentsRouter.put(
       return;
     }
 
-    // step 5: check to make sure the curriculum assessment already exists
-    // because our route is in charge of updating an *existing* curriculum
-    // assessment, so error out if the curriculum assessment doesn't exist
-    const curriculumAssessmentExisting = getCurriculumAssessment(
-      curriculumAssessmentIdParsed
-    );
-
-    if (!curriculumAssessmentExisting) {
-      next(
-        new NotFoundError(
-          `Could not find curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
-        )
-      );
-      return;
-    }
-
-    // step 6: make sure the user is the facilitator of a program that uses
-    // this curriculum assessment
-    const matchingProgramAssessments =
-      await facilitatorProgramAssessmentsForCurriculumAssessment(
-        principalId,
+    try {
+      // step 5: check to make sure the curriculum assessment already exists
+      // because our route is in charge of updating an *existing* curriculum
+      // assessment, so error out if the curriculum assessment doesn't exist
+      const curriculumAssessmentExisting = getCurriculumAssessment(
         curriculumAssessmentIdParsed
       );
 
-    // If there are no matching program assessments with this curriculum ID,
-    // then we are not facilitator of any programs where we can modify this
-    // CurriculumAssessment, so let's return an error to the user.
-    if (matchingProgramAssessments.length === 0) {
-      next(
-        new UnauthorizedError(
+      if (!curriculumAssessmentExisting) {
+        throw new NotFoundError(
+          `Could not find curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
+        );
+      }
+
+      // step 6: make sure the user is the facilitator of a program that uses
+      // this curriculum assessment
+      const matchingProgramAssessments =
+        await facilitatorProgramIdsMatchingCurriculum(
+          principalId,
+          curriculumAssessmentIdParsed
+        );
+
+      // If there are no matching program assessments with this curriculum ID,
+      // then we are not facilitator of any programs where we can modify this
+      // CurriculumAssessment, so let's return an error to the user.
+      if (matchingProgramAssessments.length === 0) {
+        throw new UnauthorizedError(
           `Not allowed to make modifications to curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
-        )
-      );
-      return;
-    }
+        );
+      }
 
-    // step 7: update the curriculum assessment, its questions, and its answers
-    const updatedCurriculumAssessment: CurriculumAssessment =
-      await updateCurriculumAssessment(curriculumAssessmentFromUser);
+      // step 7: update the curriculum assessment, its questions, and its answers
+      const updatedCurriculumAssessment: CurriculumAssessment =
+        await updateCurriculumAssessment(curriculumAssessmentFromUser);
 
-    // step 8: return the updated curriculum assessment to the user,
-    // including questions and answers
-    if (!updatedCurriculumAssessment) {
-      next(
-        new InternalServerError(
+      // step 8: return the updated curriculum assessment to the user,
+      // including questions and answers
+      if (!updatedCurriculumAssessment) {
+        throw new InternalServerError(
           `Could not update curriculum assessment with ID ${curriculumAssessmentIdParsed}`
-        )
-      );
+        );
+      }
+
+      res.json(itemEnvelope(updatedCurriculumAssessment));
+    } catch (err) {
+      next(err);
       return;
     }
-
-    res.json(itemEnvelope(updatedCurriculumAssessment));
   }
 );
 
@@ -203,17 +268,83 @@ assessmentsRouter.get(
     res.json();
   }
 );
+
 // Create a new ProgramAssessment
 assessmentsRouter.post('/program', async (req, res, next) => {
   res.json();
 });
+
 // Update an existing ProgramAssessment
 assessmentsRouter.put(
   '/program/:programAssessmentId',
   async (req, res, next) => {
-    res.json();
+    const { programAssessmentId } = req.params;
+    const { principalId } = req.session;
+    const programAssessmentFromUser = req.body;
+    const programAssessmentIdParsed = Number(programAssessmentId);
+    if (
+      !Number.isInteger(programAssessmentIdParsed) ||
+      programAssessmentIdParsed < 1
+    ) {
+      next(
+        new BadRequestError(
+          `"${programAssessmentIdParsed}" is not a valid program assessment ID.`
+        )
+      );
+      return;
+    }
+    let updatedPrgramAssessment;
+    try {
+      const programAssessment = await findProgramAssessment(
+        programAssessmentIdParsed
+      );
+
+      if (programAssessment === null) {
+        throw new NotFoundError(
+          `Could not find program assessment with ID ${programAssessmentIdParsed}.`
+        );
+      }
+
+      // get the principal program role
+      const programRole = await getPrincipalProgramRole(
+        principalId,
+        programAssessment.program_id
+      );
+
+      // if the program role is null/falsy, that means the user is not enrolled in
+      // the program. send an error back to the user.
+      if (!programRole) {
+        next(
+          new UnauthorizedError(
+            `Could not access program Assessment with ID ${programAssessmentIdParsed}.`
+          )
+        );
+        return;
+      }
+
+      const isprogramAssessment = (
+        possibleAssessment: unknown
+      ): possibleAssessment is ProgramAssessment => {
+        return (possibleAssessment as ProgramAssessment).id !== undefined;
+      };
+
+      if (!isprogramAssessment(programAssessmentFromUser)) {
+        next(new BadRequestError(`Was not given a valid program assessment.`));
+        return;
+      }
+
+      updatedPrgramAssessment = await updateProgramAssessment(
+        programAssessmentFromUser
+      );
+    } catch (error) {
+      next(error);
+      return;
+    }
+
+    res.status(201).json(itemEnvelope(updatedPrgramAssessment));
   }
 );
+
 // Delete an existing ProgramAssessment
 assessmentsRouter.delete(
   '/program/:programAssessmentId',

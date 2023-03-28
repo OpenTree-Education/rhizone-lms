@@ -4,6 +4,8 @@ import {
   ParticipantAssessmentSubmissionsSummary,
   FacilitatorAssessmentSubmissionsSummary,
   AssessmentSubmission,
+  AssessmentWithSummary,
+  Question,
 } from '../models';
 export const administratorPrincipalId = 3;
 export const participantPrincipalId = 30;
@@ -26,9 +28,10 @@ export const matchingCurriculumAssessmentRows = {
   time_limit: 120,
   curriculum_id: 3,
   activity_id: 97,
-  principal_id: 300,
+  principal_id: administratorPrincipalId,
 };
 export const curriculumAssessmentId = 1;
+export const unexpectedCurriculumAssessmentId = 0;
 
 export const exampleCurriculumAssessmentWithQuestion: CurriculumAssessment = {
   id: curriculumAssessmentId,
@@ -65,8 +68,22 @@ export const exampleCurriculumAssessmentWithQuestion: CurriculumAssessment = {
   ],
 };
 
+export const exampleCurriculumAssessment: CurriculumAssessment = {
+  id: 12,
+  title: 'Assignment 1: React',
+  assessment_type: 'test',
+  description: 'Your assignment for week 1 learning.',
+  max_score: 10,
+  max_num_submissions: 1,
+  time_limit: 120,
+  curriculum_id: 3,
+  activity_id: 97,
+  principal_id: administratorPrincipalId,
+};
+
 export const matchingAssessmentQuestionsRow = {
   id: 1,
+  assessment_id: exampleCurriculumAssessment.id,
   title: 'What is React?',
   description: '',
   question_type: 'single choice',
@@ -82,19 +99,6 @@ export const matchingAssessmentAnswersRow = {
   description: '',
   sort_order: 1,
   correct_answer: true,
-};
-
-export const exampleCurriculumAssessment: CurriculumAssessment = {
-  id: 12,
-  title: 'Assignment 1: React',
-  assessment_type: 'test',
-  description: 'Your assignment for week 1 learning.',
-  max_score: 10,
-  max_num_submissions: 3,
-  time_limit: 120,
-  curriculum_id: 3,
-  activity_id: 97,
-  principal_id: administratorPrincipalId,
 };
 
 export const exampleCurriculumAssessmentWithQuestions: CurriculumAssessment = {
@@ -119,29 +123,17 @@ export const exampleCurriculumAssessmentWithQuestions: CurriculumAssessment = {
   ],
 };
 
+export const exampleAssessmentQuestions: Question[] = [
+  {
+    ...matchingAssessmentQuestionsRow,
+    answers: [{ ...matchingAssessmentAnswersRow }],
+  },
+];
+
 export const exampleCurriculumAssessmentWithCorrectAnswers: CurriculumAssessment =
   {
     ...exampleCurriculumAssessment,
-    questions: [
-      {
-        id: 1,
-        assessment_id: exampleCurriculumAssessment.id,
-        title: 'What is React?',
-        question_type: 'single choice',
-        answers: [
-          {
-            id: 1,
-            question_id: 1,
-            title: 'A relational database management system',
-            sort_order: 1,
-            correct_answer: true,
-          },
-        ],
-        correct_answer_id: 1,
-        max_score: 1,
-        sort_order: 1,
-      },
-    ],
+    questions: exampleAssessmentQuestions,
   };
 
 export const exampleProgramAssessmentsRow = {
@@ -149,6 +141,14 @@ export const exampleProgramAssessmentsRow = {
   assessment_id: 12,
   available_after: '2023-02-06',
   due_date: '2023-02-10',
+};
+
+export const updatedProgramAssessmentsRow = {
+  id: 15,
+  program_id: 1,
+  assessment_id: 12,
+  available_after: '2023-03-06',
+  due_date: '2023-04-10',
 };
 
 export const exampleProgramAssessment: ProgramAssessment = {
@@ -165,7 +165,7 @@ export const exampleParticipantAssessmentSubmissionsSummary: ParticipantAssessme
     highest_state: 'Graded',
     most_recent_submitted_date: '2023-02-09 13:23:45',
     total_num_submissions: 1,
-    highest_score: 10,
+    highest_score: 4,
   };
 
 export const exampleFacilitatorAssessmentSubmissionsSummary: FacilitatorAssessmentSubmissionsSummary =

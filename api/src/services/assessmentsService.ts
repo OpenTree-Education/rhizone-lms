@@ -5,10 +5,12 @@ import {
   CurriculumAssessment,
   FacilitatorAssessmentSubmissionsSummary,
   ParticipantAssessmentSubmissionsSummary,
+  Program,
   ProgramAssessment,
   Question,
 } from '../models';
 import db from './db';
+import { listProgramsForCurriculum } from './programsService';
 
 // Helper functions
 
@@ -41,14 +43,10 @@ const calculateNumParticipantsWithSubmissions = async (
   programAssessmentId: number
 ): Promise<number> => {
   const [numParticipantsWithSubmissions] = await db('assessment_submissions')
-    .whereNotNull('assessment_submission_state_id')
-    .andWhere('assessment_id', programAssessmentId)
-    .count({ count: 'id' });
+    .where('assessment_id', programAssessmentId)
+    .countDistinct({ count: 'principal_id' });
 
-  if (numParticipantsWithSubmissions === 0) {
-    return null;
-  }
-  return numParticipantsWithSubmissions as number;
+  return numParticipantsWithSubmissions.count;
 };
 
 /**
@@ -68,10 +66,7 @@ const calculateNumProgramParticipants = async (
     .andWhere('role_id', 2)
     .count({ count: 'id' });
 
-  if (numProgramParticipants === 0) {
-    return null;
-  }
-  return numProgramParticipants as number;
+  return numProgramParticipants.count;
 };
 
 /**
@@ -91,10 +86,7 @@ const calculateNumUngradedSubmissions = async (
     .andWhere('score', null)
     .count({ count: 'id' });
 
-  if (numUngradedSubmissions === 0) {
-    return null;
-  }
-  return numUngradedSubmissions as number;
+  return numUngradedSubmissions.count;
 };
 
 /**
@@ -181,17 +173,17 @@ const deleteAssessmentQuestionAnswer = async (
  *
  * @param {number} questionId - The row ID of the assessment_questions table for
  *   a given question.
- * @param {boolean} [correctAnswersIncluded] - Optional specifier to determine
- *   whether or not the correct answer information should be included or removed
- *   from the return value.
  * @returns {Promise<Answer[]>} An array of Answer options, including or
  *   omitting the correct answer metadata as specified.
  */
 const listAssessmentQuestionAnswers = async (
-  questionId: number,
-  correctAnswersIncluded?: boolean
+  questionId: number
 ): Promise<Answer[]> => {
-  return [];
+  const assessmentAnswersList = await db('assessment_answers')
+    .select('id', 'question_id', 'title', 'description', 'sort_order')
+    .where('question_id', questionId);
+
+  return assessmentAnswersList;
 };
 
 /**
@@ -208,11 +200,11 @@ const listAssessmentQuestionAnswers = async (
  * @returns {Promise<Question[]>} An array of Question objects, including or
  *   omitting the correct answer metadata as specified.
  */
-const listAssessmentQuestions = async (
+export const listAssessmentQuestions = async (
   curriculumAssessmentId: number,
   correctAnswersIncluded?: boolean
 ): Promise<Question[]> => {
-  const matchinglistAssessmentQuestionsRows = await db('assessment_questions')
+  const matchingAssessmentQuestionsRows = await db('assessment_questions')
     .join(
       'assessment_question_types',
       'assessment_questions.question_type_id',
@@ -229,49 +221,37 @@ const listAssessmentQuestions = async (
     )
     .where('assessment_questions.assessment_id', curriculumAssessmentId);
 
-  if (matchinglistAssessmentQuestionsRows.length === 0) {
+  if (matchingAssessmentQuestionsRows.length === 0) {
     return null;
   }
 
-  const questionIds = matchinglistAssessmentQuestionsRows.map(
-    element => element.id
-  );
+  const assessmentQuestions: Question[] = [];
 
-  const listAssessmentAnswers = await db('assessment_answers')
-    .select('id', 'question_id', 'title', 'description', 'sort_order')
-    .whereIn('question_id', questionIds);
+  for (const assessmentQuestionsRow of matchingAssessmentQuestionsRows) {
+    const assessmentQuestion: Question = {
+      id: assessmentQuestionsRow.id,
+      assessment_id: curriculumAssessmentId,
+      title: assessmentQuestionsRow.title,
+      description: assessmentQuestionsRow.description,
+      question_type: assessmentQuestionsRow.question_type,
+      max_score: assessmentQuestionsRow.max_score,
+      sort_order: assessmentQuestionsRow.sort_order,
+      answers: await listAssessmentQuestionAnswers(assessmentQuestionsRow.id),
+    };
 
-  matchinglistAssessmentQuestionsRows
-    .filter(
-      question =>
-        question.question_type === 'single choice' ||
-        correctAnswersIncluded === true
-    )
-    .forEach(
-      question =>
-        (question.answers = listAssessmentAnswers.filter(
-          answer => answer.question_id === question.id
-        ))
-    );
+    if (correctAnswersIncluded) {
+      assessmentQuestion.correct_answer_id =
+        assessmentQuestionsRow.correct_answer_id;
+      const correctAnswer = assessmentQuestion.answers.find(
+        answer => answer.id === assessmentQuestionsRow.correct_answer_id
+      );
+      correctAnswer.correct_answer = true;
+    }
 
-  const listAssessmentQuestions: Question[] =
-    matchinglistAssessmentQuestionsRows.map(assessmentQuestionRow => {
-      return {
-        id: assessmentQuestionRow.id,
-        assessment_id: curriculumAssessmentId,
-        title: assessmentQuestionRow.title,
-        description: assessmentQuestionRow.description,
-        question_type: assessmentQuestionRow.question_type,
-        answers: assessmentQuestionRow.answers as Answer[],
-        correct_answer_id:
-          correctAnswersIncluded === true &&
-          assessmentQuestionRow.correct_answer_id,
-        max_score: assessmentQuestionRow.max_score,
-        sort_order: assessmentQuestionRow.sort_order,
-      };
-    });
+    assessmentQuestions.push(assessmentQuestion);
+  }
 
-  return listAssessmentQuestions;
+  return assessmentQuestions;
 };
 
 /**
@@ -381,9 +361,26 @@ const updateSubmissionResponse = async (
  *   facilitator.
  */
 export const constructFacilitatorAssessmentSummary = async (
-  programAssessmentId: number
+  programAssessmentId: number,
+  programId: number
 ): Promise<FacilitatorAssessmentSubmissionsSummary> => {
-  return;
+  const numParticipantsWithSubmissions =
+    await calculateNumParticipantsWithSubmissions(programAssessmentId);
+  const numProgramParticipants = await calculateNumProgramParticipants(
+    programId
+  );
+  const numUngradedSubmissions = await calculateNumUngradedSubmissions(
+    programAssessmentId
+  );
+
+  const facilitatorAssessmentSummary: FacilitatorAssessmentSubmissionsSummary =
+    {
+      num_participants_with_submissions: numParticipantsWithSubmissions,
+      num_program_participants: numProgramParticipants,
+      num_ungraded_submissions: numUngradedSubmissions,
+    };
+
+  return facilitatorAssessmentSummary;
 };
 
 /**
@@ -403,7 +400,47 @@ export const constructParticipantAssessmentSummary = async (
   participantPrincipalId: number,
   programAssessmentId: number
 ): Promise<ParticipantAssessmentSubmissionsSummary> => {
-  return;
+  const [highestState] = await db('assessment_submissions')
+    .select('assessment_submission_states.title')
+    .join(
+      'assessment_submission_states',
+      'assessment_submission_states.id',
+      'assessment_submissions.assessment_submission_state_id'
+    )
+    .where('assessment_submissions.principal_id', participantPrincipalId)
+    .andWhere('assessment_submissions.assessment_id', programAssessmentId)
+    .orderBy('assessment_submissions.assessment_submission_state_id', 'desc')
+    .limit(1);
+
+  const [mostRecentSubmittedDate] = await db('assessment_submissions')
+    .select('submitted_at')
+    .where('principal_id', participantPrincipalId)
+    .andWhere('assessment_id', programAssessmentId)
+    .orderBy('submitted_at', 'desc')
+    .limit(1);
+
+  const totalNumSubmissions = await listParticipantProgramAssessmentSubmissions(
+    participantPrincipalId,
+    programAssessmentId
+  );
+
+  const [highestScore] = await db('assessment_submissions')
+    .select('score')
+    .where('principal_id', participantPrincipalId)
+    .andWhere('assessment_id', programAssessmentId)
+    .orderBy('score', 'desc')
+    .limit(1);
+
+  const participantAssessmentSummary: ParticipantAssessmentSubmissionsSummary =
+    {
+      principal_id: participantPrincipalId,
+      highest_state: highestState.title,
+      most_recent_submitted_date: mostRecentSubmittedDate.submitted_at,
+      total_num_submissions: totalNumSubmissions.length,
+      highest_score: highestScore.score,
+    };
+
+  return participantAssessmentSummary;
 };
 
 /**
@@ -720,7 +757,6 @@ export const listParticipantProgramAssessmentSubmissions = async (
   participantPrincipalId: number,
   programAssessmentId: number
 ): Promise<AssessmentSubmission[]> => {
-
   const matchingAssessmentSubmissionsRows = await db('assessment_submissions')
     .join(
       'assessment_submission_states',
@@ -728,34 +764,35 @@ export const listParticipantProgramAssessmentSubmissions = async (
       'assessment_submission_states.id'
     )
     .select(
-      'assessment_submissions.id as id',
+      'id',
       'assessment_submission_states.title as assessment_submission_state',
       'score',
       'opened_at',
       'submitted_at'
     )
-    .where('assessment_submissions.principal_id', participantPrincipalId)
-    .andWhere('assessment_submissions.assessment_id', programAssessmentId);
+    .where('assessment_id', programAssessmentId)
+    .andWhere('principal_id', participantPrincipalId);
 
   if (matchingAssessmentSubmissionsRows.length === 0) {
     return null;
   }
 
-  const assessmentSubmissionRows = matchingAssessmentSubmissionsRows.map(
-    submission => {
-      return {
-        id: submission.id,
-        assessment_id: programAssessmentId,
-        principal_id: participantPrincipalId,
-        assessment_submission_state: submission.assessment_submission_state,
-        score: submission.score,
-        opened_at: submission.opened_at,
-        submitted_at: submission.submitted_at,
-      } as AssessmentSubmission;
-    }
-  );
+  const assessmentSubmissions: AssessmentSubmission[] = [];
 
-  return assessmentSubmissionRows;
+  for (const assessmentSubmissionsRow of matchingAssessmentSubmissionsRows) {
+    assessmentSubmissions.push({
+      id: assessmentSubmissionsRow.id,
+      assessment_id: programAssessmentId,
+      principal_id: participantPrincipalId,
+      assessment_submission_state:
+        assessmentSubmissionsRow.assessment_submission_state,
+      score: assessmentSubmissionsRow.score,
+      opened_at: assessmentSubmissionsRow.opened_at,
+      submitted_at: assessmentSubmissionsRow.submitted_at,
+    });
+  }
+
+  return assessmentSubmissions;
 };
 
 /**
@@ -769,8 +806,20 @@ export const listParticipantProgramAssessmentSubmissions = async (
  */
 export const listPrincipalEnrolledProgramIds = async (
   principalId: number
-): Promise<number[]> => {
-  return [];
+): Promise<number[] | null> => {
+  const enrolledProgramsList = await db('program_participants')
+    .select('program_id')
+    .where({ principal_id: principalId });
+
+  if (enrolledProgramsList.length === 0) {
+    return null;
+  }
+
+  const programList: number[] = enrolledProgramsList.map(
+    enrolledProgram => enrolledProgram.program_id
+  );
+
+  return programList;
 };
 
 /**
@@ -784,52 +833,66 @@ export const listPrincipalEnrolledProgramIds = async (
 export const listProgramAssessments = async (
   programId: number
 ): Promise<ProgramAssessment[]> => {
-  return [];
+  const matchingProgramAssessmentsRows = await db('program_assessments')
+    .select('id', 'assessment_id', 'available_after', 'due_date')
+    .where('program_id', programId);
+
+  if (matchingProgramAssessmentsRows.length === 0) {
+    return null;
+  }
+
+  const programAssessments: ProgramAssessment[] =
+    matchingProgramAssessmentsRows.map(programAssessmentRow => ({
+      id: programAssessmentRow.id,
+      program_id: programId,
+      assessment_id: programAssessmentRow.assessment_id,
+      available_after: programAssessmentRow.available_after,
+      due_date: programAssessmentRow.due_date,
+    }));
+
+  return programAssessments;
 };
 
 /**
- * Retrieves all program assessments that a given user is a facilitator for,
- * matching a given curriculum assessment ID. This is used for routes where we
- * have a curriculum assessment ID and do not have a way to check if a user is
- * allowed to make edits to that curriculum assessment.
+ * Retrieves all program IDs that a given user is a facilitator for, matching a
+ * given curriculum ID. This is used for routes where we have a curriculum
+ * assessment ID and do not have a way to check if a user is allowed to make
+ * edits to that curriculum assessment.
  *
  * @param {number} principalId - The row ID of the principals table for the
  *   logged-in user.
- * @param {number} curriculumAssessmentId - The row ID of the
- *   curriculum_assessments table corresponding to the assessment we will be
- *   retrieving, modifying, or deleting.
- * @returns {Promise<ProgramAssessment[]>} An array of the ProgramAssessment
- *   objects constructed from matching program assessments, if any.
+ * @param {number} curriculumId - The row ID of the curriculums table
+ *   corresponding to the curriculum assessment we will be retrieving,
+ *   modifying, or deleting.
+ * @returns {Promise<number[]>} An array of the row IDs of the programs table
+ *   matching the given curriculum ID.
  */
-export const facilitatorProgramAssessmentsForCurriculumAssessment = async (
+export const facilitatorProgramIdsMatchingCurriculum = async (
   principalId: number,
-  curriculumAssessmentId: number
-): Promise<ProgramAssessment[]> => {
+  curriculumId: number
+): Promise<number[]> => {
   const participatingProgramIds = await listPrincipalEnrolledProgramIds(
     principalId
   );
 
-  const allFacilitatorProgramAssessments: ProgramAssessment[] = [];
+  const curriculumPrograms = await listProgramsForCurriculum(curriculumId);
+
+  const matchingFacilitatorPrograms: number[] = [];
 
   participatingProgramIds.forEach(async programId => {
     const programRole = await getPrincipalProgramRole(principalId, programId);
 
     if (programRole === 'Facilitator') {
-      const programAssessmentsForProgram = await listProgramAssessments(
-        programId
-      );
-      programAssessmentsForProgram.forEach(programAssessment => {
-        allFacilitatorProgramAssessments.push(programAssessment);
-      });
+      if (
+        curriculumPrograms.filter(program => program.id === programId)
+          .length !== 0
+      ) {
+        matchingFacilitatorPrograms.push(programId);
+      }
     }
   });
 
-  const matchingProgramAssessments = allFacilitatorProgramAssessments.filter(
-    programAssessment =>
-      programAssessment.assessment_id === curriculumAssessmentId
-  );
-
-  return matchingProgramAssessments;
+  return matchingFacilitatorPrograms;
 };
 
 /**
@@ -917,7 +980,14 @@ export const updateCurriculumAssessment = async (
  *   that was handed to us, if update was successful.
  */
 export const updateProgramAssessment = async (
-  programAssessment: CurriculumAssessment
+  programAssessment: ProgramAssessment
 ): Promise<ProgramAssessment> => {
-  return;
+  await db('program_assessments')
+    .update({
+      available_after: programAssessment.available_after,
+      due_date: programAssessment.due_date,
+    })
+    .where('id', programAssessment.id);
+
+  return programAssessment;
 };
