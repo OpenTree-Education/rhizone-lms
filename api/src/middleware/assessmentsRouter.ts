@@ -32,6 +32,7 @@ import {
   facilitatorProgramIdsMatchingCurriculum,
   updateCurriculumAssessment,
   updateProgramAssessment,
+  createCurriculumAssessment,
 } from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
@@ -110,9 +111,21 @@ assessmentsRouter.get(
   }
 );
 // Create a new CurriculumAssessment
-assessmentsRouter.post('/curriculum', async (req, res, next) => {
-  res.json();
-});
+// assessmentsRouter.post('/curriculum', async (req, res, next) => {
+//       const { principalId } = req.session;
+//   const { curriculumAssessmentBody } =
+//     req.body;
+  
+//   let curriculumAssessment;
+//   try {
+//     curriculumAssessment = await createCurriculumAssessment(curriculumAssessmentBody);
+//   } catch (error) {
+//     next(error);
+//     return;
+//   }
+//   res.status(201).json(itemEnvelope(curriculumAssessment));
+// });
+
 
 // Update an existing CurriculumAssessment
 assessmentsRouter.put(

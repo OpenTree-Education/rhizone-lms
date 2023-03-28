@@ -473,10 +473,51 @@ export const createAssessmentSubmission = async (
  *   object that was handed to us, but with row ID specified.
  */
 export const createCurriculumAssessment = async (
-  curriculumAssessment: CurriculumAssessment
+  curriculumAssessment: CurriculumAssessment,
 ): Promise<CurriculumAssessment> => {
-  return;
+  let assessmentId: number;
+  await db.transaction(async (trx) => {
+    [assessmentId] = await trx('curriculum_assessments').insert({
+      title: curriculumAssessment.title,
+      description: curriculumAssessment.description,
+      max_score: curriculumAssessment.max_score,
+      max_num_submissions: curriculumAssessment.max_num_submissions,
+      time_limit: curriculumAssessment.time_limit,
+      curriculum_id: curriculumAssessment.curriculum_id,
+      activity_id: curriculumAssessment.activity_id,
+      principal_id: curriculumAssessment.principal_id,
+    });
+   const [questionType] = await trx('assessment_questions')
+      .select('assessment_question_types.id')
+      .where('title', curriculumAssessment.questions[0].question_type)
+      .join('assessment_question_types', 'assessment_questions.question_type_id', 'assessment_question_types.id')
+
+    await trx('assessment_questions').insert({
+      assessment_id: assessmentId,
+      title: curriculumAssessment.questions[0].title,
+      description: curriculumAssessment.questions[0].description,
+      question_type_id: questionType.id,
+      correct_answer_id: curriculumAssessment.questions[0].correct_answer_id,
+      max_score: curriculumAssessment.questions[0].max_score,
+      sort_order: curriculumAssessment.questions[0].sort_order,
+    });
+  });
+  const updatedCurriculumAssessment: CurriculumAssessment = {
+    id: assessmentId,
+    title: curriculumAssessment.title,
+    assessment_type: curriculumAssessment.assessment_type,
+    description: curriculumAssessment.description,
+    max_score: curriculumAssessment.max_score,
+    max_num_submissions: curriculumAssessment.max_num_submissions,
+    time_limit: curriculumAssessment.time_limit,
+    curriculum_id: curriculumAssessment.curriculum_id,
+    activity_id: curriculumAssessment.activity_id,
+    principal_id: curriculumAssessment.principal_id,
+    questions: curriculumAssessment.questions,
+  }
+  return updatedCurriculumAssessment;
 };
+
 
 /**
  * Creates a new program assessment in the program_assessments table, linked
