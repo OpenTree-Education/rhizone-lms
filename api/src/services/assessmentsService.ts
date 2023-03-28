@@ -921,24 +921,3 @@ export const updateProgramAssessment = async (
 ): Promise<ProgramAssessment> => {
   return;
 };
-
-export const getProgramIdByProgramAssessmentId = async (
-  AssessmentId: number
-): Promise<number> => {
-  const matchingIdRows = await db('curriculum_assessments')
-    .select('program_assessments.program_id')
-    .join(
-      'program_assessments',
-      'program_assessments.assessment_id',
-      'curriculum_assessments.id'
-    )
-    .where({ id: AssessmentId });
-
-  if (matchingIdRows.length === 0) {
-    return null;
-  }
-
-  const [matchingId] = matchingIdRows;
-
-  return matchingId.id;
-};
