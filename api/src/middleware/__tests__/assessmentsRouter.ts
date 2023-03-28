@@ -216,7 +216,9 @@ describe('assessmentsRouter', () => {
     });
   });
 
-  describe('GET /curriculum/:curriculumAssessmentId', () => {});
+  describe('GET /curriculum/:curriculumAssessmentId', () => {
+    //code here
+  });
   describe('POST /curriculum', () => {});
   describe('PUT /curriculum/:curriculumAssessmentId', () => {});
   describe('DELETE /curriculum/:curriculumAssessmentId', () => {});
@@ -669,6 +671,7 @@ describe('assessmentsRouter', () => {
       appAgent.get(`/submissions/${submissionId}`).expect(500, done);
     });
   });
+  //reference
 
   describe('PUT /submissions/:submissionId', () => {});
 

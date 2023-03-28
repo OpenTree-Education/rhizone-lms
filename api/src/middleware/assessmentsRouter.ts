@@ -125,24 +125,6 @@ assessmentsRouter.get(
       return;
     }
 
-    const matchingProgramAssessments =
-      await facilitatorProgramAssessmentsForCurriculumAssessment(
-        principalId,
-        curriculumAssessmentIdParsed
-      );
-
-    // If there are no matching program assessments with this curriculum ID,
-    // then we are not facilitator of any programs where we can modify this
-    // CurriculumAssessment, so let's return an error to the user.
-    if (matchingProgramAssessments.length === 0) {
-      next(
-        new UnauthorizedError(
-          `Not allowed to access curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
-        )
-      );
-      return;
-    }
-
     const includeQuestionsAndAllAnswers = true;
     const includeQuestionsAndCorrectAnswers = true;
 
@@ -151,6 +133,23 @@ assessmentsRouter.get(
       includeQuestionsAndAllAnswers,
       includeQuestionsAndCorrectAnswers
     );
+    const matchingProgramIds =
+      await facilitatorProgramIdsMatchingCurriculum(
+        principalId,
+        curriculumAssessment.curriculum_id
+      );
+
+    // If there are no matching program assessments with this curriculum ID,
+    // then we are not facilitator of any programs where we can modify this
+    // CurriculumAssessment, so let's return an error to the user.
+    if (matchingProgramIds.length === 0) {
+      next(
+        new UnauthorizedError(
+          `Not allowed to access curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
+        )
+      );
+      return;
+    }
 
     res.json(itemEnvelope(curriculumAssessment));
   }
