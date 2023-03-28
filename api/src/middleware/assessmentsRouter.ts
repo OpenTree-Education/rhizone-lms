@@ -24,13 +24,14 @@ import {
   getAssessmentSubmission,
   getCurriculumAssessment,
   getPrincipalProgramRole,
-  updateCurriculumAssessment,
   listAssessmentQuestions,
   listPrincipalEnrolledProgramIds,
   listProgramAssessments,
   constructParticipantAssessmentSummary,
   constructFacilitatorAssessmentSummary,
   facilitatorProgramAssessmentsForCurriculumAssessment,
+  updateCurriculumAssessment,
+  updateProgramAssessment,
 } from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
@@ -229,17 +230,83 @@ assessmentsRouter.get(
     res.json();
   }
 );
+
 // Create a new ProgramAssessment
 assessmentsRouter.post('/program', async (req, res, next) => {
   res.json();
 });
+
 // Update an existing ProgramAssessment
 assessmentsRouter.put(
   '/program/:programAssessmentId',
   async (req, res, next) => {
-    res.json();
+    const { programAssessmentId } = req.params;
+    const { principalId } = req.session;
+    const programAssessmentFromUser = req.body;
+    const programAssessmentIdParsed = Number(programAssessmentId);
+    if (
+      !Number.isInteger(programAssessmentIdParsed) ||
+      programAssessmentIdParsed < 1
+    ) {
+      next(
+        new BadRequestError(
+          `"${programAssessmentIdParsed}" is not a valid program assessment ID.`
+        )
+      );
+      return;
+    }
+    let updatedPrgramAssessment;
+    try {
+      const programAssessment = await findProgramAssessment(
+        programAssessmentIdParsed
+      );
+
+      if (programAssessment === null) {
+        throw new NotFoundError(
+          `Could not find program assessment with ID ${programAssessmentIdParsed}.`
+        );
+      }
+
+      // get the principal program role
+      const programRole = await getPrincipalProgramRole(
+        principalId,
+        programAssessment.program_id
+      );
+
+      // if the program role is null/falsy, that means the user is not enrolled in
+      // the program. send an error back to the user.
+      if (!programRole) {
+        next(
+          new UnauthorizedError(
+            `Could not access program Assessment with ID ${programAssessmentIdParsed}.`
+          )
+        );
+        return;
+      }
+
+      const isprogramAssessment = (
+        possibleAssessment: unknown
+      ): possibleAssessment is ProgramAssessment => {
+        return (possibleAssessment as ProgramAssessment).id !== undefined;
+      };
+
+      if (!isprogramAssessment(programAssessmentFromUser)) {
+        next(new BadRequestError(`Was not given a valid program assessment.`));
+        return;
+      }
+
+      updatedPrgramAssessment = await updateProgramAssessment(
+        programAssessmentFromUser
+      );
+    } catch (error) {
+      next(error);
+      return;
+    }
+
+    res.status(201).json(itemEnvelope(updatedPrgramAssessment));
   }
 );
+
 // Delete an existing ProgramAssessment
 assessmentsRouter.delete(
   '/program/:programAssessmentId',

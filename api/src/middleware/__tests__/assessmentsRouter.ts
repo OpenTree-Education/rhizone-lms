@@ -4,6 +4,24 @@ import {
   collectionEnvelope,
 } from '../responseEnvelope';
 import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
+
+import { AssessmentWithSummary, SavedAssessment } from '../../models';
+import {
+  exampleCurriculumAssessmentWithCorrectAnswers,
+  exampleProgramAssessment,
+  exampleAssessmentSubmissionSubmitted,
+  facilitatorPrincipalId,
+  exampleCurriculumAssessmentWithQuestions,
+  exampleAssessmentSubmissionInProgress,
+  participantPrincipalId,
+  exampleAssessmentSubmissionGraded,
+  otherParticipantPrincipalId,
+  updatedProgramAssessmentsRow,
+  unenrolledPrincipalId,
+  exampleParticipantAssessmentSubmissionsSummary,
+  exampleFacilitatorAssessmentSubmissionsSummary,
+  exampleCurriculumAssessment,
+} from '../../assets/data';
 import {
   constructFacilitatorAssessmentSummary,
   constructParticipantAssessmentSummary,
@@ -23,22 +41,7 @@ import {
   updateCurriculumAssessment,
   updateProgramAssessment,
 } from '../../services/assessmentsService';
-import {
-  exampleCurriculumAssessmentWithCorrectAnswers,
-  exampleProgramAssessment,
-  exampleAssessmentSubmissionSubmitted,
-  facilitatorPrincipalId,
-  exampleCurriculumAssessmentWithQuestions,
-  exampleAssessmentSubmissionInProgress,
-  participantPrincipalId,
-  exampleAssessmentSubmissionGraded,
-  otherParticipantPrincipalId,
-  unenrolledPrincipalId,
-  exampleParticipantAssessmentSubmissionsSummary,
-  exampleFacilitatorAssessmentSubmissionsSummary,
-  exampleCurriculumAssessment,
-} from '../../assets/data';
-import { AssessmentWithSummary, SavedAssessment } from '../../models';
+
 import assessmentsRouter from '../assessmentsRouter';
 
 jest.mock('../../services/assessmentsService');
@@ -240,7 +243,138 @@ describe('assessmentsRouter', () => {
 
   describe('GET /program/:programAssessmentId', () => {});
   describe('POST /program', () => {});
-  describe('PUT /program/:programAssessmentId', () => {});
+  describe('PUT /program/:programAssessmentId', () => {
+    it('should update a program assessment if the logged-in principal ID is the program facilitator', done => {
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
+      mockUpdateProgramAssessment.mockResolvedValue(
+        updatedProgramAssessmentsRow
+      );
+
+      mockPrincipalId(facilitatorPrincipalId);
+
+      appAgent
+        .put(`/program/${exampleProgramAssessment.id}`)
+        .send(updatedProgramAssessmentsRow)
+        .expect(201, err => {
+          expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+            exampleProgramAssessment.id
+          );
+
+          expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            exampleProgramAssessment.program_id
+          );
+
+          expect(mockUpdateProgramAssessment).toHaveBeenCalledWith(
+            updatedProgramAssessmentsRow
+          );
+
+          done(err);
+        });
+    });
+
+    it('should respond with an Unauthorized Error if the logged-in principal id is not the facilitator', done => {
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue(null);
+
+      mockPrincipalId(otherParticipantPrincipalId);
+
+      appAgent
+        .put(`/program/${exampleProgramAssessment.id}`)
+        .send(updatedProgramAssessmentsRow)
+        .expect(
+          401,
+          errorEnvelope(
+            `Could not access program Assessment with ID ${exampleProgramAssessment.id}.`
+          ),
+          err => {
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.id
+            );
+
+            expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+              otherParticipantPrincipalId,
+              exampleProgramAssessment.program_id
+            );
+
+            done(err);
+          }
+        );
+    });
+
+    it('should respond with an BadRequestError if the program assessment ID is not a number.', done => {
+      const exampleAssessmentFromUser = 'test';
+
+      mockPrincipalId(otherParticipantPrincipalId);
+
+      appAgent
+        .put(`/program/${exampleAssessmentFromUser}`)
+        .send(exampleProgramAssessment)
+        .expect(
+          400,
+          errorEnvelope(
+            `"${Number(
+              exampleAssessmentFromUser
+            )}" is not a valid program assessment ID.`
+          ),
+          done
+        );
+    });
+
+    it('should respond with an BadRequestError if the Was not given a valid program assessment.', done => {
+      const exampleAssessmentFormUser = 'test';
+
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
+
+      mockPrincipalId(otherParticipantPrincipalId);
+
+      appAgent
+        .put(`/program/${exampleProgramAssessment.id}`)
+        .send(exampleAssessmentFormUser)
+        .expect(
+          400,
+          errorEnvelope(`Was not given a valid program assessment.`),
+          err => {
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.id
+            );
+
+            expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+              otherParticipantPrincipalId,
+              exampleProgramAssessment.program_id
+            );
+
+            done(err);
+          }
+        );
+    });
+
+    it('should respond with a NotFoundError if the program assessment ID was not found in the database', done => {
+      const programAssessmentId = 20;
+
+      mockFindProgramAssessment.mockResolvedValue(null);
+
+      mockPrincipalId(facilitatorPrincipalId);
+      appAgent
+        .put(`/program/${programAssessmentId}`)
+        .send(updatedProgramAssessmentsRow)
+        .expect(
+          404,
+          errorEnvelope(
+            `Could not find program assessment with ID ${programAssessmentId}.`
+          ),
+          err => {
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              programAssessmentId
+            );
+
+            done(err);
+          }
+        );
+    });
+  });
   describe('DELETE /program/:programAssessmentId', () => {});
 
   describe('GET /program/:programAssessmentId/submissions', () => {});

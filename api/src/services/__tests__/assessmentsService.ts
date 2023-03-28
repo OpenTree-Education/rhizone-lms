@@ -44,6 +44,7 @@ import {
   exampleAssessmentQuestions,
   exampleCurriculumAssessmentWithCorrectAnswers,
   exampleParticipantAssessmentSubmissionsSummary,
+  updatedProgramAssessmentsRow,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -339,4 +340,20 @@ describe('updateAssessmentSubmission', () => {});
 
 describe('updateCurriculumAssessment', () => {});
 
-describe('updateProgramAssessment', () => {});
+describe('updateProgramAssessment', () => {
+  it('should return update for an existing program assessment ID', async () => {
+    mockQuery(
+      'update `program_assessments` set `available_after` = ?, `due_date` = ? where `id` = ?',
+      [
+        updatedProgramAssessmentsRow.available_after,
+        updatedProgramAssessmentsRow.due_date,
+        updatedProgramAssessmentsRow.id,
+      ],
+      []
+    );
+
+    expect(await updateProgramAssessment(updatedProgramAssessmentsRow)).toEqual(
+      updatedProgramAssessmentsRow
+    );
+  });
+});
