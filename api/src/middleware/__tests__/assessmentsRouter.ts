@@ -81,7 +81,7 @@ describe('assessmentsRouter', () => {
   describe('GET /program/:programAssessmentId', () => {});
   describe('POST /program', () => {});
   describe('PUT /program/:programAssessmentId', () => {
-    it('should able facilitator  to update program assessment ', done => {
+    it('should update a program assessment if the logged-in principal ID is the program facilitator', done => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
       mockUpdateProgramAssessment.mockResolvedValue(
@@ -110,6 +110,7 @@ describe('assessmentsRouter', () => {
           done(err);
         });
     });
+
     it('should respond with an Unauthorized Error if the logged-in principal id is not the facilitator', done => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue(null);
@@ -144,13 +145,35 @@ describe('assessmentsRouter', () => {
           }
         );
     });
+
+    it('should respond with an BadRequestError if the program assessment ID is not a number.', done => {
+      const exampleAssessmentFromUser = 'test';
+
+      mockPrincipalId(otherParticipantPrincipalId);
+
+      appAgent
+        .put(`/program/${exampleAssessmentFromUser}`)
+        .send(exampleProgramAssessment)
+        .expect(
+          400,
+          errorEnvelope(
+            `"${Number(
+              exampleAssessmentFromUser
+            )}" is not a valid program assessment ID.`
+          ),
+          done
+        );
+    });
+
     it('should respond with an BadRequestError if the Was not given a valid program assessment.', done => {
       const exampleAssessmentFormUser = 'test';
+
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
       mockUpdateProgramAssessment.mockResolvedValue(
         updatedProgramAssessmentsRow
       );
+
       mockPrincipalId(otherParticipantPrincipalId);
 
       appAgent
@@ -171,6 +194,30 @@ describe('assessmentsRouter', () => {
             );
             mockUpdateProgramAssessment.mockResolvedValue(
               updatedProgramAssessmentsRow
+            );
+
+            done(err);
+          }
+        );
+    });
+
+    it('should respond with a NotFoundError if the program assessment ID was not found in the database', done => {
+      const programAssessmentId = 20;
+
+      mockFindProgramAssessment.mockResolvedValue(null);
+
+      mockPrincipalId(facilitatorPrincipalId);
+      appAgent
+        .put(`/program/${programAssessmentId}`)
+        .send(updatedProgramAssessmentsRow)
+        .expect(
+          404,
+          errorEnvelope(
+            `Could not find program assessment with ID ${programAssessmentId}.`
+          ),
+          err => {
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              programAssessmentId
             );
 
             done(err);

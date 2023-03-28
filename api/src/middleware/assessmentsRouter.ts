@@ -23,6 +23,7 @@ import {
   listProgramAssessments,
   facilitatorProgramAssessmentsForCurriculumAssessment,
   updateCurriculumAssessment,
+  updateProgramAssessment,
 } from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
@@ -155,10 +156,12 @@ assessmentsRouter.get(
     res.json();
   }
 );
+
 // Create a new ProgramAssessment
 assessmentsRouter.post('/program', async (req, res, next) => {
   res.json();
 });
+
 // Update an existing ProgramAssessment
 assessmentsRouter.put(
   '/program/:programAssessmentId',
@@ -173,7 +176,7 @@ assessmentsRouter.put(
     ) {
       next(
         new BadRequestError(
-          `"${programAssessmentIdParsed}" is not a valid program id.`
+          `"${programAssessmentIdParsed}" is not a valid program assessment ID.`
         )
       );
       return;
@@ -183,6 +186,12 @@ assessmentsRouter.put(
       const programAssessment = await findProgramAssessment(
         programAssessmentIdParsed
       );
+
+      if (programAssessment === null) {
+        throw new NotFoundError(
+          `Could not find program assessment with ID ${programAssessmentIdParsed}.`
+        );
+      }
 
       // get the principal program role
       const programRole = await getPrincipalProgramRole(
@@ -223,6 +232,7 @@ assessmentsRouter.put(
     res.status(201).json(itemEnvelope(updatedPrgramAssessment));
   }
 );
+
 // Delete an existing ProgramAssessment
 assessmentsRouter.delete(
   '/program/:programAssessmentId',
