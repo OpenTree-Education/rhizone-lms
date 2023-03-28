@@ -5,7 +5,7 @@ import {
 } from '../responseEnvelope';
 import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
 
-import { SavedAssessment } from '../../models';
+import { SavedAssessment, ProgramAssessment } from '../../models';
 import {
   exampleCurriculumAssessmentWithCorrectAnswers,
   exampleProgramAssessment,
@@ -16,6 +16,7 @@ import {
   participantPrincipalId,
   exampleAssessmentSubmissionGraded,
   otherParticipantPrincipalId,
+  updatedProgramAssessmentsRow,
 } from '../../assets/data';
 import {
   constructFacilitatorAssessmentSummary,
@@ -79,7 +80,104 @@ describe('assessmentsRouter', () => {
 
   describe('GET /program/:programAssessmentId', () => {});
   describe('POST /program', () => {});
-  describe('PUT /program/:programAssessmentId', () => {});
+  describe('PUT /program/:programAssessmentId', () => {
+    it('should able facilitator  to update program assessment ', done => {
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
+      mockUpdateProgramAssessment.mockResolvedValue(
+        updatedProgramAssessmentsRow
+      );
+
+      mockPrincipalId(facilitatorPrincipalId);
+
+      appAgent
+        .put(`/program/${exampleProgramAssessment.id}`)
+        .send(updatedProgramAssessmentsRow)
+        .expect(201, err => {
+          expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+            exampleProgramAssessment.id
+          );
+
+          expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            exampleProgramAssessment.program_id
+          );
+
+          expect(mockUpdateProgramAssessment).toHaveBeenCalledWith(
+            updatedProgramAssessmentsRow
+          );
+
+          done(err);
+        });
+    });
+    it('should respond with an Unauthorized Error if the logged-in principal id is not the facilitator', done => {
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue(null);
+      mockUpdateProgramAssessment.mockResolvedValue(
+        updatedProgramAssessmentsRow
+      );
+      mockPrincipalId(otherParticipantPrincipalId);
+
+      appAgent
+
+        .put(`/program/${exampleProgramAssessment.id}`)
+        .send(updatedProgramAssessmentsRow)
+        .expect(
+          401,
+          errorEnvelope(
+            `Could not access program Assessment with ID ${exampleProgramAssessment.id}.`
+          ),
+          err => {
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.id
+            );
+
+            expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+              otherParticipantPrincipalId,
+              exampleProgramAssessment.program_id
+            );
+            mockUpdateProgramAssessment.mockResolvedValue(
+              updatedProgramAssessmentsRow
+            );
+
+            done(err);
+          }
+        );
+    });
+    it('should respond with an BadRequestError if the Was not given a valid program assessment.', done => {
+      const exampleAssessmentFormUser = 'test';
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
+      mockUpdateProgramAssessment.mockResolvedValue(
+        updatedProgramAssessmentsRow
+      );
+      mockPrincipalId(otherParticipantPrincipalId);
+
+      appAgent
+
+        .put(`/program/${exampleProgramAssessment.id}`)
+        .send(exampleAssessmentFormUser)
+        .expect(
+          400,
+          errorEnvelope(`Was not given a valid program assessment.`),
+          err => {
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.id
+            );
+
+            expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+              otherParticipantPrincipalId,
+              exampleProgramAssessment.program_id
+            );
+            mockUpdateProgramAssessment.mockResolvedValue(
+              updatedProgramAssessmentsRow
+            );
+
+            done(err);
+          }
+        );
+    });
+  });
   describe('DELETE /program/:programAssessmentId', () => {});
 
   describe('GET /program/:programAssessmentId/submissions', () => {});

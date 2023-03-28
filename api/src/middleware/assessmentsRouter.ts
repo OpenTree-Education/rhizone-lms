@@ -88,7 +88,7 @@ assessmentsRouter.put(
       const programAssessment = await findProgramAssessment(
         programAssessmentIdParsed
       );
-      console.log('program', programAssessment);
+
       // get the principal program role
       const programRole = await getPrincipalProgramRole(
         principalId,
@@ -100,7 +100,7 @@ assessmentsRouter.put(
       if (!programRole) {
         next(
           new UnauthorizedError(
-            `Could not access programAssessment  with ID ${programAssessmentIdParsed}.`
+            `Could not access program Assessment with ID ${programAssessmentIdParsed}.`
           )
         );
         return;
@@ -113,16 +113,13 @@ assessmentsRouter.put(
       };
 
       if (!isprogramAssessment(programAssessmentFromUser)) {
-        next(
-          new BadRequestError(`Was not given a valid  program  assessment.`)
-        );
+        next(new BadRequestError(`Was not given a valid program assessment.`));
         return;
       }
 
       updatedPrgramAssessment = await updateProgramAssessment(
         programAssessmentFromUser
       );
-      console.log(' updatedPrgramAssessment', updatedPrgramAssessment);
     } catch (error) {
       next(error);
       return;
