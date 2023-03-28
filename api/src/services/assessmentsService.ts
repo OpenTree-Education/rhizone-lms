@@ -145,7 +145,22 @@ const createAssessmentQuestionAnswer = async (
 const createSubmissionResponse = async (
   assessmentResponse: AssessmentResponse
 ): Promise<AssessmentResponse> => {
-  return;
+  const [newSubmissionId] = await db('assessment_responses').insert({
+    assessment_id: assessmentResponse.assessment_id,
+    submission_id: assessmentResponse.submission_id,
+    question_id: assessmentResponse.question_id,
+    answer_id: assessmentResponse.answer_id,
+    response: assessmentResponse.response_text,
+  });
+
+  return {
+    id: newSubmissionId,
+    assessment_id: assessmentResponse.assessment_id,
+    submission_id: assessmentResponse.submission_id,
+    question_id: assessmentResponse.question_id,
+    answer_id: assessmentResponse.answer_id,
+    response: assessmentResponse.response_text,
+  } as AssessmentResponse;
 };
 
 /**
@@ -360,12 +375,32 @@ const updateAssessmentQuestionAnswer = async (
  * @param {AssessmentResponse} assessmentResponse - The AssessmentResponse
  *   object for a given program assessment submission response with updated
  *   information.
+ * @param {boolean} [facilitatorGrading] - Optional specifier for when the
+ *   program facilitator is the one updating a program assessment submission response,
+ *   they are allowed to modify the score, and grader response.
  * @returns {Promise<AssessmentResponse>} The updated AssessmentResponse object.
  */
 const updateSubmissionResponse = async (
-  assessmentResponse: AssessmentResponse
+  assessmentResponse: AssessmentResponse,
+  facilitatorGrading?: boolean
 ): Promise<AssessmentResponse> => {
-  return;
+  if (facilitatorGrading) {
+    await db('assessment_responses')
+      .update({
+        score: assessmentResponse.score,
+        grader_response: assessmentResponse.grader_response,
+      })
+      .where('id', assessmentResponse.id);
+  } else {
+    await db('assessment_responses')
+      .update({
+        answer_id: assessmentResponse.answer_id,
+        response: assessmentResponse.response_text,
+      })
+      .where('id', assessmentResponse.id);
+  }
+
+  return assessmentResponse;
 };
 
 // Callable from router
@@ -843,7 +878,100 @@ export const updateAssessmentSubmission = async (
   assessmentSubmission: AssessmentSubmission,
   facilitatorOverride?: boolean
 ): Promise<AssessmentSubmission> => {
-  return;
+  let newState;
+  let totalScore = 0;
+
+  const programAssessment = await findProgramAssessment(
+    assessmentSubmission.assessment_id
+  );
+
+  const existingAssessmentSubmission = await getAssessmentSubmission(
+    assessmentSubmission.id,
+    true,
+    true
+  );
+
+  if (facilitatorOverride) {
+    if (
+      !existingAssessmentSubmission.responses ||
+      existingAssessmentSubmission.responses.length === 0
+    ) {
+      console.log(
+        `There is no existing submission response for this submission(ID ${assessmentSubmission.id})`
+      );
+      return null;
+    }
+
+    // update the newly graded response
+    // calculate the newly graded responses total score
+    await assessmentSubmission.responses.map(async response => {
+      await updateSubmissionResponse(response, facilitatorOverride);
+      totalScore += response.score;
+    });
+
+    // calculate the previously graded responses total score
+    existingAssessmentSubmission.responses
+      .filter(response =>
+        assessmentSubmission.responses.every(r => r.id !== response.id)
+      )
+      .map(response => {
+        totalScore += response.score;
+      });
+
+    newState = 'Graded';
+  } else if (
+    existingAssessmentSubmission.assessment_submission_state === 'Opened' ||
+    existingAssessmentSubmission.assessment_submission_state === 'In Progress'
+  ) {
+    // participant could only update opened and in progress submssion that within due date.
+    if (new Date(programAssessment.due_date + 'Z') > new Date()) {
+      newState = assessmentSubmission.assessment_submission_state;
+      // if there was no exisiting response, insert new response, otherwise update
+      if (
+        assessmentSubmission.responses &&
+        (!existingAssessmentSubmission.responses ||
+          existingAssessmentSubmission.responses.length === 0)
+      ) {
+        assessmentSubmission.responses.map(
+          async response => await createSubmissionResponse(response)
+        );
+      } else {
+        assessmentSubmission.responses.map(
+          async response => await updateSubmissionResponse(response)
+        );
+      }
+    } else {
+      newState = 'Expired';
+    }
+
+    //TODO: caculate score of non free response questions
+  } else {
+    console.log(
+      `Could not update submission by participant because the submission state is ${existingAssessmentSubmission.assessment_submission_state}`
+    );
+    return null;
+  }
+
+  const [newStateId] = await db('assessment_submission_states')
+    .select('id')
+    .where('title', newState);
+  await db('assessment_submissions')
+    .update({ state_id: newStateId.id, score: totalScore })
+    .where('id', assessmentSubmission.id);
+  const updatedResponse = await listSubmissionResponses(
+    assessmentSubmission.id
+  );
+
+  return {
+    id: assessmentSubmission.id,
+    assessment_id: assessmentSubmission.assessment_id,
+    principal_id: assessmentSubmission.principal_id,
+    assessment_submission_state: newState,
+    score: totalScore,
+    opened_at: assessmentSubmission.opened_at,
+    submitted_at: assessmentSubmission.submitted_at,
+    responses: updatedResponse,
+  } as AssessmentSubmission;
 };
 
 /**

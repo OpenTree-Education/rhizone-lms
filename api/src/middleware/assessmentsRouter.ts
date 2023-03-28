@@ -4,6 +4,7 @@ import {
   BadRequestError,
   InternalServerError,
   NotFoundError,
+  ForbiddenError,
   UnauthorizedError,
   ValidationError,
 } from './httpErrors';
@@ -13,6 +14,7 @@ import {
   CurriculumAssessment,
   ProgramAssessment,
   SavedAssessment,
+  AssessmentSubmission,
 } from '../models';
 import {
   findProgramAssessment,
@@ -367,7 +369,124 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
 
 // Update details of a specific AssessmentSubmission
 assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
-  res.json();
+  // get the principal row ID number
+  const { principalId } = req.session;
+  const { submissionId } = req.params;
+  const submissionIdParsed = Number(submissionId);
+  const submissionFromUser = req.body;
+  let updatedSubmission;
+
+  if (!Number.isInteger(submissionIdParsed) || submissionIdParsed < 1) {
+    next(
+      new BadRequestError(
+        `"${submissionIdParsed}" is not a valid submission ID.`
+      )
+    );
+    return;
+  }
+
+  try {
+    // get the assessment submission and responses
+    const assessmentSubmissionExisting = await getAssessmentSubmission(
+      submissionIdParsed,
+      true
+    );
+
+    // if the assessment submission is null/falsy, that means there's no matching
+    // assessment submission. send an error back to the user.
+    if (!assessmentSubmissionExisting) {
+      next(
+        new NotFoundError(
+          `Could not find submission with ID ${submissionIdParsed}.`
+        )
+      );
+      return;
+    }
+
+    // make sure it is a valid submission from body with an id.
+    const isSubmission = (
+      possibleSubmission: unknown
+    ): possibleSubmission is AssessmentSubmission => {
+      return (possibleSubmission as AssessmentSubmission).id !== undefined;
+    };
+
+    if (!isSubmission(submissionFromUser)) {
+      next(new BadRequestError(`Was not given a valid assessment submission.`));
+      return;
+    }
+
+    if (assessmentSubmissionExisting.id !== submissionIdParsed) {
+      next(
+        new BadRequestError(
+          `The submission id in the parameter(${submissionIdParsed}) is not the same id as in the request body (${assessmentSubmissionExisting.id}).`
+        )
+      );
+      return;
+    }
+
+    // get program assessment
+    const programAssessment = await findProgramAssessment(
+      submissionFromUser.assessment_id
+    );
+
+    if (!programAssessment) {
+      next(
+        new NotFoundError(
+          `Could not find program assessment(with ID ${submissionFromUser.assessment_id}) provided by submission body.`
+        )
+      );
+      return;
+    }
+
+    // Get program assessment role
+    const programRole = await getPrincipalProgramRole(
+      principalId,
+      programAssessment.program_id
+    );
+
+    if (programRole && programRole === 'Participant ') {
+      if (new Date(programAssessment.available_after + 'Z') > new Date()) {
+        next(
+          new ForbiddenError(
+            `Could not update a new submission of an assessment that's not yet available.`
+          )
+        );
+        return;
+      }
+      // pas due and its in open/inprogrss -> set expire -> return forbident
+      if (new Date(programAssessment.due_date + 'Z') < new Date()) {
+        if (
+          assessmentSubmissionExisting.assessment_submission_state ===
+            'Opened' ||
+          assessmentSubmissionExisting.assessment_submission_state ===
+            'In Progress'
+        ) {
+        }
+        next(
+          new UnauthorizedError(
+            `Could not create a new submission of an assessment that passed due date.`
+          )
+        );
+        return;
+      }
+
+      //not open or in progreaa? -> forbident
+      // in open and progrew -> update but disallowing them to update their scores or graderResponse
+    } else if (programRole && programRole === 'Facilitator') {
+    } else {
+      next(
+        new UnauthorizedError(
+          `Could not access the assessment and submssion without enrollment in the program or being a facilitator.`
+        )
+      );
+      return;
+    }
+
+    res.json(itemEnvelope(submissionFromUser));
+  } catch (err) {
+    next(err);
+    return;
+  }
 });
 
 export default assessmentsRouter;
