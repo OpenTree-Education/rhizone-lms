@@ -102,11 +102,6 @@ assessmentsRouter.get('/', async (req, res, next) => {
   }
 });
 
-assessmentsRouter.get('/test', async (req, res, next) => {
-  const test = await constructParticipantAssessmentSummary(2, 1);
-  res.json(test);
-});
-
 // Get details of a specific CurriculumAssessment
 assessmentsRouter.get(
   '/curriculum/:curriculumAssessmentId',
