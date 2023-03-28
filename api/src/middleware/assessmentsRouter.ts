@@ -31,6 +31,7 @@ import {
   listProgramAssessments,
   constructParticipantAssessmentSummary,
   constructFacilitatorAssessmentSummary,
+  facilitatorProgramAssessmentsForCurriculumAssessment,
 } from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
@@ -97,6 +98,7 @@ assessmentsRouter.get('/', async (req, res, next) => {
     );
   } catch (error) {
     next(error);
+    return;
   }
 });
 
@@ -185,14 +187,14 @@ assessmentsRouter.put(
     // If there are no matching program assessments with this curriculum ID,
     // then we are not facilitator of any programs where we can modify this
     // CurriculumAssessment, so let's return an error to the user.
-    // if (matchingProgramAssessments.length === 0) {
-    //   next(
-    //     new UnauthorizedError(
-    //       `Not allowed to make modifications to curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
-    //     )
-    //   );
-    //   return;
-    // }
+    if (matchingProgramAssessments.length === 0) {
+      next(
+        new UnauthorizedError(
+          `Not allowed to make modifications to curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
+        )
+      );
+      return;
+    }
 
     // step 7: update the curriculum assessment, its questions, and its answers
     const updatedCurriculumAssessment: CurriculumAssessment =
@@ -263,106 +265,113 @@ assessmentsRouter.get(
 );
 
 // Get details of a specific SavedAssessment
-// assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
-//   // get the principal row ID number
-//   const { principalId } = req.session;
+assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
+  // get the principal row ID number
+  const { principalId } = req.session;
 
-//   // get and parse the assessment submission row ID number
-//   // error out if we were passed an invalid assessment submission row ID number
-//   const { submissionId } = req.params;
-//   const submissionIdParsed = Number(submissionId);
+  // get and parse the assessment submission row ID number
+  // error out if we were passed an invalid assessment submission row ID number
+  const { submissionId } = req.params;
 
-//   if (!Number.isInteger(submissionIdParsed) || submissionIdParsed < 1) {
-//     next(
-//       new BadRequestError(
-//         `"${submissionIdParsed}" is not a valid submission ID.`
-//       )
-//     );
-//     return;
-//   }
+  const submissionIdParsed = Number(submissionId);
 
-//   // get the assessment submission and responses
-//   const assessmentSubmission = await getAssessmentSubmission(
-//     submissionIdParsed,
-//     true
-//   );
+  if (!Number.isInteger(submissionIdParsed) || submissionIdParsed < 1) {
+    next(
+      new BadRequestError(
+        `"${submissionIdParsed}" is not a valid submission ID.`
+      )
+    );
+    return;
+  }
 
-//   // if the assessment submission is null/falsy, that means there's no matching
-//   // assessment submission. send an error back to the user.
-//   if (!assessmentSubmission) {
-//     next(
-//       new NotFoundError(
-//         `Could not find submission with ID ${submissionIdParsed}.`
-//       )
-//     );
-//     return;
-//   }
+  try {
+    // get the assessment submission and responses
+    const assessmentSubmission = await getAssessmentSubmission(
+      submissionIdParsed,
+      true
+    );
 
-//   // get the program assessment, which should be guaranteed to exist.
-//   const programAssessmentId = assessmentSubmission.assessment_id;
-//   const programAssessment = await findProgramAssessment(programAssessmentId);
+    // if the assessment submission is null/falsy, that means there's no matching
+    // assessment submission. send an error back to the user.
+    if (!assessmentSubmission) {
+      next(
+        new NotFoundError(
+          `Could not find submission with ID ${submissionIdParsed}.`
+        )
+      );
+      return;
+    }
 
-//   // get the principal program role
-//   const programRole = await getPrincipalProgramRole(
-//     principalId,
-//     programAssessment.program_id
-//   );
+    // get the program assessment, which should be guaranteed to exist.
+    const programAssessmentId = assessmentSubmission.assessment_id;
 
-//   // if the program role is null/falsy, that means the user is not enrolled in
-//   // the program. send an error back to the user.
-//   if (!programRole) {
-//     next(
-//       new UnauthorizedError(
-//         `Could not access submission with ID ${submissionIdParsed}.`
-//       )
-//     );
-//     return;
-//   }
+    const programAssessment = await findProgramAssessment(programAssessmentId);
 
-//   // also, if the program role is "Participant" and the principal ID of the
-//   // AssessmentSubmission doesn't match the logged-in principal ID, we should
-//   // return an error to the user.
-//   if (programRole === 'Participant') {
-//     if (principalId !== assessmentSubmission.principal_id) {
-//       next(
-//         new UnauthorizedError(
-//           `Could not access submission with ID ${submissionIdParsed}.`
-//         )
-//       );
-//       return;
-//     }
-//   }
+    // get the principal program role
+    const programRole = await getPrincipalProgramRole(
+      principalId,
+      programAssessment.program_id
+    );
 
-//   // for this route, we always want to return the questions and all answer
-//   // options in all cases.
-//   const includeQuestionsAndAllAnswers = true;
+    // if the program role is null/falsy, that means the user is not enrolled in
+    // the program. send an error back to the user.
+    if (!programRole) {
+      next(
+        new UnauthorizedError(
+          `Could not access submission with ID ${submissionIdParsed}.`
+        )
+      );
+      return;
+    }
 
-//   // if the program role is facilitator, we should always return the correct
-//   // answers. otherwise, return the correct answers only if the submission has
-//   // been graded.
-//   const includeQuestionsAndCorrectAnswers =
-//     programRole === 'Facilitator' ||
-//     assessmentSubmission.assessment_submission_state === 'Graded';
+    // also, if the program role is "Participant" and the principal ID of the
+    // AssessmentSubmission doesn't match the logged-in principal ID, we should
+    // return an error to the user.
+    if (programRole === 'Participant') {
+      if (principalId !== assessmentSubmission.principal_id) {
+        next(
+          new UnauthorizedError(
+            `Could not access submission with ID ${submissionIdParsed}.`
+          )
+        );
+        return;
+      }
+    }
 
-//   // get the curriculum assessment
-//   const curriculumAssessment = await getCurriculumAssessment(
-//     programAssessment.assessment_id,
-//     includeQuestionsAndAllAnswers,
-//     includeQuestionsAndCorrectAnswers
-//   );
+    // for this route, we always want to return the questions and all answer
+    // options in all cases.
+    const includeQuestionsAndAllAnswers = true;
 
-//   // let's construct our return value
-//   const assessmentWithSubmission: SavedAssessment = {
-//     curriculum_assessment: curriculumAssessment,
-//     program_assessment: programAssessment,
-//     principal_program_role: programRole,
-//     submission: assessmentSubmission,
-//   };
+    // if the program role is facilitator, we should always return the correct
+    // answers. otherwise, return the correct answers only if the submission has
+    // been graded.
+    const includeQuestionsAndCorrectAnswers =
+      programRole === 'Facilitator' ||
+      assessmentSubmission.assessment_submission_state === 'Graded';
 
-//   // let's return that to the user
+    // get the curriculum assessment
+    const curriculumAssessment = await getCurriculumAssessment(
+      programAssessment.assessment_id,
+      includeQuestionsAndAllAnswers,
+      includeQuestionsAndCorrectAnswers
+    );
 
-//   res.json(itemEnvelope(assessmentWithSubmission));
-// });
+    // let's construct our return value
+    const assessmentWithSubmission: SavedAssessment = {
+      curriculum_assessment: curriculumAssessment,
+      program_assessment: programAssessment,
+      principal_program_role: programRole,
+      submission: assessmentSubmission,
+    };
+
+    // let's return that to the user
+
+    res.json(itemEnvelope(assessmentWithSubmission));
+  } catch (err) {
+    next(err);
+    return;
+  }
+});
 
 // Update details of a specific AssessmentSubmission
 assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
@@ -370,17 +379,3 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
 });
 
 export default assessmentsRouter;
-function getParticipantAssessmentSubmissionsSummary(
-  assessment_id: any,
-  principalId: number
-):
-  | import('../models').ParticipantAssessmentSubmissionsSummary
-  | PromiseLike<import('../models').ParticipantAssessmentSubmissionsSummary> {
-  throw new Error('Function not implemented.');
-}
-function facilitatorProgramAssessmentsForCurriculumAssessment(
-  principalId: number,
-  curriculumAssessmentIdParsed: number
-) {
-  throw new Error('Function not implemented.');
-}
