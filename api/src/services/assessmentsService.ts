@@ -48,7 +48,7 @@ const calculateNumParticipantsWithSubmissions = async (
   if (numParticipantsWithSubmissions === 0) {
     return null;
   }
-  return numParticipantsWithSubmissions as number;
+  return numParticipantsWithSubmissions;
 };
 
 /**
@@ -880,7 +880,14 @@ export const updateCurriculumAssessment = async (
  *   that was handed to us, if update was successful.
  */
 export const updateProgramAssessment = async (
-  programAssessment: CurriculumAssessment
+  programAssessment: ProgramAssessment
 ): Promise<ProgramAssessment> => {
-  return;
+  await db('program_assessments')
+    .update({
+      available_after: programAssessment.available_after,
+      due_date: programAssessment.due_date,
+    })
+    .where('id', programAssessment.id);
+
+  return programAssessment;
 };
