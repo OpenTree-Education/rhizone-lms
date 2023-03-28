@@ -104,7 +104,48 @@ const createAssessmentQuestion = async (
   curriculumAssessmentId: number,
   question: Question
 ): Promise<Question> => {
-  return;
+  const [insertedAssessmentQuestionId] = await db(
+    'assessment_questions'
+  ).insert({
+    assessment_id: curriculumAssessmentId,
+    title: question.title,
+    description: question.description,
+    question_type_id: question.question_type === 'single choice' ? 1 : 2,
+    max_score: question.max_score,
+    sort_order: question.sort_order,
+  });
+
+  const insertedAnswers: Answer[] = [];
+  let correctAnswerId;
+
+  for (const assessmentAnswer of question.answers) {
+    const insertedAnswer = await createAssessmentQuestionAnswer(
+      insertedAssessmentQuestionId,
+      assessmentAnswer
+    );
+
+    if (question.question_type === 'single choice') {
+      if (insertedAnswer.correct_answer === true) {
+        correctAnswerId = insertedAnswer.id;
+      }
+    } else if (question.question_type === 'free response') {
+      correctAnswerId = insertedAnswer.id;
+    }
+  }
+
+  if (correctAnswerId) {
+    await db('assessment_questions')
+      .update('correct_answer_id', correctAnswerId)
+      .where('id', insertedAssessmentQuestionId);
+  }
+
+  const updatedAssessmentQuestion = {
+    ...question,
+    id: insertedAssessmentQuestionId,
+    answers: insertedAnswers,
+  };
+
+  return updatedAssessmentQuestion;
 };
 
 /**
@@ -122,7 +163,19 @@ const createAssessmentQuestionAnswer = async (
   questionId: number,
   answer: Answer
 ): Promise<Answer> => {
-  return;
+  const [insertedAssessmentAnswersId] = await db('assessment_answers').insert({
+    question_id: questionId,
+    title: answer.title,
+    description: answer.description,
+    sort_order: answer.sort_order,
+  });
+
+  const updatedAssessmentAnswer = {
+    ...answer,
+    id: insertedAssessmentAnswersId,
+  };
+
+  return updatedAssessmentAnswer;
 };
 
 /**
@@ -475,41 +528,10 @@ export const createAssessmentSubmission = async (
 export const createCurriculumAssessment = async (
   curriculumAssessment: CurriculumAssessment
 ): Promise<CurriculumAssessment> => {
-  let assessmentId: number;
-  await db.transaction(async trx => {
-    [assessmentId] = await trx('curriculum_assessments').insert({
-      title: curriculumAssessment.title,
-      description: curriculumAssessment.description,
-      max_score: curriculumAssessment.max_score,
-      max_num_submissions: curriculumAssessment.max_num_submissions,
-      time_limit: curriculumAssessment.time_limit,
-      curriculum_id: curriculumAssessment.curriculum_id,
-      activity_id: curriculumAssessment.activity_id,
-      principal_id: curriculumAssessment.principal_id,
-    });
-    const [questionType] = await trx('assessment_questions')
-      .select('assessment_question_types.id')
-      .where('title', curriculumAssessment.questions[0].question_type)
-      .join(
-        'assessment_question_types',
-        'assessment_questions.question_type_id',
-        'assessment_question_types.id'
-      );
-
-    await trx('assessment_questions').insert({
-      assessment_id: assessmentId,
-      title: curriculumAssessment.questions[0].title,
-      description: curriculumAssessment.questions[0].description,
-      question_type_id: questionType.id,
-      correct_answer_id: curriculumAssessment.questions[0].correct_answer_id,
-      max_score: curriculumAssessment.questions[0].max_score,
-      sort_order: curriculumAssessment.questions[0].sort_order,
-    });
-  });
-  const updatedCurriculumAssessment: CurriculumAssessment = {
-    id: assessmentId,
+  const [insertedCurriculumAssessmentRowId] = await db(
+    'curriculum_assessments'
+  ).insert({
     title: curriculumAssessment.title,
-    assessment_type: curriculumAssessment.assessment_type,
     description: curriculumAssessment.description,
     max_score: curriculumAssessment.max_score,
     max_num_submissions: curriculumAssessment.max_num_submissions,
@@ -517,8 +539,25 @@ export const createCurriculumAssessment = async (
     curriculum_id: curriculumAssessment.curriculum_id,
     activity_id: curriculumAssessment.activity_id,
     principal_id: curriculumAssessment.principal_id,
-    questions: curriculumAssessment.questions,
+  });
+
+  const insertedQuestions: Question[] = [];
+
+  for (const assessmentQuestion of curriculumAssessment.questions) {
+    insertedQuestions.push(
+      await createAssessmentQuestion(
+        insertedCurriculumAssessmentRowId,
+        assessmentQuestion
+      )
+    );
+  }
+
+  const updatedCurriculumAssessment: CurriculumAssessment = {
+    ...curriculumAssessment,
+    id: insertedCurriculumAssessmentRowId,
+    questions: insertedQuestions,
   };
+
   return updatedCurriculumAssessment;
 };
 

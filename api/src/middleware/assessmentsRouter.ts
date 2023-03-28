@@ -34,6 +34,7 @@ import {
   updateProgramAssessment,
   createCurriculumAssessment,
 } from '../services/assessmentsService';
+import { exampleCurriculumAssessmentWithCorrectAnswers } from '../assets/data';
 
 const assessmentsRouter = Router();
 
