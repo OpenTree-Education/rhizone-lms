@@ -215,26 +215,42 @@ assessmentsRouter.delete(
     const { curriculumAssessmentId } = req.params;
     const curriculumAssessmentIdParsed = Number(curriculumAssessmentId);
 
-    if (!Number.isInteger(curriculumAssessmentIdParsed) || curriculumAssessmentIdParsed < 1 ) {
-      next(new BadRequestError(`"$curriculumAssessmentIdParsed" is not a valid curriculum assessment ID`));
+    if (
+      !Number.isInteger(curriculumAssessmentIdParsed) ||
+      curriculumAssessmentIdParsed < 1
+    ) {
+      next(
+        new BadRequestError(
+          `"$curriculumAssessmentIdParsed" is not a valid curriculum assessment ID`
+        )
+      );
       return;
     }
-    
+
     try {
-      const curriculumAssessmentExisting = getCurriculumAssessment(curriculumAssessmentIdParsed);
+      const curriculumAssessmentExisting = await getCurriculumAssessment(
+        curriculumAssessmentIdParsed
+      );
 
       if (!curriculumAssessmentExisting) {
-        throw new NotFoundError(`Could not find curriculum assessment with ID ${curriculumAssessmentIdParsed}`);
+        throw new NotFoundError(
+          `Could not find curriculum assessment with ID ${curriculumAssessmentIdParsed}`
+        );
       }
-  
-      // TODO: get the principal program role
-      const programRole = await getPrincipalProgramRole(principalId, programAssessment.program_id);
-  
-      if (programRole !== "Facilitator") {
-        throw new UnauthorizedError(`Not allowed to make delete to curriculum assessment with ID ${curriculumAssessmentIdParsed}.`);
+
+      const matchingPrograms = await facilitatorProgramIdsMatchingCurriculum(
+        principalId,
+        curriculumAssessmentExisting.curriculum_id
+      );
+
+      if (matchingPrograms.length === 0) {
+        throw new UnauthorizedError(
+          `Not allowed to delete curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
+        );
       }
-  
-      await (deleteCurriculumAssessment (curriculumAssessmentIdParsed))
+
+      await deleteCurriculumAssessment(curriculumAssessmentIdParsed);
+
       res.status(204).send();
     } catch (err) {
       next(err);
@@ -334,8 +350,6 @@ assessmentsRouter.delete(
     res.json();
   }
 );
-
-	
 
 // Get an AssessmentWithSubmissions
 assessmentsRouter.get(
