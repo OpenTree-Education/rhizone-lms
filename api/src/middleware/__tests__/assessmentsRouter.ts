@@ -99,19 +99,14 @@ describe('assessmentsRouter', () => {
           principal_program_role: 'Participant',
         },
       ];
-      // mock response from (function that gets a list of programs the user is enrolled in) to include one program
       mockListPrincipalEnrolledProgramIds.mockResolvedValue([
         exampleProgramAssessment.program_id,
       ]);
-      // mock response from (call a function that returns the permission of the user for each program (participant/facilitator)) to respond with participant for that one program
       mockGetPrincipalProgramRole.mockResolvedValue('Participant');
-      // mock response from (get a list of program assessments for each program the user is enrolled in) to respond with a list of program assessments
       mockListProgramAssessments.mockResolvedValue([exampleProgramAssessment]);
-      // mock responses from (get a list of curriculum assessments that correspond to each program assessment) to respond with the corresponding curriculum assessment for each program assessment in that previous list
       mockGetCurriculumAssessment.mockResolvedValue(
         exampleCurriculumAssessment
       );
-      // mock responses from (call a (mock) function that gets the participant assessment summary for each program assessment where the user is a participant of that program) to respond with the assessment summary for every program assessment that participant has submitted for previously
       mockConstructParticipantAssessmentSummary.mockResolvedValue(
         exampleParticipantAssessmentSubmissionsSummary
       );
@@ -126,26 +121,21 @@ describe('assessmentsRouter', () => {
             participantAssessmentListResponse.length
           ),
           err => {
-            // call a (mock) function that gets a list of programs the user is enrolled in
             expect(mockListPrincipalEnrolledProgramIds).toHaveBeenCalledWith(
               participantPrincipalId
             );
-            // call a function that returns the permission of the user for each program (participant/facilitator)
             expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
               participantPrincipalId,
               exampleProgramAssessment.program_id
             );
-            //get a list of program assessments for each program the user is enrolled in) to respond with a list of program assessments
             expect(mockListProgramAssessments).toHaveBeenCalledWith(
               exampleProgramAssessment.program_id
             );
-            // get a list of curriculum assessments that correspond to each program assessment
             expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
               exampleProgramAssessment.assessment_id,
               false,
               false
             );
-            // call a (mock) function that gets the participant assessment summary for each program assessment where the user is a participant of that program
             expect(
               mockConstructParticipantAssessmentSummary
             ).toHaveBeenCalledWith(
@@ -168,19 +158,14 @@ describe('assessmentsRouter', () => {
         },
       ];
 
-      // mock response from (function that gets a list of programs the user is enrolled in) to include one program
       mockListPrincipalEnrolledProgramIds.mockResolvedValue([
         exampleProgramAssessment.program_id,
       ]);
-      // mock response from (call a function that returns the permission of the user for each program (participant/facilitator)) to respond with facilitator for that one program
       mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
-      // mock response from (get a list of program assessments for each program the user is enrolled in) to respond with a list of program assessments
       mockListProgramAssessments.mockResolvedValue([exampleProgramAssessment]);
-      // mock responses from (get a list of curriculum assessments that correspond to each program assessment) to respond with the corresponding curriculum assessment for each program assessment in that previous list
       mockGetCurriculumAssessment.mockResolvedValue(
         exampleCurriculumAssessment
       );
-      // mock responses from (call a (mock) function that gets the facilitator assessment summary for each program assessment where the user is a facilitator of that program) to respond with the assessment summary for all participants for each program assessment
       mockConstructFacilitatorAssessmentSummary.mockResolvedValue(
         exampleFacilitatorAssessmentSubmissionsSummary
       );
@@ -196,26 +181,21 @@ describe('assessmentsRouter', () => {
             facilitatorAssessmentListResponse.length
           ),
           err => {
-            // call a (mock) function that gets a list of programs the user is facilitating
             expect(mockListPrincipalEnrolledProgramIds).toHaveBeenCalledWith(
               facilitatorPrincipalId
             );
-            // call a function that returns the permission of the user for each program (participant/facilitator)
             expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
               facilitatorPrincipalId,
               exampleProgramAssessment.program_id
             );
-            //get a list of program assessments for each program the user is enrolled in) to respond with a list of program assessments
             expect(mockListProgramAssessments).toBeCalledWith(
               exampleProgramAssessment.program_id
             );
-            // get a list of curriculum assessments that correspond to each program assessment
             expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
               exampleProgramAssessment.assessment_id,
               false,
               false
             );
-            // call a (mock) function that gets the facilitator assessment summary for each program assessment where the user is a facilitator of that program
             expect(
               mockConstructFacilitatorAssessmentSummary
             ).toHaveBeenCalledWith(
