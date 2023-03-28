@@ -7,16 +7,17 @@ import {
 } from './httpErrors';
 import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
 
-import { SavedAssessment, CurriculumAssessment,ProgramAssessment } from '../models';
+import {
+  SavedAssessment,
+  CurriculumAssessment,
+  ProgramAssessment,
+} from '../models';
 import {
   findProgramAssessment,
   getAssessmentSubmission,
   getCurriculumAssessment,
   getPrincipalProgramRole,
   updateProgramAssessment,
-   
-
-  
 } from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
@@ -67,64 +68,67 @@ assessmentsRouter.post('/program', async (req, res, next) => {
 assessmentsRouter.put(
   '/program/:programAssessmentId',
   async (req, res, next) => {
-    const {programAssessmentId} = req.params;
-    const {principalId} = req.session;
+    const { programAssessmentId } = req.params;
+    const { principalId } = req.session;
     const programAssessmentFromUser = req.body;
     const programAssessmentIdParsed = Number(programAssessmentId);
-    if (!Number.isInteger(programAssessmentIdParsed) || programAssessmentIdParsed < 1) {
-      next(new BadRequestError(`"${programAssessmentIdParsed}" is not a valid program id.`));
-      return;
-    }
-    let updatedPrgramAssessment;
-   try{
-    
-
-    const programAssessment = await findProgramAssessment(programAssessmentIdParsed);
-   console.log("program",programAssessment)
-    // get the principal program role
-    const programRole = await getPrincipalProgramRole(
-      principalId,
-      programAssessment.program_id
-    );
-    
-
-    // if the program role is null/falsy, that means the user is not enrolled in
-    // the program. send an error back to the user.
-    if (!programRole) {
+    if (
+      !Number.isInteger(programAssessmentIdParsed) ||
+      programAssessmentIdParsed < 1
+    ) {
       next(
-        new UnauthorizedError(
-          `Could not access programAssessment  with ID ${programAssessmentIdParsed}.`
+        new BadRequestError(
+          `"${programAssessmentIdParsed}" is not a valid program id.`
         )
       );
       return;
     }
-
-
-    const isprogramAssessment = (possibleAssessment: unknown): possibleAssessment is ProgramAssessment => {
-      return (possibleAssessment as ProgramAssessment).id !== undefined;
-    }
-
-    if (!isprogramAssessment(programAssessmentFromUser)) {
-      next(
-        new BadRequestError(`Was not given a valid  program  assessment.`)
+    let updatedPrgramAssessment;
+    try {
+      const programAssessment = await findProgramAssessment(
+        programAssessmentIdParsed
       );
-      return;
-    }
-  
-    updatedPrgramAssessment = await updateProgramAssessment(
-      
-      programAssessmentFromUser
-    );
-    console.log(" updatedPrgramAssessment", updatedPrgramAssessment)
-    
+      console.log('program', programAssessment);
+      // get the principal program role
+      const programRole = await getPrincipalProgramRole(
+        principalId,
+        programAssessment.program_id
+      );
 
-   }catch (error) {
+      // if the program role is null/falsy, that means the user is not enrolled in
+      // the program. send an error back to the user.
+      if (!programRole) {
+        next(
+          new UnauthorizedError(
+            `Could not access programAssessment  with ID ${programAssessmentIdParsed}.`
+          )
+        );
+        return;
+      }
+
+      const isprogramAssessment = (
+        possibleAssessment: unknown
+      ): possibleAssessment is ProgramAssessment => {
+        return (possibleAssessment as ProgramAssessment).id !== undefined;
+      };
+
+      if (!isprogramAssessment(programAssessmentFromUser)) {
+        next(
+          new BadRequestError(`Was not given a valid  program  assessment.`)
+        );
+        return;
+      }
+
+      updatedPrgramAssessment = await updateProgramAssessment(
+        programAssessmentFromUser
+      );
+      console.log(' updatedPrgramAssessment', updatedPrgramAssessment);
+    } catch (error) {
       next(error);
       return;
-   }
+    }
 
-   res.status(201).json(itemEnvelope(updatedPrgramAssessment));
-
+    res.status(201).json(itemEnvelope(updatedPrgramAssessment));
   }
 );
 // Delete an existing ProgramAssessment

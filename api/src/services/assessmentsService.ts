@@ -240,7 +240,6 @@ const listAssessmentQuestions = async (
   const listAssessmentAnswers = await db('assessment_answers')
     .select('id', 'question_id', 'title', 'description', 'sort_order')
     .whereIn('question_id', questionIds);
-  console.log(listAssessmentAnswers);
 
   matchinglistAssessmentQuestionsRows
     .filter(
@@ -829,12 +828,12 @@ export const updateCurriculumAssessment = async (
 export const updateProgramAssessment = async (
   programAssessment: ProgramAssessment
 ): Promise<ProgramAssessment> => {
-  const numberOfRowsUpdated = await db('program_assessments')
+  await db('program_assessments')
     .update({
       available_after: programAssessment.available_after,
       due_date: programAssessment.due_date,
     })
     .where('id', programAssessment.id);
- 
+
   return programAssessment;
 };

@@ -18,8 +18,6 @@ import {
   updateAssessmentSubmission,
   updateCurriculumAssessment,
   updateProgramAssessment,
-
-
 } from '../assessmentsService';
 
 import {
@@ -38,7 +36,7 @@ import {
   matchingAssessmentQuestionsRow,
   matchingAssessmentAnswersRow,
   unenrolledPrincipalId,
-  updateProgramAssessmentsRow
+  updatedProgramAssessmentsRow,
 } from '../../assets/data';
 
 describe('assessmentsService', () => {
@@ -233,29 +231,20 @@ describe('assessmentsService', () => {
   describe('updateCurriculumAssessment', () => {});
 
   describe('updateProgramAssessment', () => {
-    it('should return update for an existing program assessment id ', async () => {
+    it('should return update for an existing program assessment ID', async () => {
       mockQuery(
-        'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
-        [exampleProgramAssessment.id],
-        [exampleProgramAssessmentsRow]
-      );
-      mockQuery(
-        'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
-        [participantPrincipalId, exampleProgramAssessment.program_id],
-        [exampleProgramParticipantRoleParticipantRow]
-      );
-      mockQuery(
-        'update `available_after`, `due_date` from `program_assessments` where `id` = ?',
-        [exampleProgramAssessment.id],
+        'update `program_assessments` set `available_after` = ?, `due_date` = ? where `id` = ?',
+        [
+          updatedProgramAssessmentsRow.available_after,
+          updatedProgramAssessmentsRow.due_date,
+          updatedProgramAssessmentsRow.id,
+        ],
         []
       );
-     
-    
- 
-      expect(await updateProgramAssessment(exampleProgramAssessment)).toEqual(
-        updateProgramAssessmentsRow
-      );
 
+      expect(
+        await updateProgramAssessment(updatedProgramAssessmentsRow)
+      ).toEqual(updatedProgramAssessmentsRow);
+    });
   });
-});
 });
