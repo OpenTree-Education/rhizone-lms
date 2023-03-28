@@ -473,10 +473,10 @@ export const createAssessmentSubmission = async (
  *   object that was handed to us, but with row ID specified.
  */
 export const createCurriculumAssessment = async (
-  curriculumAssessment: CurriculumAssessment,
+  curriculumAssessment: CurriculumAssessment
 ): Promise<CurriculumAssessment> => {
   let assessmentId: number;
-  await db.transaction(async (trx) => {
+  await db.transaction(async trx => {
     [assessmentId] = await trx('curriculum_assessments').insert({
       title: curriculumAssessment.title,
       description: curriculumAssessment.description,
@@ -487,10 +487,14 @@ export const createCurriculumAssessment = async (
       activity_id: curriculumAssessment.activity_id,
       principal_id: curriculumAssessment.principal_id,
     });
-   const [questionType] = await trx('assessment_questions')
+    const [questionType] = await trx('assessment_questions')
       .select('assessment_question_types.id')
       .where('title', curriculumAssessment.questions[0].question_type)
-      .join('assessment_question_types', 'assessment_questions.question_type_id', 'assessment_question_types.id')
+      .join(
+        'assessment_question_types',
+        'assessment_questions.question_type_id',
+        'assessment_question_types.id'
+      );
 
     await trx('assessment_questions').insert({
       assessment_id: assessmentId,
@@ -514,10 +518,9 @@ export const createCurriculumAssessment = async (
     activity_id: curriculumAssessment.activity_id,
     principal_id: curriculumAssessment.principal_id,
     questions: curriculumAssessment.questions,
-  }
+  };
   return updatedCurriculumAssessment;
 };
-
 
 /**
  * Creates a new program assessment in the program_assessments table, linked
