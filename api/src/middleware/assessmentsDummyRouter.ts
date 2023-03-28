@@ -12,7 +12,7 @@ assessmentsDummyRouter.get(
   '/makeParticipant/:programId/:participantId',
   async (req, res, next) => {
     const { programId, participantId } = req.params;
-    const roleId = 1;
+    const roleId = 2;
 
     const programIdParsed = Number(programId);
     const participantIdParsed = Number(participantId);
@@ -198,7 +198,7 @@ assessmentsDummyRouter.get(
   async (req, res, next) => {
     const { programId, participantId } = req.params;
     // a role ID of 2 corresponds to a Facilitator
-    const roleId = 2;
+    const roleId = 1;
 
     const programIdParsed = Number(programId);
     const participantIdParsed = Number(participantId);
