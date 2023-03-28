@@ -92,6 +92,10 @@ export const matchingAssessmentQuestionsRow = {
   sort_order: 1,
 };
 
+export const updatedCurriculumAssessmentsRow = {
+// add info here
+};
+
 export const matchingAssessmentAnswersRow = {
   id: 1,
   question_id: 1,

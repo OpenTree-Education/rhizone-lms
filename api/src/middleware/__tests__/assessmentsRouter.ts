@@ -21,6 +21,8 @@ import {
   exampleParticipantAssessmentSubmissionsSummary,
   exampleFacilitatorAssessmentSubmissionsSummary,
   exampleCurriculumAssessment,
+  updatedCurriculumAssessmentsRow
+
 } from '../../assets/data';
 import {
   constructFacilitatorAssessmentSummary,
@@ -40,6 +42,7 @@ import {
   updateAssessmentSubmission,
   updateCurriculumAssessment,
   updateProgramAssessment,
+  facilitatorProgramIdsMatchingCurriculum
 } from '../../services/assessmentsService';
 
 import assessmentsRouter from '../assessmentsRouter';
@@ -71,6 +74,8 @@ const mockListProgramAssessments = jest.mocked(listProgramAssessments);
 const mockUpdateAssessmentSubmission = jest.mocked(updateAssessmentSubmission);
 const mockUpdateCurriculumAssessment = jest.mocked(updateCurriculumAssessment);
 const mockUpdateProgramAssessment = jest.mocked(updateProgramAssessment);
+const mockFacilitatorProgramIdsMatchingCurriculum = jest.mocked(facilitatorProgramIdsMatchingCurriculum);
+
 
 describe('assessmentsRouter', () => {
   const appAgent = createAppAgentForRouter(assessmentsRouter);
@@ -218,7 +223,38 @@ describe('assessmentsRouter', () => {
 
   describe('GET /curriculum/:curriculumAssessmentId', () => {});
   describe('POST /curriculum', () => {});
-  describe('PUT /curriculum/:curriculumAssessmentId', () => {});
+  describe('PUT /curriculum/:curriculumAssessmentId', () => {
+    it('should update a curriculum assessment if the logged-in principal ID is the program facilitator', done => {
+      const matchingFacilitatorPrograms=2;
+      mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue([matchingFacilitatorPrograms]);
+      mockGetCurriculumAssessment.mockResolvedValue(exampleCurriculumAssessmentWithCorrectAnswers);
+      mockUpdateCurriculumAssessment.mockResolvedValue(updatedCurriculumAssessmentsRow);
+
+      mockPrincipalId(facilitatorPrincipalId);
+
+      appAgent
+        .put(`/curriculum/${exampleCurriculumAssessment.id}`)
+        .send(updatedCurriculumAssessmentsRow)
+        .expect(201, err => {
+          expect(mockFacilitatorProgramIdsMatchingCurriculum).toHaveBeenCalledWith(
+            facilitatorPrincipalId, exampleCurriculumAssessment.id
+          );
+
+          expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
+            exampleCurriculumAssessment.id,
+            true,
+            true
+          );
+
+          expect(mockUpdateCurriculumAssessment).toHaveBeenCalledWith(
+            updatedProgramAssessmentsRow
+          );
+
+          done(err);
+        });
+    });
+
+  });
   describe('DELETE /curriculum/:curriculumAssessmentId', () => {});
 
   describe('GET /program/:programAssessmentId', () => {});
@@ -228,7 +264,7 @@ describe('assessmentsRouter', () => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
       mockUpdateProgramAssessment.mockResolvedValue(
-        updatedProgramAssessmentsRow
+        updatedCurriculumAssessmentsRow
       );
 
       mockPrincipalId(facilitatorPrincipalId);
@@ -247,7 +283,7 @@ describe('assessmentsRouter', () => {
           );
 
           expect(mockUpdateProgramAssessment).toHaveBeenCalledWith(
-            updatedProgramAssessmentsRow
+            exampleCurriculumAssessmentWithQuestions
           );
 
           done(err);
