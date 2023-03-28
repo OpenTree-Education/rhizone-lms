@@ -48,7 +48,7 @@ const calculateNumParticipantsWithSubmissions = async (
   if (numParticipantsWithSubmissions === 0) {
     return null;
   }
-  return numParticipantsWithSubmissions as number;
+  return numParticipantsWithSubmissions;
 };
 
 /**
@@ -809,6 +809,51 @@ export const listProgramAssessments = async (
 };
 
 /**
+ * Retrieves all program assessments that a given user is a facilitator for,
+ * matching a given curriculum assessment ID. This is used for routes where we
+ * have a curriculum assessment ID and do not have a way to check if a user is
+ * allowed to make edits to that curriculum assessment.
+ *
+ * @param {number} principalId - The row ID of the principals table for the
+ *   logged-in user.
+ * @param {number} curriculumAssessmentId - The row ID of the
+ *   curriculum_assessments table corresponding to the assessment we will be
+ *   retrieving, modifying, or deleting.
+ * @returns {Promise<ProgramAssessment[]>} An array of the ProgramAssessment
+ *   objects constructed from matching program assessments, if any.
+ */
+export const facilitatorProgramAssessmentsForCurriculumAssessment = async (
+  principalId: number,
+  curriculumAssessmentId: number
+): Promise<ProgramAssessment[]> => {
+  const participatingProgramIds = await listPrincipalEnrolledProgramIds(
+    principalId
+  );
+
+  const allFacilitatorProgramAssessments: ProgramAssessment[] = [];
+
+  participatingProgramIds.forEach(async programId => {
+    const programRole = await getPrincipalProgramRole(principalId, programId);
+
+    if (programRole === 'Facilitator') {
+      const programAssessmentsForProgram = await listProgramAssessments(
+        programId
+      );
+      programAssessmentsForProgram.forEach(programAssessment => {
+        allFacilitatorProgramAssessments.push(programAssessment);
+      });
+    }
+  });
+
+  const matchingProgramAssessments = allFacilitatorProgramAssessments.filter(
+    programAssessment =>
+      programAssessment.assessment_id === curriculumAssessmentId
+  );
+
+  return matchingProgramAssessments;
+};
+
+/**
  * Removes any possible grading information from an assessment submission in
  * cases when we don't want to return that information to the requester.
  *
@@ -872,7 +917,16 @@ export const updateAssessmentSubmission = async (
 export const updateCurriculumAssessment = async (
   curriculumAssessment: CurriculumAssessment
 ): Promise<CurriculumAssessment> => {
-  return;
+  // need to loop through and call updateAssessmentQuestion for each question that exists;
+  // need to createAssessmentQuestion for each question that does not exist;
+
+  // need to update the curriculum_assessments table with any updated data for the curriculum assessment (refer to DB/model).
+  // assessment_type_id turns into assessment_type. ignore assessment_type.
+
+  // refer to implementation of getCurriculumAssessment for knowledge on joins
+  // (data in two different database tables that relate to one another), differences between database table and data type
+
+  return null;
 };
 
 /**
@@ -884,7 +938,14 @@ export const updateCurriculumAssessment = async (
  *   that was handed to us, if update was successful.
  */
 export const updateProgramAssessment = async (
-  programAssessment: CurriculumAssessment
+  programAssessment: ProgramAssessment
 ): Promise<ProgramAssessment> => {
-  return;
+  await db('program_assessments')
+    .update({
+      available_after: programAssessment.available_after,
+      due_date: programAssessment.due_date,
+    })
+    .where('id', programAssessment.id);
+
+  return programAssessment;
 };
