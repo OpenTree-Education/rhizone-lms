@@ -720,7 +720,42 @@ export const listParticipantProgramAssessmentSubmissions = async (
   participantPrincipalId: number,
   programAssessmentId: number
 ): Promise<AssessmentSubmission[]> => {
-  return [];
+
+  const matchingAssessmentSubmissionsRows = await db('assessment_submissions')
+    .join(
+      'assessment_submission_states',
+      'assessment_submissions.assessment_submission_state_id',
+      'assessment_submission_states.id'
+    )
+    .select(
+      'assessment_submissions.id as id',
+      'assessment_submission_states.title as assessment_submission_state',
+      'score',
+      'opened_at',
+      'submitted_at'
+    )
+    .where('assessment_submissions.principal_id', participantPrincipalId)
+    .andWhere('assessment_submissions.assessment_id', programAssessmentId);
+
+  if (matchingAssessmentSubmissionsRows.length === 0) {
+    return null;
+  }
+
+  const assessmentSubmissionRows = matchingAssessmentSubmissionsRows.map(
+    submission => {
+      return {
+        id: submission.id,
+        assessment_id: programAssessmentId,
+        principal_id: participantPrincipalId,
+        assessment_submission_state: submission.assessment_submission_state,
+        score: submission.score,
+        opened_at: submission.opened_at,
+        submitted_at: submission.submitted_at,
+      } as AssessmentSubmission;
+    }
+  );
+
+  return assessmentSubmissionRows;
 };
 
 /**

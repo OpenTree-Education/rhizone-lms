@@ -13,6 +13,7 @@ import {
   CurriculumAssessment,
   ProgramAssessment,
   SavedAssessment,
+  AssessmentWithSubmissions,
 } from '../models';
 import {
   findProgramAssessment,
@@ -24,6 +25,7 @@ import {
   listProgramAssessments,
   facilitatorProgramAssessmentsForCurriculumAssessment,
   updateCurriculumAssessment,
+  listParticipantProgramAssessmentSubmissions
 } from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
@@ -218,9 +220,90 @@ assessmentsRouter.delete(
 assessmentsRouter.get(
   '/program/:programAssessmentId/submissions',
   async (req, res, next) => {
-    res.json();
+    const { programAssessmentId } = req.params
+    const programAssessmentIdParsed = Number(programAssessmentId)
+    if (
+      !Number.isInteger(programAssessmentIdParsed) ||
+      programAssessmentIdParsed < 1
+    ) {
+      next(
+        new BadRequestError(
+          `"${programAssessmentId}" is not a valid program assessment ID.`
+        )
+      );
+      return;
+    }
+
+  try {
+    //retrieve programAssessment data
+    const programAssessment = await findProgramAssessment(programAssessmentIdParsed);
+
+    //getting the role of participant of current principal
+    const programId = programAssessment.program_id
+    const { principalId } = req.session;
+    const programRole = await getPrincipalProgramRole(principalId, programId)
+    if (!programRole) {
+      next(
+        new UnauthorizedError(
+          `Could not access program accessment(ID ${programAssessmentIdParsed}) without enrollment.`
+        )
+      );
+      return;
+    }
+
+
+
+    switch (programRole) {
+      case "Participant":
+        //retrieve list of submissions from the specified assessment of the participant their own
+        const assessmentSubmissions = await listParticipantProgramAssessmentSubmissions(principalId, programAssessment.id)
+      case "Facilitator":
+
+
+      default:
+        assessmentSubmissions
+    }
+
+    //retrieve questions and answers of specific assessment.
+    //if participant is Facilitator or the submission has been graded, get correct answer as well.
+    const includeQuestionsAndAllAnswers = true;
+    const includeQuestionsAndCorrectAnswers = (
+      programRole === "Facilitator"
+      ||
+      assessmentSubmissions.some( submission =>submission.assessment_submission_state === "Graded")
+      );
+
+      //returieve questions, answers, correctAnswer etc. from curriculumAssessment
+      const curriculumAssessment = await getCurriculumAssessment(
+        programAssessment.assessment_id,
+        includeQuestionsAndAllAnswers,
+        includeQuestionsAndCorrectAnswers
+      );
+
+
+
+
+
+
+
+    // // let's construct our return value
+    const assessmentWithSubmissions: AssessmentWithSubmissions = {
+      curriculum_assessment: curriculumAssessment,
+      program_assessment: programAssessment,
+      principal_program_role: programRole,
+      submissions: assessmentSubmissions
+    };
+    res.json(assessmentWithSubmissions);
+
+  } catch (error) {
+    next(error);
+    return;
+  }
   }
 );
+
+
+
 // Start a new AssessmentSubmission
 assessmentsRouter.get(
   '/program/:programAssessmentId/submissions/new',
