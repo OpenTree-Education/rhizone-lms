@@ -5,10 +5,12 @@ import {
   CurriculumAssessment,
   FacilitatorAssessmentSubmissionsSummary,
   ParticipantAssessmentSubmissionsSummary,
+  Program,
   ProgramAssessment,
   Question,
 } from '../models';
 import db from './db';
+import { listProgramsForCurriculum } from './programsService';
 
 // Helper functions
 
@@ -849,48 +851,45 @@ export const listProgramAssessments = async (
 };
 
 /**
- * Retrieves all program assessments that a given user is a facilitator for,
- * matching a given curriculum assessment ID. This is used for routes where we
- * have a curriculum assessment ID and do not have a way to check if a user is
- * allowed to make edits to that curriculum assessment.
+ * Retrieves all program IDs that a given user is a facilitator for, matching a
+ * given curriculum ID. This is used for routes where we have a curriculum
+ * assessment ID and do not have a way to check if a user is allowed to make
+ * edits to that curriculum assessment.
  *
  * @param {number} principalId - The row ID of the principals table for the
  *   logged-in user.
- * @param {number} curriculumAssessmentId - The row ID of the
- *   curriculum_assessments table corresponding to the assessment we will be
- *   retrieving, modifying, or deleting.
- * @returns {Promise<ProgramAssessment[]>} An array of the ProgramAssessment
- *   objects constructed from matching program assessments, if any.
+ * @param {number} curriculumId - The row ID of the curriculums table
+ *   corresponding to the curriculum assessment we will be retrieving,
+ *   modifying, or deleting.
+ * @returns {Promise<number[]>} An array of the row IDs of the programs table
+ *   matching the given curriculum ID.
  */
-export const facilitatorProgramAssessmentsForCurriculumAssessment = async (
+export const facilitatorProgramIdsMatchingCurriculum = async (
   principalId: number,
-  curriculumAssessmentId: number
-): Promise<ProgramAssessment[]> => {
+  curriculumId: number
+): Promise<number[]> => {
   const participatingProgramIds = await listPrincipalEnrolledProgramIds(
     principalId
   );
 
-  const allFacilitatorProgramAssessments: ProgramAssessment[] = [];
+  const curriculumPrograms = await listProgramsForCurriculum(curriculumId);
+
+  const matchingFacilitatorPrograms: number[] = [];
 
   participatingProgramIds.forEach(async programId => {
     const programRole = await getPrincipalProgramRole(principalId, programId);
 
     if (programRole === 'Facilitator') {
-      const programAssessmentsForProgram = await listProgramAssessments(
-        programId
-      );
-      programAssessmentsForProgram.forEach(programAssessment => {
-        allFacilitatorProgramAssessments.push(programAssessment);
-      });
+      if (
+        curriculumPrograms.filter(program => program.id === programId)
+          .length !== 0
+      ) {
+        matchingFacilitatorPrograms.push(programId);
+      }
     }
   });
 
-  const matchingProgramAssessments = allFacilitatorProgramAssessments.filter(
-    programAssessment =>
-      programAssessment.assessment_id === curriculumAssessmentId
-  );
-
-  return matchingProgramAssessments;
+  return matchingFacilitatorPrograms;
 };
 
 /**

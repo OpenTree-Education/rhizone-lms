@@ -29,14 +29,14 @@ import {
   listProgramAssessments,
   constructParticipantAssessmentSummary,
   constructFacilitatorAssessmentSummary,
-  facilitatorProgramAssessmentsForCurriculumAssessment,
+  facilitatorProgramIdsMatchingCurriculum,
   updateCurriculumAssessment,
   updateProgramAssessment,
 } from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
 
-//List all AssessmentWithSummary to which the user has access
+// List all AssessmentWithSummary to which the user has access
 assessmentsRouter.get('/', async (req, res, next) => {
   const { principalId } = req.session;
 
@@ -155,58 +155,54 @@ assessmentsRouter.put(
       return;
     }
 
-    // step 5: check to make sure the curriculum assessment already exists
-    // because our route is in charge of updating an *existing* curriculum
-    // assessment, so error out if the curriculum assessment doesn't exist
-    const curriculumAssessmentExisting = getCurriculumAssessment(
-      curriculumAssessmentIdParsed
-    );
-
-    if (!curriculumAssessmentExisting) {
-      next(
-        new NotFoundError(
-          `Could not find curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
-        )
-      );
-      return;
-    }
-
-    // step 6: make sure the user is the facilitator of a program that uses
-    // this curriculum assessment
-    const matchingProgramAssessments =
-      await facilitatorProgramAssessmentsForCurriculumAssessment(
-        principalId,
+    try {
+      // step 5: check to make sure the curriculum assessment already exists
+      // because our route is in charge of updating an *existing* curriculum
+      // assessment, so error out if the curriculum assessment doesn't exist
+      const curriculumAssessmentExisting = getCurriculumAssessment(
         curriculumAssessmentIdParsed
       );
 
-    // If there are no matching program assessments with this curriculum ID,
-    // then we are not facilitator of any programs where we can modify this
-    // CurriculumAssessment, so let's return an error to the user.
-    if (matchingProgramAssessments.length === 0) {
-      next(
-        new UnauthorizedError(
+      if (!curriculumAssessmentExisting) {
+        throw new NotFoundError(
+          `Could not find curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
+        );
+      }
+
+      // step 6: make sure the user is the facilitator of a program that uses
+      // this curriculum assessment
+      const matchingProgramAssessments =
+        await facilitatorProgramIdsMatchingCurriculum(
+          principalId,
+          curriculumAssessmentIdParsed
+        );
+
+      // If there are no matching program assessments with this curriculum ID,
+      // then we are not facilitator of any programs where we can modify this
+      // CurriculumAssessment, so let's return an error to the user.
+      if (matchingProgramAssessments.length === 0) {
+        throw new UnauthorizedError(
           `Not allowed to make modifications to curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
-        )
-      );
-      return;
-    }
+        );
+      }
 
-    // step 7: update the curriculum assessment, its questions, and its answers
-    const updatedCurriculumAssessment: CurriculumAssessment =
-      await updateCurriculumAssessment(curriculumAssessmentFromUser);
+      // step 7: update the curriculum assessment, its questions, and its answers
+      const updatedCurriculumAssessment: CurriculumAssessment =
+        await updateCurriculumAssessment(curriculumAssessmentFromUser);
 
-    // step 8: return the updated curriculum assessment to the user,
-    // including questions and answers
-    if (!updatedCurriculumAssessment) {
-      next(
-        new InternalServerError(
+      // step 8: return the updated curriculum assessment to the user,
+      // including questions and answers
+      if (!updatedCurriculumAssessment) {
+        throw new InternalServerError(
           `Could not update curriculum assessment with ID ${curriculumAssessmentIdParsed}`
-        )
-      );
+        );
+      }
+
+      res.json(itemEnvelope(updatedCurriculumAssessment));
+    } catch (err) {
+      next(err);
       return;
     }
-
-    res.json(itemEnvelope(updatedCurriculumAssessment));
   }
 );
 
