@@ -831,22 +831,23 @@ export const listPrincipalEnrolledProgramIds = async (
 export const listProgramAssessments = async (
   programId: number
 ): Promise<ProgramAssessment[]> => {
-  const matchingListProgramAssessmentRows = await db('program_assessments')
+  const matchingProgramAssessmentsRows = await db('program_assessments')
     .select('id', 'assessment_id', 'available_after', 'due_date')
     .where('program_id', programId);
 
-  if (matchingListProgramAssessmentRows.length === 0) {
+  if (matchingProgramAssessmentsRows.length === 0) {
     return null;
   }
 
   const programAssessments: ProgramAssessment[] =
-    matchingListProgramAssessmentRows.map(programAssessmentRow => ({
+    matchingProgramAssessmentsRows.map(programAssessmentRow => ({
       id: programAssessmentRow.id,
       program_id: programId,
       assessment_id: programAssessmentRow.assessment_id,
       available_after: programAssessmentRow.available_after,
       due_date: programAssessmentRow.due_date,
     }));
+
   return programAssessments;
 };
 
