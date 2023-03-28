@@ -37,8 +37,11 @@ assessmentsRouter.get('/', async (req, res, next) => {
 assessmentsRouter.get(
   '/curriculum/:curriculumAssessmentId',
   async (req, res, next) => {
+    const { principalId } = req.session;
     const { curriculumAssessmentId } = req.params;
+
     const curriculumAssessmentIdParsed = Number(curriculumAssessmentId);
+
     if (
       !Number.isInteger(curriculumAssessmentIdParsed) ||
       curriculumAssessmentIdParsed < 1
@@ -51,7 +54,6 @@ assessmentsRouter.get(
       return;
     }
 
-    const { principalId } = req.session;
     const matchingProgramAssessments =
       await facilitatorProgramAssessmentsForCurriculumAssessment(
         principalId,
@@ -69,10 +71,14 @@ assessmentsRouter.get(
       );
       return;
     }
+
     const includeQuestionsAndAllAnswers = true;
+    const includeQuestionsAndCorrectAnswers = true;
+
     const curriculumAssessment = await getCurriculumAssessment(
       curriculumAssessmentIdParsed,
-      includeQuestionsAndAllAnswers
+      includeQuestionsAndAllAnswers,
+      includeQuestionsAndCorrectAnswers
     );
 
     res.json(itemEnvelope(curriculumAssessment));
