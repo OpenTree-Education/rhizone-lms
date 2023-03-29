@@ -32,6 +32,7 @@ import {
   facilitatorProgramIdsMatchingCurriculum,
   updateCurriculumAssessment,
   updateProgramAssessment,
+  createProgramAssessment,
 } from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
@@ -224,7 +225,42 @@ assessmentsRouter.get(
 
 // Create a new ProgramAssessment
 assessmentsRouter.post('/program', async (req, res, next) => {
-  res.json();
+  const { principalId } = req.session;
+  const programAssessmentBody = req.body;
+
+  let programAssessment;
+  try {
+    // get the principal program role
+    const programRole = await getPrincipalProgramRole(
+      principalId,
+      programAssessmentBody.program_id
+    );
+
+    // if the program role is null/falsy, that means the user is not enrolled in
+    // the program. send an error back to the user.
+    if (programRole !== 'Facilitator') {
+      next(
+        new UnauthorizedError(`Could not access program Assessment with ID.`)
+      );
+      return;
+    }
+    const isprogramAssessment = (
+      possibleAssessment: unknown
+    ): possibleAssessment is ProgramAssessment => {
+      return (possibleAssessment as ProgramAssessment).program_id !== undefined;
+    };
+
+    if (!isprogramAssessment(programAssessmentBody)) {
+      next(new BadRequestError(`Was not given a valid program assessment.`));
+      return;
+    }
+
+    programAssessment = await createProgramAssessment(programAssessmentBody);
+    res.status(201).json(itemEnvelope(programAssessment));
+  } catch (error) {
+    next(error);
+    return;
+  }
 });
 
 // Update an existing ProgramAssessment
@@ -266,7 +302,7 @@ assessmentsRouter.put(
 
       // if the program role is null/falsy, that means the user is not enrolled in
       // the program. send an error back to the user.
-      if (!programRole) {
+      if (programRole !== 'Facilitator') {
         next(
           new UnauthorizedError(
             `Could not access program Assessment with ID ${programAssessmentIdParsed}.`
@@ -289,12 +325,11 @@ assessmentsRouter.put(
       updatedPrgramAssessment = await updateProgramAssessment(
         programAssessmentFromUser
       );
+      res.status(201).json(itemEnvelope(updatedPrgramAssessment));
     } catch (error) {
       next(error);
       return;
     }
-
-    res.status(201).json(itemEnvelope(updatedPrgramAssessment));
   }
 );
 

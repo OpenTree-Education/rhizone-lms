@@ -44,6 +44,7 @@ import {
   exampleCurriculumAssessmentWithCorrectAnswers,
   exampleParticipantAssessmentSubmissionsSummary,
   updatedProgramAssessmentsRow,
+  createProgramAssessmentsRow,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -128,8 +129,6 @@ describe('constructParticipantAssessmentSummary', () => {
 describe('createAssessmentSubmission', () => {});
 
 describe('createCurriculumAssessment', () => {});
-
-describe('createProgramAssessment', () => {});
 
 describe('deleteCurriculumAssessment', () => {});
 
@@ -338,6 +337,24 @@ describe('listProgramAssessments', () => {});
 describe('updateAssessmentSubmission', () => {});
 
 describe('updateCurriculumAssessment', () => {});
+describe('createProgramAssessment', () => {
+  it('should create a program assessment ID', async () => {
+    mockQuery(
+      'insert into `program_assessments` (`program_id`, `assessment_id`, `available_after`, `due_date`, ) values (?, ?, ?, ?)',
+      [
+        createProgramAssessmentsRow.program_id,
+        createProgramAssessmentsRow.assessment_id,
+        createProgramAssessmentsRow.available_after,
+        createProgramAssessmentsRow.due_date,
+      ],
+      [createProgramAssessmentsRow.id]
+    );
+
+    expect(await createProgramAssessment(createProgramAssessmentsRow)).toEqual(
+      createProgramAssessmentsRow
+    );
+  });
+});
 
 describe('updateProgramAssessment', () => {
   it('should return update for an existing program assessment ID', async () => {
