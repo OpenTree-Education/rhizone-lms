@@ -331,30 +331,30 @@ export const newCurriculumAssessmentWithQuestion: CurriculumAssessment = {
           title: 'string',
           description: 'string',
           sort_order: 1,
-        }
+        },
       ],
     },
   ],
 };
 
-export const updatedAnswers: Answer ={
+export const updatedAnswers: Answer = {
   ...newCurriculumAssessmentWithQuestion.questions[0].answers[0],
   question_id: 42,
-  id: 37
-}
+  id: 37,
+};
 
-export const updatedQuestions: Question ={
+export const updatedQuestions: Question = {
   ...newCurriculumAssessmentWithQuestion.questions[0],
   id: 42,
-  answers: [updatedAnswers]
-}
+  answers: [updatedAnswers],
+};
 
 export const updatedCurriculumAssessment: CurriculumAssessment = {
   ...newCurriculumAssessment,
   id: 15,
 };
 
-export const updatedCurriculumAssessmentWithQuestions: CurriculumAssessment  = {
+export const updatedCurriculumAssessmentWithQuestions: CurriculumAssessment = {
   ...updatedCurriculumAssessment,
   questions: [updatedQuestions],
 };

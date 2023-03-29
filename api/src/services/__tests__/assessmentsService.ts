@@ -157,7 +157,7 @@ describe('createCurriculumAssessment', () => {
       ],
       [updatedCurriculumAssessment.id]
     );
-    
+
     expect(await createCurriculumAssessment(newCurriculumAssessment)).toEqual(
       updatedCurriculumAssessment
     );
@@ -177,24 +177,32 @@ describe('createCurriculumAssessment', () => {
       ],
       [updatedCurriculumAssessment.id]
     );
-    mockQuery('insert into `assessment_questions` (`assessment_id`, `description`, `max_score`, `question_type_id`, `sort_order`, `title`) values (?, ?, ?, ?, ?, ?)',[
-      updatedCurriculumAssessment.id, 
-      newCurriculumAssessmentWithQuestion.questions[0].description,
-      newCurriculumAssessmentWithQuestion.questions[0].max_score,
-      1,
-      newCurriculumAssessmentWithQuestion.questions[0].sort_order,
-      newCurriculumAssessmentWithQuestion.questions[0].title
-    ],[updatedQuestions.id]);
-
-mockQuery('insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)', [
-  newCurriculumAssessmentWithQuestion.questions[0].answers[0].description,
-  updatedQuestions.id,
-  newCurriculumAssessmentWithQuestion.questions[0].answers[0].sort_order,
-  newCurriculumAssessmentWithQuestion.questions[0].answers[0].title,
-],[updatedAnswers.id])
-    expect(await createCurriculumAssessment(newCurriculumAssessmentWithQuestion)).toEqual(
-      updatedCurriculumAssessmentWithQuestions
+    mockQuery(
+      'insert into `assessment_questions` (`assessment_id`, `description`, `max_score`, `question_type_id`, `sort_order`, `title`) values (?, ?, ?, ?, ?, ?)',
+      [
+        updatedCurriculumAssessment.id,
+        newCurriculumAssessmentWithQuestion.questions[0].description,
+        newCurriculumAssessmentWithQuestion.questions[0].max_score,
+        1,
+        newCurriculumAssessmentWithQuestion.questions[0].sort_order,
+        newCurriculumAssessmentWithQuestion.questions[0].title,
+      ],
+      [updatedQuestions.id]
     );
+
+    mockQuery(
+      'insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)',
+      [
+        newCurriculumAssessmentWithQuestion.questions[0].answers[0].description,
+        updatedQuestions.id,
+        newCurriculumAssessmentWithQuestion.questions[0].answers[0].sort_order,
+        newCurriculumAssessmentWithQuestion.questions[0].answers[0].title,
+      ],
+      [updatedAnswers.id]
+    );
+    expect(
+      await createCurriculumAssessment(newCurriculumAssessmentWithQuestion)
+    ).toEqual(updatedCurriculumAssessmentWithQuestions);
   });
 });
 

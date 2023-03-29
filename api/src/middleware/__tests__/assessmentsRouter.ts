@@ -230,7 +230,7 @@ describe('assessmentsRouter', () => {
     });
   });
 
-   describe('GET /curriculum/:curriculumAssessmentId', () => {
+  describe('GET /curriculum/:curriculumAssessmentId', () => {
     it('should retrieve a curriculum assessment if the logged-in principal ID is the program facilitator', done => {
       mockGetCurriculumAssessment.mockResolvedValue(
         exampleCurriculumAssessmentWithCorrectAnswers
@@ -336,7 +336,7 @@ describe('assessmentsRouter', () => {
     });
   });
 
-describe('POST /curriculum', () => {
+  describe('POST /curriculum', () => {
     it('should create a curriculum assessment if the logged-in principal ID is the program facilitator', done => {
       const matchingFacilitatorPrograms = [3, 4, 6];
       mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
@@ -389,19 +389,19 @@ describe('POST /curriculum', () => {
         );
     });
     it('should reponse with BadRequestError if the information missing', done => {
-          mockPrincipalId(facilitatorPrincipalId);
+      mockPrincipalId(facilitatorPrincipalId);
 
-          appAgent
-            .post(`/curriculum`)
-            .send({ description: 'test' })
-            .expect(
-              422,
-              errorEnvelope(`Was not given a valid curriculum assessment.`),
-              err => {
-                done(err);
-              }
-            );
-        });
+      appAgent
+        .post(`/curriculum`)
+        .send({ description: 'test' })
+        .expect(
+          422,
+          errorEnvelope(`Was not given a valid curriculum assessment.`),
+          err => {
+            done(err);
+          }
+        );
+    });
   });
 
   describe('PUT /curriculum/:curriculumAssessmentId', () => {});
