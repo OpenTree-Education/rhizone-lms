@@ -893,11 +893,6 @@ export const listPrincipalEnrolledProgramIds = async (
   const enrolledProgramsList = await db('program_participants')
     .select('program_id')
     .where({ principal_id: principalId });
-
-  console.log(
-    `enrolledProgramsList: ${JSON.stringify(enrolledProgramsList, null, 2)}`
-  );
-
   if (enrolledProgramsList.length === 0) {
     return null;
   }
@@ -982,7 +977,6 @@ export const facilitatorProgramIdsMatchingCurriculum = async (
       }
     }
   }
-console.log(matchingFacilitatorPrograms)
   return matchingFacilitatorPrograms;
 };
 

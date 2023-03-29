@@ -112,19 +112,15 @@ assessmentsRouter.get(
     res.json();
   }
 );
-assessmentsRouter.get(
-  '/test',
-  async (req, res, next) => {
-    try {
-    const i = await facilitatorProgramIdsMatchingCurriculum(3,2);
-        res.json(itemEnvelope(i));
+assessmentsRouter.get('/test', async (req, res, next) => {
+  try {
+    const i = await facilitatorProgramIdsMatchingCurriculum(3, 2);
+    res.json(itemEnvelope(i));
   } catch (error) {
     next(error);
     return;
   }
-
-  }
-);
+});
 // Create a new CurriculumAssessment
 assessmentsRouter.post('/curriculum', async (req, res, next) => {
   const { principalId } = req.session;

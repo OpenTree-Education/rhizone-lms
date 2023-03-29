@@ -8,6 +8,7 @@ import {
   createProgramAssessment,
   deleteCurriculumAssessment,
   deleteProgramAssessment,
+  facilitatorProgramIdsMatchingCurriculum,
   findProgramAssessment,
   getAssessmentSubmission,
   getCurriculumAssessment,
@@ -36,6 +37,7 @@ import {
   exampleCurriculumAssessmentWithQuestion,
   matchingAssessmentQuestionsRow,
   matchingAssessmentAnswersRow,
+  matchingProgramRow,
   unenrolledPrincipalId,
   exampleCurriculumAssessment,
   exampleFacilitatorAssessmentSubmissionsSummary,
@@ -44,6 +46,8 @@ import {
   exampleCurriculumAssessmentWithCorrectAnswers,
   exampleParticipantAssessmentSubmissionsSummary,
   updatedProgramAssessmentsRow,
+  newCurriculumAssessment,
+  updatedCurriculumAssessment,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -127,7 +131,43 @@ describe('constructParticipantAssessmentSummary', () => {
 
 describe('createAssessmentSubmission', () => {});
 
-describe('createCurriculumAssessment', () => {});
+// describe('createCurriculumAssessment', () => {
+//   it('should create a curriculum assessment ID', async () => {
+//     mockQuery(
+//       'insert into `curriculum_assessments` (`activity_id`, `curriculum_id`, `description`, `max_num_submissions`, `max_score`, `principal_id`, `time_limit`, `title`) values (?, ?, ?, ?, ?, ?, ?, ?)',
+//       [
+//       newCurriculumAssessment.title,
+//       newCurriculumAssessment.assessment_type,
+//       newCurriculumAssessment.description,
+//       newCurriculumAssessment.max_score,
+//       newCurriculumAssessment.max_num_submissions,
+//       newCurriculumAssessment.time_limit,
+//       newCurriculumAssessment.curriculum_id,
+//       newCurriculumAssessment.activity_id,
+//       newCurriculumAssessment.principal_id,
+//       ],
+//       [updatedCurriculumAssessment.id]
+//     );
+//       it('should create questions for curriculum assessment', async () => {
+//     mockQuery(
+//       'insert into `assessment_questions` (`assessment_id`, `description`, `max_score`, `question_type_id`, `sort_order`, `title`) values (?, ?, DEFAULT, ?, ?, ?)',
+//       [
+//       newCurriculumAssessment.questions[0].title,
+//       newCurriculumAssessment.questions[0].description,
+//       newCurriculumAssessment.questions[0].question_type,
+//       newCurriculumAssessment.questions[0].sort_order,
+//       newCurriculumAssessment.questions[0].answers,
+//       ],
+//       [updatedCurriculumAssessment.questions[0]]
+//     );
+//   });
+
+//     expect(await createCurriculumAssessment(newCurriculumAssessment)).toEqual(
+//       updatedCurriculumAssessment
+//     );
+//   });
+
+// });
 
 describe('createProgramAssessment', () => {});
 
@@ -326,6 +366,47 @@ describe('listAssessmentQuestions', () => {
         answersIncluded
       )
     ).toEqual(exampleAssessmentQuestions);
+  });
+});
+
+describe('facilitatorProgramIdsMatchingCurriculum', () => {
+  it('should return an array of program IDs for a principal that is facilitator of at least one program', async () => {
+    mockQuery(
+      'select `program_id` from `program_participants` where `principal_id` = ?',
+      [facilitatorPrincipalId],
+      [{ program_id: exampleProgramAssessment.program_id }]
+    );
+    mockQuery(
+      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `curriculum_id` = ?',
+      [exampleCurriculumAssessment.curriculum_id],
+      [matchingProgramRow]
+    );
+    mockQuery(
+      'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
+      [facilitatorPrincipalId, exampleProgramAssessment.program_id],
+      [{ title: 'Facilitator' }]
+    );
+
+    expect(
+      await facilitatorProgramIdsMatchingCurriculum(
+        facilitatorPrincipalId,
+        exampleCurriculumAssessment.curriculum_id
+      )
+    ).toEqual([exampleProgramAssessment.program_id]);
+  });
+
+  it('should return an empty array of program IDs for a principal that is not a facilitator of at least one program', async () => {
+    mockQuery(
+      'select `program_id` from `program_participants` where `principal_id` = ?',
+      [participantPrincipalId],
+      []
+    );
+    expect(
+      await facilitatorProgramIdsMatchingCurriculum(
+        participantPrincipalId,
+        exampleCurriculumAssessment.curriculum_id
+      )
+    ).toEqual([]);
   });
 });
 

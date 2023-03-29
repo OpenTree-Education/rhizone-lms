@@ -136,6 +136,15 @@ export const exampleCurriculumAssessmentWithCorrectAnswers: CurriculumAssessment
     questions: exampleAssessmentQuestions,
   };
 
+export const matchingProgramRow = {
+  id: 1,
+  title: 'Cohort 4',
+  start_date: '2022-10-24',
+  end_date: '2022-12-16',
+  time_zone: 'America/Los_Angeles',
+  curriculum_id: exampleCurriculumAssessment.curriculum_id,
+};
+
 export const exampleProgramAssessmentsRow = {
   program_id: 1,
   assessment_id: 12,
@@ -247,8 +256,8 @@ export const exampleAssessmentSubmissionGraded: AssessmentSubmission = {
 
 export const newCurriculumAssessment = {
   title: 'Test42',
-  assessment_type: "test",
-  description: "Your assignment for week 1 learning.",
+  assessment_type: 'test',
+  description: 'Your assignment for week 1 learning.',
   max_score: 10,
   max_num_submissions: 1,
   time_limit: 120,
@@ -257,45 +266,45 @@ export const newCurriculumAssessment = {
   principal_id: 1,
   questions: [
     {
-      title: "test",
-      description: "test",
-      question_type: "single choice", 
+      title: 'test',
+      description: 'test',
+      question_type: 'single choice',
       sort_order: 1,
       answers: [
         {
-          title: "string",
-          description: "string",
-          sort_order: 1
+          title: 'string',
+          description: 'string',
+          sort_order: 1,
         },
         {
-          title: "string",
-          description: "string",
+          title: 'string',
+          description: 'string',
           sort_order: 2,
-          correct_answer: true
-        }
-      ]
+          correct_answer: true,
+        },
+      ],
     },
     {
-      title: "string7",
-      description: "string",
-      question_type: "single choice",
+      title: 'string7',
+      description: 'string',
+      question_type: 'single choice',
       sort_order: 2,
       answers: [
         {
-          title: "string",
-          description: "string",
+          title: 'string',
+          description: 'string',
           sort_order: 1,
-          correct_answer: true
+          correct_answer: true,
         },
         {
-          title: "string",
-          "description": "string",
-          "sort_order": 2
-        }
-      ]
-    }
-  ]
-}
+          title: 'string',
+          description: 'string',
+          sort_order: 2,
+        },
+      ],
+    },
+  ],
+};
 
 export const updatedCurriculumAssessment = {
   ...newCurriculumAssessment,
