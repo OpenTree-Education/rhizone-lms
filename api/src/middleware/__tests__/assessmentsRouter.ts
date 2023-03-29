@@ -221,7 +221,9 @@ describe('assessmentsRouter', () => {
   describe('PUT /curriculum/:curriculumAssessmentId', () => {});
   describe('DELETE /curriculum/:curriculumAssessmentId', () => {});
 
-  describe('GET /program/:programAssessmentId', () => {});
+  describe('GET /program/:programAssessmentId', () => {
+    it('should respond with a BadRequestError if given an invalid program assessment ID', done => {});
+  });
   describe('POST /program', () => {});
   describe('PUT /program/:programAssessmentId', () => {
     it('should update a program assessment if the logged-in principal ID is the program facilitator', done => {
