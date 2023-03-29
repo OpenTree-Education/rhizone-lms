@@ -982,7 +982,7 @@ export const facilitatorProgramIdsMatchingCurriculum = async (
       }
     }
   }
-
+console.log(matchingFacilitatorPrograms)
   return matchingFacilitatorPrograms;
 };
 
