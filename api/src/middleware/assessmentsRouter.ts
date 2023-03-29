@@ -425,7 +425,7 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       return;
     }
 
-    // get program assessment 
+    // get program assessment
     const programAssessment = await findProgramAssessment(
       submissionFromUser.assessment_id
     );

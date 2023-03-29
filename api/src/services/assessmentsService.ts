@@ -887,7 +887,7 @@ export const updateAssessmentSubmission = async (
     true,
     false
   );
-  
+
   let newState;
 
   if (facilitatorOverride) {
@@ -899,23 +899,21 @@ export const updateAssessmentSubmission = async (
         `Could not submit grading, there is no existing submission response for this submission(ID ${assessmentSubmission.id})`
       );
       return null;
-
     }
-    
+
     // update scores for each response
-     assessmentSubmission.responses.map(async response => {
+    assessmentSubmission.responses.map(async response => {
       await updateSubmissionResponse(response, facilitatorOverride);
     });
 
     // update submission state and score
     newState = 'Graded';
     const [gradedStateId] = await db('assessment_submission_states')
-    .select('id')
-    .where('title', newState);
-  await db('assessment_submissions')
-    .update({ state_id: gradedStateId.id, score: assessmentSubmission.score })
-    .where('id', assessmentSubmission.id);
-
+      .select('id')
+      .where('title', newState);
+    await db('assessment_submissions')
+      .update({ state_id: gradedStateId.id, score: assessmentSubmission.score })
+      .where('id', assessmentSubmission.id);
   } else if (
     existingAssessmentSubmission.assessment_submission_state === 'Opened' ||
     existingAssessmentSubmission.assessment_submission_state === 'In Progress'
@@ -942,20 +940,21 @@ export const updateAssessmentSubmission = async (
     }
 
     const [newStateId] = await db('assessment_submission_states')
-    .select('id')
-    .where('title', newState);
+      .select('id')
+      .where('title', newState);
     // If new state is submitted, update with subbmission time.
-    if(newState === 'Submitted'){
+    if (newState === 'Submitted') {
       await db('assessment_submissions')
-      .update({ state_id: newStateId.id, submitted_at: new Date().toISOString().slice(0, 19).replace('T', ' ') })
-      .where('id', assessmentSubmission.id);
-    }else{
+        .update({
+          state_id: newStateId.id,
+          submitted_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        })
+        .where('id', assessmentSubmission.id);
+    } else {
       await db('assessment_submissions')
-      .update({ state_id: newStateId.id })
-      .where('id', assessmentSubmission.id);
+        .update({ state_id: newStateId.id })
+        .where('id', assessmentSubmission.id);
     }
-
-
   } else {
     // when the submission is not opened and in progress for participants
     console.log(
