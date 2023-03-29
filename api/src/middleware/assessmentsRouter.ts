@@ -478,30 +478,21 @@ assessmentsRouter.get(
       );
 
       if (!programAssessment) {
-        next(
-          new NotFoundError(
-            `Could not find program assessment(ID ${programAssessmentIdParsed}).`
-          )
+        throw new NotFoundError(
+          `Could not find program assessment with ID ${programAssessmentIdParsed}.`
         );
-        return;
       }
 
       if (new Date(programAssessment.available_after + 'Z') > new Date()) {
-        next(
-          new ForbiddenError(
-            `Could not create a new submission of an assessment that's not yet available.`
-          )
+        throw new ForbiddenError(
+          `Could not create a new submission of an assessment that's not yet available.`
         );
-        return;
       }
 
       if (new Date(programAssessment.due_date + 'Z') < new Date()) {
-        next(
-          new ForbiddenError(
-            `Could not create a new submission of an assessment that passed due date.`
-          )
+        throw new ForbiddenError(
+          `Could not create a new submission of an assessment after its due date.`
         );
-        return;
       }
 
       const programRole = await getPrincipalProgramRole(
@@ -510,21 +501,15 @@ assessmentsRouter.get(
       );
 
       if (!programRole) {
-        next(
-          new UnauthorizedError(
-            `Could not access program accessment(ID ${programAssessmentIdParsed}) without enrollment.`
-          )
+        throw new UnauthorizedError(
+          `Could not access program assessment with ID ${programAssessmentIdParsed}) without enrollment.`
         );
-        return;
       }
 
       if (programRole === 'Facilitator') {
-        next(
-          new UnauthorizedError(
-            `Could not create a new submission as a facilitator.`
-          )
+        throw new UnauthorizedError(
+          `Facilitators are not allowed to create program assessment submissions.`
         );
-        return;
       }
 
       // get the curriculum assessment, without its answer and correct answers.
@@ -543,41 +528,32 @@ assessmentsRouter.get(
           programAssessment.id
         );
 
-      let assessmentSubmission;
-      if (
-        existingAssessmentSubmissions &&
-        existingAssessmentSubmissions.some(
-          a =>
-            a.assessment_submission_state === 'Opened' ||
-            a.assessment_submission_state === 'In Progress'
-        )
-      ) {
-        //If the participant has an AssessmentSubmission currently in the "Opened" or "In Progress".
-        //Return that submission.
-        assessmentSubmission = existingAssessmentSubmissions.filter(
-          a =>
-            a.assessment_submission_state === 'Opened' ||
-            a.assessment_submission_state === 'In Progress'
-        )[0];
-      } else if (
-        existingAssessmentSubmissions &&
-        existingAssessmentSubmissions.length >=
-          curriculumAssessment.max_num_submissions
-      ) {
-        //If the participant has no currently "Opened" or "In Progress" submission and reach the submission limit.
-        //Return Forbidden Error.
-        next(
-          new ForbiddenError(
-            `Could not create a new submission becasue it has reach the maximum number of submissions for thie assessment.`
-          )
-        );
-        return;
-      } else {
-        //Create a new submission
+      let assessmentSubmission: AssessmentSubmission;
+
+      if (!existingAssessmentSubmissions) {
         assessmentSubmission = await createAssessmentSubmission(
           principalId,
           programAssessmentIdParsed
         );
+      } else {
+        if (
+          existingAssessmentSubmissions.length >=
+          curriculumAssessment.max_num_submissions
+        ) {
+          //If the participant has no currently "Opened" or "In Progress" submission and reach the submission limit.
+          //Return Forbidden Error.
+          throw new ForbiddenError(
+            `Could not create a new submission becasue it has reach the maximum number of submissions for thie assessment.`
+          );
+        }
+        const inProgressSubmissions: AssessmentSubmission[] =
+          existingAssessmentSubmissions.filter(assessmentSubmission =>
+            ['Opened', 'In Progress'].includes(
+              assessmentSubmission.assessment_submission_state
+            )
+          );
+
+        [assessmentSubmission] = inProgressSubmissions;
       }
 
       const assessmentWithSubmission: SavedAssessment = {

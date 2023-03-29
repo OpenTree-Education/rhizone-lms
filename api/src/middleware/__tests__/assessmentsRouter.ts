@@ -632,42 +632,48 @@ describe('assessmentsRouter', () => {
         .expect(
           400,
           errorEnvelope(
-            'The request could not be completed with the given parameters.'
+            `"${programAssessmentInvalidId}" is not a valid program assessment ID.`
           ),
           done
         );
     });
 
-    it('should respond with a NotFoundError if the assessment id was not found in the database', done => {
-      const programAssessmentNotFoundId = 0;
-      mockPrincipalId(participantPrincipalId);
+    it('should respond with a NotFoundError if the assessment submission ID was not found in the database', done => {
       mockFindProgramAssessment.mockResolvedValue(null);
+
+      mockPrincipalId(participantPrincipalId);
+
       appAgent
-        .get(`/program/${programAssessmentNotFoundId}/submissions/new`)
+        .get(`/program/${exampleProgramAssessment.id}/submissions/new`)
         .expect(
           404,
-          errorEnvelope('The requested resource does not exist.'),
+          errorEnvelope(
+            `Could not find program assessment with ID ${exampleProgramAssessment.id}.`
+          ),
           err => {
             expect(mockFindProgramAssessment).toHaveBeenCalledWith(
-              programAssessmentNotFoundId
+              exampleProgramAssessment.id
             );
             done(err);
           }
         );
     });
+
     it('should return an error when attempting to create a submission for a program assessment that is not yet available', done => {
-      mockPrincipalId(participantPrincipalId);
       mockFindProgramAssessment.mockResolvedValue(
         exampleProgramAssessmentNotAvailable
       );
+
+      mockPrincipalId(participantPrincipalId);
+
       appAgent
         .get(
           `/program/${exampleProgramAssessmentNotAvailable.id}/submissions/new`
         )
         .expect(
-          401,
+          403,
           errorEnvelope(
-            'The assessment is not yet available for a new submission.'
+            `Could not create a new submission of an assessment that's not yet available.`
           ),
           err => {
             expect(mockFindProgramAssessment).toHaveBeenCalledWith(
@@ -677,17 +683,20 @@ describe('assessmentsRouter', () => {
           }
         );
     });
+
     it('should return an error when attempting to create a submission when the program assessment due date has passed', done => {
-      mockPrincipalId(participantPrincipalId);
       mockFindProgramAssessment.mockResolvedValue(
         exampleProgramAssessmentPastDue
       );
+
+      mockPrincipalId(participantPrincipalId);
+
       appAgent
         .get(`/program/${exampleProgramAssessmentPastDue.id}/submissions/new`)
         .expect(
-          401,
+          403,
           errorEnvelope(
-            'The assessment has expired, thus unable to create a new submission.'
+            `Could not create a new submission of an assessment after its due date.`
           ),
           err => {
             expect(mockFindProgramAssessment).toHaveBeenCalledWith(
@@ -699,43 +708,56 @@ describe('assessmentsRouter', () => {
     });
 
     it('should return an error if logged-in user is not enrolled in the program', done => {
-      mockPrincipalId(participantPrincipalId);
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue(null);
+
+      mockPrincipalId(unenrolledPrincipalId);
+
       appAgent
         .get(`/program/${exampleProgramAssessment.id}/submissions/new`)
         .expect(
           401,
-          errorEnvelope('The requester does not have access to the resource.'),
+          errorEnvelope(
+            `Could not access program assessment with ID ${exampleProgramAssessment.id}) without enrollment.`
+          ),
           err => {
             expect(mockFindProgramAssessment).toHaveBeenCalledWith(
               exampleProgramAssessment.id
             );
+
             expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
-              participantPrincipalId,
+              unenrolledPrincipalId,
               exampleProgramAssessment.program_id
             );
+
             done(err);
           }
         );
     });
+
     it('should return an error if logged-in user is a facilitator', done => {
-      mockPrincipalId(facilitatorPrincipalId);
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
+
+      mockPrincipalId(facilitatorPrincipalId);
+
       appAgent
         .get(`/program/${exampleProgramAssessment.id}/submissions/new`)
         .expect(
           401,
-          errorEnvelope('The requester does not have access to the resource.'),
+          errorEnvelope(
+            `Facilitators are not allowed to create program assessment submissions.`
+          ),
           err => {
             expect(mockFindProgramAssessment).toHaveBeenCalledWith(
               exampleProgramAssessment.id
             );
+
             expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
-              participantPrincipalId,
+              facilitatorPrincipalId,
               exampleProgramAssessment.program_id
             );
+
             done(err);
           }
         );
