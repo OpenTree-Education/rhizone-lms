@@ -151,7 +151,7 @@ export const exampleProgramAssessmentsRow = {
   program_id: 1,
   assessment_id: 12,
   available_after: '2023-02-06',
-  due_date: '2023-02-10',
+  due_date: '2050-02-10',
 };
 
 export const updatedProgramAssessmentsRow = {
@@ -159,7 +159,7 @@ export const updatedProgramAssessmentsRow = {
   program_id: 1,
   assessment_id: 12,
   available_after: '2023-03-06',
-  due_date: '2023-04-10',
+  due_date: '2050-02-10',
 };
 
 export const exampleProgramAssessment: ProgramAssessment = {

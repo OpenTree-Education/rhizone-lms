@@ -113,8 +113,8 @@ describe('constructParticipantAssessmentSummary', () => {
       ]
     );
     mockQuery(
-      'select `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_id` = ? and `principal_id` = ?',
-      [exampleProgramAssessment.assessment_id, participantPrincipalId],
+      'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
+      [participantPrincipalId, exampleProgramAssessment.assessment_id],
       [assessmentSubmissionsRowGraded]
     );
     mockQuery(
@@ -416,8 +416,8 @@ describe('listAllProgramAssessmentSubmissions', () => {
 describe('listParticipantProgramAssessmentSubmissions', () => {
   it('should return program assessment submissions for a participant for a given program assessment', async () => {
     mockQuery(
-      'select `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_id` = ? and `principal_id` = ?',
-      [exampleAssessmentSubmissionOpened.assessment_id, participantPrincipalId],
+      'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
+      [participantPrincipalId, exampleAssessmentSubmissionOpened.assessment_id,],
       [matchingAssessmentSubmissionOpenedRow]
     );
     expect(
@@ -430,8 +430,8 @@ describe('listParticipantProgramAssessmentSubmissions', () => {
 
   it('should return null if no program assessment submissions for a given program assessment', async () => {
     mockQuery(
-      'select `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_id` = ? and `principal_id` = ?',
-      [exampleAssessmentSubmissionOpened.assessment_id, participantPrincipalId],
+      'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
+      [participantPrincipalId, exampleAssessmentSubmissionOpened.assessment_id,],
       []
     );
 
