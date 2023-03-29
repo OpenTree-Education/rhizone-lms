@@ -131,43 +131,41 @@ describe('constructParticipantAssessmentSummary', () => {
 
 describe('createAssessmentSubmission', () => {});
 
-// describe('createCurriculumAssessment', () => {
-//   it('should create a curriculum assessment ID', async () => {
-//     mockQuery(
-//       'insert into `curriculum_assessments` (`activity_id`, `curriculum_id`, `description`, `max_num_submissions`, `max_score`, `principal_id`, `time_limit`, `title`) values (?, ?, ?, ?, ?, ?, ?, ?)',
-//       [
-//       newCurriculumAssessment.title,
-//       newCurriculumAssessment.assessment_type,
-//       newCurriculumAssessment.description,
-//       newCurriculumAssessment.max_score,
-//       newCurriculumAssessment.max_num_submissions,
-//       newCurriculumAssessment.time_limit,
-//       newCurriculumAssessment.curriculum_id,
-//       newCurriculumAssessment.activity_id,
-//       newCurriculumAssessment.principal_id,
-//       ],
-//       [updatedCurriculumAssessment.id]
-//     );
-//       it('should create questions for curriculum assessment', async () => {
-//     mockQuery(
-//       'insert into `assessment_questions` (`assessment_id`, `description`, `max_score`, `question_type_id`, `sort_order`, `title`) values (?, ?, DEFAULT, ?, ?, ?)',
-//       [
-//       newCurriculumAssessment.questions[0].title,
-//       newCurriculumAssessment.questions[0].description,
-//       newCurriculumAssessment.questions[0].question_type,
-//       newCurriculumAssessment.questions[0].sort_order,
-//       newCurriculumAssessment.questions[0].answers,
-//       ],
-//       [updatedCurriculumAssessment.questions[0]]
-//     );
-//   });
+describe('createCurriculumAssessment', () => {
+  it('should create a curriculum assessment ID', async () => {
+    mockQuery(
+      'insert into `curriculum_assessments` (`activity_id`, `curriculum_id`, `description`, `max_num_submissions`, `max_score`, `principal_id`, `time_limit`, `title`) values (?, ?, ?, ?, ?, ?, ?, ?)',
+      [
+        newCurriculumAssessment.activity_id,
+        newCurriculumAssessment.curriculum_id,
+        newCurriculumAssessment.description,
+        newCurriculumAssessment.max_num_submissions,
+        newCurriculumAssessment.max_score,
+        newCurriculumAssessment.principal_id,
+        newCurriculumAssessment.time_limit,
+        newCurriculumAssessment.title,
+      ],
+      [updatedCurriculumAssessment.id]
+    );
 
-//     expect(await createCurriculumAssessment(newCurriculumAssessment)).toEqual(
-//       updatedCurriculumAssessment
-//     );
-//   });
-
-// });
+    expect(await createCurriculumAssessment(newCurriculumAssessment)).toEqual(
+      updatedCurriculumAssessment
+    );
+  });
+});
+//   //     it('should create questions for curriculum assessment', async () => {
+//   //   mockQuery(
+//   //     'insert into `assessment_questions` (`assessment_id`, `description`, `max_score`, `question_type_id`, `sort_order`, `title`) values (?, ?, DEFAULT, ?, ?, ?)',
+//   //     [
+//   //     newCurriculumAssessment.questions[0].title,
+//   //     newCurriculumAssessment.questions[0].description,
+//   //     newCurriculumAssessment.questions[0].question_type,
+//   //     newCurriculumAssessment.questions[0].sort_order,
+//   //     newCurriculumAssessment.questions[0].answers,
+//   //     ],
+//   //     [updatedCurriculumAssessment.questions[0]]
+//   //   );
+//   // });
 
 describe('createProgramAssessment', () => {});
 
