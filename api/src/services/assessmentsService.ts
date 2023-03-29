@@ -105,22 +105,29 @@ const createAssessmentQuestion = async (
   question: Question
 ): Promise<Question> => {
   let questionId: number;
-  await db('questions')
-      .insert({
-        curriculum_assessment_id: curriculumAssessmentId,
-        question: question,
-        question_id: questionId,
-        assessment_id: question.assessment_id,
-        title: question.title,
-        description: question.description,
-        question_type: question.question_type,
-        answers: question.answers,
-        correct_answer_id: question.correct_answer_id,
-        max_score: question.max_score,
-        sort_order: question.sort_order,
-      })
-  return;
+  const [insertedAssessmentQuestionRowId] = await db(
+    'questions'
+  ).insert({
+    curriculum_assessment_id: curriculumAssessmentId,
+    question: question,
+    question_id: questionId,
+    assessment_id: question.assessment_id,
+    title: question.title,
+    description: question.description,
+    question_type: question.question_type,
+    answers: question.answers,
+    correct_answer_id: question.correct_answer_id,
+    max_score: question.max_score,
+    sort_order: question.sort_order,
+    })
+
+  const updatedAssessmentQuestion: Question = {
+    ...question,
+    id: insertedAssessmentQuestionRowId,
+  };
+  return updatedAssessmentQuestion;
 };
+
 
 /**
  * Inserts an answer for an existing curriculum assessment question into the
@@ -514,25 +521,7 @@ export const createCurriculumAssessment = async (
  * @returns {Promise<ProgramAssessment>} The updated ProgramAssessment object
  *   that was handed to us, but with row ID specified.
  */
-export const createProgramAssessment = async (
-  programAssessment: ProgramAssessment
-): Promise<ProgramAssessment> => {
-  const [insertedProgramAssessmentRowId] = await db(
-    'program_assessments'
-  ).insert({
-    program_id: programAssessment.program_id,
-    assessment_id: programAssessment.assessment_id,
-    available_after: programAssessment.available_after,
-    due_date: programAssessment.due_date,
-  });
 
-  const updatedProgramAssessment: ProgramAssessment = {
-    ...programAssessment,
-    id: insertedProgramAssessmentRowId,
-  };
-
-  return updatedProgramAssessment;
-};
 
 /**
  * Deletes a given curriculum assessment, all associated program assessments,
