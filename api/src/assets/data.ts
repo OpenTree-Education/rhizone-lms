@@ -7,6 +7,7 @@ import {
   AssessmentWithSummary,
   Question,
   AssessmentWithSubmissions,
+  SavedAssessment,
 } from '../models';
 export const administratorPrincipalId = 3;
 export const participantPrincipalId = 30;
@@ -150,14 +151,14 @@ export const exampleProgramAssessmentsRow = {
   program_id: 1,
   assessment_id: 12,
   available_after: '2023-02-06',
-  due_date: '2023-02-10',
+  due_date: '2050-02-10',
 };
 
 export const newProgramAssessment: ProgramAssessment = {
   program_id: 1,
   assessment_id: 12,
   available_after: '2023-03-06',
-  due_date: '2023-04-10',
+  due_date: '2050-02-10',
 };
 
 export const updatedProgramAssessmentsRow = {
@@ -170,7 +171,23 @@ export const exampleProgramAssessment: ProgramAssessment = {
   program_id: 1,
   assessment_id: 12,
   available_after: '2023-02-06',
+  due_date: '2050-02-10',
+};
+
+export const exampleProgramAssessmentPastDue: ProgramAssessment = {
+  id: 15,
+  program_id: 1,
+  assessment_id: 12,
+  available_after: '2023-02-06',
   due_date: '2023-02-10',
+};
+
+export const exampleProgramAssessmentNotAvailable: ProgramAssessment = {
+  id: 15,
+  program_id: 1,
+  assessment_id: 12,
+  available_after: '2050-02-06',
+  due_date: '2050-02-10',
 };
 
 export const exampleParticipantAssessmentSubmissionsSummary: ParticipantAssessmentSubmissionsSummary =
@@ -302,6 +319,13 @@ export const exampleParticipantAssessmentWithSubmissions: AssessmentWithSubmissi
     principal_program_role: 'Participant',
     submissions: [exampleAssessmentSubmissionInProgress],
   };
+
+export const exampleParticipantOpenedSavedAssessment: SavedAssessment = {
+  curriculum_assessment: exampleCurriculumAssessmentWithQuestions,
+  program_assessment: exampleProgramAssessment,
+  principal_program_role: 'Participant',
+  submission: exampleAssessmentSubmissionOpened,
+};
 
 export const exampleFacilitatorAssessmentWithSubmissions: AssessmentWithSubmissions =
   {
