@@ -19,6 +19,7 @@ import {
   AssessmentWithSummary,
   SavedAssessment,
   AssessmentWithSubmissions,
+  AssessmentSubmission,
 } from '../models';
 import {
   findProgramAssessment,
@@ -34,7 +35,7 @@ import {
   updateCurriculumAssessment,
   updateProgramAssessment,
   listParticipantProgramAssessmentSubmissions,
-  listAllProgramAssessmentSubmissions
+  listAllProgramAssessmentSubmissions,
 } from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
@@ -366,8 +367,8 @@ assessmentsRouter.get(
   '/program/:programAssessmentId/submissions',
   async (req, res, next) => {
     const { principalId } = req.session;
-    const { programAssessmentId } = req.params
-    const programAssessmentIdParsed = Number(programAssessmentId)
+    const { programAssessmentId } = req.params;
+    const programAssessmentIdParsed = Number(programAssessmentId);
     if (
       !Number.isInteger(programAssessmentIdParsed) ||
       programAssessmentIdParsed < 1
@@ -380,58 +381,74 @@ assessmentsRouter.get(
       return;
     }
 
-  const assessmentWithSubmissions: AssessmentWithSubmissions = {
-    curriculum_assessment: null,
-    program_assessment: null,
-    principal_program_role: null,
-    submissions: []
-  };
+    let curriculumAssessment: CurriculumAssessment;
+    let programAssessment: ProgramAssessment;
+    let principalProgramRole: string;
+    let submissions: AssessmentSubmission[];
 
-  try {
-    //retrieve programAssessment data
-    assessmentWithSubmissions.program_assessment = await findProgramAssessment(programAssessmentIdParsed);
+    try {
+      // retrieve programAssessment data
+      programAssessment = await findProgramAssessment(
+        programAssessmentIdParsed
+      );
 
-    if (!assessmentWithSubmissions.program_assessment) {
-      throw new NotFoundError(`Could not find program assessment with ID ${programAssessmentIdParsed}`);
+      if (!programAssessment) {
+        throw new NotFoundError(
+          `Could not find program assessment with ID ${programAssessmentIdParsed}`
+        );
+      }
+
+      // getting the role of participant of current principal
+      const programRole = await getPrincipalProgramRole(
+        principalId,
+        programAssessment.program_id
+      );
+
+      switch (programRole) {
+        case 'Participant':
+          //retrieve list of submissions from the specified assessment of the participant their own
+          submissions = await listParticipantProgramAssessmentSubmissions(
+            principalId,
+            programAssessment.id
+          );
+          principalProgramRole = 'Participant';
+          break;
+        case 'Facilitator':
+          submissions = await listAllProgramAssessmentSubmissions(
+            programAssessment.id
+          );
+          principalProgramRole = 'Facilitator';
+          break;
+        default:
+          throw new UnauthorizedError(
+            `Could not access program assessment with ID ${programAssessmentIdParsed} without enrollment.`
+          );
+      }
+
+      const includeQuestionsAndAllAnswers = false;
+      const includeQuestionsAndCorrectAnswers = false;
+
+      //retrieve curriculumAssessment
+      curriculumAssessment = await getCurriculumAssessment(
+        programAssessment.assessment_id,
+        includeQuestionsAndAllAnswers,
+        includeQuestionsAndCorrectAnswers
+      );
+
+      const assessmentWithSubmissions: AssessmentWithSubmissions = {
+        curriculum_assessment: curriculumAssessment,
+        program_assessment: programAssessment,
+        principal_program_role: principalProgramRole,
+        submissions,
+      };
+
+      res.json(assessmentWithSubmissions);
+    } catch (error) {
+      next(error);
+      return;
     }
-
-    //getting the role of participant of current principal
-    const programId = assessmentWithSubmissions.program_assessment.program_id;
-    const programRole = await getPrincipalProgramRole(principalId, programId);
-
-    switch (programRole) {
-      case "Participant":
-        //retrieve list of submissions from the specified assessment of the participant their own
-        assessmentWithSubmissions.submissions = await listParticipantProgramAssessmentSubmissions(principalId, assessmentWithSubmissions.program_assessment.id);
-        assessmentWithSubmissions.principal_program_role = "Participant";
-        break;
-      case "Facilitator":
-        assessmentWithSubmissions.submissions = await listAllProgramAssessmentSubmissions(assessmentWithSubmissions.program_assessment.id);
-        assessmentWithSubmissions.principal_program_role = "Facilitator";
-        break;
-      default:
-        throw new UnauthorizedError(`Could not access program assessment with ID ${programAssessmentIdParsed} without enrollment.`);
-        break;
-    }
-
-    const includeQuestionsAndAllAnswers = false;
-    const includeQuestionsAndCorrectAnswers = false;
-
-    //retrieve curriculumAssessment
-    assessmentWithSubmissions.curriculum_assessment = await getCurriculumAssessment(
-      assessmentWithSubmissions.program_assessment.assessment_id,
-      includeQuestionsAndAllAnswers,
-      includeQuestionsAndCorrectAnswers
-    );
-
-    res.json(assessmentWithSubmissions);
-  } catch (error) {
-    next(error);
-    return;
   }
-});
-
-
+);
 
 // Start a new AssessmentSubmission
 assessmentsRouter.get(
