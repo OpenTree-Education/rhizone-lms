@@ -8,6 +8,7 @@ import {
   createProgramAssessment,
   deleteCurriculumAssessment,
   deleteProgramAssessment,
+  facilitatorProgramIdsMatchingCurriculum,
   findProgramAssessment,
   getAssessmentSubmission,
   getCurriculumAssessment,
@@ -44,6 +45,7 @@ import {
   exampleCurriculumAssessmentWithCorrectAnswers,
   exampleParticipantAssessmentSubmissionsSummary,
   updatedProgramAssessmentsRow,
+  matchingProgramRow,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -300,6 +302,47 @@ describe('getCurriculumAssessment', () => {
     expect(
       await getCurriculumAssessment(curriculumAssessmentId, true, true)
     ).toEqual(null);
+  });
+});
+
+describe('facilitatorProgramIdsMatchingCurriculum', () => {
+  it('should return an array of program IDs for a principal that is facilitator of at least one program', async () => {
+    mockQuery(
+      'select `program_id` from `program_participants` where `principal_id` = ?',
+      [facilitatorPrincipalId],
+      [{ program_id: exampleProgramAssessment.program_id }]
+    );
+    mockQuery(
+      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `curriculum_id` = ?',
+      [exampleCurriculumAssessment.curriculum_id],
+      [matchingProgramRow]
+    );
+    mockQuery(
+      'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
+      [facilitatorPrincipalId, exampleProgramAssessment.program_id],
+      [{ title: 'Facilitator' }]
+    );
+
+    expect(
+      await facilitatorProgramIdsMatchingCurriculum(
+        facilitatorPrincipalId,
+        exampleCurriculumAssessment.curriculum_id
+      )
+    ).toEqual([exampleProgramAssessment.program_id]);
+  });
+
+  it('should return an empty array of program IDs for a principal that is not a facilitator of at least one program', async () => {
+    mockQuery(
+      'select `program_id` from `program_participants` where `principal_id` = ?',
+      [participantPrincipalId],
+      []
+    );
+    expect(
+      await facilitatorProgramIdsMatchingCurriculum(
+        participantPrincipalId,
+        exampleCurriculumAssessment.curriculum_id
+      )
+    ).toEqual([]);
   });
 });
 

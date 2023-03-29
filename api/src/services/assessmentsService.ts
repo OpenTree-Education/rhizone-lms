@@ -875,11 +875,15 @@ export const facilitatorProgramIdsMatchingCurriculum = async (
     principalId
   );
 
+  if (participatingProgramIds === null) {
+    return [];
+  }
+
   const curriculumPrograms = await listProgramsForCurriculum(curriculumId);
 
   const matchingFacilitatorPrograms: number[] = [];
 
-  participatingProgramIds.forEach(async programId => {
+  for (const programId of participatingProgramIds) {
     const programRole = await getPrincipalProgramRole(principalId, programId);
 
     if (programRole === 'Facilitator') {
@@ -890,7 +894,7 @@ export const facilitatorProgramIdsMatchingCurriculum = async (
         matchingFacilitatorPrograms.push(programId);
       }
     }
-  });
+  }
 
   return matchingFacilitatorPrograms;
 };

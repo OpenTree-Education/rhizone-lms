@@ -33,7 +33,7 @@ import {
   facilitatorProgramIdsMatchingCurriculum,
   updateCurriculumAssessment,
   updateProgramAssessment,
-  listParticipantProgramAssessmentSubmissions
+  listParticipantProgramAssessmentSubmissions,
 } from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
@@ -125,33 +125,41 @@ assessmentsRouter.get(
       return;
     }
 
-    const includeQuestionsAndAllAnswers = true;
-    const includeQuestionsAndCorrectAnswers = true;
+    try {
+      const includeQuestionsAndAllAnswers = true;
+      const includeQuestionsAndCorrectAnswers = true;
 
-    const curriculumAssessment = await getCurriculumAssessment(
-      curriculumAssessmentIdParsed,
-      includeQuestionsAndAllAnswers,
-      includeQuestionsAndCorrectAnswers
-    );
-    const matchingProgramIds =
-      await facilitatorProgramIdsMatchingCurriculum(
+      const curriculumAssessment = await getCurriculumAssessment(
+        curriculumAssessmentIdParsed,
+        includeQuestionsAndAllAnswers,
+        includeQuestionsAndCorrectAnswers
+      );
+
+      if (!curriculumAssessment) {
+        throw new NotFoundError(
+          `Could not find curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
+        );
+      }
+
+      const matchingProgramIds = await facilitatorProgramIdsMatchingCurriculum(
         principalId,
         curriculumAssessment.curriculum_id
       );
 
-    // If there are no matching program assessments with this curriculum ID,
-    // then we are not facilitator of any programs where we can modify this
-    // CurriculumAssessment, so let's return an error to the user.
-    if (matchingProgramIds.length === 0) {
-      next(
-        new UnauthorizedError(
+      // If there are no matching program assessments with this curriculum ID,
+      // then we are not facilitator of any programs where we can modify this
+      // CurriculumAssessment, so let's return an error to the user.
+      if (matchingProgramIds.length === 0) {
+        throw new UnauthorizedError(
           `Not allowed to access curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
-        )
-      );
+        );
+      }
+
+      res.json(itemEnvelope(curriculumAssessment));
+    } catch (err) {
+      next(err);
       return;
     }
-
-    res.json(itemEnvelope(curriculumAssessment));
   }
 );
 
