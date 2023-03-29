@@ -34,6 +34,7 @@ import {
   createProgramAssessment,
   listParticipantProgramAssessmentSubmissions,
   createAssessmentSubmission,
+  updateAssessmentSubmission,
   listAllProgramAssessmentSubmissions,
 } from '../services/assessmentsService';
 
@@ -725,33 +726,25 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
   const { submissionId } = req.params;
   const submissionIdParsed = Number(submissionId);
   const submissionFromUser = req.body;
-  let updatedSubmission;
-
-  if (!Number.isInteger(submissionIdParsed) || submissionIdParsed < 1) {
-    next(
-      new BadRequestError(
-        `"${submissionIdParsed}" is not a valid submission ID.`
-      )
-    );
-    return;
-  }
 
   try {
-    // get the assessment submission and responses
+    if (!Number.isInteger(submissionIdParsed) || submissionIdParsed < 1) {
+      throw new BadRequestError(
+        `"${submissionIdParsed}" is not a valid submission ID.`
+      );
+    }
+
+    // get the submission and responses
     const assessmentSubmissionExisting = await getAssessmentSubmission(
       submissionIdParsed,
       true
     );
 
-    // if the assessment submission is null/falsy, that means there's no matching
-    // assessment submission. send an error back to the user.
+    // if the submission is null/falsy, that means there's no matching submission. send an error back to the user.
     if (!assessmentSubmissionExisting) {
-      next(
-        new NotFoundError(
-          `Could not find submission with ID ${submissionIdParsed}.`
-        )
+      throw new NotFoundError(
+        `Could not find submission with ID ${submissionIdParsed}.`
       );
-      return;
     }
 
     // make sure it is a valid submission from body with an id.
@@ -768,12 +761,9 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
 
     // make sure the submssion id from param is same from request body
     if (assessmentSubmissionExisting.id !== submissionIdParsed) {
-      next(
-        new BadRequestError(
-          `The submission id in the parameter(${submissionIdParsed}) is not the same id as in the request body (${assessmentSubmissionExisting.id}).`
-        )
+      throw new BadRequestError(
+        `The submission id in the parameter(${submissionIdParsed}) is not the same id as in the request body (${assessmentSubmissionExisting.id}).`
       );
-      return;
     }
 
     // get program assessment
@@ -782,12 +772,9 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
     );
 
     if (!programAssessment) {
-      next(
-        new NotFoundError(
-          `Could not find program assessment(with ID ${submissionFromUser.assessment_id}) provided by submission body.`
-        )
+      throw new NotFoundError(
+        `Could not find program assessment(with ID ${submissionFromUser.assessment_id}) provided by submission body.`
       );
-      return;
     }
 
     // Get program assessment role
@@ -796,45 +783,45 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       programAssessment.program_id
     );
 
-    if (programRole && programRole === 'Participant ') {
-      if (new Date(programAssessment.available_after + 'Z') > new Date()) {
-        next(
-          new ForbiddenError(
-            `Could not update a new submission of an assessment that's not yet available.`
-          )
-        );
-        return;
-      }
-      // pas due and its in open/inprogrss -> set expire -> return forbident
-      if (new Date(programAssessment.due_date + 'Z') < new Date()) {
-        if (
-          assessmentSubmissionExisting.assessment_submission_state ===
-            'Opened' ||
-          assessmentSubmissionExisting.assessment_submission_state ===
-            'In Progress'
-        ) {
-        }
-        next(
-          new UnauthorizedError(
-            `Could not create a new submission of an assessment that passed due date.`
-          )
-        );
-        return;
-      }
-
-      //not open or in progreaa? -> forbident
-      // in open and progrew -> update but disallowing them to update their scores or graderResponse
-    } else if (programRole && programRole === 'Facilitator') {
-    } else {
-      next(
-        new UnauthorizedError(
-          `Could not access the assessment and submssion without enrollment in the program or being a facilitator.`
-        )
+    if (!programRole) {
+      throw new UnauthorizedError(
+        `Could not access the assessment and submssion without enrollment in the program or being a facilitator.`
       );
-      return;
     }
 
-    res.json(itemEnvelope(submissionFromUser));
+    if (programRole === 'Facilitator') {
+      // for facilitator, they are able to grade and override the state, scores.
+      await updateAssessmentSubmission(submissionFromUser, true);
+    } else if (new Date(programAssessment.available_after + 'Z') > new Date()) {
+      throw new ForbiddenError(
+        `Could not update a submission of an assessment that's not yet available, will be avaiable at ${programAssessment.available_after} Z.`
+      );
+    } else if (
+      assessmentSubmissionExisting.assessment_submission_state === 'Opened' ||
+      assessmentSubmissionExisting.assessment_submission_state === 'In Progress'
+    ) {
+      // participant could only update opened and in progress submssion that within due date.
+      if (new Date(programAssessment.due_date + 'Z') < new Date()) {
+        // use existing submission to call service function, it will handle and set state to expired
+        await updateAssessmentSubmission(assessmentSubmissionExisting, false);
+        throw new ForbiddenError(
+          `Could not update a submission of an assessment that passed due date.`
+        );
+      }
+
+      await updateAssessmentSubmission(submissionFromUser, false);
+    } else {
+      throw new ForbiddenError(
+        `Could not update an existing submission with ${assessmentSubmissionExisting.assessment_submission_state} state.`
+      );
+    }
+
+    const updatedSubmission = await getAssessmentSubmission(
+      assessmentSubmissionExisting.id,
+      true,
+      programRole === 'Facilitator'
+    );
+    res.json(itemEnvelope(updatedSubmission));
   } catch (err) {
     next(err);
     return;

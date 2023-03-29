@@ -52,7 +52,6 @@ import {
   updateAssessmentSubmission,
   updateCurriculumAssessment,
   updateProgramAssessment,
-  facilitatorProgramIdsMatchingCurriculum
 } from '../../services/assessmentsService';
 
 import assessmentsRouter from '../assessmentsRouter';
@@ -90,7 +89,6 @@ const mockListProgramAssessments = jest.mocked(listProgramAssessments);
 const mockUpdateAssessmentSubmission = jest.mocked(updateAssessmentSubmission);
 const mockUpdateCurriculumAssessment = jest.mocked(updateCurriculumAssessment);
 const mockUpdateProgramAssessment = jest.mocked(updateProgramAssessment);
-const mockFacilitatorProgramIdsMatchingCurriculum = jest.mocked(facilitatorProgramIdsMatchingCurriculum);
 
 
 describe('assessmentsRouter', () => {
@@ -345,10 +343,16 @@ describe('assessmentsRouter', () => {
   describe('POST /curriculum', () => {});
   describe('PUT /curriculum/:curriculumAssessmentId', () => {
     it('should update a curriculum assessment if the logged-in principal ID is the program facilitator', done => {
-      const matchingFacilitatorPrograms=2;
-      mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue([matchingFacilitatorPrograms]);
-      mockGetCurriculumAssessment.mockResolvedValue(exampleCurriculumAssessmentWithCorrectAnswers);
-      mockUpdateCurriculumAssessment.mockResolvedValue(updatedCurriculumAssessmentsRow);
+      const matchingFacilitatorPrograms = 2;
+      mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue([
+        matchingFacilitatorPrograms,
+      ]);
+      mockGetCurriculumAssessment.mockResolvedValue(
+        exampleCurriculumAssessmentWithCorrectAnswers
+      );
+      mockUpdateCurriculumAssessment.mockResolvedValue(
+        updatedCurriculumAssessmentsRow
+      );
 
       mockPrincipalId(facilitatorPrincipalId);
 
@@ -356,8 +360,11 @@ describe('assessmentsRouter', () => {
         .put(`/curriculum/${exampleCurriculumAssessment.id}`)
         .send(updatedCurriculumAssessmentsRow)
         .expect(201, err => {
-          expect(mockFacilitatorProgramIdsMatchingCurriculum).toHaveBeenCalledWith(
-            facilitatorPrincipalId, exampleCurriculumAssessment.id
+          expect(
+            mockFacilitatorProgramIdsMatchingCurriculum
+          ).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            exampleCurriculumAssessment.id
           );
 
           expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
@@ -373,7 +380,6 @@ describe('assessmentsRouter', () => {
           done(err);
         });
     });
-
   });
   describe('DELETE /curriculum/:curriculumAssessmentId', () => {});
 

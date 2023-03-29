@@ -105,20 +105,19 @@ const createAssessmentQuestion = async (
   question: Question
 ): Promise<Question> => {
   let questionId: number;
-  await db('questions')
-      .insert({
-        curriculum_assessment_id: curriculumAssessmentId,
-        question: question,
-        question_id: questionId,
-        assessment_id: question.assessment_id,
-        title: question.title,
-        description: question.description,
-        question_type: question.question_type,
-        answers: question.answers,
-        correct_answer_id: question.correct_answer_id,
-        max_score: question.max_score,
-        sort_order: question.sort_order,
-      })
+  await db('questions').insert({
+    curriculum_assessment_id: curriculumAssessmentId,
+    question: question,
+    question_id: questionId,
+    assessment_id: question.assessment_id,
+    title: question.title,
+    description: question.description,
+    question_type: question.question_type,
+    answers: question.answers,
+    correct_answer_id: question.correct_answer_id,
+    max_score: question.max_score,
+    sort_order: question.sort_order,
+  });
   return;
 };
 
@@ -348,17 +347,17 @@ const updateAssessmentQuestion = async (
   question: Question
 ): Promise<Question> => {
   await db('assessment_questions')
-      .update({
-        assessment_id: question.assessment_id,
-        title: question.title,
-        description: question.description,
-        question_type: question.question_type,
-        answers: question.answers,
-        correct_answer_id: question.correct_answer_id,
-        max_score: question.max_score,
-        sort_order: question.sort_order,
-      })
-      .where('id', question.id);
+    .update({
+      assessment_id: question.assessment_id,
+      title: question.title,
+      description: question.description,
+      question_type: question.question_type,
+      answers: question.answers,
+      correct_answer_id: question.correct_answer_id,
+      max_score: question.max_score,
+      sort_order: question.sort_order,
+    })
+    .where('id', question.id);
   return;
 };
 
@@ -1137,7 +1136,11 @@ export const updateAssessmentSubmission = async (
   ) {
     // participant could only update opened and in progress submssion that within due date.
     if (new Date(programAssessment.due_date + 'Z') > new Date()) {
-      newState = assessmentSubmission.assessment_submission_state;
+      // participant could only update state to 'Submitted' or 'In Progress', defalut in progress.
+      newState =
+        assessmentSubmission.assessment_submission_state === 'Submitted'
+          ? 'Submitted'
+          : 'In Progress';
       // if there was no exisiting response, insert new response, otherwise update
       if (
         assessmentSubmission.responses &&
@@ -1159,7 +1162,7 @@ export const updateAssessmentSubmission = async (
     const [newStateId] = await db('assessment_submission_states')
       .select('id')
       .where('title', newState);
-    // If new state is submitted, update with subbmission time.
+    // If new state is submitted, update with a subbmission time.
     if (newState === 'Submitted') {
       await db('assessment_submissions')
         .update({
@@ -1173,7 +1176,7 @@ export const updateAssessmentSubmission = async (
         .where('id', assessmentSubmission.id);
     }
   } else {
-    // when the submission is not opened and in progress for participants
+    // participants should not update submission that is not opened nor in progress
     console.log(
       `Could not update submission by participant because the submission state is ${existingAssessmentSubmission.assessment_submission_state}`
     );
@@ -1207,7 +1210,7 @@ export const updateAssessmentSubmission = async (
  *   object that was handed to us, if update was successful.
  */
 export const updateCurriculumAssessment = async (
-  curriculumAssessment: CurriculumAssessment,
+  curriculumAssessment: CurriculumAssessment
 ): Promise<CurriculumAssessment> => {
   // need to loop through and call updateAssessmentQuestion for each question that exists;
   // need to createAssessmentQuestion for each question that does not exist;
