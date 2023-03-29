@@ -511,7 +511,21 @@ export const createCurriculumAssessment = async (
 export const createProgramAssessment = async (
   programAssessment: ProgramAssessment
 ): Promise<ProgramAssessment> => {
-  return;
+  const [insertedProgramAssessmentRowId] = await db(
+    'program_assessments'
+  ).insert({
+    program_id: programAssessment.program_id,
+    assessment_id: programAssessment.assessment_id,
+    available_after: programAssessment.available_after,
+    due_date: programAssessment.due_date,
+  });
+
+  const updatedProgramAssessment: ProgramAssessment = {
+    ...programAssessment,
+    id: insertedProgramAssessmentRowId,
+  };
+
+  return updatedProgramAssessment;
 };
 
 /**

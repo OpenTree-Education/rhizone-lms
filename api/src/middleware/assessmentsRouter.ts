@@ -31,6 +31,7 @@ import {
   facilitatorProgramIdsMatchingCurriculum,
   updateCurriculumAssessment,
   updateProgramAssessment,
+  createProgramAssessment,
   listParticipantProgramAssessmentSubmissions,
   createAssessmentSubmission,
   listAllProgramAssessmentSubmissions,
@@ -278,7 +279,43 @@ assessmentsRouter.get(
 
 // Create a new ProgramAssessment
 assessmentsRouter.post('/program', async (req, res, next) => {
-  res.json();
+  const { principalId } = req.session;
+  const programAssessmentFromUser = req.body;
+
+  let programAssessment;
+  try {
+    const isProgramAssessment = (
+      possibleAssessment: unknown
+    ): possibleAssessment is ProgramAssessment => {
+      return (possibleAssessment as ProgramAssessment).program_id !== undefined;
+    };
+
+    if (!isProgramAssessment(programAssessmentFromUser)) {
+      throw new BadRequestError(`Was not given a valid program assessment.`);
+    }
+
+    // get the principal program role
+    const programRole = await getPrincipalProgramRole(
+      principalId,
+      programAssessmentFromUser.program_id
+    );
+
+    // if the program role is null/falsy, that means the user is not enrolled in
+    // the program. send an error back to the user.
+    if (programRole !== 'Facilitator') {
+      throw new UnauthorizedError(
+        `User is not allowed to create new program assessments for this program.`
+      );
+    }
+
+    programAssessment = await createProgramAssessment(
+      programAssessmentFromUser
+    );
+    res.status(201).json(itemEnvelope(programAssessment));
+  } catch (error) {
+    next(error);
+    return;
+  }
 });
 
 // Update an existing ProgramAssessment
@@ -320,7 +357,7 @@ assessmentsRouter.put(
 
       // if the program role is null/falsy, that means the user is not enrolled in
       // the program. send an error back to the user.
-      if (!programRole) {
+      if (programRole !== 'Facilitator') {
         next(
           new UnauthorizedError(
             `Could not access program Assessment with ID ${programAssessmentIdParsed}.`
@@ -343,12 +380,11 @@ assessmentsRouter.put(
       updatedPrgramAssessment = await updateProgramAssessment(
         programAssessmentFromUser
       );
+      res.status(201).json(itemEnvelope(updatedPrgramAssessment));
     } catch (error) {
       next(error);
       return;
     }
-
-    res.status(201).json(itemEnvelope(updatedPrgramAssessment));
   }
 );
 
