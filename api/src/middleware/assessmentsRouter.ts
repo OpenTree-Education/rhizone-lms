@@ -415,6 +415,7 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       return;
     }
 
+    // make sure the submssion id from param is same from request body
     if (assessmentSubmissionExisting.id !== submissionIdParsed) {
       next(
         new BadRequestError(
@@ -424,7 +425,7 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       return;
     }
 
-    // get program assessment
+    // get program assessment 
     const programAssessment = await findProgramAssessment(
       submissionFromUser.assessment_id
     );

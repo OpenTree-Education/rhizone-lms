@@ -878,9 +878,6 @@ export const updateAssessmentSubmission = async (
   assessmentSubmission: AssessmentSubmission,
   facilitatorOverride?: boolean
 ): Promise<AssessmentSubmission> => {
-  let newState;
-  let totalScore = 0;
-
   const programAssessment = await findProgramAssessment(
     assessmentSubmission.assessment_id
   );
@@ -888,8 +885,10 @@ export const updateAssessmentSubmission = async (
   const existingAssessmentSubmission = await getAssessmentSubmission(
     assessmentSubmission.id,
     true,
-    true
+    false
   );
+  
+  let newState;
 
   if (facilitatorOverride) {
     if (
@@ -897,28 +896,26 @@ export const updateAssessmentSubmission = async (
       existingAssessmentSubmission.responses.length === 0
     ) {
       console.log(
-        `There is no existing submission response for this submission(ID ${assessmentSubmission.id})`
+        `Could not submit grading, there is no existing submission response for this submission(ID ${assessmentSubmission.id})`
       );
       return null;
-    }
 
-    // update the newly graded response
-    // calculate the newly graded responses total score
-    await assessmentSubmission.responses.map(async response => {
+    }
+    
+    // update scores for each response
+     assessmentSubmission.responses.map(async response => {
       await updateSubmissionResponse(response, facilitatorOverride);
-      totalScore += response.score;
     });
 
-    // calculate the previously graded responses total score
-    existingAssessmentSubmission.responses
-      .filter(response =>
-        assessmentSubmission.responses.every(r => r.id !== response.id)
-      )
-      .map(response => {
-        totalScore += response.score;
-      });
-
+    // update submission state and score
     newState = 'Graded';
+    const [gradedStateId] = await db('assessment_submission_states')
+    .select('id')
+    .where('title', newState);
+  await db('assessment_submissions')
+    .update({ state_id: gradedStateId.id, score: assessmentSubmission.score })
+    .where('id', assessmentSubmission.id);
+
   } else if (
     existingAssessmentSubmission.assessment_submission_state === 'Opened' ||
     existingAssessmentSubmission.assessment_submission_state === 'In Progress'
@@ -944,21 +941,30 @@ export const updateAssessmentSubmission = async (
       newState = 'Expired';
     }
 
-    //TODO: caculate score of non free response questions
+    const [newStateId] = await db('assessment_submission_states')
+    .select('id')
+    .where('title', newState);
+    // If new state is submitted, update with subbmission time.
+    if(newState === 'Submitted'){
+      await db('assessment_submissions')
+      .update({ state_id: newStateId.id, submitted_at: new Date().toISOString().slice(0, 19).replace('T', ' ') })
+      .where('id', assessmentSubmission.id);
+    }else{
+      await db('assessment_submissions')
+      .update({ state_id: newStateId.id })
+      .where('id', assessmentSubmission.id);
+    }
+
+
   } else {
+    // when the submission is not opened and in progress for participants
     console.log(
       `Could not update submission by participant because the submission state is ${existingAssessmentSubmission.assessment_submission_state}`
     );
     return null;
   }
 
-  const [newStateId] = await db('assessment_submission_states')
-    .select('id')
-    .where('title', newState);
-  await db('assessment_submissions')
-    .update({ state_id: newStateId.id, score: totalScore })
-    .where('id', assessmentSubmission.id);
-  const updatedResponse = await listSubmissionResponses(
+  const updatedResponses = await listSubmissionResponses(
     assessmentSubmission.id
   );
 
@@ -967,10 +973,10 @@ export const updateAssessmentSubmission = async (
     assessment_id: assessmentSubmission.assessment_id,
     principal_id: assessmentSubmission.principal_id,
     assessment_submission_state: newState,
-    score: totalScore,
+    score: assessmentSubmission.score,
     opened_at: assessmentSubmission.opened_at,
     submitted_at: assessmentSubmission.submitted_at,
-    responses: updatedResponse,
+    responses: updatedResponses,
   } as AssessmentSubmission;
 };
 
