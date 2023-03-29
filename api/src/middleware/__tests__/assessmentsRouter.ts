@@ -11,6 +11,7 @@ import {
   exampleProgramAssessment,
   exampleAssessmentSubmissionSubmitted,
   facilitatorPrincipalId,
+  validFacilitatorPrincipalId,
   exampleCurriculumAssessmentWithQuestions,
   exampleAssessmentSubmissionInProgress,
   participantPrincipalId,
@@ -21,6 +22,9 @@ import {
   exampleParticipantAssessmentSubmissionsSummary,
   exampleFacilitatorAssessmentSubmissionsSummary,
   exampleCurriculumAssessment,
+  exampleFacilitatorProgramIdsMatchingCurriculum,
+  exampleFacilitatorProgramIdsNoMatchingCurriculum,
+  exampleCurriculumAssessmentNoMatch,
 } from '../../assets/data';
 import {
   constructFacilitatorAssessmentSummary,
@@ -40,6 +44,7 @@ import {
   updateAssessmentSubmission,
   updateCurriculumAssessment,
   updateProgramAssessment,
+  facilitatorProgramIdsMatchingCurriculum,
 } from '../../services/assessmentsService';
 
 import assessmentsRouter from '../assessmentsRouter';
@@ -60,6 +65,9 @@ const mockDeleteProgramAssessment = jest.mocked(deleteProgramAssessment);
 const mockFindProgramAssessment = jest.mocked(findProgramAssessment);
 const mockGetAssessmentSubmission = jest.mocked(getAssessmentSubmission);
 const mockGetCurriculumAssessment = jest.mocked(getCurriculumAssessment);
+const mockFacilitatorProgramIdsMatchingCurriculum = jest.mocked(
+  facilitatorProgramIdsMatchingCurriculum
+);
 const mockGetPrincipalProgramRole = jest.mocked(getPrincipalProgramRole);
 const mockListParticipantProgramAssessmentSubmissions = jest.mocked(
   listParticipantProgramAssessmentSubmissions
@@ -219,7 +227,126 @@ describe('assessmentsRouter', () => {
   describe('GET /curriculum/:curriculumAssessmentId', () => {});
   describe('POST /curriculum', () => {});
   describe('PUT /curriculum/:curriculumAssessmentId', () => {});
-  describe('DELETE /curriculum/:curriculumAssessmentId', () => {});
+  describe('DELETE /curriculum/:curriculumAssessmentId', () => {
+    it('should delete a program curriculumAssessment if principal ID is a program facilitator of that curriculum', done => {
+      mockGetCurriculumAssessment.mockResolvedValue(
+        exampleCurriculumAssessment
+      );
+      mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
+        exampleFacilitatorProgramIdsMatchingCurriculum
+      );
+      mockDeleteCurriculumAssessment.mockResolvedValue();
+    });
+
+    // Exist in database
+    mockPrincipalId(validFacilitatorPrincipalId);
+
+    appAgent;
+
+    describe('DELETE /curriculum/:curriculumAssessmentId', () => {
+      it('should delete a program curriculumAssessment if principal ID is a program facilitator of that curriculum', done => {
+        mockGetCurriculumAssessment.mockResolvedValue(
+          exampleCurriculumAssessment
+        );
+        mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
+          exampleFacilitatorProgramIdsMatchingCurriculum
+        );
+        mockDeleteCurriculumAssessment.mockResolvedValue();
+      });
+
+      // Exist in database
+      mockPrincipalId(validFacilitatorPrincipalId);
+
+      appAgent
+        .delete(`/program/${exampleCurriculumAssessment.id}`)
+        .send(exampleCurriculumAssessment)
+        .expect(201, err => {
+          expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
+            exampleCurriculumAssessment.id
+          );
+
+          expect(
+            mockFacilitatorProgramIdsMatchingCurriculum
+          ).toHaveBeenCalledWith(
+            validFacilitatorPrincipalId,
+            exampleCurriculumAssessment.id
+          );
+          expect(mockDeleteCurriculumAssessment).toHaveBeenCalledWith(
+            exampleCurriculumAssessment.id
+          );
+        });
+
+      it('should respond with an Unauthorized Error if the the facilitator is not taking the program with the curriculum', done => {
+        mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
+          exampleFacilitatorProgramIdsNoMatchingCurriculum
+        );
+
+        mockPrincipalId(validFacilitatorPrincipalId);
+
+        appAgent
+          .delete(`/program/${exampleCurriculumAssessment.id}`)
+          .send(exampleCurriculumAssessment)
+          .expect(
+            401,
+            errorEnvelope(
+              `No authorized to delete curriculum Assessment with ID ${exampleCurriculumAssessment.id}.`
+            ),
+            err => {
+              expect(
+                mockFacilitatorProgramIdsMatchingCurriculum
+              ).toHaveBeenCalledWith(
+                validFacilitatorPrincipalId,
+                exampleCurriculumAssessment.id
+              );
+
+              done(err);
+            }
+          );
+      });
+
+      it('BadRequestError if the curriculumAssessment ID is not is not a valid number.', done => {
+        const invalidIdCurriculumAssessment = -2;
+
+        mockPrincipalId(otherParticipantPrincipalId);
+
+        appAgent
+          .put(`/program/${exampleCurriculumAssessment.id}`)
+          .send(exampleCurriculumAssessment)
+          .expect(
+            400,
+            errorEnvelope(
+              `"${Number(
+                invalidIdCurriculumAssessment
+              )}" is not a valid program assessment ID.`
+            ),
+            done
+          );
+      });
+
+      it('should respond with a NotFoundError if the curriculum assessment ID was not found in the database', done => {
+        mockGetCurriculumAssessment.mockResolvedValue(
+          exampleCurriculumAssessmentNoMatch
+        );
+
+        appAgent
+          .put(`/program/${exampleCurriculumAssessmentNoMatch.id}`)
+          .send(exampleCurriculumAssessmentNoMatch)
+          .expect(
+            404,
+            errorEnvelope(
+              `Could not find curriculum assessment with ID ${exampleCurriculumAssessmentNoMatch.id}.`
+            ),
+            err => {
+              expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
+                exampleCurriculumAssessmentNoMatch.id
+              );
+
+              done(err);
+            }
+          );
+      });
+    });
+  });
 
   describe('GET /program/:programAssessmentId', () => {});
   describe('POST /program', () => {});
