@@ -55,6 +55,9 @@ import {
   exampleOtherAssessmentSubmissionSubmitted,
   matchingAssessmentSubmissionOpenedRow,
   matchingOtherAssessmentSubmissionSubmittedRow,
+  updatedQuestions,
+  updatedCurriculumAssessmentWithQuestions,
+  updatedAnswers,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -154,8 +157,43 @@ describe('createCurriculumAssessment', () => {
       ],
       [updatedCurriculumAssessment.id]
     );
+    
     expect(await createCurriculumAssessment(newCurriculumAssessment)).toEqual(
       updatedCurriculumAssessment
+    );
+  });
+  it('should create a curriculum assessment ID with questions', async () => {
+    mockQuery(
+      'insert into `curriculum_assessments` (`activity_id`, `curriculum_id`, `description`, `max_num_submissions`, `max_score`, `principal_id`, `time_limit`, `title`) values (?, ?, ?, ?, ?, ?, ?, ?)',
+      [
+        newCurriculumAssessmentWithQuestion.activity_id,
+        newCurriculumAssessmentWithQuestion.curriculum_id,
+        newCurriculumAssessmentWithQuestion.description,
+        newCurriculumAssessmentWithQuestion.max_num_submissions,
+        newCurriculumAssessmentWithQuestion.max_score,
+        newCurriculumAssessmentWithQuestion.principal_id,
+        newCurriculumAssessmentWithQuestion.time_limit,
+        newCurriculumAssessmentWithQuestion.title,
+      ],
+      [updatedCurriculumAssessment.id]
+    );
+    mockQuery('insert into `assessment_questions` (`assessment_id`, `description`, `max_score`, `question_type_id`, `sort_order`, `title`) values (?, ?, ?, ?, ?, ?)',[
+      updatedCurriculumAssessment.id, 
+      newCurriculumAssessmentWithQuestion.questions[0].description,
+      newCurriculumAssessmentWithQuestion.questions[0].max_score,
+      1,
+      newCurriculumAssessmentWithQuestion.questions[0].sort_order,
+      newCurriculumAssessmentWithQuestion.questions[0].title
+    ],[updatedQuestions.id]);
+
+mockQuery('insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)', [
+  newCurriculumAssessmentWithQuestion.questions[0].answers[0].description,
+  updatedQuestions.id,
+  newCurriculumAssessmentWithQuestion.questions[0].answers[0].sort_order,
+  newCurriculumAssessmentWithQuestion.questions[0].answers[0].title,
+],[updatedAnswers.id])
+    expect(await createCurriculumAssessment(newCurriculumAssessmentWithQuestion)).toEqual(
+      updatedCurriculumAssessmentWithQuestions
     );
   });
 });

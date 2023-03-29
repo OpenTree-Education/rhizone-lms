@@ -26,6 +26,7 @@ import {
   exampleOtherAssessmentSubmissionSubmitted,
   exampleParticipantAssessmentWithSubmissions,
   exampleFacilitatorAssessmentWithSubmissions,
+  newProgramAssessment,
 } from '../../assets/data';
 import {
   constructFacilitatorAssessmentSummary,
@@ -334,7 +335,8 @@ describe('assessmentsRouter', () => {
         );
     });
   });
-  describe('POST /curriculum', () => {
+
+describe('POST /curriculum', () => {
     it('should create a curriculum assessment if the logged-in principal ID is the program facilitator', done => {
       const matchingFacilitatorPrograms = [3, 4, 6];
       mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
@@ -362,20 +364,6 @@ describe('assessmentsRouter', () => {
           done(err);
         });
     });
-        // it('should reponse with BadRequestError if the information missing', done => {
-    //       mockPrincipalId(facilitatorPrincipalId);
-
-    //       appAgent
-    //         .post(`/curriculum`)
-    //         .send({ title: 'test' })
-    //         .expect(
-    //           400,
-    //           errorEnvelope(`Was not given a valid curriculum assessment.`),
-    //           err => {
-    //             done(err);
-    //           }
-    //         );
-    //     });
 
     it('should respond with an Unauthorized Error if the logged-in principal id is not the facilitator', done => {
       mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue([]);
@@ -396,9 +384,25 @@ describe('assessmentsRouter', () => {
               participantPrincipalId,
               newCurriculumAssessment.curriculum_id
             );
+            done(err);
+          }
+        );
+    });
+    it('should reponse with BadRequestError if the information missing', done => {
+          mockPrincipalId(facilitatorPrincipalId);
 
-  });  
-})     });
+          appAgent
+            .post(`/curriculum`)
+            .send({ description: 'test' })
+            .expect(
+              422,
+              errorEnvelope(`Was not given a valid curriculum assessment.`),
+              err => {
+                done(err);
+              }
+            );
+        });
+  });
 
   describe('PUT /curriculum/:curriculumAssessmentId', () => {});
   describe('DELETE /curriculum/:curriculumAssessmentId', () => {});

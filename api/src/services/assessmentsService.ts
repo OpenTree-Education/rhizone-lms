@@ -131,6 +131,7 @@ const createAssessmentQuestion = async (
     } else if (question.question_type === 'free response') {
       correctAnswerId = insertedAnswer.id;
     }
+    insertedAnswers.push(insertedAnswer)
   }
 
   if (correctAnswerId) {
@@ -172,6 +173,7 @@ export const createAssessmentQuestionAnswer = async (
 
   const updatedAssessmentAnswer = {
     ...answer,
+    question_id: questionId,
     id: insertedAssessmentAnswersId,
   };
 

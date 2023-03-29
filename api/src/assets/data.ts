@@ -7,6 +7,7 @@ import {
   AssessmentWithSummary,
   Question,
   AssessmentWithSubmissions,
+  Answer,
 } from '../models';
 export const administratorPrincipalId = 3;
 export const participantPrincipalId = 30;
@@ -324,46 +325,40 @@ export const newCurriculumAssessmentWithQuestion: CurriculumAssessment = {
       description: 'test',
       question_type: 'single choice',
       sort_order: 1,
+      max_score: 1,
       answers: [
         {
           title: 'string',
           description: 'string',
           sort_order: 1,
-        },
-        {
-          title: 'string',
-          description: 'string',
-          sort_order: 2,
-          correct_answer: true,
-        },
-      ],
-    },
-    {
-      title: 'string7',
-      description: 'string',
-      question_type: 'single choice',
-      sort_order: 2,
-      answers: [
-        {
-          title: 'string',
-          description: 'string',
-          sort_order: 1,
-          correct_answer: true,
-        },
-        {
-          title: 'string',
-          description: 'string',
-          sort_order: 2,
-        },
+        }
       ],
     },
   ],
 };
 
-export const updatedCurriculumAssessment = {
+export const updatedAnswers: Answer ={
+  ...newCurriculumAssessmentWithQuestion.questions[0].answers[0],
+  question_id: 42,
+  id: 37
+}
+
+export const updatedQuestions: Question ={
+  ...newCurriculumAssessmentWithQuestion.questions[0],
+  id: 42,
+  answers: [updatedAnswers]
+}
+
+export const updatedCurriculumAssessment: CurriculumAssessment = {
   ...newCurriculumAssessment,
   id: 15,
 };
+
+export const updatedCurriculumAssessmentWithQuestions: CurriculumAssessment  = {
+  ...updatedCurriculumAssessment,
+  questions: [updatedQuestions],
+};
+
 export const exampleParticipantAssessmentWithSubmissions: AssessmentWithSubmissions =
   {
     curriculum_assessment: exampleCurriculumAssessment,
