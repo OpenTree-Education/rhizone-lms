@@ -271,7 +271,7 @@ const listSubmissionResponses = async (
   submissionId: number,
   gradingsIncluded?: boolean
 ): Promise<AssessmentResponse[]> => {
-  const matchingSubmissionResponsesRows = await db('assessment_responses')
+  const matchingAssessmentSubmissionsRows = await db('assessment_responses')
     .select(
       'id',
       'assessment_id',
@@ -283,12 +283,12 @@ const listSubmissionResponses = async (
     )
     .where('submission_id', submissionId);
 
-  if (matchingSubmissionResponsesRows.length === 0) {
+  if (matchingAssessmentSubmissionsRows.length === 0) {
     return null;
   }
 
   const assessmentSubmissions: AssessmentResponse[] =
-    matchingSubmissionResponsesRows.map(assessmentSubmissionsRow => {
+    matchingAssessmentSubmissionsRows.map(assessmentSubmissionsRow => {
       return {
         id: assessmentSubmissionsRow.id,
         assessment_id: assessmentSubmissionsRow.assessment_id,
@@ -533,6 +533,8 @@ export const deleteCurriculumAssessment = async (
  *   table for a given program assessment.
  * @returns {Promise<void>} Returns nothing if the deletion was successful.
  */
+//export const deleteProgramAssessment = async (programAssessmentId: number): Promise<void> => { return; };
+
 export const deleteProgramAssessment = async (
   programAssessmentId: number
 ): Promise<void> => {
@@ -887,11 +889,15 @@ export const facilitatorProgramIdsMatchingCurriculum = async (
     principalId
   );
 
+  if (participatingProgramIds === null) {
+    return [];
+  }
+
   const curriculumPrograms = await listProgramsForCurriculum(curriculumId);
 
   const matchingFacilitatorPrograms: number[] = [];
 
-  participatingProgramIds.forEach(async programId => {
+  for (const programId of participatingProgramIds) {
     const programRole = await getPrincipalProgramRole(principalId, programId);
 
     if (programRole === 'Facilitator') {
@@ -902,7 +908,7 @@ export const facilitatorProgramIdsMatchingCurriculum = async (
         matchingFacilitatorPrograms.push(programId);
       }
     }
-  });
+  }
 
   return matchingFacilitatorPrograms;
 };

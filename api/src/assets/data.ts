@@ -136,6 +136,15 @@ export const exampleCurriculumAssessmentWithCorrectAnswers: CurriculumAssessment
     questions: exampleAssessmentQuestions,
   };
 
+export const matchingProgramRow = {
+  id: 1,
+  title: 'Cohort 4',
+  start_date: '2022-10-24',
+  end_date: '2022-12-16',
+  time_zone: 'America/Los_Angeles',
+  curriculum_id: exampleCurriculumAssessment.curriculum_id,
+};
+
 export const exampleProgramAssessmentsRow = {
   program_id: 1,
   assessment_id: 12,

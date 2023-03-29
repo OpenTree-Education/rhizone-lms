@@ -32,6 +32,7 @@ import {
   createProgramAssessment,
   deleteCurriculumAssessment,
   deleteProgramAssessment,
+  facilitatorProgramIdsMatchingCurriculum,
   findProgramAssessment,
   getAssessmentSubmission,
   getCurriculumAssessment,
@@ -63,6 +64,9 @@ const mockFindProgramAssessment = jest.mocked(findProgramAssessment);
 const mockGetAssessmentSubmission = jest.mocked(getAssessmentSubmission);
 const mockGetCurriculumAssessment = jest.mocked(getCurriculumAssessment);
 const mockGetPrincipalProgramRole = jest.mocked(getPrincipalProgramRole);
+const mockFacilitatorProgramIdsMatchingCurriculum = jest.mocked(
+  facilitatorProgramIdsMatchingCurriculum
+);
 const mockListParticipantProgramAssessmentSubmissions = jest.mocked(
   listParticipantProgramAssessmentSubmissions
 );
@@ -218,7 +222,111 @@ describe('assessmentsRouter', () => {
     });
   });
 
-  describe('GET /curriculum/:curriculumAssessmentId', () => {});
+  describe('GET /curriculum/:curriculumAssessmentId', () => {
+    it('should retrieve a curriculum assessment if the logged-in principal ID is the program facilitator', done => {
+      mockGetCurriculumAssessment.mockResolvedValue(
+        exampleCurriculumAssessmentWithCorrectAnswers
+      );
+      mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue([
+        exampleProgramAssessment.program_id,
+      ]);
+
+      mockPrincipalId(facilitatorPrincipalId);
+
+      appAgent
+        .get(`/curriculum/${exampleCurriculumAssessmentWithCorrectAnswers.id}`)
+        .expect(
+          200,
+          itemEnvelope(exampleCurriculumAssessmentWithCorrectAnswers),
+          err => {
+            expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
+              exampleCurriculumAssessmentWithCorrectAnswers.id,
+              true,
+              true
+            );
+            expect(
+              mockFacilitatorProgramIdsMatchingCurriculum
+            ).toHaveBeenCalledWith(
+              facilitatorPrincipalId,
+              exampleCurriculumAssessmentWithCorrectAnswers.curriculum_id
+            );
+
+            done(err);
+          }
+        );
+    });
+
+    it('should respond with an UnauthorizedError if the logged-in principal ID is not the program facilitator', done => {
+      mockGetCurriculumAssessment.mockResolvedValue(
+        exampleCurriculumAssessmentWithCorrectAnswers
+      );
+      mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue([]);
+
+      mockPrincipalId(participantPrincipalId);
+
+      appAgent
+        .get(`/curriculum/${exampleCurriculumAssessmentWithCorrectAnswers.id}`)
+        .expect(
+          401,
+          errorEnvelope(
+            `Not allowed to access curriculum assessment with ID ${exampleCurriculumAssessmentWithCorrectAnswers.id}.`
+          ),
+          err => {
+            expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
+              exampleCurriculumAssessmentWithCorrectAnswers.id,
+              true,
+              true
+            );
+            expect(
+              mockFacilitatorProgramIdsMatchingCurriculum
+            ).toHaveBeenCalledWith(
+              participantPrincipalId,
+              exampleCurriculumAssessmentWithCorrectAnswers.curriculum_id
+            );
+
+            done(err);
+          }
+        );
+    });
+
+    it('should respond with an BadRequestError if the curriculum assessment ID is not a number.', done => {
+      mockPrincipalId(facilitatorPrincipalId);
+
+      appAgent
+        .get(`/curriculum/test`)
+        .expect(
+          400,
+          errorEnvelope(`"${Number(test)}" is not a valid submission ID.`),
+          err => {
+            done(err);
+          }
+        );
+    });
+
+    it('should respond with a NotFoundError if the curriculum assessment ID was not found in the database', done => {
+      mockGetCurriculumAssessment.mockResolvedValue(null);
+
+      mockPrincipalId(facilitatorPrincipalId);
+
+      appAgent
+        .get(`/curriculum/${exampleCurriculumAssessmentWithCorrectAnswers.id}`)
+        .expect(
+          404,
+          errorEnvelope(
+            `Could not find curriculum assessment with ID ${exampleCurriculumAssessmentWithCorrectAnswers.id}.`
+          ),
+          err => {
+            expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
+              exampleCurriculumAssessmentWithCorrectAnswers.id,
+              true,
+              true
+            );
+
+            done(err);
+          }
+        );
+    });
+  });
   describe('POST /curriculum', () => {});
   describe('PUT /curriculum/:curriculumAssessmentId', () => {});
   describe('DELETE /curriculum/:curriculumAssessmentId', () => {});
@@ -756,6 +864,7 @@ describe('assessmentsRouter', () => {
       appAgent.get(`/submissions/${submissionId}`).expect(500, done);
     });
   });
+  //reference
 
   describe('PUT /submissions/:submissionId', () => {});
 
