@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import { useParams } from 'react-router-dom';
-import { FormGroup, FormControlLabel, Switch } from '@mui/material';
+import { FormGroup, FormControlLabel, Switch, CircularProgress } from '@mui/material';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
@@ -13,7 +13,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-
 import {
   assessmentDetailPageExampleData,
   submissionsExample,
@@ -21,6 +20,7 @@ import {
 import { renderChipByStatus } from './AssessmentsListTable';
 import { AssessmentWithSubmissions } from '../types/api';
 import { formatDateTime } from '../helpers/dateTime';
+import useApiData from '../helpers/useApiData';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -44,55 +44,66 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const AssessmentSubmissionsListPage = () => {
+
   const { assessmentId } = useParams();
   const assessmentIdNumber = Number(assessmentId);
-
   const [isFacilitator, setIsFacilitator] = useState(false);
-  const [assessment, setAssessment] = useState<AssessmentWithSubmissions>();
 
-  useEffect(() => {
-    const filteredSubmissions = () => {
-      if (!isFacilitator) {
-        return submissionsExample.filter(sub => sub.principal_id === 3);
-      }
-      return submissionsExample;
-    };
+  const {
+    data: assessmentSub,
+    error,
+    isLoading,
+  } = useApiData<AssessmentWithSubmissions>({
+    deps: [],
+    path: `/assessments/program/${assessmentId}/submissions`,
+    sendCredentials: true,
+  });
 
-    setAssessment({
-      curriculum_assessment:
-        assessmentDetailPageExampleData.curriculum_assessment,
-      program_assessment: assessmentDetailPageExampleData.program_assessment,
-
-      submissions: filteredSubmissions(),
-      principal_program_role: isFacilitator ? 'Facilitator' : 'Participant',
-    });
-  }, [isFacilitator]);
-
-  if (!assessment || typeof assessment.curriculum_assessment === 'undefined') {
+  if (!assessmentSub || assessmentSub.submissions.length === 0) {
     return (
       <Container>
-        <p>An error occurred.</p>
+        <p>No submissions.</p>
       </Container>
     );
   }
 
+
   const ButtonWrapper = () => {
     if (
-      new Date(assessment.program_assessment.due_date) > new Date() &&
-      assessment.curriculum_assessment.max_num_submissions >
-        assessment.submissions.length
+      new Date(assessmentSub.program_assessment.due_date) > new Date() &&
+      assessmentSub.curriculum_assessment.max_num_submissions >
+        assessmentSub.submissions.length
     ) {
       return <Button variant="contained">New Submission</Button>;
     }
     return null;
   };
 
+  if (isLoading) {
+    return (
+      <Stack
+        alignItems="center"
+        justifyContent="center"
+        sx={{ height: '40em' }}
+      >
+        <CircularProgress size={100} disableShrink />
+      </Stack>
+    );
+  }
+if (error) {
+    return (
+      <Container fixed>
+        <p>There was an error loading the assessments list.</p>
+      </Container>
+    );
+  }
+
   return (
     <Container>
       <Grid container spacing={2}>
         <Grid item xs={9}>
-          <h1>{assessment.curriculum_assessment.title}</h1>
-          <p>{assessment.curriculum_assessment.description}</p>
+          <h1>{assessmentSub.curriculum_assessment.title}</h1>
+          <p>{assessmentSub.curriculum_assessment.description}</p>
         </Grid>
         <Grid item xs={3}>
           <Stack
@@ -136,7 +147,7 @@ const AssessmentSubmissionsListPage = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {assessment.submissions.map(submission => (
+                {assessmentSub.submissions.map(submission => (
                   <StyledTableRow
                     key={submission.id}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
