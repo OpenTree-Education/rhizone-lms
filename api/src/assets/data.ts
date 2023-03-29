@@ -185,12 +185,24 @@ export const exampleFacilitatorAssessmentSubmissionsSummary: FacilitatorAssessme
     num_ungraded_submissions: 6,
   };
 
+export const matchingAssessmentSubmissionOpenedRow = {
+  id: 2,
+  assessment_id: exampleProgramAssessment.id,
+  principal_id: participantPrincipalId,
+  assessment_submission_state: 'Opened',
+  opened_at: '2023-02-09 12:00:00',
+  submitted_at: null as string,
+  score: null as number,
+};
+
 export const exampleAssessmentSubmissionOpened: AssessmentSubmission = {
   id: 2,
   assessment_id: exampleProgramAssessment.id,
   principal_id: participantPrincipalId,
   assessment_submission_state: 'Opened',
   opened_at: '2023-02-09 12:00:00',
+  submitted_at: null as string,
+  score: null as number,
 };
 
 export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
@@ -222,12 +234,23 @@ export const exampleAssessmentSubmissionSubmitted: AssessmentSubmission = {
   ],
 };
 
+export const matchingOtherAssessmentSubmissionSubmittedRow = {
+  id: 3,
+  assessment_id: exampleProgramAssessment.id,
+  principal_id: otherParticipantPrincipalId,
+  assessment_submission_state: 'Submitted',
+  opened_at: '2023-02-09 12:00:00',
+  submitted_at: '2023-02-09 13:23:45',
+  score: null as number,
+};
+
 export const exampleOtherAssessmentSubmissionSubmitted: AssessmentSubmission = {
   ...exampleAssessmentSubmissionOpened,
   assessment_submission_state: 'Submitted',
   submitted_at: '2023-02-09 13:23:45',
   principal_id: otherParticipantPrincipalId,
   id: 3,
+  score: null as number,
 };
 
 export const assessmentSubmissionsRowGraded = {

@@ -13,6 +13,7 @@ import {
   getAssessmentSubmission,
   getCurriculumAssessment,
   getPrincipalProgramRole,
+  listAllProgramAssessmentSubmissions,
   listAssessmentQuestions,
   listParticipantProgramAssessmentSubmissions,
   listPrincipalEnrolledProgramIds,
@@ -46,6 +47,10 @@ import {
   exampleParticipantAssessmentSubmissionsSummary,
   updatedProgramAssessmentsRow,
   matchingProgramRow,
+  exampleAssessmentSubmissionOpened,
+  exampleOtherAssessmentSubmissionSubmitted,
+  matchingAssessmentSubmissionOpenedRow,
+  matchingOtherAssessmentSubmissionSubmittedRow,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -372,7 +377,72 @@ describe('listAssessmentQuestions', () => {
   });
 });
 
-describe('listParticipantProgramAssessmentSubmissions', () => {});
+describe('listAllProgramAssessmentSubmissions', () => {
+  it('should return all program assessment submissions for a given program assessment', async () => {
+    mockQuery(
+      'select `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `principal_id`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_id` = ?',
+      [exampleAssessmentSubmissionOpened.assessment_id],
+      [
+        matchingAssessmentSubmissionOpenedRow,
+        matchingOtherAssessmentSubmissionSubmittedRow,
+      ]
+    );
+
+    expect(
+      await listAllProgramAssessmentSubmissions(
+        exampleAssessmentSubmissionOpened.assessment_id
+      )
+    ).toEqual([
+      exampleAssessmentSubmissionOpened,
+      exampleOtherAssessmentSubmissionSubmitted,
+    ]);
+  });
+
+  it('should return null if no program assessment submissions for a given program assessment', async () => {
+    mockQuery(
+      'select `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `principal_id`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_id` = ?',
+      [exampleAssessmentSubmissionOpened.assessment_id],
+      []
+    );
+
+    expect(
+      await listAllProgramAssessmentSubmissions(
+        exampleAssessmentSubmissionOpened.assessment_id
+      )
+    ).toEqual(null);
+  });
+});
+
+describe('listParticipantProgramAssessmentSubmissions', () => {
+  it('should return program assessment submissions for a participant for a given program assessment', async () => {
+    mockQuery(
+      'select `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_id` = ? and `principal_id` = ?',
+      [exampleAssessmentSubmissionOpened.assessment_id, participantPrincipalId],
+      [matchingAssessmentSubmissionOpenedRow]
+    );
+    expect(
+      await listParticipantProgramAssessmentSubmissions(
+        participantPrincipalId,
+        exampleAssessmentSubmissionOpened.assessment_id
+      )
+    ).toEqual([exampleAssessmentSubmissionOpened]);
+  });
+
+  it('should return null if no program assessment submissions for a given program assessment', async () => {
+    mockQuery(
+      'select `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_id` = ? and `principal_id` = ?',
+      [exampleAssessmentSubmissionOpened.assessment_id, participantPrincipalId],
+      []
+    );
+
+    expect(
+      await listParticipantProgramAssessmentSubmissions(
+        participantPrincipalId,
+        exampleAssessmentSubmissionOpened.assessment_id
+      )
+    ).toEqual(null);
+  });
+});
 
 describe('listPrincipalEnrolledProgramIds', () => {});
 
