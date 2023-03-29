@@ -21,6 +21,7 @@ import {
   exampleParticipantAssessmentSubmissionsSummary,
   exampleFacilitatorAssessmentSubmissionsSummary,
   exampleCurriculumAssessment,
+  exampleAssessmentDetails,
 } from '../../assets/data';
 import {
   constructFacilitatorAssessmentSummary,
@@ -222,7 +223,61 @@ describe('assessmentsRouter', () => {
   describe('DELETE /curriculum/:curriculumAssessmentId', () => {});
 
   describe('GET /program/:programAssessmentId', () => {
-    it('should respond with a BadRequestError if given an invalid program assessment ID', done => {});
+    it('should respond with a program assessment when user is facilitator and program assessment in database', done => {
+      // mock service file responses
+        // findProgramAssessment
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+        // getPrincipalProgramRole
+      mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
+        // getCurriculumAssessment
+      mockGetCurriculumAssessment.mockResolvedValue(exampleCurriculumAssessmentWithCorrectAnswers);
+
+      // mock principal ID
+      mockPrincipalId(facilitatorPrincipalId);
+
+      // app agent
+      appAgent
+        .get(`/program/${exampleProgramAssessment.id}`)
+        .expect(
+          200,
+          itemEnvelope(exampleAssessmentDetails),
+          err => {
+        // mock service file calls
+          // findProgramAssessment
+          expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+            exampleProgramAssessment.id
+          );
+
+          // getPrincipalProgramRole
+          expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            exampleProgramAssessment.program_id
+          );
+
+          // getCurriculumAssessment
+
+          expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
+            exampleProgramAssessment.assessment_id,
+            true,
+            true
+          );
+
+          // done
+          done(err);
+        }
+      );
+    });
+
+    // it('should respond with a BadRequestError if given an invalid program assessment ID', done => {
+
+    // });
+
+    // it('should respond with a NotFoundError if given a program assessment ID not in the database', done => {
+
+    // });
+    // it('should respond with a UnauthorizedError if someone other than a facilitator accesses the route', done => {
+
+    // });
   });
   describe('POST /program', () => {});
   describe('PUT /program/:programAssessmentId', () => {

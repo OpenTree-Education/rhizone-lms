@@ -245,7 +245,9 @@ export const listAssessmentQuestions = async (
       const correctAnswer = assessmentQuestion.answers.find(
         answer => answer.id === assessmentQuestionsRow.correct_answer_id
       );
-      correctAnswer.correct_answer = true;
+      if (correctAnswer) {
+        correctAnswer.correct_answer = true;
+      }
     }
 
     assessmentQuestions.push(assessmentQuestion);

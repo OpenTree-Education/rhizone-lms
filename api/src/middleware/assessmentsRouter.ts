@@ -221,7 +221,6 @@ assessmentsRouter.get(
   async (req, res, next) => {
 
     const { principalId } = req.session;
-    console.log('principal id:', principalId);
 
     // get and parse the program assessment row ID number
     // error out if we were passed an invalid program assessment row ID number

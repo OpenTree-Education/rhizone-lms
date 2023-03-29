@@ -6,6 +6,7 @@ import {
   AssessmentSubmission,
   AssessmentWithSummary,
   Question,
+  AssessmentDetails
 } from '../models';
 export const administratorPrincipalId = 3;
 export const participantPrincipalId = 30;
@@ -158,6 +159,11 @@ export const exampleProgramAssessment: ProgramAssessment = {
   available_after: '2023-02-06',
   due_date: '2023-02-10',
 };
+
+export const exampleAssessmentDetails: AssessmentDetails = {
+  curriculum_assessment: exampleCurriculumAssessmentWithCorrectAnswers,
+  program_assessment: exampleProgramAssessment
+}
 
 export const exampleParticipantAssessmentSubmissionsSummary: ParticipantAssessmentSubmissionsSummary =
   {
