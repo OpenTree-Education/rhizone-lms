@@ -4,6 +4,9 @@ import {
   ParticipantAssessmentSubmissionsSummary,
   FacilitatorAssessmentSubmissionsSummary,
   AssessmentSubmission,
+  AssessmentWithSummary,
+  Question,
+  AssessmentWithSubmissions,
 } from '../models';
 export const administratorPrincipalId = 3;
 export const participantPrincipalId = 30;
@@ -26,9 +29,10 @@ export const matchingCurriculumAssessmentRows = {
   time_limit: 120,
   curriculum_id: 3,
   activity_id: 97,
-  principal_id: 300,
+  principal_id: administratorPrincipalId,
 };
 export const curriculumAssessmentId = 1;
+export const unexpectedCurriculumAssessmentId = 0;
 
 export const exampleCurriculumAssessmentWithQuestion: CurriculumAssessment = {
   id: curriculumAssessmentId,
@@ -65,8 +69,22 @@ export const exampleCurriculumAssessmentWithQuestion: CurriculumAssessment = {
   ],
 };
 
+export const exampleCurriculumAssessment: CurriculumAssessment = {
+  id: 12,
+  title: 'Assignment 1: React',
+  assessment_type: 'test',
+  description: 'Your assignment for week 1 learning.',
+  max_score: 10,
+  max_num_submissions: 1,
+  time_limit: 120,
+  curriculum_id: 3,
+  activity_id: 97,
+  principal_id: administratorPrincipalId,
+};
+
 export const matchingAssessmentQuestionsRow = {
   id: 1,
+  assessment_id: exampleCurriculumAssessment.id,
   title: 'What is React?',
   description: '',
   question_type: 'single choice',
@@ -82,19 +100,6 @@ export const matchingAssessmentAnswersRow = {
   description: '',
   sort_order: 1,
   correct_answer: true,
-};
-
-export const exampleCurriculumAssessment: CurriculumAssessment = {
-  id: 12,
-  title: 'Assignment 1: React',
-  assessment_type: 'test',
-  description: 'Your assignment for week 1 learning.',
-  max_score: 10,
-  max_num_submissions: 3,
-  time_limit: 120,
-  curriculum_id: 3,
-  activity_id: 97,
-  principal_id: administratorPrincipalId,
 };
 
 export const exampleCurriculumAssessmentWithQuestions: CurriculumAssessment = {
@@ -119,30 +124,27 @@ export const exampleCurriculumAssessmentWithQuestions: CurriculumAssessment = {
   ],
 };
 
+export const exampleAssessmentQuestions: Question[] = [
+  {
+    ...matchingAssessmentQuestionsRow,
+    answers: [{ ...matchingAssessmentAnswersRow }],
+  },
+];
+
 export const exampleCurriculumAssessmentWithCorrectAnswers: CurriculumAssessment =
   {
     ...exampleCurriculumAssessment,
-    questions: [
-      {
-        id: 1,
-        assessment_id: exampleCurriculumAssessment.id,
-        title: 'What is React?',
-        question_type: 'single choice',
-        answers: [
-          {
-            id: 1,
-            question_id: 1,
-            title: 'A relational database management system',
-            sort_order: 1,
-            correct_answer: true,
-          },
-        ],
-        correct_answer_id: 1,
-        max_score: 1,
-        sort_order: 1,
-      },
-    ],
+    questions: exampleAssessmentQuestions,
   };
+
+export const matchingProgramRow = {
+  id: 1,
+  title: 'Cohort 4',
+  start_date: '2022-10-24',
+  end_date: '2022-12-16',
+  time_zone: 'America/Los_Angeles',
+  curriculum_id: exampleCurriculumAssessment.curriculum_id,
+};
 
 export const exampleProgramAssessmentsRow = {
   program_id: 1,
@@ -173,7 +175,7 @@ export const exampleParticipantAssessmentSubmissionsSummary: ParticipantAssessme
     highest_state: 'Graded',
     most_recent_submitted_date: '2023-02-09 13:23:45',
     total_num_submissions: 1,
-    highest_score: 10,
+    highest_score: 4,
   };
 
 export const exampleFacilitatorAssessmentSubmissionsSummary: FacilitatorAssessmentSubmissionsSummary =
@@ -183,12 +185,29 @@ export const exampleFacilitatorAssessmentSubmissionsSummary: FacilitatorAssessme
     num_ungraded_submissions: 6,
   };
 
-export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
+export const matchingAssessmentSubmissionOpenedRow = {
   id: 2,
   assessment_id: exampleProgramAssessment.id,
   principal_id: participantPrincipalId,
-  assessment_submission_state: 'In Progress',
+  assessment_submission_state: 'Opened',
   opened_at: '2023-02-09 12:00:00',
+  submitted_at: null as string,
+  score: null as number,
+};
+
+export const exampleAssessmentSubmissionOpened: AssessmentSubmission = {
+  id: 2,
+  assessment_id: exampleProgramAssessment.id,
+  principal_id: participantPrincipalId,
+  assessment_submission_state: 'Opened',
+  opened_at: '2023-02-09 12:00:00',
+  submitted_at: null as string,
+  score: null as number,
+};
+
+export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'In Progress',
   responses: [
     {
       id: 1,
@@ -201,7 +220,7 @@ export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
 };
 
 export const exampleAssessmentSubmissionSubmitted: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionInProgress,
+  ...exampleAssessmentSubmissionOpened,
   assessment_submission_state: 'Submitted',
   submitted_at: '2023-02-09 13:23:45',
   responses: [
@@ -213,6 +232,25 @@ export const exampleAssessmentSubmissionSubmitted: AssessmentSubmission = {
       answer_id: 1,
     },
   ],
+};
+
+export const matchingOtherAssessmentSubmissionSubmittedRow = {
+  id: 3,
+  assessment_id: exampleProgramAssessment.id,
+  principal_id: otherParticipantPrincipalId,
+  assessment_submission_state: 'Submitted',
+  opened_at: '2023-02-09 12:00:00',
+  submitted_at: '2023-02-09 13:23:45',
+  score: null as number,
+};
+
+export const exampleOtherAssessmentSubmissionSubmitted: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'Submitted',
+  submitted_at: '2023-02-09 13:23:45',
+  principal_id: otherParticipantPrincipalId,
+  id: 3,
+  score: null as number,
 };
 
 export const assessmentSubmissionsRowGraded = {
@@ -252,3 +290,22 @@ export const exampleAssessmentSubmissionGraded: AssessmentSubmission = {
     },
   ],
 };
+
+export const exampleParticipantAssessmentWithSubmissions: AssessmentWithSubmissions =
+  {
+    curriculum_assessment: exampleCurriculumAssessment,
+    program_assessment: exampleProgramAssessment,
+    principal_program_role: 'Participant',
+    submissions: [exampleAssessmentSubmissionInProgress],
+  };
+
+export const exampleFacilitatorAssessmentWithSubmissions: AssessmentWithSubmissions =
+  {
+    curriculum_assessment: exampleCurriculumAssessment,
+    program_assessment: exampleProgramAssessment,
+    principal_program_role: 'Facilitator',
+    submissions: [
+      exampleAssessmentSubmissionInProgress,
+      exampleOtherAssessmentSubmissionSubmitted,
+    ],
+  };
