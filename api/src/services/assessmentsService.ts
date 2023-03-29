@@ -286,7 +286,7 @@ const listSubmissionResponses = async (
   submissionId: number,
   gradingsIncluded?: boolean
 ): Promise<AssessmentResponse[]> => {
-  const matchingSubmissionResponsesRows = await db('assessment_responses')
+  const matchingAssessmentSubmissionsRows = await db('assessment_responses')
     .select(
       'id',
       'assessment_id',
@@ -298,12 +298,12 @@ const listSubmissionResponses = async (
     )
     .where('submission_id', submissionId);
 
-  if (matchingSubmissionResponsesRows.length === 0) {
+  if (matchingAssessmentSubmissionsRows.length === 0) {
     return null;
   }
 
   const assessmentSubmissions: AssessmentResponse[] =
-    matchingSubmissionResponsesRows.map(assessmentSubmissionsRow => {
+    matchingAssessmentSubmissionsRows.map(assessmentSubmissionsRow => {
       return {
         id: assessmentSubmissionsRow.id,
         assessment_id: assessmentSubmissionsRow.assessment_id,
@@ -517,7 +517,21 @@ export const createCurriculumAssessment = async (
 export const createProgramAssessment = async (
   programAssessment: ProgramAssessment
 ): Promise<ProgramAssessment> => {
-  return;
+  const [insertedProgramAssessmentRowId] = await db(
+    'program_assessments'
+  ).insert({
+    program_id: programAssessment.program_id,
+    assessment_id: programAssessment.assessment_id,
+    available_after: programAssessment.available_after,
+    due_date: programAssessment.due_date,
+  });
+
+  const updatedProgramAssessment: ProgramAssessment = {
+    ...programAssessment,
+    id: insertedProgramAssessmentRowId,
+  };
+
+  return updatedProgramAssessment;
 };
 
 /**
@@ -546,6 +560,8 @@ export const deleteCurriculumAssessment = async (
  *   table for a given program assessment.
  * @returns {Promise<void>} Returns nothing if the deletion was successful.
  */
+//export const deleteProgramAssessment = async (programAssessmentId: number): Promise<void> => { return; };
+
 export const deleteProgramAssessment = async (
   programAssessmentId: number
 ): Promise<void> => {
@@ -767,6 +783,57 @@ export const getPrincipalProgramRole = async (
 };
 
 /**
+ * Lists all submissions by all program participants for a given program
+ * assessment, if any. Does not include responses for those submissions.
+ *
+ * @param {number} programAssessmentId - The row ID of the program_assessments
+ *   table for a given program assessment.
+ * @returns {Promise<AssessmentSubmission[]>} An array of AssessmentSubmission
+ *   objects constructed from matching program assessment submissions, if any,
+ *   not including their responses.
+ */
+export const listAllProgramAssessmentSubmissions = async (
+  programAssessmentId: number
+): Promise<AssessmentSubmission[]> => {
+  const matchingAssessmentSubmissionsRows = await db('assessment_submissions')
+    .join(
+      'assessment_submission_states',
+      'assessment_submissions.assessment_submission_state_id',
+      'assessment_submission_states.id'
+    )
+    .select(
+      'id',
+      'assessment_submission_states.title as assessment_submission_state',
+      'principal_id',
+      'score',
+      'opened_at',
+      'submitted_at'
+    )
+    .where('assessment_id', programAssessmentId);
+
+  if (matchingAssessmentSubmissionsRows.length === 0) {
+    return null;
+  }
+
+  const assessmentSubmissions: AssessmentSubmission[] = [];
+
+  for (const assessmentSubmissionsRow of matchingAssessmentSubmissionsRows) {
+    assessmentSubmissions.push({
+      id: assessmentSubmissionsRow.id,
+      assessment_id: programAssessmentId,
+      principal_id: assessmentSubmissionsRow.principal_id,
+      assessment_submission_state:
+        assessmentSubmissionsRow.assessment_submission_state,
+      score: assessmentSubmissionsRow.score,
+      opened_at: assessmentSubmissionsRow.opened_at,
+      submitted_at: assessmentSubmissionsRow.submitted_at,
+    });
+  }
+
+  return assessmentSubmissions;
+};
+
+/**
  * Lists all submissions by a program participant for a given program
  * assessment, if any. Does not include responses for those submissions.
  *
@@ -900,11 +967,15 @@ export const facilitatorProgramIdsMatchingCurriculum = async (
     principalId
   );
 
+  if (participatingProgramIds === null) {
+    return [];
+  }
+
   const curriculumPrograms = await listProgramsForCurriculum(curriculumId);
 
   const matchingFacilitatorPrograms: number[] = [];
 
-  participatingProgramIds.forEach(async programId => {
+  for (const programId of participatingProgramIds) {
     const programRole = await getPrincipalProgramRole(principalId, programId);
 
     if (programRole === 'Facilitator') {
@@ -915,7 +986,7 @@ export const facilitatorProgramIdsMatchingCurriculum = async (
         matchingFacilitatorPrograms.push(programId);
       }
     }
-  });
+  }
 
   return matchingFacilitatorPrograms;
 };
