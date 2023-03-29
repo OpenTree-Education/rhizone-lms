@@ -104,6 +104,21 @@ const createAssessmentQuestion = async (
   curriculumAssessmentId: number,
   question: Question
 ): Promise<Question> => {
+  let questionId: number;
+  await db('questions')
+      .insert({
+        curriculum_assessment_id: curriculumAssessmentId,
+        question: question,
+        question_id: questionId,
+        assessment_id: question.assessment_id,
+        title: question.title,
+        description: question.description,
+        question_type: question.question_type,
+        answers: question.answers,
+        correct_answer_id: question.correct_answer_id,
+        max_score: question.max_score,
+        sort_order: question.sort_order,
+      })
   return;
 };
 
@@ -332,6 +347,18 @@ const listSubmissionResponses = async (
 const updateAssessmentQuestion = async (
   question: Question
 ): Promise<Question> => {
+  await db('assessment_questions')
+      .update({
+        assessment_id: question.assessment_id,
+        title: question.title,
+        description: question.description,
+        question_type: question.question_type,
+        answers: question.answers,
+        correct_answer_id: question.correct_answer_id,
+        max_score: question.max_score,
+        sort_order: question.sort_order,
+      })
+      .where('id', question.id);
   return;
 };
 
@@ -525,7 +552,21 @@ export const createCurriculumAssessment = async (
 export const createProgramAssessment = async (
   programAssessment: ProgramAssessment
 ): Promise<ProgramAssessment> => {
-  return;
+  const [insertedProgramAssessmentRowId] = await db(
+    'program_assessments'
+  ).insert({
+    program_id: programAssessment.program_id,
+    assessment_id: programAssessment.assessment_id,
+    available_after: programAssessment.available_after,
+    due_date: programAssessment.due_date,
+  });
+
+  const updatedProgramAssessment: ProgramAssessment = {
+    ...programAssessment,
+    id: insertedProgramAssessmentRowId,
+  };
+
+  return updatedProgramAssessment;
 };
 
 /**
@@ -1145,7 +1186,7 @@ export const updateAssessmentSubmission = async (
  *   object that was handed to us, if update was successful.
  */
 export const updateCurriculumAssessment = async (
-  curriculumAssessment: CurriculumAssessment
+  curriculumAssessment: CurriculumAssessment,
 ): Promise<CurriculumAssessment> => {
   // need to loop through and call updateAssessmentQuestion for each question that exists;
   // need to createAssessmentQuestion for each question that does not exist;
