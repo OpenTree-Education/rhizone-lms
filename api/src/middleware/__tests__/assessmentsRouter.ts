@@ -337,7 +337,72 @@ describe('assessmentsRouter', () => {
   describe('DELETE /curriculum/:curriculumAssessmentId', () => {});
 
   describe('GET /program/:programAssessmentId', () => {});
-  describe('POST /program', () => {});
+  describe('POST /program', () => {
+    it('should update a program assessment if the logged-in principal ID is the program facilitator', done => {
+      mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
+      mockCreateProgramAssessment.mockResolvedValue(
+        updatedProgramAssessmentsRow
+      );
+
+      mockPrincipalId(facilitatorPrincipalId);
+
+      appAgent
+        .post(`/program`)
+        .send(newProgramAssessment)
+        .expect(201, err => {
+          expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            newProgramAssessment.program_id
+          );
+
+          expect(mockCreateProgramAssessment).toHaveBeenCalledWith(
+            newProgramAssessment
+          );
+
+          done(err);
+        });
+    });
+
+    it('should respond with an Unauthorized Error if the logged-in principal id is not the facilitator', done => {
+      mockGetPrincipalProgramRole.mockResolvedValue('Participant');
+
+      mockPrincipalId(participantPrincipalId);
+
+      appAgent
+        .post(`/program`)
+        .send(newProgramAssessment)
+        .expect(
+          401,
+          errorEnvelope(
+            `User is not allowed to create new program assessments for this program.`
+          ),
+          err => {
+            expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+              participantPrincipalId,
+              newProgramAssessment.program_id
+            );
+
+            done(err);
+          }
+        );
+    });
+
+    it('should reponse with BadRequestError if the information missing', done => {
+      mockPrincipalId(facilitatorPrincipalId);
+
+      appAgent
+        .post(`/program`)
+        .send({ available_after: '2023-08-10' })
+        .expect(
+          400,
+          errorEnvelope(`Was not given a valid program assessment.`),
+          err => {
+            done(err);
+          }
+        );
+    });
+  });
+
   describe('PUT /program/:programAssessmentId', () => {
     it('should update a program assessment if the logged-in principal ID is the program facilitator', done => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
@@ -401,7 +466,7 @@ describe('assessmentsRouter', () => {
     it('should respond with an BadRequestError if the program assessment ID is not a number.', done => {
       const exampleAssessmentFromUser = 'test';
 
-      mockPrincipalId(otherParticipantPrincipalId);
+      mockPrincipalId(facilitatorPrincipalId);
 
       appAgent
         .put(`/program/${exampleAssessmentFromUser}`)
@@ -423,7 +488,7 @@ describe('assessmentsRouter', () => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
 
-      mockPrincipalId(otherParticipantPrincipalId);
+      mockPrincipalId(facilitatorPrincipalId);
 
       appAgent
         .put(`/program/${exampleProgramAssessment.id}`)
@@ -437,7 +502,7 @@ describe('assessmentsRouter', () => {
             );
 
             expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
-              otherParticipantPrincipalId,
+              facilitatorPrincipalId,
               exampleProgramAssessment.program_id
             );
 
