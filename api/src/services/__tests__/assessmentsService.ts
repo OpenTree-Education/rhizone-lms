@@ -48,6 +48,7 @@ import {
   updatedProgramAssessmentsRow,
   newCurriculumAssessment,
   updatedCurriculumAssessment,
+  newCurriculumAssessmentWithQuestion,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -132,7 +133,7 @@ describe('constructParticipantAssessmentSummary', () => {
 describe('createAssessmentSubmission', () => {});
 
 describe('createCurriculumAssessment', () => {
-  it('should create a curriculum assessment ID', async () => {
+  it('should create a curriculum assessment ID without question', async () => {
     mockQuery(
       'insert into `curriculum_assessments` (`activity_id`, `curriculum_id`, `description`, `max_num_submissions`, `max_score`, `principal_id`, `time_limit`, `title`) values (?, ?, ?, ?, ?, ?, ?, ?)',
       [
@@ -147,25 +148,11 @@ describe('createCurriculumAssessment', () => {
       ],
       [updatedCurriculumAssessment.id]
     );
-
     expect(await createCurriculumAssessment(newCurriculumAssessment)).toEqual(
       updatedCurriculumAssessment
     );
   });
 });
-//   //     it('should create questions for curriculum assessment', async () => {
-//   //   mockQuery(
-//   //     'insert into `assessment_questions` (`assessment_id`, `description`, `max_score`, `question_type_id`, `sort_order`, `title`) values (?, ?, DEFAULT, ?, ?, ?)',
-//   //     [
-//   //     newCurriculumAssessment.questions[0].title,
-//   //     newCurriculumAssessment.questions[0].description,
-//   //     newCurriculumAssessment.questions[0].question_type,
-//   //     newCurriculumAssessment.questions[0].sort_order,
-//   //     newCurriculumAssessment.questions[0].answers,
-//   //     ],
-//   //     [updatedCurriculumAssessment.questions[0]]
-//   //   );
-//   // });
 
 describe('createProgramAssessment', () => {});
 

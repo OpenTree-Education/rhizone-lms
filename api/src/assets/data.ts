@@ -267,6 +267,58 @@ export const newCurriculumAssessment: CurriculumAssessment = {
   questions: [],
 };
 
+export const newCurriculumAssessmentWithQuestion: CurriculumAssessment = {
+  title: 'Test42',
+  assessment_type: 'test',
+  description: 'Your assignment for week 1 learning.',
+  max_score: 10,
+  max_num_submissions: 1,
+  time_limit: 120,
+  curriculum_id: 3,
+  activity_id: 97,
+  principal_id: 1,
+  questions: [
+    {
+      title: 'test',
+      description: 'test',
+      question_type: 'single choice',
+      sort_order: 1,
+      answers: [
+        {
+          title: 'string',
+          description: 'string',
+          sort_order: 1,
+        },
+        {
+          title: 'string',
+          description: 'string',
+          sort_order: 2,
+          correct_answer: true,
+        },
+      ],
+    },
+    {
+      title: 'string7',
+      description: 'string',
+      question_type: 'single choice',
+      sort_order: 2,
+      answers: [
+        {
+          title: 'string',
+          description: 'string',
+          sort_order: 1,
+          correct_answer: true,
+        },
+        {
+          title: 'string',
+          description: 'string',
+          sort_order: 2,
+        },
+      ],
+    },
+  ],
+};
+
 export const updatedCurriculumAssessment = {
   ...newCurriculumAssessment,
   id: 15,

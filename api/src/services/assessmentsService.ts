@@ -159,7 +159,7 @@ const createAssessmentQuestion = async (
  * @returns {Promise<Answer>} The updated Answer object that was handed to us
  *   but with row ID specified.
  */
-const createAssessmentQuestionAnswer = async (
+export const createAssessmentQuestionAnswer = async (
   questionId: number,
   answer: Answer
 ): Promise<Answer> => {
