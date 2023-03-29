@@ -6,6 +6,7 @@ import {
   AssessmentSubmission,
   AssessmentWithSummary,
   Question,
+  AssessmentWithSubmissions,
 } from '../models';
 export const administratorPrincipalId = 3;
 export const participantPrincipalId = 30;
@@ -152,12 +153,16 @@ export const exampleProgramAssessmentsRow = {
   due_date: '2023-02-10',
 };
 
-export const updatedProgramAssessmentsRow = {
-  id: 15,
+export const newProgramAssessment: ProgramAssessment = {
   program_id: 1,
   assessment_id: 12,
   available_after: '2023-03-06',
   due_date: '2023-04-10',
+};
+
+export const updatedProgramAssessmentsRow = {
+  ...newProgramAssessment,
+  id: 15,
 };
 
 export const exampleProgramAssessment: ProgramAssessment = {
@@ -184,12 +189,29 @@ export const exampleFacilitatorAssessmentSubmissionsSummary: FacilitatorAssessme
     num_ungraded_submissions: 6,
   };
 
-export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
+export const matchingAssessmentSubmissionOpenedRow = {
   id: 2,
   assessment_id: exampleProgramAssessment.id,
   principal_id: participantPrincipalId,
-  assessment_submission_state: 'In Progress',
+  assessment_submission_state: 'Opened',
   opened_at: '2023-02-09 12:00:00',
+  submitted_at: null as string,
+  score: null as number,
+};
+
+export const exampleAssessmentSubmissionOpened: AssessmentSubmission = {
+  id: 2,
+  assessment_id: exampleProgramAssessment.id,
+  principal_id: participantPrincipalId,
+  assessment_submission_state: 'Opened',
+  opened_at: '2023-02-09 12:00:00',
+  submitted_at: null as string,
+  score: null as number,
+};
+
+export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'In Progress',
   responses: [
     {
       id: 1,
@@ -202,7 +224,7 @@ export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
 };
 
 export const exampleAssessmentSubmissionSubmitted: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionInProgress,
+  ...exampleAssessmentSubmissionOpened,
   assessment_submission_state: 'Submitted',
   submitted_at: '2023-02-09 13:23:45',
   responses: [
@@ -214,6 +236,25 @@ export const exampleAssessmentSubmissionSubmitted: AssessmentSubmission = {
       answer_id: 1,
     },
   ],
+};
+
+export const matchingOtherAssessmentSubmissionSubmittedRow = {
+  id: 3,
+  assessment_id: exampleProgramAssessment.id,
+  principal_id: otherParticipantPrincipalId,
+  assessment_submission_state: 'Submitted',
+  opened_at: '2023-02-09 12:00:00',
+  submitted_at: '2023-02-09 13:23:45',
+  score: null as number,
+};
+
+export const exampleOtherAssessmentSubmissionSubmitted: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'Submitted',
+  submitted_at: '2023-02-09 13:23:45',
+  principal_id: otherParticipantPrincipalId,
+  id: 3,
+  score: null as number,
 };
 
 export const assessmentSubmissionsRowGraded = {
@@ -323,3 +364,21 @@ export const updatedCurriculumAssessment = {
   ...newCurriculumAssessment,
   id: 15,
 };
+export const exampleParticipantAssessmentWithSubmissions: AssessmentWithSubmissions =
+  {
+    curriculum_assessment: exampleCurriculumAssessment,
+    program_assessment: exampleProgramAssessment,
+    principal_program_role: 'Participant',
+    submissions: [exampleAssessmentSubmissionInProgress],
+  };
+
+export const exampleFacilitatorAssessmentWithSubmissions: AssessmentWithSubmissions =
+  {
+    curriculum_assessment: exampleCurriculumAssessment,
+    program_assessment: exampleProgramAssessment,
+    principal_program_role: 'Facilitator',
+    submissions: [
+      exampleAssessmentSubmissionInProgress,
+      exampleOtherAssessmentSubmissionSubmitted,
+    ],
+  };
