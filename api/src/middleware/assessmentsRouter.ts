@@ -18,6 +18,7 @@ import {
   ProgramAssessment,
   AssessmentWithSummary,
   SavedAssessment,
+  AssessmentWithSubmissions,
 } from '../models';
 import {
   findProgramAssessment,
@@ -32,6 +33,7 @@ import {
   facilitatorProgramIdsMatchingCurriculum,
   updateCurriculumAssessment,
   updateProgramAssessment,
+  listParticipantProgramAssessmentSubmissions,
 } from '../services/assessmentsService';
 
 const assessmentsRouter = Router();
@@ -106,9 +108,61 @@ assessmentsRouter.get('/', async (req, res, next) => {
 assessmentsRouter.get(
   '/curriculum/:curriculumAssessmentId',
   async (req, res, next) => {
-    res.json();
+    const { principalId } = req.session;
+    const { curriculumAssessmentId } = req.params;
+
+    const curriculumAssessmentIdParsed = Number(curriculumAssessmentId);
+
+    if (
+      !Number.isInteger(curriculumAssessmentIdParsed) ||
+      curriculumAssessmentIdParsed < 1
+    ) {
+      next(
+        new BadRequestError(
+          `"${curriculumAssessmentIdParsed}" is not a valid submission ID.`
+        )
+      );
+      return;
+    }
+
+    try {
+      const includeQuestionsAndAllAnswers = true;
+      const includeQuestionsAndCorrectAnswers = true;
+
+      const curriculumAssessment = await getCurriculumAssessment(
+        curriculumAssessmentIdParsed,
+        includeQuestionsAndAllAnswers,
+        includeQuestionsAndCorrectAnswers
+      );
+
+      if (!curriculumAssessment) {
+        throw new NotFoundError(
+          `Could not find curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
+        );
+      }
+
+      const matchingProgramIds = await facilitatorProgramIdsMatchingCurriculum(
+        principalId,
+        curriculumAssessment.curriculum_id
+      );
+
+      // If there are no matching program assessments with this curriculum ID,
+      // then we are not facilitator of any programs where we can modify this
+      // CurriculumAssessment, so let's return an error to the user.
+      if (matchingProgramIds.length === 0) {
+        throw new UnauthorizedError(
+          `Not allowed to access curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
+        );
+      }
+
+      res.json(itemEnvelope(curriculumAssessment));
+    } catch (err) {
+      next(err);
+      return;
+    }
   }
 );
+
 // Create a new CurriculumAssessment
 assessmentsRouter.post('/curriculum', async (req, res, next) => {
   res.json();
