@@ -1045,6 +1045,7 @@ export const updateCurriculumAssessment = async (
   curriculumAssessment: CurriculumAssessment,
 ): Promise<CurriculumAssessment> => {
   // need to loop through and call updateAssessmentQuestion for each question that exists;
+  // 
   // need to createAssessmentQuestion for each question that does not exist;
 
   // need to update the curriculum_assessments table with any updated data for the curriculum assessment (refer to DB/model).
