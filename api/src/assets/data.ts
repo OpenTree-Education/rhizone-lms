@@ -7,6 +7,7 @@ import {
   AssessmentWithSummary,
   Question,
   AssessmentWithSubmissions,
+  SavedAssessment,
 } from '../models';
 export const administratorPrincipalId = 3;
 export const participantPrincipalId = 30;
@@ -184,6 +185,7 @@ export const exampleProgramAssessmentNotAvailable: ProgramAssessment = {
   available_after: '2050-02-06',
   due_date: '2050-02-10',
 };
+
 export const exampleParticipantAssessmentSubmissionsSummary: ParticipantAssessmentSubmissionsSummary =
   {
     principal_id: participantPrincipalId,
@@ -313,6 +315,13 @@ export const exampleParticipantAssessmentWithSubmissions: AssessmentWithSubmissi
     principal_program_role: 'Participant',
     submissions: [exampleAssessmentSubmissionInProgress],
   };
+
+export const exampleParticipantOpenedSavedAssessment: SavedAssessment = {
+  curriculum_assessment: exampleCurriculumAssessmentWithQuestions,
+  program_assessment: exampleProgramAssessment,
+  principal_program_role: 'Participant',
+  submission: exampleAssessmentSubmissionOpened,
+};
 
 export const exampleFacilitatorAssessmentWithSubmissions: AssessmentWithSubmissions =
   {

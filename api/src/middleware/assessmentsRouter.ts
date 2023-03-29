@@ -516,7 +516,7 @@ assessmentsRouter.get(
       const includeQuestionsAndAllAnswers = true;
       const includeQuestionsAndCorrectAnswers = false;
       const curriculumAssessment = await getCurriculumAssessment(
-        programAssessmentIdParsed,
+        programAssessment.assessment_id,
         includeQuestionsAndAllAnswers,
         includeQuestionsAndCorrectAnswers
       );
@@ -536,22 +536,24 @@ assessmentsRouter.get(
           programAssessmentIdParsed
         );
       } else {
-        if (
-          existingAssessmentSubmissions.length >=
-          curriculumAssessment.max_num_submissions
-        ) {
-          //If the participant has no currently "Opened" or "In Progress" submission and reach the submission limit.
-          //Return Forbidden Error.
-          throw new ForbiddenError(
-            `Could not create a new submission becasue it has reach the maximum number of submissions for thie assessment.`
-          );
-        }
         const inProgressSubmissions: AssessmentSubmission[] =
           existingAssessmentSubmissions.filter(assessmentSubmission =>
             ['Opened', 'In Progress'].includes(
               assessmentSubmission.assessment_submission_state
             )
           );
+
+        if (
+          existingAssessmentSubmissions.length >=
+            curriculumAssessment.max_num_submissions &&
+          inProgressSubmissions.length === 0
+        ) {
+          //If the participant has no currently "Opened" or "In Progress" submission and reach the submission limit.
+          //Return Forbidden Error.
+          throw new ForbiddenError(
+            `Could not create a new submission as you have reached the maximum number of submissions for this assessment.`
+          );
+        }
 
         [assessmentSubmission] = inProgressSubmissions;
       }
