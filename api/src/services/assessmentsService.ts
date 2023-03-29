@@ -460,28 +460,25 @@ export const createAssessmentSubmission = async (
   participantPrincipalId: number,
   programAssessmentId: number
 ): Promise<AssessmentSubmission> => {
-  const opendStateTitle = 'Opened';
+  const openedStateTitle = 'Opened';
   const [openedStateId] = await db('assessment_submission_states')
     .select('id')
-    .where('title', opendStateTitle);
-  if (!openedStateId) {
-    return null;
-  }
+    .where('title', openedStateTitle);
 
-  const openAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
   const [newSubmissionId] = await db('assessment_submissions').insert({
     assessment_id: programAssessmentId,
     principal_id: participantPrincipalId,
     assessment_submission_state_id: openedStateId.id,
-    opened_at: openAt,
   });
 
   const newSubmission: AssessmentSubmission = {
     id: newSubmissionId,
     assessment_id: programAssessmentId,
     principal_id: participantPrincipalId,
-    assessment_submission_state: opendStateTitle,
-    opened_at: openAt,
+    assessment_submission_state: openedStateTitle,
+    opened_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
+    score: null as number,
+    submitted_at: null as string,
   };
 
   return newSubmission;
