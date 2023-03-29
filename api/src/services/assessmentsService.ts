@@ -487,7 +487,28 @@ export const createAssessmentSubmission = async (
   participantPrincipalId: number,
   programAssessmentId: number
 ): Promise<AssessmentSubmission> => {
-  return;
+  const openedStateTitle = 'Opened';
+  const [openedStateId] = await db('assessment_submission_states')
+    .select('id')
+    .where('title', openedStateTitle);
+
+  const [newSubmissionId] = await db('assessment_submissions').insert({
+    assessment_id: programAssessmentId,
+    principal_id: participantPrincipalId,
+    assessment_submission_state_id: openedStateId.id,
+  });
+
+  const newSubmission: AssessmentSubmission = {
+    id: newSubmissionId,
+    assessment_id: programAssessmentId,
+    principal_id: participantPrincipalId,
+    assessment_submission_state: openedStateTitle,
+    opened_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
+    score: null as number,
+    submitted_at: null as string,
+  };
+
+  return newSubmission;
 };
 
 /**
@@ -856,14 +877,14 @@ export const listParticipantProgramAssessmentSubmissions = async (
       'assessment_submission_states.id'
     )
     .select(
-      'id',
+      'assessment_submissions.id as id',
       'assessment_submission_states.title as assessment_submission_state',
       'score',
       'opened_at',
       'submitted_at'
     )
-    .where('assessment_id', programAssessmentId)
-    .andWhere('principal_id', participantPrincipalId);
+    .where('assessment_submissions.principal_id', participantPrincipalId)
+    .andWhere('assessment_submissions.assessment_id', programAssessmentId);
 
   if (matchingAssessmentSubmissionsRows.length === 0) {
     return null;
