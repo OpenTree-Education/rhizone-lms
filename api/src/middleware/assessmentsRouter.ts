@@ -442,7 +442,7 @@ assessmentsRouter.get(
         submissions,
       };
 
-      res.json(assessmentWithSubmissions);
+      res.json(itemEnvelope(assessmentWithSubmissions));
     } catch (error) {
       next(error);
       return;

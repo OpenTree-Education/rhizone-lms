@@ -6,6 +6,7 @@ import {
   AssessmentSubmission,
   AssessmentWithSummary,
   Question,
+  AssessmentWithSubmissions,
 } from '../models';
 export const administratorPrincipalId = 3;
 export const participantPrincipalId = 30;
@@ -184,12 +185,17 @@ export const exampleFacilitatorAssessmentSubmissionsSummary: FacilitatorAssessme
     num_ungraded_submissions: 6,
   };
 
-export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
+export const exampleAssessmentSubmissionOpened: AssessmentSubmission = {
   id: 2,
   assessment_id: exampleProgramAssessment.id,
   principal_id: participantPrincipalId,
-  assessment_submission_state: 'In Progress',
+  assessment_submission_state: 'Opened',
   opened_at: '2023-02-09 12:00:00',
+};
+
+export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'In Progress',
   responses: [
     {
       id: 1,
@@ -202,7 +208,7 @@ export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
 };
 
 export const exampleAssessmentSubmissionSubmitted: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionInProgress,
+  ...exampleAssessmentSubmissionOpened,
   assessment_submission_state: 'Submitted',
   submitted_at: '2023-02-09 13:23:45',
   responses: [
@@ -214,6 +220,14 @@ export const exampleAssessmentSubmissionSubmitted: AssessmentSubmission = {
       answer_id: 1,
     },
   ],
+};
+
+export const exampleOtherAssessmentSubmissionSubmitted: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'Submitted',
+  submitted_at: '2023-02-09 13:23:45',
+  principal_id: otherParticipantPrincipalId,
+  id: 3,
 };
 
 export const assessmentSubmissionsRowGraded = {
@@ -253,3 +267,22 @@ export const exampleAssessmentSubmissionGraded: AssessmentSubmission = {
     },
   ],
 };
+
+export const exampleParticipantAssessmentWithSubmissions: AssessmentWithSubmissions =
+  {
+    curriculum_assessment: exampleCurriculumAssessment,
+    program_assessment: exampleProgramAssessment,
+    principal_program_role: 'Participant',
+    submissions: [exampleAssessmentSubmissionInProgress],
+  };
+
+export const exampleFacilitatorAssessmentWithSubmissions: AssessmentWithSubmissions =
+  {
+    curriculum_assessment: exampleCurriculumAssessment,
+    program_assessment: exampleProgramAssessment,
+    principal_program_role: 'Facilitator',
+    submissions: [
+      exampleAssessmentSubmissionInProgress,
+      exampleOtherAssessmentSubmissionSubmitted,
+    ],
+  };
