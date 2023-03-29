@@ -742,6 +742,57 @@ export const getPrincipalProgramRole = async (
 };
 
 /**
+ * Lists all submissions by all program participants for a given program
+ * assessment, if any. Does not include responses for those submissions.
+ *
+ * @param {number} programAssessmentId - The row ID of the program_assessments
+ *   table for a given program assessment.
+ * @returns {Promise<AssessmentSubmission[]>} An array of AssessmentSubmission
+ *   objects constructed from matching program assessment submissions, if any,
+ *   not including their responses.
+ */
+export const listAllProgramAssessmentSubmissions = async (
+  programAssessmentId: number
+): Promise<AssessmentSubmission[]> => {
+  const matchingAssessmentSubmissionsRows = await db('assessment_submissions')
+    .join(
+      'assessment_submission_states',
+      'assessment_submissions.assessment_submission_state_id',
+      'assessment_submission_states.id'
+    )
+    .select(
+      'id',
+      'assessment_submission_states.title as assessment_submission_state',
+      'principal_id',
+      'score',
+      'opened_at',
+      'submitted_at'
+    )
+    .where('assessment_id', programAssessmentId);
+
+  if (matchingAssessmentSubmissionsRows.length === 0) {
+    return null;
+  }
+
+  const assessmentSubmissions: AssessmentSubmission[] = [];
+
+  for (const assessmentSubmissionsRow of matchingAssessmentSubmissionsRows) {
+    assessmentSubmissions.push({
+      id: assessmentSubmissionsRow.id,
+      assessment_id: programAssessmentId,
+      principal_id: assessmentSubmissionsRow.principal_id,
+      assessment_submission_state:
+        assessmentSubmissionsRow.assessment_submission_state,
+      score: assessmentSubmissionsRow.score,
+      opened_at: assessmentSubmissionsRow.opened_at,
+      submitted_at: assessmentSubmissionsRow.submitted_at,
+    });
+  }
+
+  return assessmentSubmissions;
+};
+
+/**
  * Lists all submissions by a program participant for a given program
  * assessment, if any. Does not include responses for those submissions.
  *
