@@ -7,10 +7,7 @@ import {
   UnauthorizedError,
   ValidationError,
 } from './httpErrors';
-import {
-  itemEnvelope,
-  collectionEnvelope,
-} from './responseEnvelope';
+import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
 
 import {
   CurriculumAssessment,
@@ -279,36 +276,37 @@ assessmentsRouter.get(
 // Create a new ProgramAssessment
 assessmentsRouter.post('/program', async (req, res, next) => {
   const { principalId } = req.session;
-  const programAssessmentBody = req.body;
+  const programAssessmentFromUser = req.body;
 
   let programAssessment;
   try {
-    // get the principal program role
-    const programRole = await getPrincipalProgramRole(
-      principalId,
-      programAssessmentBody.program_id
-    );
-
-    // if the program role is null/falsy, that means the user is not enrolled in
-    // the program. send an error back to the user.
-    if (programRole !== 'Facilitator') {
-      next(
-        new UnauthorizedError(`Could not access program Assessment with ID.`)
-      );
-      return;
-    }
-    const isprogramAssessment = (
+    const isProgramAssessment = (
       possibleAssessment: unknown
     ): possibleAssessment is ProgramAssessment => {
       return (possibleAssessment as ProgramAssessment).program_id !== undefined;
     };
 
-    if (!isprogramAssessment(programAssessmentBody)) {
-      next(new BadRequestError(`Was not given a valid program assessment.`));
-      return;
+    if (!isProgramAssessment(programAssessmentFromUser)) {
+      throw new BadRequestError(`Was not given a valid program assessment.`);
     }
 
-    programAssessment = await createProgramAssessment(programAssessmentBody);
+    // get the principal program role
+    const programRole = await getPrincipalProgramRole(
+      principalId,
+      programAssessmentFromUser.program_id
+    );
+
+    // if the program role is null/falsy, that means the user is not enrolled in
+    // the program. send an error back to the user.
+    if (programRole !== 'Facilitator') {
+      throw new UnauthorizedError(
+        `User is not allowed to create new program assessments for this program.`
+      );
+    }
+
+    programAssessment = await createProgramAssessment(
+      programAssessmentFromUser
+    );
     res.status(201).json(itemEnvelope(programAssessment));
   } catch (error) {
     next(error);

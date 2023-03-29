@@ -45,7 +45,7 @@ import {
   exampleCurriculumAssessmentWithCorrectAnswers,
   exampleParticipantAssessmentSubmissionsSummary,
   updatedProgramAssessmentsRow,
-  createProgramAssessmentsRow,
+  newProgramAssessment,
   matchingProgramRow,
 } from '../../assets/data';
 
@@ -132,9 +132,69 @@ describe('createAssessmentSubmission', () => {});
 
 describe('createCurriculumAssessment', () => {});
 
+describe('createProgramAssessment', () => {
+  it('should create a program assessment ID', async () => {
+    mockQuery(
+      'insert into `program_assessments` (`assessment_id`, `available_after`, `due_date`, `program_id`) values (?, ?, ?, ?)',
+      [
+        newProgramAssessment.assessment_id,
+        newProgramAssessment.available_after,
+        newProgramAssessment.due_date,
+        newProgramAssessment.program_id,
+      ],
+      [updatedProgramAssessmentsRow.id]
+    );
+
+    expect(await createProgramAssessment(newProgramAssessment)).toEqual(
+      updatedProgramAssessmentsRow
+    );
+  });
+});
+
 describe('deleteCurriculumAssessment', () => {});
 
 describe('deleteProgramAssessment', () => {});
+
+describe('facilitatorProgramIdsMatchingCurriculum', () => {
+  it('should return an array of program IDs for a principal that is facilitator of at least one program', async () => {
+    mockQuery(
+      'select `program_id` from `program_participants` where `principal_id` = ?',
+      [facilitatorPrincipalId],
+      [{ program_id: exampleProgramAssessment.program_id }]
+    );
+    mockQuery(
+      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `curriculum_id` = ?',
+      [exampleCurriculumAssessment.curriculum_id],
+      [matchingProgramRow]
+    );
+    mockQuery(
+      'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
+      [facilitatorPrincipalId, exampleProgramAssessment.program_id],
+      [{ title: 'Facilitator' }]
+    );
+
+    expect(
+      await facilitatorProgramIdsMatchingCurriculum(
+        facilitatorPrincipalId,
+        exampleCurriculumAssessment.curriculum_id
+      )
+    ).toEqual([exampleProgramAssessment.program_id]);
+  });
+
+  it('should return an empty array of program IDs for a principal that is not a facilitator of at least one program', async () => {
+    mockQuery(
+      'select `program_id` from `program_participants` where `principal_id` = ?',
+      [participantPrincipalId],
+      []
+    );
+    expect(
+      await facilitatorProgramIdsMatchingCurriculum(
+        participantPrincipalId,
+        exampleCurriculumAssessment.curriculum_id
+      )
+    ).toEqual([]);
+  });
+});
 
 describe('findProgramAssessment', () => {
   it('should return a ProgramAssessment for an existing program assessment ID', async () => {
@@ -206,53 +266,6 @@ describe('getAssessmentSubmission', () => {
   });
 });
 
-describe('getPrincipalProgramRole', () => {
-  it('should return the correct role for a facilitator based on principal ID and program ID', async () => {
-    mockQuery(
-      'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
-      [facilitatorPrincipalId, exampleProgramAssessment.program_id],
-      [exampleProgramParticipantRoleFacilitatorRow]
-    );
-
-    expect(
-      await getPrincipalProgramRole(
-        facilitatorPrincipalId,
-        exampleProgramAssessment.program_id
-      )
-    ).toEqual('Facilitator');
-  });
-
-  it('should return the correct role for a participant based on principal ID and program ID', async () => {
-    mockQuery(
-      'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
-      [participantPrincipalId, exampleProgramAssessment.program_id],
-      [exampleProgramParticipantRoleParticipantRow]
-    );
-
-    expect(
-      await getPrincipalProgramRole(
-        participantPrincipalId,
-        exampleProgramAssessment.program_id
-      )
-    ).toEqual('Participant');
-  });
-
-  it('should return null for a user not enrolled in the program', async () => {
-    mockQuery(
-      'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
-      [unenrolledPrincipalId, exampleProgramAssessment.program_id],
-      []
-    );
-
-    expect(
-      await getPrincipalProgramRole(
-        unenrolledPrincipalId,
-        exampleProgramAssessment.program_id
-      )
-    ).toEqual(null);
-  });
-});
-
 describe('getCurriculumAssessment', () => {
   it('should return a CurriculumAssessment for an existing curriculum assessment ID', async () => {
     const questionsAndAllAnswersIncluded = true,
@@ -304,44 +317,50 @@ describe('getCurriculumAssessment', () => {
   });
 });
 
-describe('facilitatorProgramIdsMatchingCurriculum', () => {
-  it('should return an array of program IDs for a principal that is facilitator of at least one program', async () => {
-    mockQuery(
-      'select `program_id` from `program_participants` where `principal_id` = ?',
-      [facilitatorPrincipalId],
-      [{ program_id: exampleProgramAssessment.program_id }]
-    );
-    mockQuery(
-      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `curriculum_id` = ?',
-      [exampleCurriculumAssessment.curriculum_id],
-      [matchingProgramRow]
-    );
+describe('getPrincipalProgramRole', () => {
+  it('should return the correct role for a facilitator based on principal ID and program ID', async () => {
     mockQuery(
       'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
       [facilitatorPrincipalId, exampleProgramAssessment.program_id],
-      [{ title: 'Facilitator' }]
+      [exampleProgramParticipantRoleFacilitatorRow]
     );
 
     expect(
-      await facilitatorProgramIdsMatchingCurriculum(
+      await getPrincipalProgramRole(
         facilitatorPrincipalId,
-        exampleCurriculumAssessment.curriculum_id
+        exampleProgramAssessment.program_id
       )
-    ).toEqual([exampleProgramAssessment.program_id]);
+    ).toEqual('Facilitator');
   });
 
-  it('should return an empty array of program IDs for a principal that is not a facilitator of at least one program', async () => {
+  it('should return the correct role for a participant based on principal ID and program ID', async () => {
     mockQuery(
-      'select `program_id` from `program_participants` where `principal_id` = ?',
-      [participantPrincipalId],
+      'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
+      [participantPrincipalId, exampleProgramAssessment.program_id],
+      [exampleProgramParticipantRoleParticipantRow]
+    );
+
+    expect(
+      await getPrincipalProgramRole(
+        participantPrincipalId,
+        exampleProgramAssessment.program_id
+      )
+    ).toEqual('Participant');
+  });
+
+  it('should return null for a user not enrolled in the program', async () => {
+    mockQuery(
+      'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
+      [unenrolledPrincipalId, exampleProgramAssessment.program_id],
       []
     );
+
     expect(
-      await facilitatorProgramIdsMatchingCurriculum(
-        participantPrincipalId,
-        exampleCurriculumAssessment.curriculum_id
+      await getPrincipalProgramRole(
+        unenrolledPrincipalId,
+        exampleProgramAssessment.program_id
       )
-    ).toEqual([]);
+    ).toEqual(null);
   });
 });
 
@@ -380,24 +399,6 @@ describe('listProgramAssessments', () => {});
 describe('updateAssessmentSubmission', () => {});
 
 describe('updateCurriculumAssessment', () => {});
-describe('createProgramAssessment', () => {
-  it('should create a program assessment ID', async () => {
-    mockQuery(
-      'insert into `program_assessments` (`program_id`, `assessment_id`, `available_after`, `due_date`, ) values (?, ?, ?, ?)',
-      [
-        createProgramAssessmentsRow.program_id,
-        createProgramAssessmentsRow.assessment_id,
-        createProgramAssessmentsRow.available_after,
-        createProgramAssessmentsRow.due_date,
-      ],
-      [createProgramAssessmentsRow.id]
-    );
-
-    expect(await createProgramAssessment(createProgramAssessmentsRow)).toEqual(
-      createProgramAssessmentsRow
-    );
-  });
-});
 
 describe('updateProgramAssessment', () => {
   it('should return update for an existing program assessment ID', async () => {
