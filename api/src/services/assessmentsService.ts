@@ -104,28 +104,28 @@ const createAssessmentQuestion = async (
   curriculumAssessmentId: number,
   question: Question
 ): Promise<Question> => {
-  let questionId: number;
-  const [insertedAssessmentQuestionRowId] = await db(
-    'questions'
-  ).insert({
-    curriculum_assessment_id: curriculumAssessmentId,
-    question: question,
-    question_id: questionId,
-    assessment_id: question.assessment_id,
-    title: question.title,
-    description: question.description,
-    question_type: question.question_type,
-    answers: question.answers,
-    correct_answer_id: question.correct_answer_id,
-    max_score: question.max_score,
-    sort_order: question.sort_order,
-    })
+  // let questionId: number;
+  // const [insertedAssessmentQuestionRowId] = await db(
+  //   'questions'
+  // ).insert({
+  //   curriculum_assessment_id: curriculumAssessmentId,
+  //   question: question,
+  //   question_id: questionId,
+  //   assessment_id: question.assessment_id,
+  //   title: question.title,
+  //   description: question.description,
+  //   question_type: question.question_type,
+  //   answers: question.answers,
+  //   correct_answer_id: question.correct_answer_id,
+  //   max_score: question.max_score,
+  //   sort_order: question.sort_order,
+  //   })
 
-  const updatedAssessmentQuestion: Question = {
-    ...question,
-    id: insertedAssessmentQuestionRowId,
-  };
-  return updatedAssessmentQuestion;
+  // const updatedAssessmentQuestion: Question = {
+  //   ...question,
+  //   id: insertedAssessmentQuestionRowId,
+  // };
+  // return updatedAssessmentQuestion;
 };
 
 
@@ -348,7 +348,7 @@ const updateAssessmentQuestion = async (
         answers: question.answers,
         correct_answer_id: question.correct_answer_id,
         max_score: question.max_score,
-        sort_order: question.sort_order,
+        sort_order: question.sort_order
       })
       .where('id', question.id);
   return;
@@ -1045,7 +1045,7 @@ export const updateCurriculumAssessment = async (
   curriculumAssessment: CurriculumAssessment,
 ): Promise<CurriculumAssessment> => {
   // need to loop through and call updateAssessmentQuestion for each question that exists;
-  // 
+  //
   // need to createAssessmentQuestion for each question that does not exist;
 
   // need to update the curriculum_assessments table with any updated data for the curriculum assessment (refer to DB/model).
