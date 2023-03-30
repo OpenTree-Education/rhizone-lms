@@ -26,11 +26,19 @@ interface TableCellWrapperProps {
   children?: React.ReactNode;
   index: number[];
   statusTab: number;
+  showForFacilitator: boolean;
+  showForParticipant: boolean;
+  principalRoles: {
+    isFacilitator: boolean,
+    isParticipant: boolean,
+    isMixedRole: boolean,
+    isNeither: boolean,
+  };
 }
 
 const TableCellWrapper = (props: TableCellWrapperProps) => {
-  const { children, statusTab, index } = props;
-  return index.includes(statusTab) ? <TableCell>{children}</TableCell> : null;
+  const { children, statusTab, index, showForFacilitator, showForParticipant, principalRoles } = props;
+  return (index.includes(statusTab) && ((showForFacilitator && (principalRoles.isFacilitator || principalRoles.isMixedRole)) || (showForParticipant && (principalRoles.isParticipant || principalRoles.isMixedRole))) ? <TableCell>{children}</TableCell> : null);
 };
 
 const renderButtonByStatus = (status: string, id: number) => {
@@ -125,6 +133,42 @@ interface AssessmentListTableProps {
   };
 }
 
+// For Participants:
+//   For All Assessments Tab:
+//     - Assessment Name, Type, Due Date, Score, State, Action
+//   For Active Assessments Tab:
+//     - Assessment Name, Type, Due Date, State, Action
+//   For Past Assessments Tab:
+//     - Assessment Name, Type, Due Date, Submitted Date, Score, State, Action
+//   For Upcoming Assessments Tab:
+//     - Assessment Name, Type, Available Date, Due Date
+
+// For Facilitators:
+//   For All Assessments Tab:
+//     - Assessment Name, Type, Due Date, Num Submissions, Ungraded, Action
+//   For Active Assessments Tab:
+//     - Assessment Name, Type, Due Date, Num Submissions, Action
+//   For Past Assessments Tab:
+//     - Assessment Name, Type, Due Date, Num Submissions, Ungraded, Action
+//   For Upcoming Assessments Tab:
+//     - Assessment Name, Type, Available Date, Due Date, Action
+
+// Combined:
+//   For All Assessments Tab:
+//     - Assessment Name, Type, Due Date, Num Submissions (F), Score (P), Ungraded (F), State (P), Action
+//   For Active Assessments Tab:
+//     - Assessment Name, Type, Due Date, Num Submissions (F), State (P), Action
+//   For Past Assessments Tab:
+//     - Assessment Name, Type, Due Date, Submitted Date (P), Num Submissions (F), Score (P), Ungraded (F), State (P), Action
+//   For Upcoming Assessments Tab:
+//     - Assessment Name, Type, Available Date, Due Date, Action
+
+// Total Combined
+//     - Assessment Name, Type, Available Date, Due Date, Submitted Date (P), Num Submissions (F), Score (P), Ungraded (F), State (P), Action
+
+// For the Num Submissions, Ungraded Columns:
+//    "3 (of 8)", aka "num ungraded/p with sub (of total num participants)"
+
 const AssessmentsListTable = ({
   currentStatusTab,
   matchingAssessmentList,
@@ -153,6 +197,9 @@ const AssessmentsListTable = ({
                 StatusTab.Past,
                 StatusTab.Upcoming,
               ]}
+              showForFacilitator={true}
+              showForParticipant={true}
+              principalRoles={userRoles}
             >
               Assessment Name
             </TableCellWrapper>
