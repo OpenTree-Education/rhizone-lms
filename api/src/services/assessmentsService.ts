@@ -1303,7 +1303,6 @@ export const updateCurriculumAssessment = async (
     .where('id', curriculumAssessment.id);
   // refer to implementation of getCurriculumAssessment for knowledge on joins
   // (data in two different database tables that relate to one another), differences between database table and data type
-
   return updatedCurriculumAssessment;
 };
 
