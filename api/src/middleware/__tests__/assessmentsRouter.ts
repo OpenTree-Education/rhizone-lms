@@ -371,8 +371,6 @@ describe('assessmentsRouter', () => {
           done(err);
         });
     });
-<<<<<<< HEAD
-=======
 
     it('should respond with an Unauthorized Error if the logged-in principal id is not the facilitator', done => {
       mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue([]);
