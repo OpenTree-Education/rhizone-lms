@@ -4,6 +4,7 @@ import {
   BadRequestError,
   InternalServerError,
   NotFoundError,
+  ForbiddenError,
   UnauthorizedError,
   ValidationError,
 } from './httpErrors';
@@ -30,10 +31,13 @@ import {
   facilitatorProgramIdsMatchingCurriculum,
   updateCurriculumAssessment,
   updateProgramAssessment,
+  createCurriculumAssessment,
   createProgramAssessment,
   listParticipantProgramAssessmentSubmissions,
+  createAssessmentSubmission,
   listAllProgramAssessmentSubmissions,
 } from '../services/assessmentsService';
+import { DateTime } from 'luxon';
 
 const assessmentsRouter = Router();
 
@@ -164,7 +168,40 @@ assessmentsRouter.get(
 
 // Create a new CurriculumAssessment
 assessmentsRouter.post('/curriculum', async (req, res, next) => {
-  res.json();
+  const { principalId } = req.session;
+  const curriculumAssessmentFromUser = req.body;
+
+  const isACurriculumAssessment = (
+    possibleAssessment: unknown
+  ): possibleAssessment is CurriculumAssessment => {
+    return (possibleAssessment as CurriculumAssessment).title !== undefined;
+  };
+  if (!isACurriculumAssessment(curriculumAssessmentFromUser)) {
+    next(new ValidationError(`Was not given a valid curriculum assessment.`));
+    return;
+  }
+
+  try {
+    const facilitatorProgramIds = await facilitatorProgramIdsMatchingCurriculum(
+      principalId,
+      curriculumAssessmentFromUser.curriculum_id
+    );
+
+    if (facilitatorProgramIds.length === 0) {
+      throw new UnauthorizedError(
+        `Not allowed to add a new assessment for this curriculum.`
+      );
+    }
+
+    const curriculumAssessment = await createCurriculumAssessment(
+      curriculumAssessmentFromUser
+    );
+
+    res.status(201).json(itemEnvelope(curriculumAssessment));
+  } catch (error) {
+    next(error);
+    return;
+  }
 });
 
 // Update an existing CurriculumAssessment
@@ -486,7 +523,126 @@ assessmentsRouter.get(
 assessmentsRouter.get(
   '/program/:programAssessmentId/submissions/new',
   async (req, res, next) => {
-    res.json();
+    // get the principal row ID number
+    const { principalId } = req.session;
+
+    // get and parse the program assessment row ID number
+    const { programAssessmentId } = req.params;
+
+    const programAssessmentIdParsed = Number(programAssessmentId);
+
+    if (
+      !Number.isInteger(programAssessmentIdParsed) ||
+      programAssessmentIdParsed < 1
+    ) {
+      next(
+        new BadRequestError(
+          `"${programAssessmentId}" is not a valid program assessment ID.`
+        )
+      );
+      return;
+    }
+
+    try {
+      const programAssessment = await findProgramAssessment(
+        programAssessmentIdParsed
+      );
+
+      if (!programAssessment) {
+        throw new NotFoundError(
+          `Could not find program assessment with ID ${programAssessmentIdParsed}.`
+        );
+      }
+
+      if (
+        DateTime.fromISO(programAssessment.available_after) > DateTime.now()
+      ) {
+        throw new ForbiddenError(
+          `Could not create a new submission of an assessment that's not yet available.`
+        );
+      }
+
+      if (DateTime.fromISO(programAssessment.due_date) < DateTime.now()) {
+        throw new ForbiddenError(
+          `Could not create a new submission of an assessment after its due date.`
+        );
+      }
+
+      const programRole = await getPrincipalProgramRole(
+        principalId,
+        programAssessment.program_id
+      );
+
+      if (!programRole) {
+        throw new UnauthorizedError(
+          `Could not access program assessment with ID ${programAssessmentIdParsed}) without enrollment.`
+        );
+      }
+
+      if (programRole === 'Facilitator') {
+        throw new UnauthorizedError(
+          `Facilitators are not allowed to create program assessment submissions.`
+        );
+      }
+
+      // get the curriculum assessment, without its answer and correct answers.
+      const includeQuestionsAndAllAnswers = true;
+      const includeQuestionsAndCorrectAnswers = false;
+      const curriculumAssessment = await getCurriculumAssessment(
+        programAssessment.assessment_id,
+        includeQuestionsAndAllAnswers,
+        includeQuestionsAndCorrectAnswers
+      );
+
+      // get the list of the programm assessment submission
+      const existingAssessmentSubmissions =
+        await listParticipantProgramAssessmentSubmissions(
+          principalId,
+          programAssessment.id
+        );
+
+      let assessmentSubmission: AssessmentSubmission;
+
+      if (!existingAssessmentSubmissions) {
+        assessmentSubmission = await createAssessmentSubmission(
+          principalId,
+          programAssessmentIdParsed
+        );
+      } else {
+        const inProgressSubmissions: AssessmentSubmission[] =
+          existingAssessmentSubmissions.filter(assessmentSubmission =>
+            ['Opened', 'In Progress'].includes(
+              assessmentSubmission.assessment_submission_state
+            )
+          );
+
+        if (
+          existingAssessmentSubmissions.length >=
+            curriculumAssessment.max_num_submissions &&
+          inProgressSubmissions.length === 0
+        ) {
+          //If the participant has no currently "Opened" or "In Progress" submission and reach the submission limit.
+          //Return Forbidden Error.
+          throw new ForbiddenError(
+            `Could not create a new submission as you have reached the maximum number of submissions for this assessment.`
+          );
+        }
+
+        [assessmentSubmission] = inProgressSubmissions;
+      }
+
+      const assessmentWithSubmission: SavedAssessment = {
+        curriculum_assessment: curriculumAssessment,
+        program_assessment: programAssessment,
+        principal_program_role: programRole,
+        submission: assessmentSubmission,
+      };
+
+      res.json(itemEnvelope(assessmentWithSubmission));
+    } catch (err) {
+      next(err);
+      return;
+    }
   }
 );
 
