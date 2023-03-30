@@ -371,8 +371,8 @@ const AssessmentsListTable = ({
               <TableCellWrapper
                 statusTab={currentStatusTab}
                 index={[StatusTab.Past]}
-                showForFacilitator={true}
-                showForParticipant={false}
+                showForFacilitator={false}
+                showForParticipant={true}
                 principalRoles={userRoles}
               >
                 {(assessment.participant_submissions_summary?.highest_state ===
@@ -425,8 +425,8 @@ const AssessmentsListTable = ({
                   StatusTab.Past,
                   StatusTab.Upcoming,
                 ]}
-                showForFacilitator={true}
-                showForParticipant={false}
+                showForFacilitator={false}
+                showForParticipant={true}
                 principalRoles={userRoles}
               >
                 {assessment.participant_submissions_summary &&
@@ -438,8 +438,8 @@ const AssessmentsListTable = ({
               <TableCellWrapper
                 statusTab={currentStatusTab}
                 index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}
-                showForFacilitator={true}
-                showForParticipant={false}
+                showForFacilitator={false}
+                showForParticipant={true}
                 principalRoles={userRoles}
               >
                 {assessment.participant_submissions_summary &&
