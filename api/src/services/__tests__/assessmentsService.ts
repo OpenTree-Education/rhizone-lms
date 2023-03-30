@@ -120,8 +120,8 @@ describe('constructParticipantAssessmentSummary', () => {
       ]
     );
     mockQuery(
-      'select `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_id` = ? and `principal_id` = ?',
-      [exampleProgramAssessment.assessment_id, participantPrincipalId],
+      'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
+      [participantPrincipalId, exampleProgramAssessment.assessment_id],
       [assessmentSubmissionsRowGraded]
     );
     mockQuery(
@@ -139,7 +139,32 @@ describe('constructParticipantAssessmentSummary', () => {
   });
 });
 
-describe('createAssessmentSubmission', () => {});
+describe('createAssessmentSubmission', () => {
+  it('should create a new AssessmentSubmission for a program assessment', async () => {
+    const openedSubmission = {
+      ...exampleAssessmentSubmissionOpened,
+      opened_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
+    };
+
+    mockQuery(
+      'select `id` from `assessment_submission_states` where `title` = ?',
+      ['Opened'],
+      [3]
+    );
+    mockQuery(
+      'insert into `assessment_submissions` (`assessment_id`, `assessment_submission_state_id`, `principal_id`) values (?, DEFAULT, ?)',
+      [exampleAssessmentSubmissionOpened.assessment_id, participantPrincipalId],
+      [exampleAssessmentSubmissionOpened.id]
+    );
+
+    expect(
+      await createAssessmentSubmission(
+        participantPrincipalId,
+        exampleAssessmentSubmissionOpened.assessment_id
+      )
+    ).toEqual(openedSubmission);
+  });
+});
 
 describe('createCurriculumAssessment', () => {
   it('should create a curriculum assessment ID without question', async () => {
@@ -544,8 +569,8 @@ describe('listAllProgramAssessmentSubmissions', () => {
 describe('listParticipantProgramAssessmentSubmissions', () => {
   it('should return program assessment submissions for a participant for a given program assessment', async () => {
     mockQuery(
-      'select `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_id` = ? and `principal_id` = ?',
-      [exampleAssessmentSubmissionOpened.assessment_id, participantPrincipalId],
+      'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
+      [participantPrincipalId, exampleAssessmentSubmissionOpened.assessment_id],
       [matchingAssessmentSubmissionOpenedRow]
     );
     expect(
@@ -558,8 +583,8 @@ describe('listParticipantProgramAssessmentSubmissions', () => {
 
   it('should return null if no program assessment submissions for a given program assessment', async () => {
     mockQuery(
-      'select `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_id` = ? and `principal_id` = ?',
-      [exampleAssessmentSubmissionOpened.assessment_id, participantPrincipalId],
+      'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
+      [participantPrincipalId, exampleAssessmentSubmissionOpened.assessment_id],
       []
     );
 
