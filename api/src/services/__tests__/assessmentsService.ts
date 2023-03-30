@@ -49,15 +49,19 @@ import {
   updatedProgramAssessmentsRow,
   newCurriculumAssessment,
   updatedCurriculumAssessment,
-  newCurriculumAssessmentWithQuestion,
+  newCurriculumAssessmentWithSingleChoiceQuestion,
+  newCurriculumAssessmentWithFreeResponseQuestion,
   newProgramAssessment,
   exampleAssessmentSubmissionOpened,
   exampleOtherAssessmentSubmissionSubmitted,
   matchingAssessmentSubmissionOpenedRow,
   matchingOtherAssessmentSubmissionSubmittedRow,
-  updatedQuestions,
-  updatedCurriculumAssessmentWithQuestions,
-  updatedAnswers,
+  updatedSingleChoiceAnswer,
+  updatedCurriculumAssessmentWithSingleChoiceQuestion,
+  updatedSingleChoiceQuestion,
+  updatedFreeResponseAnswer,
+  updatedCurriculumAssessmentWithFreeResponseQuestion,
+  updatedFreeResponseQuestion,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -187,18 +191,18 @@ describe('createCurriculumAssessment', () => {
       updatedCurriculumAssessment
     );
   });
-  it('should create a curriculum assessment ID with questions', async () => {
+  it('should create a curriculum assessment ID with a single choice question', async () => {
     mockQuery(
       'insert into `curriculum_assessments` (`activity_id`, `curriculum_id`, `description`, `max_num_submissions`, `max_score`, `principal_id`, `time_limit`, `title`) values (?, ?, ?, ?, ?, ?, ?, ?)',
       [
-        newCurriculumAssessmentWithQuestion.activity_id,
-        newCurriculumAssessmentWithQuestion.curriculum_id,
-        newCurriculumAssessmentWithQuestion.description,
-        newCurriculumAssessmentWithQuestion.max_num_submissions,
-        newCurriculumAssessmentWithQuestion.max_score,
-        newCurriculumAssessmentWithQuestion.principal_id,
-        newCurriculumAssessmentWithQuestion.time_limit,
-        newCurriculumAssessmentWithQuestion.title,
+        newCurriculumAssessmentWithSingleChoiceQuestion.activity_id,
+        newCurriculumAssessmentWithSingleChoiceQuestion.curriculum_id,
+        newCurriculumAssessmentWithSingleChoiceQuestion.description,
+        newCurriculumAssessmentWithSingleChoiceQuestion.max_num_submissions,
+        newCurriculumAssessmentWithSingleChoiceQuestion.max_score,
+        newCurriculumAssessmentWithSingleChoiceQuestion.principal_id,
+        newCurriculumAssessmentWithSingleChoiceQuestion.time_limit,
+        newCurriculumAssessmentWithSingleChoiceQuestion.title,
       ],
       [updatedCurriculumAssessment.id]
     );
@@ -206,28 +210,96 @@ describe('createCurriculumAssessment', () => {
       'insert into `assessment_questions` (`assessment_id`, `description`, `max_score`, `question_type_id`, `sort_order`, `title`) values (?, ?, ?, ?, ?, ?)',
       [
         updatedCurriculumAssessment.id,
-        newCurriculumAssessmentWithQuestion.questions[0].description,
-        newCurriculumAssessmentWithQuestion.questions[0].max_score,
+        newCurriculumAssessmentWithSingleChoiceQuestion.questions[0]
+          .description,
+        newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].max_score,
         1,
-        newCurriculumAssessmentWithQuestion.questions[0].sort_order,
-        newCurriculumAssessmentWithQuestion.questions[0].title,
+        newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].sort_order,
+        newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].title,
       ],
-      [updatedQuestions.id]
+      [updatedSingleChoiceQuestion.id]
     );
 
     mockQuery(
       'insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)',
       [
-        newCurriculumAssessmentWithQuestion.questions[0].answers[0].description,
-        updatedQuestions.id,
-        newCurriculumAssessmentWithQuestion.questions[0].answers[0].sort_order,
-        newCurriculumAssessmentWithQuestion.questions[0].answers[0].title,
+        newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].answers[0]
+          .description,
+        updatedSingleChoiceQuestion.id,
+        newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].answers[0]
+          .sort_order,
+        newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].answers[0]
+          .title,
       ],
-      [updatedAnswers.id]
+      [updatedSingleChoiceAnswer.id]
     );
+
+    mockQuery(
+      'update `assessment_questions` set `correct_answer_id` = ? where `id` = ?',
+      [updatedSingleChoiceAnswer.id, updatedSingleChoiceQuestion.id],
+      []
+    );
+
     expect(
-      await createCurriculumAssessment(newCurriculumAssessmentWithQuestion)
-    ).toEqual(updatedCurriculumAssessmentWithQuestions);
+      await createCurriculumAssessment(
+        newCurriculumAssessmentWithSingleChoiceQuestion
+      )
+    ).toEqual(updatedCurriculumAssessmentWithSingleChoiceQuestion);
+  });
+  it('should create a curriculum assessment ID with a free response question', async () => {
+    mockQuery(
+      'insert into `curriculum_assessments` (`activity_id`, `curriculum_id`, `description`, `max_num_submissions`, `max_score`, `principal_id`, `time_limit`, `title`) values (?, ?, ?, ?, ?, ?, ?, ?)',
+      [
+        newCurriculumAssessmentWithFreeResponseQuestion.activity_id,
+        newCurriculumAssessmentWithFreeResponseQuestion.curriculum_id,
+        newCurriculumAssessmentWithFreeResponseQuestion.description,
+        newCurriculumAssessmentWithFreeResponseQuestion.max_num_submissions,
+        newCurriculumAssessmentWithFreeResponseQuestion.max_score,
+        newCurriculumAssessmentWithFreeResponseQuestion.principal_id,
+        newCurriculumAssessmentWithFreeResponseQuestion.time_limit,
+        newCurriculumAssessmentWithFreeResponseQuestion.title,
+      ],
+      [updatedCurriculumAssessment.id]
+    );
+    mockQuery(
+      'insert into `assessment_questions` (`assessment_id`, `description`, `max_score`, `question_type_id`, `sort_order`, `title`) values (?, ?, ?, ?, ?, ?)',
+      [
+        updatedCurriculumAssessment.id,
+        newCurriculumAssessmentWithFreeResponseQuestion.questions[0]
+          .description,
+        newCurriculumAssessmentWithFreeResponseQuestion.questions[0].max_score,
+        2,
+        newCurriculumAssessmentWithFreeResponseQuestion.questions[0].sort_order,
+        newCurriculumAssessmentWithFreeResponseQuestion.questions[0].title,
+      ],
+      [updatedFreeResponseQuestion.id]
+    );
+
+    mockQuery(
+      'insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)',
+      [
+        newCurriculumAssessmentWithFreeResponseQuestion.questions[0].answers[0]
+          .description,
+        updatedFreeResponseQuestion.id,
+        newCurriculumAssessmentWithFreeResponseQuestion.questions[0].answers[0]
+          .sort_order,
+        newCurriculumAssessmentWithFreeResponseQuestion.questions[0].answers[0]
+          .title,
+      ],
+      [updatedFreeResponseAnswer.id]
+    );
+
+    mockQuery(
+      'update `assessment_questions` set `correct_answer_id` = ? where `id` = ?',
+      [updatedFreeResponseAnswer.id, updatedFreeResponseQuestion.id],
+      []
+    );
+
+    expect(
+      await createCurriculumAssessment(
+        newCurriculumAssessmentWithFreeResponseQuestion
+      )
+    ).toEqual(updatedCurriculumAssessmentWithFreeResponseQuestion);
   });
 });
 

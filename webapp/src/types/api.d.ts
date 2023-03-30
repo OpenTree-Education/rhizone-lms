@@ -157,7 +157,7 @@ export interface Question extends Entity {
   question_type: string;
   answers?: Answer[];
   correct_answer_id?: number;
-  max_score?: number;
+  max_score: number;
   sort_order: number;
 }
 

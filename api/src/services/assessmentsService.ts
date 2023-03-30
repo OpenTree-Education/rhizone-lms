@@ -486,17 +486,17 @@ export const constructParticipantAssessmentSummary = async (
   }
 
   let mostRecentSubmittedDate;
-  const mostRecentSubmittedDateFormDB = await db('assessment_submissions')
+  const mostRecentSubmittedDateFromDB = await db('assessment_submissions')
     .select('submitted_at')
     .where('principal_id', participantPrincipalId)
     .andWhere('assessment_id', programAssessmentId)
     .orderBy('submitted_at', 'desc')
     .limit(1);
 
-  if (mostRecentSubmittedDateFormDB.length === 0) {
+  if (mostRecentSubmittedDateFromDB.length === 0) {
     mostRecentSubmittedDate = '';
   } else {
-    mostRecentSubmittedDate = mostRecentSubmittedDateFormDB[0].submitted_at;
+    mostRecentSubmittedDate = mostRecentSubmittedDateFromDB[0].submitted_at;
   }
 
   const totalNumSubmissions = await listParticipantProgramAssessmentSubmissions(
