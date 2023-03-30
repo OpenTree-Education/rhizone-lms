@@ -104,22 +104,49 @@ const createAssessmentQuestion = async (
   curriculumAssessmentId: number,
   question: Question
 ): Promise<Question> => {
-  let questionId: number;
-  await db('questions')
-      .insert({
-        curriculum_assessment_id: curriculumAssessmentId,
-        question: question,
-        question_id: questionId,
-        assessment_id: question.assessment_id,
-        title: question.title,
-        description: question.description,
-        question_type: question.question_type,
-        answers: question.answers,
-        correct_answer_id: question.correct_answer_id,
-        max_score: question.max_score,
-        sort_order: question.sort_order,
-      })
-  return;
+  const [insertedAssessmentQuestionId] = await db(
+    'assessment_questions'
+  ).insert({
+    assessment_id: curriculumAssessmentId,
+    title: question.title,
+    description: question.description,
+    question_type_id: question.question_type === 'single choice' ? 1 : 2,
+    max_score: question.max_score,
+    sort_order: question.sort_order,
+  });
+
+  const insertedAnswers: Answer[] = [];
+  let correctAnswerId;
+
+  for (const assessmentAnswer of question.answers) {
+    const insertedAnswer = await createAssessmentQuestionAnswer(
+      insertedAssessmentQuestionId,
+      assessmentAnswer
+    );
+
+    if (question.question_type === 'single choice') {
+      if (insertedAnswer.correct_answer === true) {
+        correctAnswerId = insertedAnswer.id;
+      }
+    } else if (question.question_type === 'free response') {
+      correctAnswerId = insertedAnswer.id;
+    }
+    insertedAnswers.push(insertedAnswer);
+  }
+
+  if (correctAnswerId) {
+    await db('assessment_questions')
+      .update('correct_answer_id', correctAnswerId)
+      .where('id', insertedAssessmentQuestionId);
+  }
+
+  const updatedAssessmentQuestion = {
+    ...question,
+    id: insertedAssessmentQuestionId,
+    answers: insertedAnswers,
+  };
+
+  return updatedAssessmentQuestion;
 };
 
 /**
@@ -137,7 +164,20 @@ const createAssessmentQuestionAnswer = async (
   questionId: number,
   answer: Answer
 ): Promise<Answer> => {
-  return;
+  const [insertedAssessmentAnswersId] = await db('assessment_answers').insert({
+    question_id: questionId,
+    title: answer.title,
+    description: answer.description,
+    sort_order: answer.sort_order,
+  });
+
+  const updatedAssessmentAnswer = {
+    ...answer,
+    question_id: questionId,
+    id: insertedAssessmentAnswersId,
+  };
+
+  return updatedAssessmentAnswer;
 };
 
 /**
@@ -333,17 +373,17 @@ const updateAssessmentQuestion = async (
   question: Question
 ): Promise<Question> => {
   await db('assessment_questions')
-      .update({
-        assessment_id: question.assessment_id,
-        title: question.title,
-        description: question.description,
-        question_type: question.question_type,
-        answers: question.answers,
-        correct_answer_id: question.correct_answer_id,
-        max_score: question.max_score,
-        sort_order: question.sort_order,
-      })
-      .where('id', question.id);
+    .update({
+      assessment_id: question.assessment_id,
+      title: question.title,
+      description: question.description,
+      question_type: question.question_type,
+      answers: question.answers,
+      correct_answer_id: question.correct_answer_id,
+      max_score: question.max_score,
+      sort_order: question.sort_order,
+    })
+    .where('id', question.id);
   return;
 };
 
@@ -427,7 +467,8 @@ export const constructParticipantAssessmentSummary = async (
   participantPrincipalId: number,
   programAssessmentId: number
 ): Promise<ParticipantAssessmentSubmissionsSummary> => {
-  const [highestState] = await db('assessment_submissions')
+  let highestState;
+  const highestStateFromDB = await db('assessment_submissions')
     .select('assessment_submission_states.title')
     .join(
       'assessment_submission_states',
@@ -438,33 +479,52 @@ export const constructParticipantAssessmentSummary = async (
     .andWhere('assessment_submissions.assessment_id', programAssessmentId)
     .orderBy('assessment_submissions.assessment_submission_state_id', 'desc')
     .limit(1);
+  if (highestStateFromDB.length === 0) {
+    highestState = 'Active';
+  } else {
+    highestState = highestStateFromDB[0].title;
+  }
 
-  const [mostRecentSubmittedDate] = await db('assessment_submissions')
+  let mostRecentSubmittedDate;
+  const mostRecentSubmittedDateFromDB = await db('assessment_submissions')
     .select('submitted_at')
     .where('principal_id', participantPrincipalId)
     .andWhere('assessment_id', programAssessmentId)
     .orderBy('submitted_at', 'desc')
     .limit(1);
 
+  if (mostRecentSubmittedDateFromDB.length === 0) {
+    mostRecentSubmittedDate = '';
+  } else {
+    mostRecentSubmittedDate = mostRecentSubmittedDateFromDB[0].submitted_at;
+  }
+
   const totalNumSubmissions = await listParticipantProgramAssessmentSubmissions(
     participantPrincipalId,
     programAssessmentId
   );
 
-  const [highestScore] = await db('assessment_submissions')
+  let highestScore;
+  const highestScoreFromDB = await db('assessment_submissions')
     .select('score')
     .where('principal_id', participantPrincipalId)
     .andWhere('assessment_id', programAssessmentId)
     .orderBy('score', 'desc')
     .limit(1);
 
+  if (highestScoreFromDB.length === 0) {
+    highestScore = 0;
+  } else {
+    highestScore = highestScoreFromDB[0].score;
+  }
+
   const participantAssessmentSummary: ParticipantAssessmentSubmissionsSummary =
     {
       principal_id: participantPrincipalId,
-      highest_state: highestState.title,
-      most_recent_submitted_date: mostRecentSubmittedDate.submitted_at,
+      highest_state: highestState,
+      most_recent_submitted_date: mostRecentSubmittedDate,
       total_num_submissions: totalNumSubmissions.length,
-      highest_score: highestScore.score,
+      highest_score: highestScore,
     };
 
   return participantAssessmentSummary;
@@ -523,7 +583,39 @@ export const createAssessmentSubmission = async (
 export const createCurriculumAssessment = async (
   curriculumAssessment: CurriculumAssessment
 ): Promise<CurriculumAssessment> => {
-  return;
+  const [insertedCurriculumAssessmentRowId] = await db(
+    'curriculum_assessments'
+  ).insert({
+    title: curriculumAssessment.title,
+    description: curriculumAssessment.description,
+    max_score: curriculumAssessment.max_score,
+    max_num_submissions: curriculumAssessment.max_num_submissions,
+    time_limit: curriculumAssessment.time_limit,
+    curriculum_id: curriculumAssessment.curriculum_id,
+    activity_id: curriculumAssessment.activity_id,
+    principal_id: curriculumAssessment.principal_id,
+  });
+
+  const insertedQuestions: Question[] = [];
+
+  if (typeof curriculumAssessment.questions !== 'undefined') {
+    for (const assessmentQuestion of curriculumAssessment.questions) {
+      insertedQuestions.push(
+        await createAssessmentQuestion(
+          insertedCurriculumAssessmentRowId,
+          assessmentQuestion
+        )
+      );
+    }
+  }
+
+  const updatedCurriculumAssessment: CurriculumAssessment = {
+    ...curriculumAssessment,
+    id: insertedCurriculumAssessmentRowId,
+    questions: insertedQuestions,
+  };
+
+  return updatedCurriculumAssessment;
 };
 
 /**
@@ -1074,7 +1166,7 @@ export const updateAssessmentSubmission = async (
  *   object that was handed to us, if update was successful.
  */
 export const updateCurriculumAssessment = async (
-  curriculumAssessment: CurriculumAssessment,
+  curriculumAssessment: CurriculumAssessment
 ): Promise<CurriculumAssessment> => {
   // need to loop through and call updateAssessmentQuestion for each question that exists;
   // need to createAssessmentQuestion for each question that does not exist;
