@@ -506,7 +506,7 @@ export const createProgramAssessment = async (
 export const deleteCurriculumAssessment = async (
   curriculumAssessmentId: number
 ): Promise<void> => {
-  return db('programs_assessments')
+  return db('curriculum_assessments')
     .where('id', curriculumAssessmentId)
     .delete();
 };

@@ -227,6 +227,7 @@ describe('assessmentsRouter', () => {
   describe('GET /curriculum/:curriculumAssessmentId', () => {});
   describe('POST /curriculum', () => {});
   describe('PUT /curriculum/:curriculumAssessmentId', () => {});
+
   describe('DELETE /curriculum/:curriculumAssessmentId', () => {
     it('should delete a program curriculumAssessment if principal ID is a program facilitator of that curriculum', done => {
       mockGetCurriculumAssessment.mockResolvedValue(
@@ -252,15 +253,16 @@ describe('assessmentsRouter', () => {
           exampleFacilitatorProgramIdsMatchingCurriculum
         );
         mockDeleteCurriculumAssessment.mockResolvedValue();
-      });
 
-      // Exist in database
+         // Exist in database
       mockPrincipalId(validFacilitatorPrincipalId);
+      
+
+     
 
       appAgent
-        .delete(`/program/${exampleCurriculumAssessment.id}`)
-        .send(exampleCurriculumAssessment)
-        .expect(201, err => {
+        .delete(`/curriculum/${exampleCurriculumAssessment.id}`)
+        .expect(204, err => {
           expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
             exampleCurriculumAssessment.id
           );
@@ -275,7 +277,7 @@ describe('assessmentsRouter', () => {
             exampleCurriculumAssessment.id
           );
         });
-
+});
       it('should respond with an Unauthorized Error if the the facilitator is not taking the program with the curriculum', done => {
         mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
           exampleFacilitatorProgramIdsNoMatchingCurriculum
