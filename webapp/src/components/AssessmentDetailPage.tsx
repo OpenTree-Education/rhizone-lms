@@ -20,11 +20,24 @@ import { AssessmentResponse, SavedAssessment } from '../types/api';
 import AssessmentMetadataBar from './AssessmentMetadataBar';
 import AssessmentDisplay from './AssessmentDisplay';
 import AssessmentSubmitBar from './AssessmentSubmitBar';
+import useApiData from '../helpers/useApiData';
 
 const AssessmentDetailPage = () => {
   const { assessmentId, submissionId } = useParams();
   const assessmentIdNumber = Number(assessmentId);
   const submissionIdNumber = Number(submissionId);
+  const path = Number.isInteger(submissionIdNumber)
+    ? `/assessments/submissions/${submissionIdNumber}`
+    : `/assessments/program/${assessmentIdNumber}/submissions/new`;
+  const {
+    data: fetchAssessment,
+    error,
+    isLoading,
+  } = useApiData<SavedAssessment>({
+    deps: [submissionIdNumber],
+    path: path,
+    sendCredentials: true,
+  });
 
   // Previously used to find the assessment details, but that will be covered by
   // the call to the backend:
@@ -33,7 +46,9 @@ const AssessmentDetailPage = () => {
   //   assessment => assessment.id === assessmentIdNumber
   // );
 
-  const [assessment, setAssessment] = useState<SavedAssessment>();
+  const [assessment, setAssessment] = useState<SavedAssessment>(
+    fetchAssessment!
+  );
   const [numOfAnsweredQuestions, setNumOfAnsweredQuestions] = useState(0);
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
   const [endTime, setEndTime] = useState<Date | null>(null);
@@ -43,7 +58,10 @@ const AssessmentDetailPage = () => {
   // First, let's load the example data. This will be replaced by the backend
   // API call in a future ticket.
   useEffect(() => {
-    setAssessment(assessmentDetailPageExampleData);
+    // setAssessment(assessmentDetailPageExampleData);
+    // if(fetchAssessment){
+    //   setAssessment(fetchAssessment);
+    //   }
   }, []);
 
   useEffect(() => {
@@ -219,9 +237,9 @@ const AssessmentDetailPage = () => {
 
   if (
     !Number.isInteger(assessmentIdNumber) ||
-    !Number.isInteger(submissionIdNumber) ||
-    assessmentIdNumber < 1 ||
-    submissionIdNumber < 1
+    //!Number.isInteger(submissionIdNumber) ||
+    assessmentIdNumber < 1 //||
+    //submissionIdNumber < 1
   ) {
     return (
       <Alert severity="error">
@@ -253,53 +271,55 @@ const AssessmentDetailPage = () => {
 
   return (
     <Container>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <h1>{assessment.curriculum_assessment.title}</h1>
-        </Grid>
+      {!isLoading && (
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <h1>{assessment.curriculum_assessment.title}</h1>
+          </Grid>
 
-        <Grid item xs={12} md={12}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={3}>
-              <AssessmentMetadataBar
-                assessment={assessment}
-                secondsRemaining={secondsRemaining}
-                endTime={endTime}
-                submissionDisabled={submissionDisabled}
-              />
-            </Grid>
+          <Grid item xs={12} md={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={3}>
+                <AssessmentMetadataBar
+                  assessment={assessment}
+                  secondsRemaining={secondsRemaining}
+                  endTime={new Date()}
+                  submissionDisabled={submissionDisabled}
+                />
+              </Grid>
 
-            <Grid
-              id="assessment_display"
-              item
-              xs={12}
-              md={7.5}
-              sx={{
-                height: '75vh',
-                overflowX: 'auto',
-                overflowY: 'scroll',
-                backgroundColor: '#fafafa',
-                boxShadow: '0 0 0.25em rgba(0,0,0,0.35)',
-              }}
-            >
-              <AssessmentDisplay
-                assessment={assessment}
-                handleUpdatedResponse={handleUpdatedResponse}
-                questionsDisabled={submissionDisabled}
-              />
-            </Grid>
+              <Grid
+                id="assessment_display"
+                item
+                xs={12}
+                md={7.5}
+                sx={{
+                  height: '75vh',
+                  overflowX: 'auto',
+                  overflowY: 'scroll',
+                  backgroundColor: '#fafafa',
+                  boxShadow: '0 0 0.25em rgba(0,0,0,0.35)',
+                }}
+              >
+                <AssessmentDisplay
+                  assessment={assessment}
+                  handleUpdatedResponse={handleUpdatedResponse}
+                  questionsDisabled={submissionDisabled}
+                />
+              </Grid>
 
-            <Grid item xs={12} md={1.5}>
-              <AssessmentSubmitBar
-                assessment={assessment}
-                numOfAnsweredQuestions={numOfAnsweredQuestions}
-                setShowSubmitDialog={setShowSubmitDialog}
-                submitButtonDisabled={submissionDisabled}
-              />
+              <Grid item xs={12} md={1.5}>
+                <AssessmentSubmitBar
+                  assessment={assessment}
+                  numOfAnsweredQuestions={numOfAnsweredQuestions}
+                  setShowSubmitDialog={setShowSubmitDialog}
+                  submitButtonDisabled={submissionDisabled}
+                />
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
-      </Grid>
+      )}
       <Dialog
         open={showSubmitDialog}
         onClose={() => setShowSubmitDialog(false)}

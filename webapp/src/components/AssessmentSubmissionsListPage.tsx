@@ -82,7 +82,14 @@ const AssessmentSubmissionsListPage = () => {
       assessment.curriculum_assessment.max_num_submissions >
         assessment.submissions.length
     ) {
-      return <Button variant="contained">New Submission</Button>;
+      return (
+        <Button
+          href={`/assessments/${assessmentIdNumber}/submission/new`}
+          variant="contained"
+        >
+          New Submission
+        </Button>
+      );
     }
     return null;
   };
@@ -185,7 +192,7 @@ const AssessmentSubmissionsListPage = () => {
                         <Button
                           variant="contained"
                           size="small"
-                          href={`/assessments/${assessmentIdNumber}/${submission.id}`}
+                          href={`/assessments/${assessmentIdNumber}/submission/${submission.id}`}
                         >
                           Review
                         </Button>

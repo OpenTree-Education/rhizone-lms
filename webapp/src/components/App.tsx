@@ -71,7 +71,15 @@ const App = () => {
             }
           />
           <Route
-            path="/assessments/:assessmentId/:submissionId"
+            path="/assessments/:assessmentId/submission/:submissionId"
+            element={
+              <RequireAuth>
+                <AssessmentsDetailPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/assessments/:assessmentId/submission/new"
             element={
               <RequireAuth>
                 <AssessmentsDetailPage />
