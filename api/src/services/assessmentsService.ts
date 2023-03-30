@@ -160,7 +160,7 @@ const createAssessmentQuestion = async (
  * @returns {Promise<Answer>} The updated Answer object that was handed to us
  *   but with row ID specified.
  */
-export const createAssessmentQuestionAnswer = async (
+const createAssessmentQuestionAnswer = async (
   questionId: number,
   answer: Answer
 ): Promise<Answer> => {
@@ -1015,6 +1015,7 @@ export const listPrincipalEnrolledProgramIds = async (
   const enrolledProgramsList = await db('program_participants')
     .select('program_id')
     .where({ principal_id: principalId });
+
   if (enrolledProgramsList.length === 0) {
     return null;
   }
@@ -1099,6 +1100,7 @@ export const facilitatorProgramIdsMatchingCurriculum = async (
       }
     }
   }
+
   return matchingFacilitatorPrograms;
 };
 
