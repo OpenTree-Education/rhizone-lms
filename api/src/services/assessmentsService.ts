@@ -1107,56 +1107,55 @@ export const updateAssessmentSubmission = async (
   let newState;
 
   if (facilitatorOverride) {
-    if (
-      !existingAssessmentSubmission.responses ||
-      existingAssessmentSubmission.responses.length === 0
-    ) {
-      console.log(
-        `Could not submit grading, there is no existing submission response for this submission(ID ${assessmentSubmission.id})`
-      );
-      return null;
-    }
-
-    // update scores for each response
-    assessmentSubmission.responses.map(async response => {
-      await updateSubmissionResponse(response, facilitatorOverride);
+    // update each response's score and grading, only if there is a matching existing responses
+    assessmentSubmission.responses?.map(async response => {
+      if (
+        existingAssessmentSubmission.responses?.filter(
+          e => e.id === response.id
+        )?.length === 1
+      ) {
+        await updateSubmissionResponse(response, facilitatorOverride);
+      }
     });
 
     // update submission state and score
-    newState = 'Graded';
+    newState = assessmentSubmission.assessment_submission_state;
     const [gradedStateId] = await db('assessment_submission_states')
       .select('id')
       .where('title', newState);
     await db('assessment_submissions')
-      .update({ state_id: gradedStateId.id, score: assessmentSubmission.score })
+      .update({
+        assessment_submission_state_id: gradedStateId.id,
+        score: assessmentSubmission.score,
+      })
       .where('id', assessmentSubmission.id);
   } else if (
-    existingAssessmentSubmission.assessment_submission_state === 'Opened' ||
-    existingAssessmentSubmission.assessment_submission_state === 'In Progress'
+    ['Opened', 'In Progress'].includes(
+      existingAssessmentSubmission.assessment_submission_state
+    )
   ) {
     // participant could only update opened and in progress submssion that within due date.
-    if (new Date(programAssessment.due_date + 'Z') > new Date()) {
+    if (new Date(programAssessment.due_date + 'Z') < new Date()) {
+      newState = 'Expired';
+    } else {
       // participant could only update state to 'Submitted' or 'In Progress', defalut in progress.
       newState =
         assessmentSubmission.assessment_submission_state === 'Submitted'
           ? 'Submitted'
           : 'In Progress';
-      // if there was no exisiting response, insert new response, otherwise update
-      if (
-        assessmentSubmission.responses &&
-        (!existingAssessmentSubmission.responses ||
-          existingAssessmentSubmission.responses.length === 0)
-      ) {
-        assessmentSubmission.responses.map(
-          async response => await createSubmissionResponse(response)
-        );
-      } else {
-        assessmentSubmission.responses.map(
-          async response => await updateSubmissionResponse(response)
-        );
-      }
-    } else {
-      newState = 'Expired';
+
+      // if there is an exisiting response, update it, otherwise insert new response.
+      assessmentSubmission.responses?.map(async response => {
+        if (
+          existingAssessmentSubmission.responses?.filter(
+            e => e.id === response.id
+          )?.length === 1
+        ) {
+          await updateSubmissionResponse(response);
+        } else {
+          await createSubmissionResponse(response);
+        }
+      });
     }
 
     const [newStateId] = await db('assessment_submission_states')
@@ -1166,13 +1165,13 @@ export const updateAssessmentSubmission = async (
     if (newState === 'Submitted') {
       await db('assessment_submissions')
         .update({
-          state_id: newStateId.id,
+          assessment_submission_state_id: newStateId.id,
           submitted_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
         })
         .where('id', assessmentSubmission.id);
     } else {
       await db('assessment_submissions')
-        .update({ state_id: newStateId.id })
+        .update({ assessment_submission_state_id: newStateId.id })
         .where('id', assessmentSubmission.id);
     }
   } else {
@@ -1183,20 +1182,13 @@ export const updateAssessmentSubmission = async (
     return null;
   }
 
-  const updatedResponses = await listSubmissionResponses(
-    assessmentSubmission.id
+  const updatedSubmission: AssessmentSubmission = await getAssessmentSubmission(
+    assessmentSubmission.id,
+    true,
+    facilitatorOverride
   );
 
-  return {
-    id: assessmentSubmission.id,
-    assessment_id: assessmentSubmission.assessment_id,
-    principal_id: assessmentSubmission.principal_id,
-    assessment_submission_state: newState,
-    score: assessmentSubmission.score,
-    opened_at: assessmentSubmission.opened_at,
-    submitted_at: assessmentSubmission.submitted_at,
-    responses: updatedResponses,
-  } as AssessmentSubmission;
+  return updatedSubmission;
 };
 
 /**
