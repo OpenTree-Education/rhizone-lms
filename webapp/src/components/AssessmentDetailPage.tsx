@@ -271,55 +271,54 @@ const AssessmentDetailPage = () => {
 
   return (
     <Container>
-      {!isLoading && (
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
-            <h1>{assessment.curriculum_assessment.title}</h1>
-          </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
+          <h1>{assessment.curriculum_assessment.title}</h1>
+        </Grid>
 
-          <Grid item xs={12} md={12}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={3}>
-                <AssessmentMetadataBar
-                  assessment={assessment}
-                  secondsRemaining={secondsRemaining}
-                  endTime={new Date()}
-                  submissionDisabled={submissionDisabled}
-                />
-              </Grid>
+        <Grid item xs={12} md={12}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={3}>
+              <AssessmentMetadataBar
+                assessment={assessment}
+                secondsRemaining={secondsRemaining}
+                endTime={endTime}
+                submissionDisabled={submissionDisabled}
+              />
+            </Grid>
 
-              <Grid
-                id="assessment_display"
-                item
-                xs={12}
-                md={7.5}
-                sx={{
-                  height: '75vh',
-                  overflowX: 'auto',
-                  overflowY: 'scroll',
-                  backgroundColor: '#fafafa',
-                  boxShadow: '0 0 0.25em rgba(0,0,0,0.35)',
-                }}
-              >
-                <AssessmentDisplay
-                  assessment={assessment}
-                  handleUpdatedResponse={handleUpdatedResponse}
-                  questionsDisabled={submissionDisabled}
-                />
-              </Grid>
+            <Grid
+              id="assessment_display"
+              item
+              xs={12}
+              md={7.5}
+              sx={{
+                height: '75vh',
+                overflowX: 'auto',
+                overflowY: 'scroll',
+                backgroundColor: '#fafafa',
+                boxShadow: '0 0 0.25em rgba(0,0,0,0.35)',
+              }}
+            >
+              <AssessmentDisplay
+                assessment={assessment}
+                handleUpdatedResponse={handleUpdatedResponse}
+                questionsDisabled={submissionDisabled}
+              />
+            </Grid>
 
-              <Grid item xs={12} md={1.5}>
-                <AssessmentSubmitBar
-                  assessment={assessment}
-                  numOfAnsweredQuestions={numOfAnsweredQuestions}
-                  setShowSubmitDialog={setShowSubmitDialog}
-                  submitButtonDisabled={submissionDisabled}
-                />
-              </Grid>
+            <Grid item xs={12} md={1.5}>
+              <AssessmentSubmitBar
+                assessment={assessment}
+                numOfAnsweredQuestions={numOfAnsweredQuestions}
+                setShowSubmitDialog={setShowSubmitDialog}
+                submitButtonDisabled={submissionDisabled}
+              />
             </Grid>
           </Grid>
         </Grid>
-      )}
+      </Grid>
+      )
       <Dialog
         open={showSubmitDialog}
         onClose={() => setShowSubmitDialog(false)}
