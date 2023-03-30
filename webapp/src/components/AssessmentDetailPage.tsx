@@ -318,7 +318,6 @@ const AssessmentDetailPage = () => {
           </Grid>
         </Grid>
       </Grid>
-      )
       <Dialog
         open={showSubmitDialog}
         onClose={() => setShowSubmitDialog(false)}
