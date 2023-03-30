@@ -51,7 +51,6 @@ import {
   updatedCurriculumAssessment,
   newCurriculumAssessmentWithSingleChoiceQuestion,
   newCurriculumAssessmentWithFreeResponseQuestion,
-  newProgramAssessment,
   exampleAssessmentSubmissionOpened,
   exampleOtherAssessmentSubmissionSubmitted,
   matchingAssessmentSubmissionOpenedRow,
@@ -109,35 +108,44 @@ describe('constructFacilitatorAssessmentSummary', () => {
 describe('constructParticipantAssessmentSummary', () => {
   it('should gather the relevant information for constructing a ParticipantAssessmentSubmissionsSummary for a given program assessment', async () => {
     mockQuery(
+      'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
+      [exampleProgramAssessment.id],
+      [exampleProgramAssessmentsRow]
+    );
+    mockQuery(
+      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
+      [exampleProgramAssessmentsRow.program_id],
+      [matchingProgramRow]
+    );
+    mockQuery(
       'select `assessment_submission_states`.`title` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submission_states`.`id` = `assessment_submissions`.`assessment_submission_state_id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ? order by `assessment_submissions`.`assessment_submission_state_id` desc limit ?',
-      [participantPrincipalId, exampleProgramAssessment.assessment_id, 1],
-      [{ title: exampleParticipantAssessmentSubmissionsSummary.highest_state }]
+      [participantPrincipalId, exampleProgramAssessment.id, 1],
+      [{ title: assessmentSubmissionsRowGraded.assessment_submission_state }]
     );
     mockQuery(
       'select `submitted_at` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `submitted_at` desc limit ?',
-      [participantPrincipalId, exampleProgramAssessment.assessment_id, 1],
+      [participantPrincipalId, exampleProgramAssessment.id, 1],
       [
         {
-          submitted_at:
-            exampleParticipantAssessmentSubmissionsSummary.most_recent_submitted_date,
+          submitted_at: assessmentSubmissionsRowGraded.submitted_at,
         },
       ]
     );
     mockQuery(
       'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
-      [participantPrincipalId, exampleProgramAssessment.assessment_id],
+      [participantPrincipalId, exampleProgramAssessment.id],
       [assessmentSubmissionsRowGraded]
     );
     mockQuery(
       'select `score` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `score` desc limit ?',
-      [participantPrincipalId, exampleProgramAssessment.assessment_id, 1],
-      [{ score: exampleParticipantAssessmentSubmissionsSummary.highest_score }]
+      [participantPrincipalId, exampleProgramAssessment.id, 1],
+      [{ score: assessmentSubmissionsRowGraded.score }]
     );
 
     expect(
       await constructParticipantAssessmentSummary(
         participantPrincipalId,
-        exampleProgramAssessment.assessment_id
+        exampleProgramAssessment.id
       )
     ).toEqual(exampleParticipantAssessmentSubmissionsSummary);
   });
@@ -304,19 +312,19 @@ describe('createCurriculumAssessment', () => {
 });
 
 describe('createProgramAssessment', () => {
-  it('should create a program assessment ID', async () => {
+  it('should insert a ProgramAssessment into the database', async () => {
     mockQuery(
       'insert into `program_assessments` (`assessment_id`, `available_after`, `due_date`, `program_id`) values (?, ?, ?, ?)',
       [
-        newProgramAssessment.assessment_id,
-        newProgramAssessment.available_after,
-        newProgramAssessment.due_date,
-        newProgramAssessment.program_id,
+        exampleProgramAssessmentsRow.assessment_id,
+        exampleProgramAssessmentsRow.available_after,
+        exampleProgramAssessmentsRow.due_date,
+        exampleProgramAssessmentsRow.program_id,
       ],
       [updatedProgramAssessmentsRow.id]
     );
 
-    expect(await createProgramAssessment(newProgramAssessment)).toEqual(
+    expect(await createProgramAssessment(exampleProgramAssessmentsRow)).toEqual(
       updatedProgramAssessmentsRow
     );
   });
@@ -373,6 +381,12 @@ describe('findProgramAssessment', () => {
       'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
       [exampleProgramAssessment.id],
       [exampleProgramAssessmentsRow]
+    );
+
+    mockQuery(
+      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
+      [exampleProgramAssessmentsRow.program_id],
+      [matchingProgramRow]
     );
 
     expect(await findProgramAssessment(exampleProgramAssessment.id)).toEqual(

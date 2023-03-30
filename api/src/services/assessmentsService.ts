@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import {
   Answer,
   AssessmentResponse,
@@ -10,7 +11,7 @@ import {
   Question,
 } from '../models';
 import db from './db';
-import { listProgramsForCurriculum } from './programsService';
+import { findProgram, listProgramsForCurriculum } from './programsService';
 
 // Helper functions
 
@@ -467,7 +468,16 @@ export const constructParticipantAssessmentSummary = async (
   participantPrincipalId: number,
   programAssessmentId: number
 ): Promise<ParticipantAssessmentSubmissionsSummary> => {
+  const programAssessment: ProgramAssessment = await findProgramAssessment(
+    programAssessmentId
+  );
+  const assessmentActiveDate = DateTime.fromISO(
+    programAssessment.available_after
+  );
+  const assessmentDueDate = DateTime.fromISO(programAssessment.due_date);
+
   let highestState;
+
   const highestStateFromDB = await db('assessment_submissions')
     .select('assessment_submission_states.title')
     .join(
@@ -479,8 +489,20 @@ export const constructParticipantAssessmentSummary = async (
     .andWhere('assessment_submissions.assessment_id', programAssessmentId)
     .orderBy('assessment_submissions.assessment_submission_state_id', 'desc')
     .limit(1);
+
   if (highestStateFromDB.length === 0) {
-    highestState = 'Active';
+    if (
+      DateTime.now() >= assessmentActiveDate &&
+      DateTime.now() < assessmentDueDate
+    ) {
+      highestState = 'Active';
+    } else if (DateTime.now() < assessmentActiveDate) {
+      highestState = 'Inactive';
+    } else if (DateTime.now() >= assessmentDueDate) {
+      highestState = 'Expired';
+    } else {
+      highestState = 'Hidden';
+    }
   } else {
     highestState = highestStateFromDB[0].title;
   }
@@ -494,9 +516,12 @@ export const constructParticipantAssessmentSummary = async (
     .limit(1);
 
   if (mostRecentSubmittedDateFromDB.length === 0) {
-    mostRecentSubmittedDate = '';
+    mostRecentSubmittedDate = null;
   } else {
-    mostRecentSubmittedDate = mostRecentSubmittedDateFromDB[0].submitted_at;
+    mostRecentSubmittedDate = DateTime.fromSQL(
+      mostRecentSubmittedDateFromDB[0].submitted_at,
+      { zone: 'utc' }
+    ).toISO();
   }
 
   const totalNumSubmissions = await listParticipantProgramAssessmentSubmissions(
@@ -513,7 +538,7 @@ export const constructParticipantAssessmentSummary = async (
     .limit(1);
 
   if (highestScoreFromDB.length === 0) {
-    highestScore = 0;
+    highestScore = null;
   } else {
     highestScore = highestScoreFromDB[0].score;
   }
@@ -522,10 +547,19 @@ export const constructParticipantAssessmentSummary = async (
     {
       principal_id: participantPrincipalId,
       highest_state: highestState,
-      most_recent_submitted_date: mostRecentSubmittedDate,
-      total_num_submissions: totalNumSubmissions.length,
-      highest_score: highestScore,
+      total_num_submissions: totalNumSubmissions
+        ? totalNumSubmissions.length
+        : 0,
     };
+
+  if (mostRecentSubmittedDate !== null) {
+    participantAssessmentSummary.most_recent_submitted_date =
+      mostRecentSubmittedDate;
+  }
+
+  if (highestScore !== null) {
+    participantAssessmentSummary.highest_score = highestScore;
+  }
 
   return participantAssessmentSummary;
 };
@@ -708,14 +742,20 @@ export const findProgramAssessment = async (
     return null;
   }
 
-  const [programAssessmentRow] = matchingProgramAssessmentsRows;
+  const [programAssessmentsRow] = matchingProgramAssessmentsRows;
+
+  const program = await findProgram(programAssessmentsRow.program_id);
 
   const programAssessment: ProgramAssessment = {
     id: programAssessmentId,
-    program_id: programAssessmentRow.program_id,
-    assessment_id: programAssessmentRow.assessment_id,
-    available_after: programAssessmentRow.available_after,
-    due_date: programAssessmentRow.due_date,
+    program_id: programAssessmentsRow.program_id,
+    assessment_id: programAssessmentsRow.assessment_id,
+    available_after: DateTime.fromSQL(programAssessmentsRow.available_after, {
+      zone: program.time_zone,
+    }).toISO(),
+    due_date: DateTime.fromSQL(programAssessmentsRow.due_date, {
+      zone: program.time_zone,
+    }).toISO(),
   };
 
   return programAssessment;
@@ -766,17 +806,21 @@ export const getAssessmentSubmission = async (
     return null;
   }
 
-  const [assessmentSubmissionRow] = matchingAssessmentSubmissionsRows;
+  const [assessmentSubmissionsRow] = matchingAssessmentSubmissionsRows;
 
   const assessmentSubmission: AssessmentSubmission = {
     id: assessmentSubmissionId,
-    assessment_id: assessmentSubmissionRow.assessment_id,
-    principal_id: assessmentSubmissionRow.principal_id,
+    assessment_id: assessmentSubmissionsRow.assessment_id,
+    principal_id: assessmentSubmissionsRow.principal_id,
     assessment_submission_state:
-      assessmentSubmissionRow.assessment_submission_state,
-    score: assessmentSubmissionRow.score,
-    opened_at: assessmentSubmissionRow.opened_at,
-    submitted_at: assessmentSubmissionRow.submitted_at,
+      assessmentSubmissionsRow.assessment_submission_state,
+    score: assessmentSubmissionsRow.score,
+    opened_at: DateTime.fromSQL(assessmentSubmissionsRow.opened_at, {
+      zone: 'utc',
+    }).toISO(),
+    submitted_at: DateTime.fromSQL(assessmentSubmissionsRow.submitted_at, {
+      zone: 'utc',
+    }).toISO(),
   };
 
   if (responsesIncluded) {
@@ -938,8 +982,12 @@ export const listAllProgramAssessmentSubmissions = async (
       assessment_submission_state:
         assessmentSubmissionsRow.assessment_submission_state,
       score: assessmentSubmissionsRow.score,
-      opened_at: assessmentSubmissionsRow.opened_at,
-      submitted_at: assessmentSubmissionsRow.submitted_at,
+      opened_at: DateTime.fromSQL(assessmentSubmissionsRow.opened_at, {
+        zone: 'utc',
+      }).toISO(),
+      submitted_at: DateTime.fromSQL(assessmentSubmissionsRow.submitted_at, {
+        zone: 'utc',
+      }).toISO(),
     });
   }
 
@@ -992,8 +1040,12 @@ export const listParticipantProgramAssessmentSubmissions = async (
       assessment_submission_state:
         assessmentSubmissionsRow.assessment_submission_state,
       score: assessmentSubmissionsRow.score,
-      opened_at: assessmentSubmissionsRow.opened_at,
-      submitted_at: assessmentSubmissionsRow.submitted_at,
+      opened_at: DateTime.fromSQL(assessmentSubmissionsRow.opened_at, {
+        zone: 'utc',
+      }).toISO(),
+      submitted_at: DateTime.fromSQL(assessmentSubmissionsRow.submitted_at, {
+        zone: 'utc',
+      }).toISO(),
     });
   }
 
@@ -1046,14 +1098,23 @@ export const listProgramAssessments = async (
     return null;
   }
 
-  const programAssessments: ProgramAssessment[] =
-    matchingProgramAssessmentsRows.map(programAssessmentRow => ({
-      id: programAssessmentRow.id,
+  const programAssessments: ProgramAssessment[] = [];
+
+  for (const programAssessmentsRow of matchingProgramAssessmentsRows) {
+    const program = await findProgram(programId);
+
+    programAssessments.push({
+      id: programAssessmentsRow.id,
       program_id: programId,
-      assessment_id: programAssessmentRow.assessment_id,
-      available_after: programAssessmentRow.available_after,
-      due_date: programAssessmentRow.due_date,
-    }));
+      assessment_id: programAssessmentsRow.assessment_id,
+      available_after: DateTime.fromSQL(programAssessmentsRow.available_after, {
+        zone: program.time_zone,
+      }).toISO(),
+      due_date: DateTime.fromSQL(programAssessmentsRow.due_date, {
+        zone: program.time_zone,
+      }).toISO(),
+    });
+  }
 
   return programAssessments;
 };

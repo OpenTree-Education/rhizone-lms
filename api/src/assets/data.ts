@@ -148,26 +148,19 @@ export const matchingProgramRow = {
   title: 'Cohort 4',
   start_date: '2022-10-24',
   end_date: '2022-12-16',
-  time_zone: 'America/Los_Angeles',
+  time_zone: 'America/Vancouver',
   curriculum_id: exampleCurriculumAssessment.curriculum_id,
 };
 
 export const exampleProgramAssessmentsRow = {
   program_id: 1,
   assessment_id: 12,
-  available_after: '2023-02-06',
-  due_date: '2050-02-10',
-};
-
-export const newProgramAssessment: ProgramAssessment = {
-  program_id: 1,
-  assessment_id: 12,
-  available_after: '2023-03-06',
-  due_date: '2050-02-10',
+  available_after: '2023-02-06 00:00:00',
+  due_date: '2050-06-24 00:00:00',
 };
 
 export const updatedProgramAssessmentsRow = {
-  ...newProgramAssessment,
+  ...exampleProgramAssessmentsRow,
   id: 15,
 };
 
@@ -175,31 +168,31 @@ export const exampleProgramAssessment: ProgramAssessment = {
   id: 15,
   program_id: 1,
   assessment_id: 12,
-  available_after: '2023-02-06',
-  due_date: '2050-02-10',
+  available_after: '2023-02-06T00:00:00.000-08:00',
+  due_date: '2050-06-24T00:00:00.000-07:00',
 };
 
 export const exampleProgramAssessmentPastDue: ProgramAssessment = {
   id: 15,
   program_id: 1,
   assessment_id: 12,
-  available_after: '2023-02-06',
-  due_date: '2023-02-10',
+  available_after: '2023-02-06T00:00:00.000-08:00',
+  due_date: '2023-02-10T00:00:00.000-08:00',
 };
 
 export const exampleProgramAssessmentNotAvailable: ProgramAssessment = {
   id: 15,
   program_id: 1,
   assessment_id: 12,
-  available_after: '2050-02-06',
-  due_date: '2050-02-10',
+  available_after: '2050-06-24T00:00:00.000-07:00',
+  due_date: '2050-06-23T00:00:00.000-07:00',
 };
 
 export const exampleParticipantAssessmentSubmissionsSummary: ParticipantAssessmentSubmissionsSummary =
   {
     principal_id: participantPrincipalId,
     highest_state: 'Graded',
-    most_recent_submitted_date: '2023-02-09 13:23:45',
+    most_recent_submitted_date: '2023-02-09T13:23:45.000Z',
     total_num_submissions: 1,
     highest_score: 4,
   };
@@ -226,7 +219,7 @@ export const exampleAssessmentSubmissionOpened: AssessmentSubmission = {
   assessment_id: exampleProgramAssessment.id,
   principal_id: participantPrincipalId,
   assessment_submission_state: 'Opened',
-  opened_at: '2023-02-09 12:00:00',
+  opened_at: '2023-02-09T12:00:00.000Z',
   submitted_at: null as string,
   score: null as number,
 };
@@ -248,7 +241,7 @@ export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
 export const exampleAssessmentSubmissionSubmitted: AssessmentSubmission = {
   ...exampleAssessmentSubmissionOpened,
   assessment_submission_state: 'Submitted',
-  submitted_at: '2023-02-09 13:23:45',
+  submitted_at: '2023-02-09T13:23:45.000Z',
   responses: [
     {
       id: 1,
@@ -273,7 +266,7 @@ export const matchingOtherAssessmentSubmissionSubmittedRow = {
 export const exampleOtherAssessmentSubmissionSubmitted: AssessmentSubmission = {
   ...exampleAssessmentSubmissionOpened,
   assessment_submission_state: 'Submitted',
-  submitted_at: '2023-02-09 13:23:45',
+  submitted_at: '2023-02-09T13:23:45.000Z',
   principal_id: otherParticipantPrincipalId,
   id: 3,
   score: null as number,

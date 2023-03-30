@@ -25,7 +25,6 @@ import {
   exampleFacilitatorAssessmentSubmissionsSummary,
   updatedCurriculumAssessment,
   newCurriculumAssessment,
-  newProgramAssessment,
   // updatedCurriculumAssessmentsRow,
   exampleOtherAssessmentSubmissionSubmitted,
   exampleParticipantAssessmentWithSubmissions,
@@ -34,6 +33,7 @@ import {
   matchingOtherAssessmentSubmissionSubmittedRow,
   exampleParticipantOpenedSavedAssessment,
   exampleAssessmentSubmissionOpened,
+  exampleProgramAssessmentsRow,
 } from '../../assets/data';
 import {
   constructFacilitatorAssessmentSummary,
@@ -457,15 +457,15 @@ describe('assessmentsRouter', () => {
 
       appAgent
         .post(`/program`)
-        .send(newProgramAssessment)
+        .send(exampleProgramAssessmentsRow)
         .expect(201, err => {
           expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
             facilitatorPrincipalId,
-            newProgramAssessment.program_id
+            exampleProgramAssessmentsRow.program_id
           );
 
           expect(mockCreateProgramAssessment).toHaveBeenCalledWith(
-            newProgramAssessment
+            exampleProgramAssessmentsRow
           );
 
           done(err);
@@ -479,7 +479,7 @@ describe('assessmentsRouter', () => {
 
       appAgent
         .post(`/program`)
-        .send(newProgramAssessment)
+        .send(exampleProgramAssessmentsRow)
         .expect(
           401,
           errorEnvelope(
@@ -488,7 +488,7 @@ describe('assessmentsRouter', () => {
           err => {
             expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
               participantPrincipalId,
-              newProgramAssessment.program_id
+              exampleProgramAssessmentsRow.program_id
             );
 
             done(err);
@@ -987,7 +987,7 @@ describe('assessmentsRouter', () => {
         exampleCurriculumAssessmentWithQuestions
       );
       mockListParticipantProgramAssessmentSubmissions.mockResolvedValue([
-        matchingAssessmentSubmissionOpenedRow,
+        exampleAssessmentSubmissionOpened,
       ]);
 
       mockPrincipalId(participantPrincipalId);
