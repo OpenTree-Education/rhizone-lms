@@ -38,6 +38,7 @@ import {
   exampleCurriculumAssessmentWithQuestion,
   matchingAssessmentQuestionsRow,
   matchingAssessmentAnswersRow,
+  matchingProgramRow,
   unenrolledPrincipalId,
   exampleCurriculumAssessment,
   exampleFacilitatorAssessmentSubmissionsSummary,
@@ -46,12 +47,21 @@ import {
   exampleCurriculumAssessmentWithCorrectAnswers,
   exampleParticipantAssessmentSubmissionsSummary,
   updatedProgramAssessmentsRow,
+  newCurriculumAssessment,
+  updatedCurriculumAssessment,
+  newCurriculumAssessmentWithSingleChoiceQuestion,
+  newCurriculumAssessmentWithFreeResponseQuestion,
   newProgramAssessment,
-  matchingProgramRow,
   exampleAssessmentSubmissionOpened,
   exampleOtherAssessmentSubmissionSubmitted,
   matchingAssessmentSubmissionOpenedRow,
   matchingOtherAssessmentSubmissionSubmittedRow,
+  updatedSingleChoiceAnswer,
+  updatedCurriculumAssessmentWithSingleChoiceQuestion,
+  updatedSingleChoiceQuestion,
+  updatedFreeResponseAnswer,
+  updatedCurriculumAssessmentWithFreeResponseQuestion,
+  updatedFreeResponseQuestion,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -160,7 +170,138 @@ describe('createAssessmentSubmission', () => {
   });
 });
 
-describe('createCurriculumAssessment', () => {});
+describe('createCurriculumAssessment', () => {
+  it('should create a curriculum assessment ID without question', async () => {
+    mockQuery(
+      'insert into `curriculum_assessments` (`activity_id`, `curriculum_id`, `description`, `max_num_submissions`, `max_score`, `principal_id`, `time_limit`, `title`) values (?, ?, ?, ?, ?, ?, ?, ?)',
+      [
+        newCurriculumAssessment.activity_id,
+        newCurriculumAssessment.curriculum_id,
+        newCurriculumAssessment.description,
+        newCurriculumAssessment.max_num_submissions,
+        newCurriculumAssessment.max_score,
+        newCurriculumAssessment.principal_id,
+        newCurriculumAssessment.time_limit,
+        newCurriculumAssessment.title,
+      ],
+      [updatedCurriculumAssessment.id]
+    );
+
+    expect(await createCurriculumAssessment(newCurriculumAssessment)).toEqual(
+      updatedCurriculumAssessment
+    );
+  });
+  it('should create a curriculum assessment ID with a single choice question', async () => {
+    mockQuery(
+      'insert into `curriculum_assessments` (`activity_id`, `curriculum_id`, `description`, `max_num_submissions`, `max_score`, `principal_id`, `time_limit`, `title`) values (?, ?, ?, ?, ?, ?, ?, ?)',
+      [
+        newCurriculumAssessmentWithSingleChoiceQuestion.activity_id,
+        newCurriculumAssessmentWithSingleChoiceQuestion.curriculum_id,
+        newCurriculumAssessmentWithSingleChoiceQuestion.description,
+        newCurriculumAssessmentWithSingleChoiceQuestion.max_num_submissions,
+        newCurriculumAssessmentWithSingleChoiceQuestion.max_score,
+        newCurriculumAssessmentWithSingleChoiceQuestion.principal_id,
+        newCurriculumAssessmentWithSingleChoiceQuestion.time_limit,
+        newCurriculumAssessmentWithSingleChoiceQuestion.title,
+      ],
+      [updatedCurriculumAssessment.id]
+    );
+    mockQuery(
+      'insert into `assessment_questions` (`assessment_id`, `description`, `max_score`, `question_type_id`, `sort_order`, `title`) values (?, ?, ?, ?, ?, ?)',
+      [
+        updatedCurriculumAssessment.id,
+        newCurriculumAssessmentWithSingleChoiceQuestion.questions[0]
+          .description,
+        newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].max_score,
+        1,
+        newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].sort_order,
+        newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].title,
+      ],
+      [updatedSingleChoiceQuestion.id]
+    );
+
+    mockQuery(
+      'insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)',
+      [
+        newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].answers[0]
+          .description,
+        updatedSingleChoiceQuestion.id,
+        newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].answers[0]
+          .sort_order,
+        newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].answers[0]
+          .title,
+      ],
+      [updatedSingleChoiceAnswer.id]
+    );
+
+    mockQuery(
+      'update `assessment_questions` set `correct_answer_id` = ? where `id` = ?',
+      [updatedSingleChoiceAnswer.id, updatedSingleChoiceQuestion.id],
+      []
+    );
+
+    expect(
+      await createCurriculumAssessment(
+        newCurriculumAssessmentWithSingleChoiceQuestion
+      )
+    ).toEqual(updatedCurriculumAssessmentWithSingleChoiceQuestion);
+  });
+  it('should create a curriculum assessment ID with a free response question', async () => {
+    mockQuery(
+      'insert into `curriculum_assessments` (`activity_id`, `curriculum_id`, `description`, `max_num_submissions`, `max_score`, `principal_id`, `time_limit`, `title`) values (?, ?, ?, ?, ?, ?, ?, ?)',
+      [
+        newCurriculumAssessmentWithFreeResponseQuestion.activity_id,
+        newCurriculumAssessmentWithFreeResponseQuestion.curriculum_id,
+        newCurriculumAssessmentWithFreeResponseQuestion.description,
+        newCurriculumAssessmentWithFreeResponseQuestion.max_num_submissions,
+        newCurriculumAssessmentWithFreeResponseQuestion.max_score,
+        newCurriculumAssessmentWithFreeResponseQuestion.principal_id,
+        newCurriculumAssessmentWithFreeResponseQuestion.time_limit,
+        newCurriculumAssessmentWithFreeResponseQuestion.title,
+      ],
+      [updatedCurriculumAssessment.id]
+    );
+    mockQuery(
+      'insert into `assessment_questions` (`assessment_id`, `description`, `max_score`, `question_type_id`, `sort_order`, `title`) values (?, ?, ?, ?, ?, ?)',
+      [
+        updatedCurriculumAssessment.id,
+        newCurriculumAssessmentWithFreeResponseQuestion.questions[0]
+          .description,
+        newCurriculumAssessmentWithFreeResponseQuestion.questions[0].max_score,
+        2,
+        newCurriculumAssessmentWithFreeResponseQuestion.questions[0].sort_order,
+        newCurriculumAssessmentWithFreeResponseQuestion.questions[0].title,
+      ],
+      [updatedFreeResponseQuestion.id]
+    );
+
+    mockQuery(
+      'insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)',
+      [
+        newCurriculumAssessmentWithFreeResponseQuestion.questions[0].answers[0]
+          .description,
+        updatedFreeResponseQuestion.id,
+        newCurriculumAssessmentWithFreeResponseQuestion.questions[0].answers[0]
+          .sort_order,
+        newCurriculumAssessmentWithFreeResponseQuestion.questions[0].answers[0]
+          .title,
+      ],
+      [updatedFreeResponseAnswer.id]
+    );
+
+    mockQuery(
+      'update `assessment_questions` set `correct_answer_id` = ? where `id` = ?',
+      [updatedFreeResponseAnswer.id, updatedFreeResponseQuestion.id],
+      []
+    );
+
+    expect(
+      await createCurriculumAssessment(
+        newCurriculumAssessmentWithFreeResponseQuestion
+      )
+    ).toEqual(updatedCurriculumAssessmentWithFreeResponseQuestion);
+  });
+});
 
 describe('createProgramAssessment', () => {
   it('should create a program assessment ID', async () => {
@@ -417,6 +558,47 @@ describe('listAssessmentQuestions', () => {
         answersIncluded
       )
     ).toEqual(exampleAssessmentQuestions);
+  });
+});
+
+describe('facilitatorProgramIdsMatchingCurriculum', () => {
+  it('should return an array of program IDs for a principal that is facilitator of at least one program', async () => {
+    mockQuery(
+      'select `program_id` from `program_participants` where `principal_id` = ?',
+      [facilitatorPrincipalId],
+      [{ program_id: exampleProgramAssessment.program_id }]
+    );
+    mockQuery(
+      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `curriculum_id` = ?',
+      [exampleCurriculumAssessment.curriculum_id],
+      [matchingProgramRow]
+    );
+    mockQuery(
+      'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
+      [facilitatorPrincipalId, exampleProgramAssessment.program_id],
+      [{ title: 'Facilitator' }]
+    );
+
+    expect(
+      await facilitatorProgramIdsMatchingCurriculum(
+        facilitatorPrincipalId,
+        exampleCurriculumAssessment.curriculum_id
+      )
+    ).toEqual([exampleProgramAssessment.program_id]);
+  });
+
+  it('should return an empty array of program IDs for a principal that is not a facilitator of at least one program', async () => {
+    mockQuery(
+      'select `program_id` from `program_participants` where `principal_id` = ?',
+      [participantPrincipalId],
+      []
+    );
+    expect(
+      await facilitatorProgramIdsMatchingCurriculum(
+        participantPrincipalId,
+        exampleCurriculumAssessment.curriculum_id
+      )
+    ).toEqual([]);
   });
 });
 

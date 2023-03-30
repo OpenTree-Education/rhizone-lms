@@ -7,6 +7,7 @@ import {
   AssessmentWithSummary,
   Question,
   AssessmentWithSubmissions,
+  Answer,
   SavedAssessment,
 } from '../models';
 export const administratorPrincipalId = 3;
@@ -315,6 +316,120 @@ export const exampleAssessmentSubmissionGraded: AssessmentSubmission = {
     },
   ],
 };
+
+export const newCurriculumAssessment: CurriculumAssessment = {
+  title: 'Test42',
+  assessment_type: 'test',
+  description: 'Your assignment for week 1 learning.',
+  max_score: 10,
+  max_num_submissions: 1,
+  time_limit: 120,
+  curriculum_id: 3,
+  activity_id: 97,
+  principal_id: 1,
+  questions: [],
+};
+
+export const newCurriculumAssessmentWithSingleChoiceQuestion: CurriculumAssessment =
+  {
+    title: 'Test42',
+    assessment_type: 'test',
+    description: 'Your assignment for week 1 learning.',
+    max_score: 10,
+    max_num_submissions: 1,
+    time_limit: 120,
+    curriculum_id: 3,
+    activity_id: 97,
+    principal_id: 1,
+    questions: [
+      {
+        title: 'test',
+        description: 'test',
+        question_type: 'single choice',
+        sort_order: 1,
+        max_score: 1,
+        answers: [
+          {
+            title: 'string',
+            description: 'string',
+            sort_order: 1,
+            correct_answer: true,
+          },
+        ],
+      },
+    ],
+  };
+
+export const newCurriculumAssessmentWithFreeResponseQuestion: CurriculumAssessment =
+  {
+    title: 'Test42',
+    assessment_type: 'test',
+    description: 'Your assignment for week 1 learning.',
+    max_score: 10,
+    max_num_submissions: 1,
+    time_limit: 120,
+    curriculum_id: 3,
+    activity_id: 97,
+    principal_id: 1,
+    questions: [
+      {
+        title: 'test free response',
+        description: 'test',
+        question_type: 'free response',
+        sort_order: 1,
+        max_score: 1,
+        answers: [
+          {
+            title: 'test free response answer',
+            description: 'string',
+            sort_order: 1,
+            correct_answer: true,
+          },
+        ],
+      },
+    ],
+  };
+
+export const updatedSingleChoiceAnswer: Answer = {
+  ...newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].answers[0],
+  question_id: 42,
+  id: 37,
+};
+
+export const updatedSingleChoiceQuestion: Question = {
+  ...newCurriculumAssessmentWithSingleChoiceQuestion.questions[0],
+  id: 42,
+  answers: [updatedSingleChoiceAnswer],
+};
+
+export const updatedFreeResponseAnswer: Answer = {
+  ...newCurriculumAssessmentWithFreeResponseQuestion.questions[0].answers[0],
+  question_id: 43,
+  id: 38,
+};
+
+export const updatedFreeResponseQuestion: Question = {
+  ...newCurriculumAssessmentWithFreeResponseQuestion.questions[0],
+  id: 43,
+  answers: [updatedFreeResponseAnswer],
+};
+
+export const updatedCurriculumAssessment: CurriculumAssessment = {
+  ...newCurriculumAssessment,
+  id: 15,
+};
+
+export const updatedCurriculumAssessmentWithSingleChoiceQuestion: CurriculumAssessment =
+  {
+    ...updatedCurriculumAssessment,
+    questions: [updatedSingleChoiceQuestion],
+  };
+
+export const updatedCurriculumAssessmentWithFreeResponseQuestion: CurriculumAssessment =
+  {
+    ...updatedCurriculumAssessment,
+    questions: [updatedFreeResponseQuestion],
+  };
 
 export const exampleParticipantAssessmentWithSubmissions: AssessmentWithSubmissions =
   {

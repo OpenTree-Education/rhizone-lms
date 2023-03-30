@@ -31,6 +31,7 @@ import {
   facilitatorProgramIdsMatchingCurriculum,
   updateCurriculumAssessment,
   updateProgramAssessment,
+  createCurriculumAssessment,
   createProgramAssessment,
   listParticipantProgramAssessmentSubmissions,
   createAssessmentSubmission,
@@ -167,7 +168,40 @@ assessmentsRouter.get(
 
 // Create a new CurriculumAssessment
 assessmentsRouter.post('/curriculum', async (req, res, next) => {
-  res.json();
+  const { principalId } = req.session;
+  const curriculumAssessmentFromUser = req.body;
+
+  const isACurriculumAssessment = (
+    possibleAssessment: unknown
+  ): possibleAssessment is CurriculumAssessment => {
+    return (possibleAssessment as CurriculumAssessment).title !== undefined;
+  };
+  if (!isACurriculumAssessment(curriculumAssessmentFromUser)) {
+    next(new ValidationError(`Was not given a valid curriculum assessment.`));
+    return;
+  }
+
+  try {
+    const facilitatorProgramIds = await facilitatorProgramIdsMatchingCurriculum(
+      principalId,
+      curriculumAssessmentFromUser.curriculum_id
+    );
+
+    if (facilitatorProgramIds.length === 0) {
+      throw new UnauthorizedError(
+        `Not allowed to add a new assessment for this curriculum.`
+      );
+    }
+
+    const curriculumAssessment = await createCurriculumAssessment(
+      curriculumAssessmentFromUser
+    );
+
+    res.status(201).json(itemEnvelope(curriculumAssessment));
+  } catch (error) {
+    next(error);
+    return;
+  }
 });
 
 // Update an existing CurriculumAssessment
