@@ -74,7 +74,7 @@ const AssessmentSubmissionsListPage = () => {
       assessmentSub.curriculum_assessment.max_num_submissions >
         assessmentSub.submissions.length
     ) {
-      return <Button variant="contained">New Submission</Button>;
+      return <Button variant="contained" href={`/assessments/${assessmentIdNumber}/new`}>New Submission</Button>;
     }
     return null;
   };
