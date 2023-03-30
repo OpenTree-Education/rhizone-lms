@@ -29,16 +29,29 @@ interface TableCellWrapperProps {
   showForFacilitator: boolean;
   showForParticipant: boolean;
   principalRoles: {
-    isFacilitator: boolean,
-    isParticipant: boolean,
-    isMixedRole: boolean,
-    isNeither: boolean,
+    isFacilitator: boolean;
+    isParticipant: boolean;
+    isMixedRole: boolean;
+    isNeither: boolean;
   };
 }
 
 const TableCellWrapper = (props: TableCellWrapperProps) => {
-  const { children, statusTab, index, showForFacilitator, showForParticipant, principalRoles } = props;
-  return (index.includes(statusTab) && ((showForFacilitator && (principalRoles.isFacilitator || principalRoles.isMixedRole)) || (showForParticipant && (principalRoles.isParticipant || principalRoles.isMixedRole))) ? <TableCell>{children}</TableCell> : null);
+  const {
+    children,
+    statusTab,
+    index,
+    showForFacilitator,
+    showForParticipant,
+    principalRoles,
+  } = props;
+  return index.includes(statusTab) &&
+    ((showForFacilitator &&
+      (principalRoles.isFacilitator || principalRoles.isMixedRole)) ||
+      (showForParticipant &&
+        (principalRoles.isParticipant || principalRoles.isMixedRole))) ? (
+    <TableCell>{children}</TableCell>
+  ) : null;
 };
 
 const renderButtonByStatus = (status: string, id: number) => {
@@ -211,62 +224,92 @@ const AssessmentsListTable = ({
                 StatusTab.Past,
                 StatusTab.Upcoming,
               ]}
+              showForFacilitator={true}
+              showForParticipant={true}
+              principalRoles={userRoles}
             >
               Type
             </TableCellWrapper>
             <TableCellWrapper
               statusTab={currentStatusTab}
-              index={[StatusTab.All, StatusTab.Active]}
+              index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}
+              showForFacilitator={true}
+              showForParticipant={true}
+              principalRoles={userRoles}
             >
               Due Date
             </TableCellWrapper>
             <TableCellWrapper
               statusTab={currentStatusTab}
               index={[StatusTab.Past]}
+              showForFacilitator={false}
+              showForParticipant={true}
+              principalRoles={userRoles}
             >
               Submitted Date
             </TableCellWrapper>
             <TableCellWrapper
               statusTab={currentStatusTab}
+              index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}
+              showForFacilitator={true}
+              showForParticipant={false}
+              principalRoles={userRoles}
+            >
+              Num Submissions
+            </TableCellWrapper>
+            <TableCellWrapper
+              statusTab={currentStatusTab}
               index={[StatusTab.All, StatusTab.Past]}
+              showForFacilitator={true}
+              showForParticipant={false}
+              principalRoles={userRoles}
+            >
+              Ungraded
+            </TableCellWrapper>
+            <TableCellWrapper
+              statusTab={currentStatusTab}
+              index={[StatusTab.All, StatusTab.Past]}
+              showForFacilitator={false}
+              showForParticipant={true}
+              principalRoles={userRoles}
             >
               Score
             </TableCellWrapper>
             <TableCellWrapper
               statusTab={currentStatusTab}
               index={[StatusTab.Upcoming]}
+              showForFacilitator={true}
+              showForParticipant={true}
+              principalRoles={userRoles}
             >
               Available Date
             </TableCellWrapper>
+            <TableCellWrapper
+              statusTab={currentStatusTab}
+              index={[StatusTab.Upcoming]}
+              showForFacilitator={true}
+              showForParticipant={true}
+              principalRoles={userRoles}
+            >
+              available date
+            </TableCellWrapper>
 
-            {matchingAssessmentList.filter(
-              assessment => assessment.principal_program_role === 'Facilitator'
-            ).length > 0 ? (
-              <>
-                {' '}
-                <TableCellWrapper
-                  statusTab={currentStatusTab}
-                  index={[
-                    StatusTab.All,
-                    StatusTab.Active,
-                    StatusTab.Past,
-                    StatusTab.Upcoming,
-                  ]}
-                >
-                  available date
-                </TableCellWrapper>
-              </>
-            ) : (
-              <TableCellWrapper
-                statusTab={currentStatusTab}
-                index={[StatusTab.All, StatusTab.Active]}
-              >
-                Status
-              </TableCellWrapper>
-            )}
             <TableCellWrapper
               statusTab={currentStatusTab}
               index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}
+              showForFacilitator={true}
+              showForParticipant={true}
+              principalRoles={userRoles}
+            >
+              State
+            </TableCellWrapper>
+
+            <TableCellWrapper
+              statusTab={currentStatusTab}
+              index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}
+              showForFacilitator={true}
+              showForParticipant={true}
+              principalRoles={userRoles}
             >
               Action
             </TableCellWrapper>
@@ -283,6 +326,9 @@ const AssessmentsListTable = ({
                   StatusTab.Past,
                   StatusTab.Upcoming,
                 ]}
+                showForFacilitator={true}
+                showForParticipant={true}
+                principalRoles={userRoles}
               >
                 <strong>{assessment.curriculum_assessment.title}</strong>
                 <br />
@@ -296,6 +342,9 @@ const AssessmentsListTable = ({
                   StatusTab.Past,
                   StatusTab.Upcoming,
                 ]}
+                showForFacilitator={true}
+                showForParticipant={true}
+                principalRoles={userRoles}
               >
                 {assessment.curriculum_assessment.assessment_type[0].toLocaleUpperCase() +
                   assessment.curriculum_assessment.assessment_type.slice(1)}
@@ -303,51 +352,68 @@ const AssessmentsListTable = ({
               <TableCellWrapper
                 statusTab={currentStatusTab}
                 index={[StatusTab.All, StatusTab.Active]}
+                showForFacilitator={true}
+                showForParticipant={true}
+                principalRoles={userRoles}
               >
                 {formatDateTime(assessment.program_assessment.due_date)}
               </TableCellWrapper>
               <TableCellWrapper
                 statusTab={currentStatusTab}
-                index={[StatusTab.All, StatusTab.Active]}
+                index={[StatusTab.Active]}
+                showForFacilitator={true}
+                showForParticipant={true}
+                principalRoles={userRoles}
               >
-                {assessment.principal_program_role === 'Facilitator' &&
-                  formatDateTime(assessment.program_assessment.available_after)}
+                {formatDateTime(assessment.program_assessment.available_after)}
               </TableCellWrapper>
 
               <TableCellWrapper
                 statusTab={currentStatusTab}
                 index={[StatusTab.Past]}
+                showForFacilitator={true}
+                showForParticipant={false}
+                principalRoles={userRoles}
               >
-                {assessment.principal_program_role === 'Participant' &&
-                  (assessment.participant_submissions_summary.highest_state ===
-                    'Submitted' ||
-                    assessment.participant_submissions_summary.highest_state ===
-                      'Graded' ||
-                    assessment.participant_submissions_summary.highest_state ===
-                      'Expired') &&
+                {(assessment.participant_submissions_summary?.highest_state ===
+                  'Submitted' ||
+                  assessment.participant_submissions_summary?.highest_state ===
+                    'Graded' ||
+                  assessment.participant_submissions_summary?.highest_state ===
+                    'Expired') &&
+                  assessment.participant_submissions_summary
+                    ?.most_recent_submitted_date &&
                   formatDateTime(
                     assessment.participant_submissions_summary
-                      .most_recent_submitted_date
+                      ?.most_recent_submitted_date
                   )}
               </TableCellWrapper>
               <TableCellWrapper
                 statusTab={currentStatusTab}
                 index={[StatusTab.All, StatusTab.Past]}
+                showForFacilitator={false}
+                showForParticipant={true}
+                principalRoles={userRoles}
               >
-                {assessment.principal_program_role === 'Participant' &&
-                  assessment.participant_submissions_summary.highest_score !==
-                    -1 &&
-                  assessment.participant_submissions_summary.highest_score}
+                {assessment.participant_submissions_summary?.highest_score !==
+                  -1 &&
+                  assessment.participant_submissions_summary?.highest_score}
               </TableCellWrapper>
               <TableCellWrapper
                 statusTab={currentStatusTab}
                 index={[StatusTab.Upcoming]}
+                showForFacilitator={true}
+                showForParticipant={true}
+                principalRoles={userRoles}
               >
                 {formatDateTime(assessment.program_assessment.available_after)}
               </TableCellWrapper>
               <TableCellWrapper
                 statusTab={currentStatusTab}
                 index={[StatusTab.Active]}
+                showForFacilitator={true}
+                showForParticipant={true}
+                principalRoles={userRoles}
               >
                 {formatDateTime(assessment.program_assessment.due_date)}
               </TableCellWrapper>
@@ -359,8 +425,12 @@ const AssessmentsListTable = ({
                   StatusTab.Past,
                   StatusTab.Upcoming,
                 ]}
+                showForFacilitator={true}
+                showForParticipant={false}
+                principalRoles={userRoles}
               >
-                {assessment.principal_program_role === 'Participant' &&
+                {assessment.participant_submissions_summary &&
+                  assessment.program_assessment.id &&
                   renderChipByStatus(
                     assessment.participant_submissions_summary.highest_state
                   )}
@@ -368,8 +438,11 @@ const AssessmentsListTable = ({
               <TableCellWrapper
                 statusTab={currentStatusTab}
                 index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}
+                showForFacilitator={true}
+                showForParticipant={false}
+                principalRoles={userRoles}
               >
-                {assessment.principal_program_role === 'Participant' &&
+                {assessment.participant_submissions_summary &&
                   assessment.program_assessment.id &&
                   renderButtonByStatus(
                     assessment.participant_submissions_summary.highest_state,

@@ -52,8 +52,8 @@ const AssessmentsListTabs = ({
                 assessmentList.filter(
                   assessment =>
                     assessment.principal_program_role === 'Participant' &&
-                    assessment.participant_submissions_summary.highest_state ===
-                      'Active'
+                    assessment.participant_submissions_summary
+                      ?.highest_state === 'Active'
                 ).length
               }
               color="primary"
