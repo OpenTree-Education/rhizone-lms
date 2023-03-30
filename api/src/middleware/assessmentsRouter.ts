@@ -31,11 +31,13 @@ import {
   facilitatorProgramIdsMatchingCurriculum,
   updateCurriculumAssessment,
   updateProgramAssessment,
+  createCurriculumAssessment,
   createProgramAssessment,
   listParticipantProgramAssessmentSubmissions,
   createAssessmentSubmission,
   listAllProgramAssessmentSubmissions,
 } from '../services/assessmentsService';
+import { DateTime } from 'luxon';
 
 const assessmentsRouter = Router();
 
@@ -166,7 +168,40 @@ assessmentsRouter.get(
 
 // Create a new CurriculumAssessment
 assessmentsRouter.post('/curriculum', async (req, res, next) => {
-  res.json();
+  const { principalId } = req.session;
+  const curriculumAssessmentFromUser = req.body;
+
+  const isACurriculumAssessment = (
+    possibleAssessment: unknown
+  ): possibleAssessment is CurriculumAssessment => {
+    return (possibleAssessment as CurriculumAssessment).title !== undefined;
+  };
+  if (!isACurriculumAssessment(curriculumAssessmentFromUser)) {
+    next(new ValidationError(`Was not given a valid curriculum assessment.`));
+    return;
+  }
+
+  try {
+    const facilitatorProgramIds = await facilitatorProgramIdsMatchingCurriculum(
+      principalId,
+      curriculumAssessmentFromUser.curriculum_id
+    );
+
+    if (facilitatorProgramIds.length === 0) {
+      throw new UnauthorizedError(
+        `Not allowed to add a new assessment for this curriculum.`
+      );
+    }
+
+    const curriculumAssessment = await createCurriculumAssessment(
+      curriculumAssessmentFromUser
+    );
+
+    res.status(201).json(itemEnvelope(curriculumAssessment));
+  } catch (error) {
+    next(error);
+    return;
+  }
 });
 
 // Update an existing CurriculumAssessment
@@ -519,13 +554,15 @@ assessmentsRouter.get(
         );
       }
 
-      if (new Date(programAssessment.available_after + 'Z') > new Date()) {
+      if (
+        DateTime.fromISO(programAssessment.available_after) > DateTime.now()
+      ) {
         throw new ForbiddenError(
           `Could not create a new submission of an assessment that's not yet available.`
         );
       }
 
-      if (new Date(programAssessment.due_date + 'Z') < new Date()) {
+      if (DateTime.fromISO(programAssessment.due_date) < DateTime.now()) {
         throw new ForbiddenError(
           `Could not create a new submission of an assessment after its due date.`
         );
