@@ -471,6 +471,7 @@ export const constructParticipantAssessmentSummary = async (
   const programAssessment: ProgramAssessment = await findProgramAssessment(
     programAssessmentId
   );
+
   const assessmentActiveDate = DateTime.fromISO(
     programAssessment.available_after
   );
@@ -500,8 +501,6 @@ export const constructParticipantAssessmentSummary = async (
       highestState = 'Inactive';
     } else if (DateTime.now() >= assessmentDueDate) {
       highestState = 'Expired';
-    } else {
-      highestState = 'Hidden';
     }
   } else {
     highestState = highestStateFromDB[0].title;
@@ -598,8 +597,6 @@ export const createAssessmentSubmission = async (
     principal_id: participantPrincipalId,
     assessment_submission_state: openedStateTitle,
     opened_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
-    score: null as number,
-    submitted_at: null as string,
   };
 
   return newSubmission;
@@ -814,20 +811,32 @@ export const getAssessmentSubmission = async (
     principal_id: assessmentSubmissionsRow.principal_id,
     assessment_submission_state:
       assessmentSubmissionsRow.assessment_submission_state,
-    score: assessmentSubmissionsRow.score,
     opened_at: DateTime.fromSQL(assessmentSubmissionsRow.opened_at, {
-      zone: 'utc',
-    }).toISO(),
-    submitted_at: DateTime.fromSQL(assessmentSubmissionsRow.submitted_at, {
       zone: 'utc',
     }).toISO(),
   };
 
+  if (assessmentSubmissionsRow.score !== null) {
+    assessmentSubmission.score = assessmentSubmissionsRow.score;
+  }
+
+  if (assessmentSubmissionsRow.submitted_at !== null) {
+    assessmentSubmission.submitted_at = DateTime.fromSQL(
+      assessmentSubmissionsRow.submitted_at,
+      {
+        zone: 'utc',
+      }
+    ).toISO();
+  }
+
   if (responsesIncluded) {
-    assessmentSubmission.responses = await listSubmissionResponses(
+    const assessmentResponses = await listSubmissionResponses(
       assessmentSubmissionId,
       gradingsIncluded
     );
+    if (assessmentResponses !== null) {
+      assessmentSubmission.responses = assessmentResponses;
+    }
   }
 
   return assessmentSubmission;
@@ -975,20 +984,29 @@ export const listAllProgramAssessmentSubmissions = async (
   const assessmentSubmissions: AssessmentSubmission[] = [];
 
   for (const assessmentSubmissionsRow of matchingAssessmentSubmissionsRows) {
-    assessmentSubmissions.push({
+    const assessmentSubmission: AssessmentSubmission = {
       id: assessmentSubmissionsRow.id,
       assessment_id: programAssessmentId,
       principal_id: assessmentSubmissionsRow.principal_id,
       assessment_submission_state:
         assessmentSubmissionsRow.assessment_submission_state,
-      score: assessmentSubmissionsRow.score,
       opened_at: DateTime.fromSQL(assessmentSubmissionsRow.opened_at, {
         zone: 'utc',
       }).toISO(),
-      submitted_at: DateTime.fromSQL(assessmentSubmissionsRow.submitted_at, {
-        zone: 'utc',
-      }).toISO(),
-    });
+    };
+
+    if (assessmentSubmissionsRow.score !== null) {
+      assessmentSubmission.score = assessmentSubmissionsRow.score;
+    }
+
+    if (assessmentSubmissionsRow.submitted_at !== null) {
+      assessmentSubmission.submitted_at = DateTime.fromSQL(
+        assessmentSubmissionsRow.submitted_at,
+        { zone: 'utc' }
+      ).toISO();
+    }
+
+    assessmentSubmissions.push(assessmentSubmission);
   }
 
   return assessmentSubmissions;
@@ -1033,20 +1051,29 @@ export const listParticipantProgramAssessmentSubmissions = async (
   const assessmentSubmissions: AssessmentSubmission[] = [];
 
   for (const assessmentSubmissionsRow of matchingAssessmentSubmissionsRows) {
-    assessmentSubmissions.push({
+    const assessmentSubmission: AssessmentSubmission = {
       id: assessmentSubmissionsRow.id,
       assessment_id: programAssessmentId,
       principal_id: participantPrincipalId,
       assessment_submission_state:
         assessmentSubmissionsRow.assessment_submission_state,
-      score: assessmentSubmissionsRow.score,
       opened_at: DateTime.fromSQL(assessmentSubmissionsRow.opened_at, {
         zone: 'utc',
       }).toISO(),
-      submitted_at: DateTime.fromSQL(assessmentSubmissionsRow.submitted_at, {
-        zone: 'utc',
-      }).toISO(),
-    });
+    };
+
+    if (assessmentSubmissionsRow.score !== null) {
+      assessmentSubmission.score = assessmentSubmissionsRow.score;
+    }
+
+    if (assessmentSubmissionsRow.submitted_at !== null) {
+      assessmentSubmission.submitted_at = DateTime.fromSQL(
+        assessmentSubmissionsRow.submitted_at,
+        { zone: 'utc' }
+      ).toISO();
+    }
+
+    assessmentSubmissions.push(assessmentSubmission);
   }
 
   return assessmentSubmissions;
