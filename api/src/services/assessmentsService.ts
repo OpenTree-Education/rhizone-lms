@@ -400,7 +400,8 @@ export const constructParticipantAssessmentSummary = async (
   participantPrincipalId: number,
   programAssessmentId: number
 ): Promise<ParticipantAssessmentSubmissionsSummary> => {
-  const [highestState] = await db('assessment_submissions')
+  let highestState;
+  const highestStateFromDB = await db('assessment_submissions')
     .select('assessment_submission_states.title')
     .join(
       'assessment_submission_states',
@@ -411,33 +412,57 @@ export const constructParticipantAssessmentSummary = async (
     .andWhere('assessment_submissions.assessment_id', programAssessmentId)
     .orderBy('assessment_submissions.assessment_submission_state_id', 'desc')
     .limit(1);
+  if (highestStateFromDB.length === 0) {
+    highestState = 'Active';
+  } else {
+    highestState = highestStateFromDB[0].title;
+  }
 
-  const [mostRecentSubmittedDate] = await db('assessment_submissions')
+  let mostRecentSubmittedDate;
+  const mostRecentSubmittedDateFormDB = await db('assessment_submissions')
     .select('submitted_at')
     .where('principal_id', participantPrincipalId)
     .andWhere('assessment_id', programAssessmentId)
     .orderBy('submitted_at', 'desc')
     .limit(1);
+  if (mostRecentSubmittedDateFormDB.length === 0) {
+    mostRecentSubmittedDate = '';
+  } else {
+    mostRecentSubmittedDate = mostRecentSubmittedDateFormDB[0].submitted_at;
+  }
+  let totalNumSubmissions;
+  const totalNumSubmissionsFromDB =
+    await listParticipantProgramAssessmentSubmissions(
+      participantPrincipalId,
+      programAssessmentId
+    );
 
-  const totalNumSubmissions = await listParticipantProgramAssessmentSubmissions(
-    participantPrincipalId,
-    programAssessmentId
-  );
-
-  const [highestScore] = await db('assessment_submissions')
+  if (!totalNumSubmissionsFromDB) {
+    totalNumSubmissions = 0;
+  } else {
+    totalNumSubmissions = totalNumSubmissionsFromDB.length;
+  }
+  let highestScore;
+  const highestScoreFromDB = await db('assessment_submissions')
     .select('score')
     .where('principal_id', participantPrincipalId)
     .andWhere('assessment_id', programAssessmentId)
     .orderBy('score', 'desc')
     .limit(1);
 
+  if (highestScoreFromDB.length === 0) {
+    highestScore = 0;
+  } else {
+    highestScore = highestScoreFromDB[0].score;
+  }
+
   const participantAssessmentSummary: ParticipantAssessmentSubmissionsSummary =
     {
       principal_id: participantPrincipalId,
-      highest_state: highestState.title,
-      most_recent_submitted_date: mostRecentSubmittedDate.submitted_at,
-      total_num_submissions: totalNumSubmissions.length,
-      highest_score: highestScore.score,
+      highest_state: highestState,
+      most_recent_submitted_date: mostRecentSubmittedDate,
+      total_num_submissions: totalNumSubmissions,
+      highest_score: highestScore,
     };
 
   return participantAssessmentSummary;
@@ -862,11 +887,12 @@ export const listParticipantProgramAssessmentSubmissions = async (
   if (matchingAssessmentSubmissionsRows.length === 0) {
     return null;
   }
+  let assessmentSubmissions: any;
 
-  const assessmentSubmissions: AssessmentSubmission[] = [];
+  const assessmentSubmissionsFromDB: AssessmentSubmission[] = [];
 
   for (const assessmentSubmissionsRow of matchingAssessmentSubmissionsRows) {
-    assessmentSubmissions.push({
+    assessmentSubmissionsFromDB.push({
       id: assessmentSubmissionsRow.id,
       assessment_id: programAssessmentId,
       principal_id: participantPrincipalId,
@@ -876,6 +902,11 @@ export const listParticipantProgramAssessmentSubmissions = async (
       opened_at: assessmentSubmissionsRow.opened_at,
       submitted_at: assessmentSubmissionsRow.submitted_at,
     });
+  }
+  if (assessmentSubmissionsFromDB.length === 0) {
+    assessmentSubmissions = [];
+  } else {
+    assessmentSubmissions = assessmentSubmissionsFromDB;
   }
 
   return assessmentSubmissions;

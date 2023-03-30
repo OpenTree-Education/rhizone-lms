@@ -184,17 +184,32 @@ const AssessmentsListTable = ({
             >
               Available Date
             </TableCellWrapper>
-            <TableCellWrapper
-              statusTab={currentStatusTab}
-              index={[
-                StatusTab.All,
-                StatusTab.Active,
-                StatusTab.Past,
-                StatusTab.Upcoming,
-              ]}
-            >
-              Status
-            </TableCellWrapper>
+
+            {matchingAssessmentList.filter(
+              assessment => assessment.principal_program_role === 'Facilitator'
+            ).length > 0 ? (
+              <>
+                {' '}
+                <TableCellWrapper
+                  statusTab={currentStatusTab}
+                  index={[
+                    StatusTab.All,
+                    StatusTab.Active,
+                    StatusTab.Past,
+                    StatusTab.Upcoming,
+                  ]}
+                >
+                  available date
+                </TableCellWrapper>
+              </>
+            ) : (
+              <TableCellWrapper
+                statusTab={currentStatusTab}
+                index={[StatusTab.All, StatusTab.Active]}
+              >
+                Stauts
+              </TableCellWrapper>
+            )}
             <TableCellWrapper
               statusTab={currentStatusTab}
               index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}
@@ -228,7 +243,8 @@ const AssessmentsListTable = ({
                   StatusTab.Upcoming,
                 ]}
               >
-                {assessment.curriculum_assessment.assessment_type}
+                {assessment.curriculum_assessment.assessment_type[0].toLocaleUpperCase() +
+                  assessment.curriculum_assessment.assessment_type.slice(1)}
               </TableCellWrapper>
               <TableCellWrapper
                 statusTab={currentStatusTab}
@@ -238,14 +254,23 @@ const AssessmentsListTable = ({
               </TableCellWrapper>
               <TableCellWrapper
                 statusTab={currentStatusTab}
+                index={[StatusTab.All, StatusTab.Active]}
+              >
+                {assessment.principal_program_role === 'Facilitator' &&
+                  formatDateTime(assessment.program_assessment.available_after)}
+              </TableCellWrapper>
+
+              <TableCellWrapper
+                statusTab={currentStatusTab}
                 index={[StatusTab.Past]}
               >
-                {(assessment.participant_submissions_summary.highest_state ===
-                  'Submitted' ||
-                  assessment.participant_submissions_summary.highest_state ===
-                    'Graded' ||
-                  assessment.participant_submissions_summary.highest_state ===
-                    'Expired') &&
+                {assessment.principal_program_role === 'Participant' &&
+                  (assessment.participant_submissions_summary.highest_state ===
+                    'Submitted' ||
+                    assessment.participant_submissions_summary.highest_state ===
+                      'Graded' ||
+                    assessment.participant_submissions_summary.highest_state ===
+                      'Expired') &&
                   formatDateTime(
                     assessment.participant_submissions_summary
                       .most_recent_submitted_date
@@ -255,8 +280,9 @@ const AssessmentsListTable = ({
                 statusTab={currentStatusTab}
                 index={[StatusTab.All, StatusTab.Past]}
               >
-                {assessment.participant_submissions_summary.highest_score !==
-                  -1 &&
+                {assessment.principal_program_role === 'Participant' &&
+                  assessment.participant_submissions_summary.highest_score !==
+                    -1 &&
                   assessment.participant_submissions_summary.highest_score}
               </TableCellWrapper>
               <TableCellWrapper
@@ -267,6 +293,12 @@ const AssessmentsListTable = ({
               </TableCellWrapper>
               <TableCellWrapper
                 statusTab={currentStatusTab}
+                index={[StatusTab.Active]}
+              >
+                {formatDateTime(assessment.program_assessment.due_date)}
+              </TableCellWrapper>
+              <TableCellWrapper
+                statusTab={currentStatusTab}
                 index={[
                   StatusTab.All,
                   StatusTab.Active,
@@ -274,15 +306,17 @@ const AssessmentsListTable = ({
                   StatusTab.Upcoming,
                 ]}
               >
-                {renderChipByStatus(
-                  assessment.participant_submissions_summary.highest_state
-                )}
+                {assessment.principal_program_role === 'Participant' &&
+                  renderChipByStatus(
+                    assessment.participant_submissions_summary.highest_state
+                  )}
               </TableCellWrapper>
               <TableCellWrapper
                 statusTab={currentStatusTab}
                 index={[StatusTab.All, StatusTab.Active, StatusTab.Past]}
               >
-                {assessment.program_assessment.id &&
+                {assessment.principal_program_role === 'Participant' &&
+                  assessment.program_assessment.id &&
                   renderButtonByStatus(
                     assessment.participant_submissions_summary.highest_state,
                     Number(assessment.program_assessment.id)

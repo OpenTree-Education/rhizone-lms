@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Container, Stack } from '@mui/material';
+import { Container, Stack, CircularProgress } from '@mui/material';
 
 import { AssessmentWithSummary } from '../types/api';
 import AssessmentsListTable from './AssessmentsListTable';
@@ -33,30 +33,40 @@ const AssessmentsListPage = () => {
 
   useEffect(() => {
     if (!assessmentsList) return;
-    if (currentStatusTab === 0)
-      // All Assessments
-      setAssessmentListSubset(assessmentsList);
-    else if (currentStatusTab === 2)
-      // Past Assessments
-      setAssessmentListSubset(
-        assessmentsList.filter(
-          assessment =>
-            assessment.participant_submissions_summary.highest_state ===
-              'Graded' ||
-            assessment.participant_submissions_summary.highest_state ===
-              'Submitted' ||
-            assessment.participant_submissions_summary.highest_state ===
-              'Expired'
-        )
-      );
-    else
-      setAssessmentListSubset(
-        assessmentsList.filter(
-          assessment =>
-            assessment.participant_submissions_summary.highest_state ===
-            StatusTab[currentStatusTab]
-        )
-      );
+    assessmentsList.map(assessment => {
+      if (assessment.principal_program_role === 'Participant') {
+        if (currentStatusTab === 0)
+          // All Assessments
+          setAssessmentListSubset(assessmentsList);
+        else if (currentStatusTab === 2)
+          // Past Assessments
+          setAssessmentListSubset(
+            assessmentsList.filter(
+              assessment =>
+                assessment.participant_submissions_summary.highest_state ===
+                  'Graded' ||
+                assessment.participant_submissions_summary.highest_state ===
+                  'Submitted' ||
+                assessment.participant_submissions_summary.highest_state ===
+                  'Expired'
+            )
+          );
+        else
+          setAssessmentListSubset(
+            assessmentsList.filter(
+              assessment =>
+                assessment.participant_submissions_summary.highest_state ===
+                StatusTab[currentStatusTab]
+            )
+          );
+      } else if (assessment.principal_program_role === 'Facilitator') {
+        setAssessmentListSubset(
+          assessmentsList.filter(
+            assessment => assessment.facilitator_submissions_summary
+          )
+        );
+      }
+    });
   }, [currentStatusTab, assessmentsList]);
 
   const handleChangeTab = (
@@ -69,7 +79,15 @@ const AssessmentsListPage = () => {
 
   // We have to deal with the state where the API request is still loading
   if (isLoading) {
-    return <></>;
+    return (
+      <Stack
+        alignItems="center"
+        justifyContent="center"
+        sx={{ height: '40em' }}
+      >
+        <CircularProgress size={100} disableShrink />
+      </Stack>
+    );
   }
 
   // We have to deal with the state where an error occurs
