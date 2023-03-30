@@ -37,8 +37,6 @@ import {
   createAssessmentSubmission,
   listAllProgramAssessmentSubmissions,
 } from '../services/assessmentsService';
-import { exampleCurriculumAssessmentWithCorrectAnswers } from '../assets/data';
-import { number } from 'yargs';
 
 const assessmentsRouter = Router();
 
