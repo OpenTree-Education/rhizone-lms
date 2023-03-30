@@ -631,7 +631,7 @@ export const createAssessmentSubmission = async (
     assessment_id: programAssessmentId,
     principal_id: participantPrincipalId,
     assessment_submission_state: openedStateTitle,
-    opened_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
+    opened_at: new Date().toISOString(),
   };
 
   return newSubmission;
@@ -1316,7 +1316,7 @@ export const updateAssessmentSubmission = async (
     )
   ) {
     // participant could only update opened and in progress submssion that within due date.
-    if (new Date(programAssessment.due_date + 'Z') < new Date()) {
+    if (DateTime.fromISO(programAssessment.due_date) < DateTime.now()) {
       newState = 'Expired';
     } else {
       // participant could only update state to 'Submitted' or 'In Progress', defalut in progress.
@@ -1347,7 +1347,7 @@ export const updateAssessmentSubmission = async (
       await db('assessment_submissions')
         .update({
           assessment_submission_state_id: newStateId.id,
-          submitted_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
+          submitted_at: new Date().toISOString(),
         })
         .where('id', assessmentSubmission.id);
     } else {
