@@ -1268,17 +1268,43 @@ export const updateAssessmentSubmission = async (
 export const updateCurriculumAssessment = async (
   curriculumAssessment: CurriculumAssessment
 ): Promise<CurriculumAssessment> => {
-  // need to loop through and call updateAssessmentQuestion for each question that exists;
-  //
-  // need to createAssessmentQuestion for each question that does not exist;
-
+  const updatedQuestions = [];
+  const updatedCurriculumAssessment = {
+    ...curriculumAssessment
+  };
+  if (curriculumAssessment !== null) {
+    for (const question of curriculumAssessment.questions) {
+      if (typeof question.id !== "undefined") {
+        // need to createAssessmentQuestion for each question that does not exist;
+        // the question is new
+        const newQuestion = await createAssessmentQuestion(curriculumAssessment.id, question);
+        updatedQuestions.push(newQuestion);
+      } else {
+        // need to loop through and call updateAssessmentQuestion for each question that exists
+        //the question was updated
+        const updatedQuestion = await updateAssessmentQuestion(question);
+        updatedQuestions.push(updatedQuestion);
+      }
+    }
+  }
+  updatedCurriculumAssessment.questions = updatedQuestions;
   // need to update the curriculum_assessments table with any updated data for the curriculum assessment (refer to DB/model).
   // assessment_type_id turns into assessment_type. ignore assessment_type.
-
+  await db('curriculum_assessments')
+    .update({
+      title: curriculumAssessment.title,
+      assessment_type: curriculumAssessment.assessment_type,
+      description: curriculumAssessment.description,
+      max_score: curriculumAssessment.max_score,
+      max_num_submissions: curriculumAssessment.max_num_submissions,
+      time_limit: curriculumAssessment.time_limit,
+      questions: curriculumAssessment.questions
+    })
+    .where('id', curriculumAssessment.id);
   // refer to implementation of getCurriculumAssessment for knowledge on joins
   // (data in two different database tables that relate to one another), differences between database table and data type
 
-  return null;
+  return updatedCurriculumAssessment;
 };
 
 /**
