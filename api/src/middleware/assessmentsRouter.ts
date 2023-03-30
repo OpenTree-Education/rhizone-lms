@@ -38,6 +38,7 @@ import {
   updateAssessmentSubmission,
   listAllProgramAssessmentSubmissions,
 } from '../services/assessmentsService';
+import { DateTime } from 'luxon';
 
 const assessmentsRouter = Router();
 
@@ -554,13 +555,15 @@ assessmentsRouter.get(
         );
       }
 
-      if (new Date(programAssessment.available_after + 'Z') > new Date()) {
+      if (
+        DateTime.fromISO(programAssessment.available_after) > DateTime.now()
+      ) {
         throw new ForbiddenError(
           `Could not create a new submission of an assessment that's not yet available.`
         );
       }
 
-      if (new Date(programAssessment.due_date + 'Z') < new Date()) {
+      if (DateTime.fromISO(programAssessment.due_date) < DateTime.now()) {
         throw new ForbiddenError(
           `Could not create a new submission of an assessment after its due date.`
         );
