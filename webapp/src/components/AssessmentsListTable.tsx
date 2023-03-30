@@ -117,11 +117,18 @@ export const renderChipByStatus = (status: string) => {
 interface AssessmentListTableProps {
   currentStatusTab: StatusTab;
   matchingAssessmentList: AssessmentWithSummary[];
+  userRoles: {
+    isFacilitator: boolean;
+    isParticipant: boolean;
+    isMixedRole: boolean;
+    isNeither: boolean;
+  };
 }
 
 const AssessmentsListTable = ({
   currentStatusTab,
   matchingAssessmentList,
+  userRoles,
 }: AssessmentListTableProps) => {
   return (
     <TableContainer component={Paper}>
@@ -207,7 +214,7 @@ const AssessmentsListTable = ({
                 statusTab={currentStatusTab}
                 index={[StatusTab.All, StatusTab.Active]}
               >
-                Stauts
+                Status
               </TableCellWrapper>
             )}
             <TableCellWrapper

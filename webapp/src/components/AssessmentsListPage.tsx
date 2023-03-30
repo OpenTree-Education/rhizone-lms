@@ -6,6 +6,7 @@ import { AssessmentWithSummary } from '../types/api';
 import AssessmentsListTable from './AssessmentsListTable';
 import AssessmentsListTabs from './AssessmentsListTabs';
 import useApiData from '../helpers/useApiData';
+import { DateTime } from 'luxon';
 
 export enum StatusTab {
   All,
@@ -19,6 +20,12 @@ const AssessmentsListPage = () => {
   const [assessmentsListSubset, setAssessmentListSubset] = useState<
     AssessmentWithSummary[]
   >([]);
+  const [userRoles, setUserRoles] = useState({
+    isFacilitator: false,
+    isParticipant: false,
+    isMixedRole: false,
+    isNeither: false,
+  });
 
   // We have to retrieve the data from the backend
   const {
@@ -33,40 +40,59 @@ const AssessmentsListPage = () => {
 
   useEffect(() => {
     if (!assessmentsList) return;
-    assessmentsList.map(assessment => {
-      if (assessment.principal_program_role === 'Participant') {
-        if (currentStatusTab === 0)
-          // All Assessments
-          setAssessmentListSubset(assessmentsList);
-        else if (currentStatusTab === 2)
-          // Past Assessments
-          setAssessmentListSubset(
-            assessmentsList.filter(
-              assessment =>
-                assessment.participant_submissions_summary.highest_state ===
-                  'Graded' ||
-                assessment.participant_submissions_summary.highest_state ===
-                  'Submitted' ||
-                assessment.participant_submissions_summary.highest_state ===
-                  'Expired'
-            )
-          );
-        else
-          setAssessmentListSubset(
-            assessmentsList.filter(
-              assessment =>
-                assessment.participant_submissions_summary.highest_state ===
-                StatusTab[currentStatusTab]
-            )
-          );
-      } else if (assessment.principal_program_role === 'Facilitator') {
+
+    // Determine if user is a facilitator, participant, both, or neither:
+    const isFacilitator =
+      assessmentsList.filter(
+        assessment => assessment.principal_program_role === 'Facilitator'
+      ).length > 0;
+    const isParticipant =
+      assessmentsList.filter(
+        assessment => assessment.principal_program_role === 'Participant'
+      ).length > 0;
+    const isMixedRole = isFacilitator && isParticipant;
+    const isNeither = !isFacilitator && !isParticipant;
+
+    setUserRoles({ isFacilitator, isParticipant, isMixedRole, isNeither });
+
+    switch (currentStatusTab) {
+      case 1:
+        // Active Assessments
         setAssessmentListSubset(
           assessmentsList.filter(
-            assessment => assessment.facilitator_submissions_summary
+            assessment =>
+              DateTime.now() <
+                DateTime.fromISO(assessment.program_assessment.due_date) &&
+              DateTime.now() >=
+                DateTime.fromISO(assessment.program_assessment.available_after)
           )
         );
-      }
-    });
+        break;
+      case 2:
+        // Past Assessments
+        setAssessmentListSubset(
+          assessmentsList.filter(
+            assessment =>
+              DateTime.now() >
+              DateTime.fromISO(assessment.program_assessment.due_date)
+          )
+        );
+        break;
+      case 3:
+        // Upcoming Assessments
+        setAssessmentListSubset(
+          assessmentsList.filter(
+            assessment =>
+              DateTime.now() <
+              DateTime.fromISO(assessment.program_assessment.available_after)
+          )
+        );
+        break;
+      default:
+        // All Assessments
+        setAssessmentListSubset(assessmentsList);
+        break;
+    }
   }, [currentStatusTab, assessmentsList]);
 
   const handleChangeTab = (
@@ -90,18 +116,23 @@ const AssessmentsListPage = () => {
     );
   }
 
-  // We have to deal with the state where an error occurs
-  if (error) {
+  // We have to deal with the state where no data is returned
+  if (!assessmentsList || error) {
     return (
-      <Container fixed>
-        <p>There was an error loading the assessments list.</p>
+      <Container>
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          justifyContent="space-between"
+          alignItems={{ xs: 'flex-start', md: 'center' }}
+        >
+          <h1>Assessments</h1>
+        </Stack>
+
+        <div style={{ padding: '20px' }}>
+          There was an error loading the assessments list.
+        </div>
       </Container>
     );
-  }
-
-  // We have to deal with the state where no data is returned
-  if (!assessmentsList) {
-    return <></>;
   }
 
   if (assessmentsList.length === 0) {
@@ -140,6 +171,7 @@ const AssessmentsListPage = () => {
       <AssessmentsListTable
         currentStatusTab={currentStatusTab}
         matchingAssessmentList={assessmentsListSubset}
+        userRoles={userRoles}
       />
     </Container>
   );
