@@ -374,19 +374,40 @@ const listSubmissionResponses = async (
 const updateAssessmentQuestion = async (
   question: Question
 ): Promise<Question> => {
+  let correctAnswerId = question.correct_answer_id;
+  const updatedAnswers = [];
+  const updatedQuestion = {
+    ...question
+  };
+  if (question.answers !== null) {
+    for (const answer of question.answers) {
+      if (typeof answer.id !== "undefined") {
+        // the answer is new
+        const newAnswer = await createAssessmentQuestionAnswer(question.id, answer);
+        correctAnswerId = (newAnswer.correct_answer && newAnswer.correct_answer === true) ? newAnswer.id : correctAnswerId;
+        updatedAnswers.push(newAnswer);
+      } else {
+        // the answer was updated
+        const updatedAnswer = await updateAssessmentQuestionAnswer(answer);
+        correctAnswerId = (updatedAnswer.correct_answer && updatedAnswer.correct_answer === true) ? updatedAnswer.id : correctAnswerId;
+        updatedAnswers.push(updatedAnswer);
+      }
+    }
+  }
+  updatedQuestion.answers = updatedAnswers;
+  updatedQuestion.correct_answer_id = correctAnswerId;
+
   await db('assessment_questions')
       .update({
-        assessment_id: question.assessment_id,
         title: question.title,
         description: question.description,
         question_type: question.question_type,
-        answers: question.answers,
-        correct_answer_id: question.correct_answer_id,
+        correct_answer_id: correctAnswerId,
         max_score: question.max_score,
         sort_order: question.sort_order
       })
       .where('id', question.id);
-  return;
+  return updatedQuestion;
 };
 
 /**
@@ -400,7 +421,15 @@ const updateAssessmentQuestion = async (
 const updateAssessmentQuestionAnswer = async (
   answer: Answer
 ): Promise<Answer> => {
-  return;
+  await db('assessment_answers')
+      .update({
+        title: answer.title,
+        description: answer.description,
+        sort_order: answer.sort_order,
+        correct_answer: answer.correct_answer
+      })
+      .where('id', answer.id);
+  return answer;
 };
 
 /**
