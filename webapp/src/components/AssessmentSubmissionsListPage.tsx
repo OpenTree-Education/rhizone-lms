@@ -13,10 +13,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import {
-  assessmentDetailPageExampleData,
-  submissionsExample,
-} from '../assets/data';
 import { renderChipByStatus } from './AssessmentsListTable';
 import { AssessmentWithSubmissions } from '../types/api';
 import { formatDateTime } from '../helpers/dateTime';
@@ -74,7 +70,14 @@ const AssessmentSubmissionsListPage = () => {
       assessmentSub.curriculum_assessment.max_num_submissions >
         assessmentSub.submissions.length
     ) {
-      return <Button variant="contained" href={`/assessments/${assessmentIdNumber}/new`}>New Submission</Button>;
+      return (
+        <Button
+          href={`/assessments/${assessmentIdNumber}/submission/new`}
+          variant="contained"
+        >
+          New Submission
+        </Button>
+      );
     }
     return null;
   };
@@ -196,7 +199,7 @@ if (error) {
                         <Button
                           variant="contained"
                           size="small"
-                          href={`/assessments/${assessmentIdNumber}/${submission.id}`}
+                          href={`/assessments/${assessmentIdNumber}/submission/${submission.id}`}
                         >
                           Review
                         </Button>
