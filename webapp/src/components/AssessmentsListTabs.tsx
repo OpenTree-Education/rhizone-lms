@@ -50,8 +50,10 @@ const AssessmentsListTabs = ({
             <StyledBadge
               badgeContent={
                 assessmentList.filter(
-                  x =>
-                    x.participant_submissions_summary.highest_state === 'Active'
+                  assessment =>
+                    assessment.principal_program_role === 'Participant' &&
+                    assessment.participant_submissions_summary
+                      ?.highest_state === 'Active'
                 ).length
               }
               color="primary"
