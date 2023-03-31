@@ -645,7 +645,71 @@ describe('assessmentsRouter', () => {
         );
     });
   });
-  describe('DELETE /program/:programAssessmentId', () => {});
+  describe('DELETE /program/:programAssessmentId', () => {
+    it('should delete a program assessment in the system if logged-in user is facilitator of that program', done => {
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
+      mockDeleteProgramAssessment.mockResolvedValue(null);
+
+      mockPrincipalId(facilitatorPrincipalId);
+      appAgent
+        .delete(`/program/${exampleProgramAssessment.id}`)
+        .expect(204, {}, err => {
+          expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+            exampleProgramAssessment.id
+          );
+          expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            exampleProgramAssessment.program_id
+          );
+          expect(mockDeleteProgramAssessment).toHaveBeenCalledWith(
+            exampleProgramAssessment.id
+          );
+          done(err);
+        });
+    });
+
+    it('should return an error if logged-in user is not a facilitator of that program', done => {
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue('Participant');
+
+      mockPrincipalId(participantPrincipalId);
+      appAgent
+        .delete(`/program/${exampleProgramAssessment.id}`)
+        .expect(
+          401,
+          errorEnvelope(
+            `Not allowed to access program assessment with ID ${exampleProgramAssessment.id}.`
+          ),
+          err => {
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.id
+            );
+            expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+              participantPrincipalId,
+              exampleProgramAssessment.program_id
+            );
+            done(err);
+          }
+        );
+    });
+
+    it('should respond with a BadRequestError if given an invalid program assessment ID', done => {
+      const programAssessmentId = 'test';
+
+      appAgent
+        .delete(`/program/${programAssessmentId}`)
+        .expect(
+          400,
+          errorEnvelope(
+            `"${Number(
+              programAssessmentId
+            )}" is not a valid program assessment ID.`
+          ),
+          done
+        );
+    });
+  });
 
   describe('GET /program/:programAssessmentId/submissions', () => {
     it('should show a facilitator an AssessmentWithSubmissions with all participant submissions', done => {
