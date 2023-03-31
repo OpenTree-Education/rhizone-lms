@@ -215,8 +215,8 @@ export const exampleProgramAssessmentNotAvailable: ProgramAssessment = {
 
 export const exampleAssessmentDetails: AssessmentDetails = {
   curriculum_assessment: exampleCurriculumAssessmentWithCorrectAnswers,
-  program_assessment: exampleProgramAssessment
-}
+  program_assessment: exampleProgramAssessment,
+};
 export const exampleParticipantAssessmentSubmissionsInactive: ParticipantAssessmentSubmissionsSummary =
   {
     principal_id: participantPrincipalId,

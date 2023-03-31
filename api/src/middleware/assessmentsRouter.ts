@@ -309,7 +309,6 @@ assessmentsRouter.delete(
 assessmentsRouter.get(
   '/program/:programAssessmentId',
   async (req, res, next) => {
-
     const { principalId } = req.session;
 
     // get and parse the program assessment row ID number
@@ -317,8 +316,11 @@ assessmentsRouter.get(
 
     const { programAssessmentId } = req.params;
     const programAssessmentIdParsed = Number(programAssessmentId);
-  
-    if (!Number.isInteger(programAssessmentIdParsed) || programAssessmentIdParsed < 1) {
+
+    if (
+      !Number.isInteger(programAssessmentIdParsed) ||
+      programAssessmentIdParsed < 1
+    ) {
       next(
         new BadRequestError(
           `"${programAssessmentIdParsed}" is not a valid submission ID.`
@@ -326,9 +328,11 @@ assessmentsRouter.get(
       );
       return;
     }
-  
+
     try {
-      const programAssessment = await findProgramAssessment(programAssessmentIdParsed);
+      const programAssessment = await findProgramAssessment(
+        programAssessmentIdParsed
+      );
 
       // if programAssessment is null
       // programAssessment.nil?
@@ -337,41 +341,43 @@ assessmentsRouter.get(
           `Could not find program assessment with ID ${programAssessmentIdParsed}.`
         );
       }
-  
+
       // get the principal program role
       const programRole = await getPrincipalProgramRole(
         principalId,
         programAssessment.program_id
       );
-  
+
       // if the program role is null/falsy, that means the user is not enrolled in
       // the program. send an error back to the user.
-      if (programRole !== "Facilitator") {
-        throw new UnauthorizedError(`Could not access assessment with Program Assessment ID ${programAssessmentIdParsed}.`);
+      if (programRole !== 'Facilitator') {
+        throw new UnauthorizedError(
+          `Could not access assessment with Program Assessment ID ${programAssessmentIdParsed}.`
+        );
       }
-  
+
       // for this route, we always want to return the questions and all answer
       // options in all cases.
       const includeQuestionsAndAllAnswers = true;
-  
+
       // if the program role is facilitator, we should always return the correct
       // answers. otherwise, return the correct answers only if the submission has
       // been graded.
       const includeQuestionsAndCorrectAnswers = true;
-  
+
       // get the curriculum assessment
       const curriculumAssessment = await getCurriculumAssessment(
         programAssessment.assessment_id,
         includeQuestionsAndAllAnswers,
         includeQuestionsAndCorrectAnswers
       );
-  
+
       // let's construct our return value
       const assessmentDetails: AssessmentDetails = {
         curriculum_assessment: curriculumAssessment,
         program_assessment: programAssessment,
       };
-  
+
       // let's return that to the user
       res.json(itemEnvelope(assessmentDetails));
     } catch (err) {
