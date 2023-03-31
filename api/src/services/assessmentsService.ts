@@ -150,6 +150,7 @@ const createAssessmentQuestion = async (
   return updatedAssessmentQuestion;
 };
 
+
 /**
  * Inserts an answer for an existing curriculum assessment question into the
  * assessment_answers table.
@@ -388,19 +389,40 @@ const listSubmissionResponses = async (
 const updateAssessmentQuestion = async (
   question: Question
 ): Promise<Question> => {
+  let correctAnswerId = question.correct_answer_id;
+  const updatedAnswers = [];
+  const updatedQuestion = {
+    ...question
+  };
+  if (question.answers !== null) {
+    for (const answer of question.answers) {
+      if (typeof answer.id !== "undefined") {
+        // the answer is new
+        const newAnswer = await createAssessmentQuestionAnswer(question.id, answer);
+        correctAnswerId = (newAnswer.correct_answer && newAnswer.correct_answer === true) ? newAnswer.id : correctAnswerId;
+        updatedAnswers.push(newAnswer);
+      } else {
+        // the answer was updated
+        const updatedAnswer = await updateAssessmentQuestionAnswer(answer);
+        correctAnswerId = (updatedAnswer.correct_answer && updatedAnswer.correct_answer === true) ? updatedAnswer.id : correctAnswerId;
+        updatedAnswers.push(updatedAnswer);
+      }
+    }
+  }
+  updatedQuestion.answers = updatedAnswers;
+  updatedQuestion.correct_answer_id = correctAnswerId;
+
   await db('assessment_questions')
-    .update({
-      assessment_id: question.assessment_id,
-      title: question.title,
-      description: question.description,
-      question_type: question.question_type,
-      answers: question.answers,
-      correct_answer_id: question.correct_answer_id,
-      max_score: question.max_score,
-      sort_order: question.sort_order,
-    })
-    .where('id', question.id);
-  return;
+      .update({
+        title: question.title,
+        description: question.description,
+        question_type: question.question_type,
+        correct_answer_id: correctAnswerId,
+        max_score: question.max_score,
+        sort_order: question.sort_order
+      })
+      .where('id', question.id);
+  return updatedQuestion;
 };
 
 /**
@@ -414,7 +436,15 @@ const updateAssessmentQuestion = async (
 const updateAssessmentQuestionAnswer = async (
   answer: Answer
 ): Promise<Answer> => {
-  return;
+  await db('assessment_answers')
+      .update({
+        title: answer.title,
+        description: answer.description,
+        sort_order: answer.sort_order,
+        correct_answer: answer.correct_answer
+      })
+      .where('id', answer.id);
+  return answer;
 };
 
 /**
@@ -693,25 +723,7 @@ export const createCurriculumAssessment = async (
  * @returns {Promise<ProgramAssessment>} The updated ProgramAssessment object
  *   that was handed to us, but with row ID specified.
  */
-export const createProgramAssessment = async (
-  programAssessment: ProgramAssessment
-): Promise<ProgramAssessment> => {
-  const [insertedProgramAssessmentRowId] = await db(
-    'program_assessments'
-  ).insert({
-    program_id: programAssessment.program_id,
-    assessment_id: programAssessment.assessment_id,
-    available_after: programAssessment.available_after,
-    due_date: programAssessment.due_date,
-  });
 
-  const updatedProgramAssessment: ProgramAssessment = {
-    ...programAssessment,
-    id: insertedProgramAssessmentRowId,
-  };
-
-  return updatedProgramAssessment;
-};
 
 /**
  * Deletes a given curriculum assessment, all associated program assessments,
@@ -1385,16 +1397,42 @@ export const updateAssessmentSubmission = async (
 export const updateCurriculumAssessment = async (
   curriculumAssessment: CurriculumAssessment
 ): Promise<CurriculumAssessment> => {
-  // need to loop through and call updateAssessmentQuestion for each question that exists;
-  // need to createAssessmentQuestion for each question that does not exist;
-
+  const updatedQuestions = [];
+  const updatedCurriculumAssessment = {
+    ...curriculumAssessment
+  };
+  if (curriculumAssessment !== null) {
+    for (const question of curriculumAssessment.questions) {
+      if (typeof question.id !== "undefined") {
+        // need to createAssessmentQuestion for each question that does not exist;
+        // the question is new
+        const newQuestion = await createAssessmentQuestion(curriculumAssessment.id, question);
+        updatedQuestions.push(newQuestion);
+      } else {
+        // need to loop through and call updateAssessmentQuestion for each question that exists
+        //the question was updated
+        const updatedQuestion = await updateAssessmentQuestion(question);
+        updatedQuestions.push(updatedQuestion);
+      }
+    }
+  }
+  updatedCurriculumAssessment.questions = updatedQuestions;
   // need to update the curriculum_assessments table with any updated data for the curriculum assessment (refer to DB/model).
   // assessment_type_id turns into assessment_type. ignore assessment_type.
-
+  await db('curriculum_assessments')
+    .update({
+      title: curriculumAssessment.title,
+      assessment_type: curriculumAssessment.assessment_type,
+      description: curriculumAssessment.description,
+      max_score: curriculumAssessment.max_score,
+      max_num_submissions: curriculumAssessment.max_num_submissions,
+      time_limit: curriculumAssessment.time_limit,
+      questions: curriculumAssessment.questions
+    })
+    .where('id', curriculumAssessment.id);
   // refer to implementation of getCurriculumAssessment for knowledge on joins
   // (data in two different database tables that relate to one another), differences between database table and data type
-
-  return null;
+  return updatedCurriculumAssessment;
 };
 
 /**
