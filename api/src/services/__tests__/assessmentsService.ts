@@ -926,10 +926,12 @@ describe('deleteCurriculumAssessment', () => {
     mockQuery(
       //'update program_assessments set available_after` = ?, `due_date` = ? where `id` = ?',
       'delete from `curriculum_assessments` where `id` = ?',
-      [exampleCurriculumAssessment.id],[]
-      );
+      [exampleCurriculumAssessment.id],
+      []
+    );
 
-    expect(await deleteCurriculumAssessment(exampleCurriculumAssessment.id)).toEqual([]);
-
+    expect(
+      await deleteCurriculumAssessment(exampleCurriculumAssessment.id)
+    ).toEqual([]);
   });
 });

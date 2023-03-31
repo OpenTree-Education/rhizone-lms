@@ -13,6 +13,7 @@ import {
   exampleProgramAssessmentPastDue,
   exampleProgramAssessmentNotAvailable,
   exampleAssessmentSubmissionSubmitted,
+  exampleFacilitatorProgramIdsMatchingCurriculum,
   facilitatorPrincipalId,
   validFacilitatorPrincipalId,
   exampleCurriculumAssessmentWithQuestions,
@@ -446,7 +447,105 @@ describe('assessmentsRouter', () => {
   //   });
 
   // });
-  describe('DELETE /curriculum/:curriculumAssessmentId', () => {});
+  //describe('DELETE /curriculum/:curriculumAssessmentId', () => {});
+
+  describe('DELETE /curriculum/:curriculumAssessmentId', () => {
+    it('should delete a curriculumAssessment if principal ID is a program facilitator of that curriculum', done => {
+      mockGetCurriculumAssessment.mockResolvedValue(
+        exampleCurriculumAssessment
+      );
+      mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
+        exampleFacilitatorProgramIdsMatchingCurriculum
+      );
+      mockDeleteCurriculumAssessment.mockResolvedValue();
+
+      // Exist in database
+      mockPrincipalId(validFacilitatorPrincipalId);
+
+      appAgent
+        .post(`/curriculum`)
+        .send(exampleCurriculumAssessment)
+        .expect(201, err => {
+          expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
+            exampleCurriculumAssessment.id
+          );
+
+          expect(
+            mockFacilitatorProgramIdsMatchingCurriculum
+          ).toHaveBeenCalledWith(
+            validFacilitatorPrincipalId /*4*/,
+            exampleCurriculumAssessment.id /*12*/
+          );
+
+          expect(mockDeleteCurriculumAssessment).toHaveBeenCalledWith(
+            exampleCurriculumAssessment.id
+          );
+
+          done(err);
+        });
+    });
+
+    it('should respond with an Unauthorized Error if the the facilitator is not taking the program with the curriculum', done => {
+      mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
+        exampleFacilitatorProgramIdsNoMatchingCurriculum
+      );
+      mockPrincipalId(validFacilitatorPrincipalId);
+      appAgent
+        .delete(`/curriculum/${exampleCurriculumAssessment.id}`)
+        .send(exampleCurriculumAssessment)
+        .expect(
+          401,
+          errorEnvelope(
+            `No authorized to delete curriculum Assessment with ID ${exampleCurriculumAssessment.id}.`
+          ),
+          err => {
+            expect(
+              mockFacilitatorProgramIdsMatchingCurriculum
+            ).toHaveBeenCalledWith(
+              validFacilitatorPrincipalId,
+              exampleCurriculumAssessment.id
+            );
+            done(err);
+          }
+        );
+    });
+    it('BadRequestError if the curriculumAssessment ID is not is not a valid number.', done => {
+      const invalidIdCurriculumAssessment = -2;
+      mockPrincipalId(otherParticipantPrincipalId);
+      appAgent
+        .put(`/curriculum/${exampleCurriculumAssessment.id}`)
+        .send(exampleCurriculumAssessment)
+        .expect(
+          400,
+          errorEnvelope(
+            `"${Number(
+              invalidIdCurriculumAssessment
+            )}" is not a valid program assessment ID.`
+          ),
+          done
+        );
+    });
+    it('should respond with a NotFoundError if the curriculum assessment ID was not found in the database', done => {
+      mockGetCurriculumAssessment.mockResolvedValue(
+        exampleCurriculumAssessmentNoMatch
+      );
+      appAgent
+        .put(`/curriculum/${exampleCurriculumAssessmentNoMatch.id}`)
+        .send(exampleCurriculumAssessmentNoMatch)
+        .expect(
+          404,
+          errorEnvelope(
+            `Could not find curriculum assessment with ID ${exampleCurriculumAssessmentNoMatch.id}.`
+          ),
+          err => {
+            expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
+              exampleCurriculumAssessmentNoMatch.id
+            );
+            done(err);
+          }
+        );
+    });
+  });
 
   describe('GET /program/:programAssessmentId', () => {});
   describe('POST /program', () => {

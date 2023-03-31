@@ -99,7 +99,7 @@ export const exampleCurriculumAssessmentNoMatch: CurriculumAssessment = {
 };
 
 export const exampleFacilitatorProgramIdsMatchingCurriculum: number[] = [
-  10, 20,
+  3, 12, 20,
 ];
 export const exampleFacilitatorProgramIdsNoMatchingCurriculum: number[] = [
   40, 50,
