@@ -22,18 +22,20 @@ import { formatDateTime } from '../helpers/dateTime';
 import { AssessmentWithSummary } from '../types/api';
 import { StatusTab } from './AssessmentsListPage';
 
+interface PrincipalProgramRole {
+  isFacilitator: boolean;
+  isParticipant: boolean;
+  isMixedRole?: boolean;
+  isNeither?: boolean;
+}
+
 interface TableCellWrapperProps {
   children?: React.ReactNode;
   index: number[];
   statusTab: number;
   showForFacilitator: boolean;
   showForParticipant: boolean;
-  principalRoles: {
-    isFacilitator: boolean;
-    isParticipant: boolean;
-    isMixedRole: boolean;
-    isNeither: boolean;
-  };
+  principalRoles: PrincipalProgramRole;
 }
 
 const TableCellWrapper = (props: TableCellWrapperProps) => {
@@ -54,29 +56,63 @@ const TableCellWrapper = (props: TableCellWrapperProps) => {
   ) : null;
 };
 
-const renderButtonByStatus = (status: string, id: number) => {
-  let buttonLabel;
-  switch (status) {
-    case 'Active':
-      buttonLabel = 'Start';
-      break;
-    case 'Submitted':
-    case 'Graded':
-    case 'Unsubmitted':
-    case 'Expired':
-      buttonLabel = 'View';
-      break;
-    case 'Upcoming':
-    default:
-  }
-  if (status !== 'Upcoming') {
+const renderButtonByStatus = (
+  status: string,
+  programAssessmentId: number,
+  principalRole: string
+) => {
+  let buttonLabel = '';
+  let destinationPath = '';
+  let displayButton = true;
+  if (principalRole === 'Facilitator') {
     return (
-      //TODO: use the latest submission id
-      <Button variant="contained" size="small" href={`/assessments/${id}/0`}>
-        {buttonLabel}
+      <Button
+        variant="contained"
+        size="small"
+        href={`/assessments/${programAssessmentId}/submissions`}
+      >
+        View
       </Button>
     );
   }
+  switch (status) {
+    case 'Active':
+      buttonLabel = 'Start';
+      destinationPath = 'new';
+      break;
+    case 'Opened':
+    case 'In Progress':
+      buttonLabel = 'Resume';
+      // TODO: Path should be to submission number
+      destinationPath = 'new';
+      break;
+    case 'Submitted':
+    case 'Graded':
+      buttonLabel = 'Review';
+      destinationPath = 'submissions';
+      break;
+    case 'Upcoming':
+      displayButton = false;
+      break;
+    case 'Unsubmitted':
+    case 'Expired':
+    default:
+      buttonLabel = 'Info';
+      destinationPath = 'submissions';
+      break;
+  }
+  if (!displayButton) {
+    return null;
+  }
+  return (
+    <Button
+      variant="contained"
+      size="small"
+      href={`/assessments/${programAssessmentId}/${destinationPath}`}
+    >
+      {buttonLabel}
+    </Button>
+  );
 };
 
 export const renderChipByStatus = (status: string) => {
@@ -138,12 +174,7 @@ export const renderChipByStatus = (status: string) => {
 interface AssessmentListTableProps {
   currentStatusTab: StatusTab;
   matchingAssessmentList: AssessmentWithSummary[];
-  userRoles: {
-    isFacilitator: boolean;
-    isParticipant: boolean;
-    isMixedRole: boolean;
-    isNeither: boolean;
-  };
+  userRoles: PrincipalProgramRole;
 }
 
 // For Participants:
@@ -446,7 +477,8 @@ const AssessmentsListTable = ({
                   assessment.program_assessment.id &&
                   renderButtonByStatus(
                     assessment.participant_submissions_summary.highest_state,
-                    Number(assessment.program_assessment.id)
+                    Number(assessment.program_assessment.id),
+                    assessment.principal_program_role
                   )}
               </TableCellWrapper>
             </TableRow>

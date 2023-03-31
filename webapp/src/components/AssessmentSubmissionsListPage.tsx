@@ -107,33 +107,9 @@ const AssessmentSubmissionsListPage = () => {
   return (
     <Container>
       <Grid container spacing={2}>
-        <Grid item xs={9}>
+        <Grid item xs={12}>
           <h1>{assessmentSub.curriculum_assessment.title}</h1>
           <p>{assessmentSub.curriculum_assessment.description}</p>
-        </Grid>
-        <Grid item xs={3}>
-          <Stack
-            direction="row"
-            justifyContent="flex-end"
-            alignItems="flex-end"
-            spacing={2}
-            sx={{ height: '100%' }}
-          >
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={isFacilitator}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                      setIsFacilitator(event.target.checked);
-                    }}
-                    name="isFacilitator"
-                  />
-                }
-                label="Facilitator mode"
-              />
-            </FormGroup>
-          </Stack>
         </Grid>
 
         <Grid item xs={12}>
@@ -222,6 +198,9 @@ const AssessmentSubmissionsListPage = () => {
             alignItems="flex-end"
             spacing={2}
           >
+            <Button href={'/assessments'} variant="outlined">
+              &laquo; Assessments List
+            </Button>
             <ButtonWrapper />
           </Stack>
         </Grid>
