@@ -25,6 +25,7 @@ import {
   unenrolledPrincipalId,
   exampleParticipantAssessmentSubmissionsSummary,
   exampleFacilitatorAssessmentSubmissionsSummary,
+  exampleAssessmentDetails,
   exampleFacilitatorProgramIdsNoMatchingCurriculum,
   exampleCurriculumAssessmentNoMatch,
   updatedCurriculumAssessment,

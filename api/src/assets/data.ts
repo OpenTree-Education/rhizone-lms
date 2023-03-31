@@ -6,6 +6,7 @@ import {
   AssessmentSubmission,
   AssessmentWithSummary,
   Question,
+  AssessmentDetails,
   AssessmentWithSubmissions,
   Answer,
   SavedAssessment,
@@ -233,6 +234,10 @@ export const exampleProgramAssessmentNotAvailable: ProgramAssessment = {
   due_date: '2050-06-23T00:00:00.000-07:00',
 };
 
+export const exampleAssessmentDetails: AssessmentDetails = {
+  curriculum_assessment: exampleCurriculumAssessmentWithCorrectAnswers,
+  program_assessment: exampleProgramAssessment,
+};
 export const exampleParticipantAssessmentSubmissionsInactive: ParticipantAssessmentSubmissionsSummary =
   {
     principal_id: participantPrincipalId,
