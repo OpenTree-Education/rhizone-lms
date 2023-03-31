@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { DateTime } from 'luxon';
+
 import { styled } from '@mui/material/styles';
 import { useParams } from 'react-router-dom';
-import {
-  FormGroup,
-  FormControlLabel,
-  Switch,
-  CircularProgress,
-} from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
@@ -18,10 +15,12 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { renderChipByStatus } from './AssessmentsListTable';
-import { AssessmentWithSubmissions } from '../types/api';
+
 import { formatDateTime } from '../helpers/dateTime';
 import useApiData from '../helpers/useApiData';
+import { AssessmentWithSubmissions } from '../types/api';
+
+import { renderChipByStatus } from './AssessmentsListTable';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -59,23 +58,41 @@ const AssessmentSubmissionsListPage = () => {
     sendCredentials: true,
   });
 
-  if (!assessmentSub || assessmentSub.submissions.length === 0) {
+  useEffect(() => {
+    if (assessmentSub) {
+      if (assessmentSub.principal_program_role === 'Facilitator') {
+        setIsFacilitator(true);
+      } else {
+        setIsFacilitator(false);
+      }
+    }
+  }, [assessmentSub]);
+
+  if (!assessmentSub || error) {
     return (
-      <Container>
-        <p>No submissions.</p>
+      <Container fixed>
+        <p>There was an error loading the assessment submissions list.</p>
+        <Button href={'/assessments'} variant="outlined">
+          &laquo; Assessments List
+        </Button>
       </Container>
     );
   }
 
-  const ButtonWrapper = () => {
+  const NewSubmissionButton = () => {
     if (
-      new Date(assessmentSub.program_assessment.due_date) > new Date() &&
-      assessmentSub.curriculum_assessment.max_num_submissions >
-        assessmentSub.submissions.length
+      DateTime.fromISO(assessmentSub.program_assessment.available_after) <
+        DateTime.now() &&
+      DateTime.fromISO(assessmentSub.program_assessment.due_date) >
+        DateTime.now() &&
+      (!assessmentSub.submissions ||
+        assessmentSub.curriculum_assessment.max_num_submissions >
+          assessmentSub.submissions.length) &&
+      !isFacilitator
     ) {
       return (
         <Button
-          href={`/assessments/${assessmentIdNumber}/submission/new`}
+          href={`/assessments/${assessmentIdNumber}/new`}
           variant="contained"
         >
           New Submission
@@ -96,10 +113,57 @@ const AssessmentSubmissionsListPage = () => {
       </Stack>
     );
   }
-  if (error) {
+
+  const SubmissionsHeader = () => {
     return (
-      <Container fixed>
-        <p>There was an error loading the assessments list.</p>
+      <Grid item xs={12}>
+        <h1>{assessmentSub.curriculum_assessment.title}</h1>
+        <p>{assessmentSub.curriculum_assessment.description}</p>
+        {DateTime.now() <
+          DateTime.fromISO(
+            assessmentSub.program_assessment.available_after
+          ) && (
+          <p>
+            <strong>Available After:</strong>{' '}
+            {formatDateTime(assessmentSub.program_assessment.available_after)}
+          </p>
+        )}
+        <p>
+          <strong>Due Date:</strong>{' '}
+          {formatDateTime(assessmentSub.program_assessment.due_date)}
+        </p>
+      </Grid>
+    );
+  };
+
+  const SubmissionsFooter = () => {
+    return (
+      <Grid item xs={12} sx={{ justifyContent: 'flex-end' }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="flex-end"
+          spacing={2}
+        >
+          <Button href={'/assessments'} variant="outlined">
+            &laquo; Assessments List
+          </Button>
+          <NewSubmissionButton />
+        </Stack>
+      </Grid>
+    );
+  };
+
+  if (!assessmentSub.submissions || assessmentSub.submissions.length === 0) {
+    return (
+      <Container>
+        <Grid container spacing={2}>
+          <SubmissionsHeader />
+          <Grid item xs={12}>
+            <p>No submissions for this program assessment.</p>
+          </Grid>
+          <SubmissionsFooter />
+        </Grid>
       </Container>
     );
   }
@@ -107,11 +171,7 @@ const AssessmentSubmissionsListPage = () => {
   return (
     <Container>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <h1>{assessmentSub.curriculum_assessment.title}</h1>
-          <p>{assessmentSub.curriculum_assessment.description}</p>
-        </Grid>
-
+        <SubmissionsHeader />
         <Grid item xs={12}>
           <TableContainer component={Paper}>
             <Table>
@@ -178,7 +238,7 @@ const AssessmentSubmissionsListPage = () => {
                         <Button
                           variant="contained"
                           size="small"
-                          href={`/assessments/${assessmentIdNumber}/submission/${submission.id}`}
+                          href={`/assessments/${assessmentIdNumber}/${submission.id}`}
                         >
                           Review
                         </Button>
@@ -190,20 +250,7 @@ const AssessmentSubmissionsListPage = () => {
             </Table>
           </TableContainer>
         </Grid>
-
-        <Grid item xs={12} sx={{ justifyContent: 'flex-end' }}>
-          <Stack
-            direction="row"
-            justifyContent="flex-end"
-            alignItems="flex-end"
-            spacing={2}
-          >
-            <Button href={'/assessments'} variant="outlined">
-              &laquo; Assessments List
-            </Button>
-            <ButtonWrapper />
-          </Stack>
-        </Grid>
+        <SubmissionsFooter />
       </Grid>
     </Container>
   );

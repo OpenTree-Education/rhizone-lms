@@ -841,12 +841,12 @@ export const getAssessmentSubmission = async (
       'assessment_submission_states.id'
     )
     .select(
-      'assessment_id',
-      'principal_id',
+      'assessment_submissions.assessment_id',
+      'assessment_submissions.principal_id',
       'assessment_submission_states.title as assessment_submission_state',
-      'score',
-      'opened_at',
-      'submitted_at'
+      'assessment_submissions.score',
+      'assessment_submissions.opened_at',
+      'assessment_submissions.submitted_at'
     )
     .where('assessment_submissions.id', assessmentSubmissionId);
 
@@ -1019,12 +1019,12 @@ export const listAllProgramAssessmentSubmissions = async (
       'assessment_submission_states.id'
     )
     .select(
-      'id',
+      'assessment_submissions.id',
       'assessment_submission_states.title as assessment_submission_state',
-      'principal_id',
-      'score',
-      'opened_at',
-      'submitted_at'
+      'assessment_submissions.principal_id',
+      'assessment_submissions.score',
+      'assessment_submissions.opened_at',
+      'assessment_submissions.submitted_at'
     )
     .where('assessment_id', programAssessmentId);
 
@@ -1088,9 +1088,9 @@ export const listParticipantProgramAssessmentSubmissions = async (
     .select(
       'assessment_submissions.id as id',
       'assessment_submission_states.title as assessment_submission_state',
-      'score',
-      'opened_at',
-      'submitted_at'
+      'assessment_submissions.score',
+      'assessment_submissions.opened_at',
+      'assessment_submissions.submitted_at'
     )
     .where('assessment_submissions.principal_id', participantPrincipalId)
     .andWhere('assessment_submissions.assessment_id', programAssessmentId);
