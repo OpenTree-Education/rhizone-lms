@@ -710,7 +710,7 @@ export const deleteProgramAssessment = async (
   programAssessmentId: number
 ): Promise<void> => {
   const matchingProgramAssessmentsRows = await db('program_assessments')
-    .select('program_id', 'assessment_id', 'available_after', 'due_date')
+    // fix this missing line using the knex documentation, using the correct command for delete: https://knexjs.org/guide/query-builder.html#common
     .where('id', programAssessmentId);
 
   if (matchingProgramAssessmentsRows.length === 0) {

@@ -1,43 +1,44 @@
 import { Router } from 'express';
+import { DateTime } from 'luxon';
 
 import {
   BadRequestError,
+  ForbiddenError,
   InternalServerError,
   NotFoundError,
-  ForbiddenError,
   UnauthorizedError,
   ValidationError,
 } from './httpErrors';
-import { itemEnvelope, collectionEnvelope } from './responseEnvelope';
+import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
 
 import {
+  AssessmentSubmission,
+  AssessmentWithSubmissions,
+  AssessmentWithSummary,
   CurriculumAssessment,
   ProgramAssessment,
-  AssessmentWithSummary,
   SavedAssessment,
-  AssessmentWithSubmissions,
-  AssessmentSubmission,
 } from '../models';
 import {
+  constructFacilitatorAssessmentSummary,
+  constructParticipantAssessmentSummary,
+  createAssessmentSubmission,
+  createCurriculumAssessment,
+  createProgramAssessment,
+  deleteProgramAssessment,
+  facilitatorProgramIdsMatchingCurriculum,
   findProgramAssessment,
   getAssessmentSubmission,
   getCurriculumAssessment,
   getPrincipalProgramRole,
+  listAllProgramAssessmentSubmissions,
   listAssessmentQuestions,
+  listParticipantProgramAssessmentSubmissions,
   listPrincipalEnrolledProgramIds,
   listProgramAssessments,
-  constructParticipantAssessmentSummary,
-  constructFacilitatorAssessmentSummary,
-  facilitatorProgramIdsMatchingCurriculum,
   updateCurriculumAssessment,
   updateProgramAssessment,
-  createCurriculumAssessment,
-  createProgramAssessment,
-  listParticipantProgramAssessmentSubmissions,
-  createAssessmentSubmission,
-  listAllProgramAssessmentSubmissions,
 } from '../services/assessmentsService';
-import { DateTime } from 'luxon';
 
 const assessmentsRouter = Router();
 
@@ -427,7 +428,59 @@ assessmentsRouter.put(
 assessmentsRouter.delete(
   '/program/:programAssessmentId',
   async (req, res, next) => {
-    res.json();
+    // get the principal ID of the logged in user
+    const { principalId } = req.session;
+
+    // get the program assessment ID from the URL parameters
+    const { programAssessmentId } = req.params;
+
+    // make sure the program assessment ID is a number/integer
+    const programAssessmentIdParsed = Number(programAssessmentId);
+
+    if (
+      !Number.isInteger(programAssessmentIdParsed) ||
+      programAssessmentIdParsed < 1
+    ) {
+      next(
+        new BadRequestError(
+          `"${programAssessmentIdParsed}" is not a valid program assessment ID.`
+        )
+      );
+      return;
+    }
+
+    try {
+      // get the program assessment so we can get the program ID
+      const matchingProgramAssessment = await findProgramAssessment(
+        programAssessmentIdParsed
+      );
+
+      if (matchingProgramAssessment === null) {
+        throw new NotFoundError(
+          `Could not find program assessment with ID ${programAssessmentIdParsed}.`
+        );
+      }
+
+      // check the user has permission to delete the program assessment
+      const programRole = await getPrincipalProgramRole(
+        principalId,
+        matchingProgramAssessment.program_id
+      );
+
+      if (programRole !== 'Facilitator') {
+        throw new UnauthorizedError(
+          `Not allowed to access program assessment with ID ${programAssessmentIdParsed}.`
+        );
+      }
+
+      // if they do, delete the program assessment
+      await deleteProgramAssessment(programAssessmentIdParsed);
+    } catch (err) {
+      next(err);
+      return;
+    }
+
+    res.status(204).send();
   }
 );
 
