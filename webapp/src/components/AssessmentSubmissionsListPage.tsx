@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import { useParams } from 'react-router-dom';
-import { FormGroup, FormControlLabel, Switch, CircularProgress } from '@mui/material';
+import {
+  FormGroup,
+  FormControlLabel,
+  Switch,
+  CircularProgress,
+} from '@mui/material';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
@@ -40,7 +45,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const AssessmentSubmissionsListPage = () => {
-
   const { assessmentId } = useParams();
   const assessmentIdNumber = Number(assessmentId);
   const [isFacilitator, setIsFacilitator] = useState(false);
@@ -62,7 +66,6 @@ const AssessmentSubmissionsListPage = () => {
       </Container>
     );
   }
-
 
   const ButtonWrapper = () => {
     if (
@@ -93,7 +96,7 @@ const AssessmentSubmissionsListPage = () => {
       </Stack>
     );
   }
-if (error) {
+  if (error) {
     return (
       <Container fixed>
         <p>There was an error loading the assessments list.</p>
