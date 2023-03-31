@@ -181,7 +181,7 @@ export interface AssessmentSubmission extends Entity {
   responses?: AssessmentResponse[];
 }
 
-export interface AssessmentSubmissionsSummary {
+export interface ParticipantAssessmentSubmissionsSummary {
   principal_id: number;
   highest_state: string;
   total_num_submissions: number;
