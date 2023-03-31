@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import {
   Answer,
   AssessmentResponse,
@@ -10,7 +11,7 @@ import {
   Question,
 } from '../models';
 import db from './db';
-import { listProgramsForCurriculum } from './programsService';
+import { findProgram, listProgramsForCurriculum } from './programsService';
 
 // Helper functions
 
@@ -104,8 +105,51 @@ const createAssessmentQuestion = async (
   curriculumAssessmentId: number,
   question: Question
 ): Promise<Question> => {
-  return;
+  const [insertedAssessmentQuestionId] = await db(
+    'assessment_questions'
+  ).insert({
+    assessment_id: curriculumAssessmentId,
+    title: question.title,
+    description: question.description,
+    question_type_id: question.question_type === 'single choice' ? 1 : 2,
+    max_score: question.max_score,
+    sort_order: question.sort_order,
+  });
+
+  const insertedAnswers: Answer[] = [];
+  let correctAnswerId;
+
+  for (const assessmentAnswer of question.answers) {
+    const insertedAnswer = await createAssessmentQuestionAnswer(
+      insertedAssessmentQuestionId,
+      assessmentAnswer
+    );
+
+    if (question.question_type === 'single choice') {
+      if (insertedAnswer.correct_answer === true) {
+        correctAnswerId = insertedAnswer.id;
+      }
+    } else if (question.question_type === 'free response') {
+      correctAnswerId = insertedAnswer.id;
+    }
+    insertedAnswers.push(insertedAnswer);
+  }
+
+  if (correctAnswerId) {
+    await db('assessment_questions')
+      .update('correct_answer_id', correctAnswerId)
+      .where('id', insertedAssessmentQuestionId);
+  }
+
+  const updatedAssessmentQuestion = {
+    ...question,
+    id: insertedAssessmentQuestionId,
+    answers: insertedAnswers,
+  };
+
+  return updatedAssessmentQuestion;
 };
+
 
 /**
  * Inserts an answer for an existing curriculum assessment question into the
@@ -122,7 +166,20 @@ const createAssessmentQuestionAnswer = async (
   questionId: number,
   answer: Answer
 ): Promise<Answer> => {
-  return;
+  const [insertedAssessmentAnswersId] = await db('assessment_answers').insert({
+    question_id: questionId,
+    title: answer.title,
+    description: answer.description,
+    sort_order: answer.sort_order,
+  });
+
+  const updatedAssessmentAnswer = {
+    ...answer,
+    question_id: questionId,
+    id: insertedAssessmentAnswersId,
+  };
+
+  return updatedAssessmentAnswer;
 };
 
 /**
@@ -137,7 +194,22 @@ const createAssessmentQuestionAnswer = async (
 const createSubmissionResponse = async (
   assessmentResponse: AssessmentResponse
 ): Promise<AssessmentResponse> => {
-  return;
+  const [newSubmissionId] = await db('assessment_responses').insert({
+    assessment_id: assessmentResponse.assessment_id,
+    submission_id: assessmentResponse.submission_id,
+    question_id: assessmentResponse.question_id,
+    answer_id: assessmentResponse.answer_id,
+    response: assessmentResponse.response_text,
+  });
+
+  return {
+    id: newSubmissionId,
+    assessment_id: assessmentResponse.assessment_id,
+    submission_id: assessmentResponse.submission_id,
+    question_id: assessmentResponse.question_id,
+    answer_id: assessmentResponse.answer_id,
+    response: assessmentResponse.response_text,
+  } as AssessmentResponse;
 };
 
 /**
@@ -317,7 +389,40 @@ const listSubmissionResponses = async (
 const updateAssessmentQuestion = async (
   question: Question
 ): Promise<Question> => {
-  return;
+  let correctAnswerId = question.correct_answer_id;
+  const updatedAnswers = [];
+  const updatedQuestion = {
+    ...question
+  };
+  if (question.answers !== null) {
+    for (const answer of question.answers) {
+      if (typeof answer.id !== "undefined") {
+        // the answer is new
+        const newAnswer = await createAssessmentQuestionAnswer(question.id, answer);
+        correctAnswerId = (newAnswer.correct_answer && newAnswer.correct_answer === true) ? newAnswer.id : correctAnswerId;
+        updatedAnswers.push(newAnswer);
+      } else {
+        // the answer was updated
+        const updatedAnswer = await updateAssessmentQuestionAnswer(answer);
+        correctAnswerId = (updatedAnswer.correct_answer && updatedAnswer.correct_answer === true) ? updatedAnswer.id : correctAnswerId;
+        updatedAnswers.push(updatedAnswer);
+      }
+    }
+  }
+  updatedQuestion.answers = updatedAnswers;
+  updatedQuestion.correct_answer_id = correctAnswerId;
+
+  await db('assessment_questions')
+      .update({
+        title: question.title,
+        description: question.description,
+        question_type: question.question_type,
+        correct_answer_id: correctAnswerId,
+        max_score: question.max_score,
+        sort_order: question.sort_order
+      })
+      .where('id', question.id);
+  return updatedQuestion;
 };
 
 /**
@@ -331,7 +436,15 @@ const updateAssessmentQuestion = async (
 const updateAssessmentQuestionAnswer = async (
   answer: Answer
 ): Promise<Answer> => {
-  return;
+  await db('assessment_answers')
+      .update({
+        title: answer.title,
+        description: answer.description,
+        sort_order: answer.sort_order,
+        correct_answer: answer.correct_answer
+      })
+      .where('id', answer.id);
+  return answer;
 };
 
 /**
@@ -340,12 +453,32 @@ const updateAssessmentQuestionAnswer = async (
  * @param {AssessmentResponse} assessmentResponse - The AssessmentResponse
  *   object for a given program assessment submission response with updated
  *   information.
+ * @param {boolean} [facilitatorGrading] - Optional specifier for when the
+ *   program facilitator is the one updating a program assessment submission response,
+ *   they are allowed to modify the score, and grader response.
  * @returns {Promise<AssessmentResponse>} The updated AssessmentResponse object.
  */
 const updateSubmissionResponse = async (
-  assessmentResponse: AssessmentResponse
+  assessmentResponse: AssessmentResponse,
+  facilitatorGrading?: boolean
 ): Promise<AssessmentResponse> => {
-  return;
+  if (facilitatorGrading) {
+    await db('assessment_responses')
+      .update({
+        score: assessmentResponse.score,
+        grader_response: assessmentResponse.grader_response,
+      })
+      .where('id', assessmentResponse.id);
+  } else {
+    await db('assessment_responses')
+      .update({
+        answer_id: assessmentResponse.answer_id,
+        response: assessmentResponse.response_text,
+      })
+      .where('id', assessmentResponse.id);
+  }
+
+  return assessmentResponse;
 };
 
 // Callable from router
@@ -400,7 +533,18 @@ export const constructParticipantAssessmentSummary = async (
   participantPrincipalId: number,
   programAssessmentId: number
 ): Promise<ParticipantAssessmentSubmissionsSummary> => {
-  const [highestState] = await db('assessment_submissions')
+  const programAssessment: ProgramAssessment = await findProgramAssessment(
+    programAssessmentId
+  );
+
+  const assessmentActiveDate = DateTime.fromISO(
+    programAssessment.available_after
+  );
+  const assessmentDueDate = DateTime.fromISO(programAssessment.due_date);
+
+  let highestState;
+
+  const highestStateFromDB = await db('assessment_submissions')
     .select('assessment_submission_states.title')
     .join(
       'assessment_submission_states',
@@ -412,33 +556,74 @@ export const constructParticipantAssessmentSummary = async (
     .orderBy('assessment_submissions.assessment_submission_state_id', 'desc')
     .limit(1);
 
-  const [mostRecentSubmittedDate] = await db('assessment_submissions')
+  if (highestStateFromDB.length === 0) {
+    if (
+      DateTime.now() >= assessmentActiveDate &&
+      DateTime.now() < assessmentDueDate
+    ) {
+      highestState = 'Active';
+    } else if (DateTime.now() < assessmentActiveDate) {
+      highestState = 'Inactive';
+    } else if (DateTime.now() >= assessmentDueDate) {
+      highestState = 'Expired';
+    }
+  } else {
+    highestState = highestStateFromDB[0].title;
+  }
+
+  let mostRecentSubmittedDate;
+  const mostRecentSubmittedDateFromDB = await db('assessment_submissions')
     .select('submitted_at')
     .where('principal_id', participantPrincipalId)
     .andWhere('assessment_id', programAssessmentId)
     .orderBy('submitted_at', 'desc')
     .limit(1);
 
+  if (mostRecentSubmittedDateFromDB.length === 0) {
+    mostRecentSubmittedDate = null;
+  } else {
+    mostRecentSubmittedDate = DateTime.fromSQL(
+      mostRecentSubmittedDateFromDB[0].submitted_at,
+      { zone: 'utc' }
+    ).toISO();
+  }
+
   const totalNumSubmissions = await listParticipantProgramAssessmentSubmissions(
     participantPrincipalId,
     programAssessmentId
   );
 
-  const [highestScore] = await db('assessment_submissions')
+  let highestScore;
+  const highestScoreFromDB = await db('assessment_submissions')
     .select('score')
     .where('principal_id', participantPrincipalId)
     .andWhere('assessment_id', programAssessmentId)
     .orderBy('score', 'desc')
     .limit(1);
 
+  if (highestScoreFromDB.length === 0) {
+    highestScore = null;
+  } else {
+    highestScore = highestScoreFromDB[0].score;
+  }
+
   const participantAssessmentSummary: ParticipantAssessmentSubmissionsSummary =
     {
       principal_id: participantPrincipalId,
-      highest_state: highestState.title,
-      most_recent_submitted_date: mostRecentSubmittedDate.submitted_at,
-      total_num_submissions: totalNumSubmissions.length,
-      highest_score: highestScore.score,
+      highest_state: highestState,
+      total_num_submissions: totalNumSubmissions
+        ? totalNumSubmissions.length
+        : 0,
     };
+
+  if (mostRecentSubmittedDate !== null) {
+    participantAssessmentSummary.most_recent_submitted_date =
+      mostRecentSubmittedDate;
+  }
+
+  if (highestScore !== null) {
+    participantAssessmentSummary.highest_score = highestScore;
+  }
 
   return participantAssessmentSummary;
 };
@@ -476,9 +661,7 @@ export const createAssessmentSubmission = async (
     assessment_id: programAssessmentId,
     principal_id: participantPrincipalId,
     assessment_submission_state: openedStateTitle,
-    opened_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
-    score: null as number,
-    submitted_at: null as string,
+    opened_at: new Date().toISOString(),
   };
 
   return newSubmission;
@@ -496,7 +679,39 @@ export const createAssessmentSubmission = async (
 export const createCurriculumAssessment = async (
   curriculumAssessment: CurriculumAssessment
 ): Promise<CurriculumAssessment> => {
-  return;
+  const [insertedCurriculumAssessmentRowId] = await db(
+    'curriculum_assessments'
+  ).insert({
+    title: curriculumAssessment.title,
+    description: curriculumAssessment.description,
+    max_score: curriculumAssessment.max_score,
+    max_num_submissions: curriculumAssessment.max_num_submissions,
+    time_limit: curriculumAssessment.time_limit,
+    curriculum_id: curriculumAssessment.curriculum_id,
+    activity_id: curriculumAssessment.activity_id,
+    principal_id: curriculumAssessment.principal_id,
+  });
+
+  const insertedQuestions: Question[] = [];
+
+  if (typeof curriculumAssessment.questions !== 'undefined') {
+    for (const assessmentQuestion of curriculumAssessment.questions) {
+      insertedQuestions.push(
+        await createAssessmentQuestion(
+          insertedCurriculumAssessmentRowId,
+          assessmentQuestion
+        )
+      );
+    }
+  }
+
+  const updatedCurriculumAssessment: CurriculumAssessment = {
+    ...curriculumAssessment,
+    id: insertedCurriculumAssessmentRowId,
+    questions: insertedQuestions,
+  };
+
+  return updatedCurriculumAssessment;
 };
 
 /**
@@ -508,25 +723,7 @@ export const createCurriculumAssessment = async (
  * @returns {Promise<ProgramAssessment>} The updated ProgramAssessment object
  *   that was handed to us, but with row ID specified.
  */
-export const createProgramAssessment = async (
-  programAssessment: ProgramAssessment
-): Promise<ProgramAssessment> => {
-  const [insertedProgramAssessmentRowId] = await db(
-    'program_assessments'
-  ).insert({
-    program_id: programAssessment.program_id,
-    assessment_id: programAssessment.assessment_id,
-    available_after: programAssessment.available_after,
-    due_date: programAssessment.due_date,
-  });
 
-  const updatedProgramAssessment: ProgramAssessment = {
-    ...programAssessment,
-    id: insertedProgramAssessmentRowId,
-  };
-
-  return updatedProgramAssessment;
-};
 
 /**
  * Deletes a given curriculum assessment, all associated program assessments,
@@ -560,7 +757,7 @@ export const deleteProgramAssessment = async (
   programAssessmentId: number
 ): Promise<void> => {
   const matchingProgramAssessmentsRows = await db('program_assessments')
-    .select('program_id', 'assessment_id', 'available_after', 'due_date')
+    // fix this missing line using the knex documentation, using the correct command for delete: https://knexjs.org/guide/query-builder.html#common
     .where('id', programAssessmentId);
 
   if (matchingProgramAssessmentsRows.length === 0) {
@@ -589,14 +786,20 @@ export const findProgramAssessment = async (
     return null;
   }
 
-  const [programAssessmentRow] = matchingProgramAssessmentsRows;
+  const [programAssessmentsRow] = matchingProgramAssessmentsRows;
+
+  const program = await findProgram(programAssessmentsRow.program_id);
 
   const programAssessment: ProgramAssessment = {
     id: programAssessmentId,
-    program_id: programAssessmentRow.program_id,
-    assessment_id: programAssessmentRow.assessment_id,
-    available_after: programAssessmentRow.available_after,
-    due_date: programAssessmentRow.due_date,
+    program_id: programAssessmentsRow.program_id,
+    assessment_id: programAssessmentsRow.assessment_id,
+    available_after: DateTime.fromSQL(programAssessmentsRow.available_after, {
+      zone: program.time_zone,
+    }).toISO(),
+    due_date: DateTime.fromSQL(programAssessmentsRow.due_date, {
+      zone: program.time_zone,
+    }).toISO(),
   };
 
   return programAssessment;
@@ -647,24 +850,40 @@ export const getAssessmentSubmission = async (
     return null;
   }
 
-  const [assessmentSubmissionRow] = matchingAssessmentSubmissionsRows;
+  const [assessmentSubmissionsRow] = matchingAssessmentSubmissionsRows;
 
   const assessmentSubmission: AssessmentSubmission = {
     id: assessmentSubmissionId,
-    assessment_id: assessmentSubmissionRow.assessment_id,
-    principal_id: assessmentSubmissionRow.principal_id,
+    assessment_id: assessmentSubmissionsRow.assessment_id,
+    principal_id: assessmentSubmissionsRow.principal_id,
     assessment_submission_state:
-      assessmentSubmissionRow.assessment_submission_state,
-    score: assessmentSubmissionRow.score,
-    opened_at: assessmentSubmissionRow.opened_at,
-    submitted_at: assessmentSubmissionRow.submitted_at,
+      assessmentSubmissionsRow.assessment_submission_state,
+    opened_at: DateTime.fromSQL(assessmentSubmissionsRow.opened_at, {
+      zone: 'utc',
+    }).toISO(),
   };
 
+  if (assessmentSubmissionsRow.score !== null) {
+    assessmentSubmission.score = assessmentSubmissionsRow.score;
+  }
+
+  if (assessmentSubmissionsRow.submitted_at !== null) {
+    assessmentSubmission.submitted_at = DateTime.fromSQL(
+      assessmentSubmissionsRow.submitted_at,
+      {
+        zone: 'utc',
+      }
+    ).toISO();
+  }
+
   if (responsesIncluded) {
-    assessmentSubmission.responses = await listSubmissionResponses(
+    const assessmentResponses = await listSubmissionResponses(
       assessmentSubmissionId,
       gradingsIncluded
     );
+    if (assessmentResponses !== null) {
+      assessmentSubmission.responses = assessmentResponses;
+    }
   }
 
   return assessmentSubmission;
@@ -812,16 +1031,29 @@ export const listAllProgramAssessmentSubmissions = async (
   const assessmentSubmissions: AssessmentSubmission[] = [];
 
   for (const assessmentSubmissionsRow of matchingAssessmentSubmissionsRows) {
-    assessmentSubmissions.push({
+    const assessmentSubmission: AssessmentSubmission = {
       id: assessmentSubmissionsRow.id,
       assessment_id: programAssessmentId,
       principal_id: assessmentSubmissionsRow.principal_id,
       assessment_submission_state:
         assessmentSubmissionsRow.assessment_submission_state,
-      score: assessmentSubmissionsRow.score,
-      opened_at: assessmentSubmissionsRow.opened_at,
-      submitted_at: assessmentSubmissionsRow.submitted_at,
-    });
+      opened_at: DateTime.fromSQL(assessmentSubmissionsRow.opened_at, {
+        zone: 'utc',
+      }).toISO(),
+    };
+
+    if (assessmentSubmissionsRow.score !== null) {
+      assessmentSubmission.score = assessmentSubmissionsRow.score;
+    }
+
+    if (assessmentSubmissionsRow.submitted_at !== null) {
+      assessmentSubmission.submitted_at = DateTime.fromSQL(
+        assessmentSubmissionsRow.submitted_at,
+        { zone: 'utc' }
+      ).toISO();
+    }
+
+    assessmentSubmissions.push(assessmentSubmission);
   }
 
   return assessmentSubmissions;
@@ -866,16 +1098,29 @@ export const listParticipantProgramAssessmentSubmissions = async (
   const assessmentSubmissions: AssessmentSubmission[] = [];
 
   for (const assessmentSubmissionsRow of matchingAssessmentSubmissionsRows) {
-    assessmentSubmissions.push({
+    const assessmentSubmission: AssessmentSubmission = {
       id: assessmentSubmissionsRow.id,
       assessment_id: programAssessmentId,
       principal_id: participantPrincipalId,
       assessment_submission_state:
         assessmentSubmissionsRow.assessment_submission_state,
-      score: assessmentSubmissionsRow.score,
-      opened_at: assessmentSubmissionsRow.opened_at,
-      submitted_at: assessmentSubmissionsRow.submitted_at,
-    });
+      opened_at: DateTime.fromSQL(assessmentSubmissionsRow.opened_at, {
+        zone: 'utc',
+      }).toISO(),
+    };
+
+    if (assessmentSubmissionsRow.score !== null) {
+      assessmentSubmission.score = assessmentSubmissionsRow.score;
+    }
+
+    if (assessmentSubmissionsRow.submitted_at !== null) {
+      assessmentSubmission.submitted_at = DateTime.fromSQL(
+        assessmentSubmissionsRow.submitted_at,
+        { zone: 'utc' }
+      ).toISO();
+    }
+
+    assessmentSubmissions.push(assessmentSubmission);
   }
 
   return assessmentSubmissions;
@@ -927,14 +1172,23 @@ export const listProgramAssessments = async (
     return null;
   }
 
-  const programAssessments: ProgramAssessment[] =
-    matchingProgramAssessmentsRows.map(programAssessmentRow => ({
-      id: programAssessmentRow.id,
+  const programAssessments: ProgramAssessment[] = [];
+
+  for (const programAssessmentsRow of matchingProgramAssessmentsRows) {
+    const program = await findProgram(programId);
+
+    programAssessments.push({
+      id: programAssessmentsRow.id,
       program_id: programId,
-      assessment_id: programAssessmentRow.assessment_id,
-      available_after: programAssessmentRow.available_after,
-      due_date: programAssessmentRow.due_date,
-    }));
+      assessment_id: programAssessmentsRow.assessment_id,
+      available_after: DateTime.fromSQL(programAssessmentsRow.available_after, {
+        zone: program.time_zone,
+      }).toISO(),
+      due_date: DateTime.fromSQL(programAssessmentsRow.due_date, {
+        zone: program.time_zone,
+      }).toISO(),
+    });
+  }
 
   return programAssessments;
 };
@@ -1033,7 +1287,101 @@ export const updateAssessmentSubmission = async (
   assessmentSubmission: AssessmentSubmission,
   facilitatorOverride?: boolean
 ): Promise<AssessmentSubmission> => {
-  return;
+  const programAssessment = await findProgramAssessment(
+    assessmentSubmission.assessment_id
+  );
+
+  const existingAssessmentSubmission = await getAssessmentSubmission(
+    assessmentSubmission.id,
+    true,
+    false
+  );
+
+  let newState;
+
+  if (facilitatorOverride) {
+    // update each response's score and grading, only if there is a matching existing responses
+    assessmentSubmission.responses?.map(async response => {
+      if (
+        existingAssessmentSubmission.responses?.filter(
+          e => e.id === response.id
+        )?.length === 1
+      ) {
+        await updateSubmissionResponse(response, facilitatorOverride);
+      }
+    });
+
+    // update submission state and score
+    newState = assessmentSubmission.assessment_submission_state;
+    const [gradedStateId] = await db('assessment_submission_states')
+      .select('id')
+      .where('title', newState);
+    await db('assessment_submissions')
+      .update({
+        assessment_submission_state_id: gradedStateId.id,
+        score: assessmentSubmission.score,
+      })
+      .where('id', assessmentSubmission.id);
+  } else if (
+    ['Opened', 'In Progress'].includes(
+      existingAssessmentSubmission.assessment_submission_state
+    )
+  ) {
+    // participant could only update opened and in progress submssion that within due date.
+    if (DateTime.fromISO(programAssessment.due_date) < DateTime.now()) {
+      newState = 'Expired';
+    } else {
+      // participant could only update state to 'Submitted' or 'In Progress', defalut in progress.
+      newState =
+        assessmentSubmission.assessment_submission_state === 'Submitted'
+          ? 'Submitted'
+          : 'In Progress';
+
+      // if there is an exisiting response, update it, otherwise insert new response.
+      assessmentSubmission.responses?.map(async response => {
+        if (
+          existingAssessmentSubmission.responses?.filter(
+            e => e.id === response.id
+          )?.length === 1
+        ) {
+          await updateSubmissionResponse(response);
+        } else {
+          await createSubmissionResponse(response);
+        }
+      });
+    }
+
+    const [newStateId] = await db('assessment_submission_states')
+      .select('id')
+      .where('title', newState);
+    // If new state is submitted, update with a subbmission time.
+    if (newState === 'Submitted') {
+      await db('assessment_submissions')
+        .update({
+          assessment_submission_state_id: newStateId.id,
+          submitted_at: new Date().toISOString(),
+        })
+        .where('id', assessmentSubmission.id);
+    } else {
+      await db('assessment_submissions')
+        .update({ assessment_submission_state_id: newStateId.id })
+        .where('id', assessmentSubmission.id);
+    }
+  } else {
+    // participants should not update submission that is not opened nor in progress
+    console.log(
+      `Could not update submission by participant because the submission state is ${existingAssessmentSubmission.assessment_submission_state}`
+    );
+    return null;
+  }
+
+  const updatedSubmission: AssessmentSubmission = await getAssessmentSubmission(
+    assessmentSubmission.id,
+    true,
+    facilitatorOverride
+  );
+
+  return updatedSubmission;
 };
 
 /**
@@ -1049,16 +1397,42 @@ export const updateAssessmentSubmission = async (
 export const updateCurriculumAssessment = async (
   curriculumAssessment: CurriculumAssessment
 ): Promise<CurriculumAssessment> => {
-  // need to loop through and call updateAssessmentQuestion for each question that exists;
-  // need to createAssessmentQuestion for each question that does not exist;
-
+  const updatedQuestions = [];
+  const updatedCurriculumAssessment = {
+    ...curriculumAssessment
+  };
+  if (curriculumAssessment !== null) {
+    for (const question of curriculumAssessment.questions) {
+      if (typeof question.id !== "undefined") {
+        // need to createAssessmentQuestion for each question that does not exist;
+        // the question is new
+        const newQuestion = await createAssessmentQuestion(curriculumAssessment.id, question);
+        updatedQuestions.push(newQuestion);
+      } else {
+        // need to loop through and call updateAssessmentQuestion for each question that exists
+        //the question was updated
+        const updatedQuestion = await updateAssessmentQuestion(question);
+        updatedQuestions.push(updatedQuestion);
+      }
+    }
+  }
+  updatedCurriculumAssessment.questions = updatedQuestions;
   // need to update the curriculum_assessments table with any updated data for the curriculum assessment (refer to DB/model).
   // assessment_type_id turns into assessment_type. ignore assessment_type.
-
+  await db('curriculum_assessments')
+    .update({
+      title: curriculumAssessment.title,
+      assessment_type: curriculumAssessment.assessment_type,
+      description: curriculumAssessment.description,
+      max_score: curriculumAssessment.max_score,
+      max_num_submissions: curriculumAssessment.max_num_submissions,
+      time_limit: curriculumAssessment.time_limit,
+      questions: curriculumAssessment.questions
+    })
+    .where('id', curriculumAssessment.id);
   // refer to implementation of getCurriculumAssessment for knowledge on joins
   // (data in two different database tables that relate to one another), differences between database table and data type
-
-  return null;
+  return updatedCurriculumAssessment;
 };
 
 /**
