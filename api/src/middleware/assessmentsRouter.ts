@@ -36,6 +36,7 @@ import {
   listParticipantProgramAssessmentSubmissions,
   listPrincipalEnrolledProgramIds,
   listProgramAssessments,
+  updateAssessmentSubmission,
   updateCurriculumAssessment,
   updateProgramAssessment,
 } from '../services/assessmentsService';
@@ -810,7 +811,129 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
 
 // Update details of a specific AssessmentSubmission
 assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
-  res.json();
+  // get the principal row ID number
+  const { principalId } = req.session;
+  const { submissionId } = req.params;
+  const submissionIdParsed = Number(submissionId);
+  const submissionFromUser = req.body;
+
+  try {
+    if (!Number.isInteger(submissionIdParsed) || submissionIdParsed < 1) {
+      throw new BadRequestError(
+        `"${submissionIdParsed}" is not a valid submission ID.`
+      );
+    }
+
+    // get the submission and responses
+    const existingAssessmentSubmission = await getAssessmentSubmission(
+      submissionIdParsed,
+      true
+    );
+
+    // if the submission is null/falsy, that means there's no matching submission. send an error back to the user.
+    if (!existingAssessmentSubmission) {
+      throw new NotFoundError(
+        `Could not find submission with ID ${submissionIdParsed}.`
+      );
+    }
+
+    // make sure it is a valid submission from body with an id.
+    const isSubmission = (
+      possibleSubmission: unknown
+    ): possibleSubmission is AssessmentSubmission => {
+      return (possibleSubmission as AssessmentSubmission).id !== undefined;
+    };
+
+    if (!isSubmission(submissionFromUser)) {
+      throw new BadRequestError(`Was not given a valid assessment submission.`);
+    }
+
+    // make sure the submssion id from param is the same from request body
+    if (submissionFromUser.id !== submissionIdParsed) {
+      throw new BadRequestError(
+        `The submission id in the parameter(${submissionIdParsed}) is not the same id as in the request body (${submissionFromUser.id}).`
+      );
+    }
+
+    // make sure the principal id from session is the same from request body
+    if (submissionFromUser.principal_id !== principalId) {
+      throw new BadRequestError(
+        `The principal id from session(${principalId}) is not the same id as in the request body (${submissionFromUser.principal_id}).`
+      );
+    }
+
+    // get program assessment
+    const programAssessment = await findProgramAssessment(
+      submissionFromUser.assessment_id
+    );
+
+    if (!programAssessment) {
+      throw new NotFoundError(
+        `Could not find program assessment(with ID ${submissionFromUser.assessment_id}) provided by submission body.`
+      );
+    }
+
+    // Get program assessment role
+    const programRole = await getPrincipalProgramRole(
+      principalId,
+      programAssessment.program_id
+    );
+
+    if (!programRole) {
+      throw new UnauthorizedError(
+        `Could not access the assessment and submssion without enrollment in the program or being a facilitator.`
+      );
+    }
+
+    if (programRole === 'Facilitator') {
+      // for facilitator, they are able to grade and override the state, scores.
+      await updateAssessmentSubmission(
+        submissionFromUser,
+        programRole === 'Facilitator'
+      );
+    } else if (
+      DateTime.fromISO(programAssessment.available_after) > DateTime.now()
+    ) {
+      throw new ForbiddenError(
+        `Could not update a submission of an assessment that's not yet available, will be avaiable at ${programAssessment.available_after} Z.`
+      );
+    } else if (
+      ['Opened', 'In Progress'].includes(
+        existingAssessmentSubmission.assessment_submission_state
+      )
+    ) {
+      // participant could only update opened and in progress submssion that within due date.
+      if (DateTime.fromISO(programAssessment.due_date) < DateTime.now()) {
+        // use existing submission to call service function, it will handle and set state to expired
+        await updateAssessmentSubmission(
+          existingAssessmentSubmission,
+          programRole === 'Facilitator'
+        );
+        throw new ForbiddenError(
+          `Could not update a submission of an assessment that passed due date.`
+        );
+      }
+
+      await updateAssessmentSubmission(
+        submissionFromUser,
+        programRole === 'Facilitator'
+      );
+    } else {
+      throw new ForbiddenError(
+        `Could not update an existing submission with ${existingAssessmentSubmission.assessment_submission_state} state.`
+      );
+    }
+    const updatedSubmission: AssessmentSubmission =
+      await getAssessmentSubmission(
+        existingAssessmentSubmission.id,
+        true,
+        programRole === 'Facilitator'
+      );
+    res.json(itemEnvelope(updatedSubmission));
+  } catch (err) {
+    next(err);
+    return;
+  }
 });
 
 export default assessmentsRouter;
