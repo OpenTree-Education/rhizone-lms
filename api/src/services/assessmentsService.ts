@@ -740,7 +740,9 @@ export const createCurriculumAssessment = async (
 export const deleteCurriculumAssessment = async (
   curriculumAssessmentId: number
 ): Promise<void> => {
-  return;
+  return db('curriculum_assessments')
+    .where('id', curriculumAssessmentId)
+    .delete();
 };
 
 /**

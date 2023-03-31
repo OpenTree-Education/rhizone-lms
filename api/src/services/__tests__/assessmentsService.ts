@@ -920,3 +920,18 @@ describe('updateProgramAssessment', () => {
     );
   });
 });
+
+describe('deleteCurriculumAssessment', () => {
+  it('should delete a curriculum assessment', async () => {
+    mockQuery(
+      //'update program_assessments set available_after` = ?, `due_date` = ? where `id` = ?',
+      'delete from `curriculum_assessments` where `id` = ?',
+      [exampleCurriculumAssessment.id],
+      []
+    );
+
+    expect(
+      await deleteCurriculumAssessment(exampleCurriculumAssessment.id)
+    ).toEqual([]);
+  });
+});

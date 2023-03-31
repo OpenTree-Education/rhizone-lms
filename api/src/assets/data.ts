@@ -16,6 +16,7 @@ export const participantPrincipalId = 30;
 export const unenrolledPrincipalId = 31;
 export const otherParticipantPrincipalId = 32;
 export const facilitatorPrincipalId = 300;
+export const validFacilitatorPrincipalId = 4;
 
 export const exampleProgramParticipantRoleParticipantRow = {
   title: 'Participant',
@@ -84,6 +85,26 @@ export const exampleCurriculumAssessment: CurriculumAssessment = {
   activity_id: 97,
   principal_id: administratorPrincipalId,
 };
+
+export const exampleCurriculumAssessmentNoMatch: CurriculumAssessment = {
+  id: 12,
+  title: 'Assignment 1: React',
+  assessment_type: 'test',
+  description: 'Your assignment for week 1 learning.',
+  max_score: 10,
+  max_num_submissions: 1,
+  time_limit: 120,
+  curriculum_id: 3,
+  activity_id: 97,
+  principal_id: administratorPrincipalId,
+};
+
+export const exampleFacilitatorProgramIdsMatchingCurriculum: number[] = [
+  3, 12, 20,
+];
+export const exampleFacilitatorProgramIdsNoMatchingCurriculum: number[] = [
+  40, 50,
+];
 
 export const matchingAssessmentQuestionsRow = {
   id: 1,
