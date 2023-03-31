@@ -150,6 +150,7 @@ const createAssessmentQuestion = async (
   return updatedAssessmentQuestion;
 };
 
+
 /**
  * Inserts an answer for an existing curriculum assessment question into the
  * assessment_answers table.
@@ -193,7 +194,22 @@ const createAssessmentQuestionAnswer = async (
 const createSubmissionResponse = async (
   assessmentResponse: AssessmentResponse
 ): Promise<AssessmentResponse> => {
-  return;
+  const [newSubmissionId] = await db('assessment_responses').insert({
+    assessment_id: assessmentResponse.assessment_id,
+    submission_id: assessmentResponse.submission_id,
+    question_id: assessmentResponse.question_id,
+    answer_id: assessmentResponse.answer_id,
+    response: assessmentResponse.response_text,
+  });
+
+  return {
+    id: newSubmissionId,
+    assessment_id: assessmentResponse.assessment_id,
+    submission_id: assessmentResponse.submission_id,
+    question_id: assessmentResponse.question_id,
+    answer_id: assessmentResponse.answer_id,
+    response: assessmentResponse.response_text,
+  } as AssessmentResponse;
 };
 
 /**
@@ -373,19 +389,40 @@ const listSubmissionResponses = async (
 const updateAssessmentQuestion = async (
   question: Question
 ): Promise<Question> => {
+  let correctAnswerId = question.correct_answer_id;
+  const updatedAnswers = [];
+  const updatedQuestion = {
+    ...question
+  };
+  if (question.answers !== null) {
+    for (const answer of question.answers) {
+      if (typeof answer.id !== "undefined") {
+        // the answer is new
+        const newAnswer = await createAssessmentQuestionAnswer(question.id, answer);
+        correctAnswerId = (newAnswer.correct_answer && newAnswer.correct_answer === true) ? newAnswer.id : correctAnswerId;
+        updatedAnswers.push(newAnswer);
+      } else {
+        // the answer was updated
+        const updatedAnswer = await updateAssessmentQuestionAnswer(answer);
+        correctAnswerId = (updatedAnswer.correct_answer && updatedAnswer.correct_answer === true) ? updatedAnswer.id : correctAnswerId;
+        updatedAnswers.push(updatedAnswer);
+      }
+    }
+  }
+  updatedQuestion.answers = updatedAnswers;
+  updatedQuestion.correct_answer_id = correctAnswerId;
+
   await db('assessment_questions')
-    .update({
-      assessment_id: question.assessment_id,
-      title: question.title,
-      description: question.description,
-      question_type: question.question_type,
-      answers: question.answers,
-      correct_answer_id: question.correct_answer_id,
-      max_score: question.max_score,
-      sort_order: question.sort_order,
-    })
-    .where('id', question.id);
-  return;
+      .update({
+        title: question.title,
+        description: question.description,
+        question_type: question.question_type,
+        correct_answer_id: correctAnswerId,
+        max_score: question.max_score,
+        sort_order: question.sort_order
+      })
+      .where('id', question.id);
+  return updatedQuestion;
 };
 
 /**
@@ -399,7 +436,15 @@ const updateAssessmentQuestion = async (
 const updateAssessmentQuestionAnswer = async (
   answer: Answer
 ): Promise<Answer> => {
-  return;
+  await db('assessment_answers')
+      .update({
+        title: answer.title,
+        description: answer.description,
+        sort_order: answer.sort_order,
+        correct_answer: answer.correct_answer
+      })
+      .where('id', answer.id);
+  return answer;
 };
 
 /**
@@ -408,12 +453,32 @@ const updateAssessmentQuestionAnswer = async (
  * @param {AssessmentResponse} assessmentResponse - The AssessmentResponse
  *   object for a given program assessment submission response with updated
  *   information.
+ * @param {boolean} [facilitatorGrading] - Optional specifier for when the
+ *   program facilitator is the one updating a program assessment submission response,
+ *   they are allowed to modify the score, and grader response.
  * @returns {Promise<AssessmentResponse>} The updated AssessmentResponse object.
  */
 const updateSubmissionResponse = async (
-  assessmentResponse: AssessmentResponse
+  assessmentResponse: AssessmentResponse,
+  facilitatorGrading?: boolean
 ): Promise<AssessmentResponse> => {
-  return;
+  if (facilitatorGrading) {
+    await db('assessment_responses')
+      .update({
+        score: assessmentResponse.score,
+        grader_response: assessmentResponse.grader_response,
+      })
+      .where('id', assessmentResponse.id);
+  } else {
+    await db('assessment_responses')
+      .update({
+        answer_id: assessmentResponse.answer_id,
+        response: assessmentResponse.response_text,
+      })
+      .where('id', assessmentResponse.id);
+  }
+
+  return assessmentResponse;
 };
 
 // Callable from router
@@ -596,7 +661,7 @@ export const createAssessmentSubmission = async (
     assessment_id: programAssessmentId,
     principal_id: participantPrincipalId,
     assessment_submission_state: openedStateTitle,
-    opened_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
+    opened_at: new Date().toISOString(),
   };
 
   return newSubmission;
@@ -658,25 +723,7 @@ export const createCurriculumAssessment = async (
  * @returns {Promise<ProgramAssessment>} The updated ProgramAssessment object
  *   that was handed to us, but with row ID specified.
  */
-export const createProgramAssessment = async (
-  programAssessment: ProgramAssessment
-): Promise<ProgramAssessment> => {
-  const [insertedProgramAssessmentRowId] = await db(
-    'program_assessments'
-  ).insert({
-    program_id: programAssessment.program_id,
-    assessment_id: programAssessment.assessment_id,
-    available_after: programAssessment.available_after,
-    due_date: programAssessment.due_date,
-  });
 
-  const updatedProgramAssessment: ProgramAssessment = {
-    ...programAssessment,
-    id: insertedProgramAssessmentRowId,
-  };
-
-  return updatedProgramAssessment;
-};
 
 /**
  * Deletes a given curriculum assessment, all associated program assessments,
@@ -710,7 +757,7 @@ export const deleteProgramAssessment = async (
   programAssessmentId: number
 ): Promise<void> => {
   const matchingProgramAssessmentsRows = await db('program_assessments')
-    .select('program_id', 'assessment_id', 'available_after', 'due_date')
+    // fix this missing line using the knex documentation, using the correct command for delete: https://knexjs.org/guide/query-builder.html#common
     .where('id', programAssessmentId);
 
   if (matchingProgramAssessmentsRows.length === 0) {
@@ -1240,7 +1287,101 @@ export const updateAssessmentSubmission = async (
   assessmentSubmission: AssessmentSubmission,
   facilitatorOverride?: boolean
 ): Promise<AssessmentSubmission> => {
-  return;
+  const programAssessment = await findProgramAssessment(
+    assessmentSubmission.assessment_id
+  );
+
+  const existingAssessmentSubmission = await getAssessmentSubmission(
+    assessmentSubmission.id,
+    true,
+    false
+  );
+
+  let newState;
+
+  if (facilitatorOverride) {
+    // update each response's score and grading, only if there is a matching existing responses
+    assessmentSubmission.responses?.map(async response => {
+      if (
+        existingAssessmentSubmission.responses?.filter(
+          e => e.id === response.id
+        )?.length === 1
+      ) {
+        await updateSubmissionResponse(response, facilitatorOverride);
+      }
+    });
+
+    // update submission state and score
+    newState = assessmentSubmission.assessment_submission_state;
+    const [gradedStateId] = await db('assessment_submission_states')
+      .select('id')
+      .where('title', newState);
+    await db('assessment_submissions')
+      .update({
+        assessment_submission_state_id: gradedStateId.id,
+        score: assessmentSubmission.score,
+      })
+      .where('id', assessmentSubmission.id);
+  } else if (
+    ['Opened', 'In Progress'].includes(
+      existingAssessmentSubmission.assessment_submission_state
+    )
+  ) {
+    // participant could only update opened and in progress submssion that within due date.
+    if (DateTime.fromISO(programAssessment.due_date) < DateTime.now()) {
+      newState = 'Expired';
+    } else {
+      // participant could only update state to 'Submitted' or 'In Progress', defalut in progress.
+      newState =
+        assessmentSubmission.assessment_submission_state === 'Submitted'
+          ? 'Submitted'
+          : 'In Progress';
+
+      // if there is an exisiting response, update it, otherwise insert new response.
+      assessmentSubmission.responses?.map(async response => {
+        if (
+          existingAssessmentSubmission.responses?.filter(
+            e => e.id === response.id
+          )?.length === 1
+        ) {
+          await updateSubmissionResponse(response);
+        } else {
+          await createSubmissionResponse(response);
+        }
+      });
+    }
+
+    const [newStateId] = await db('assessment_submission_states')
+      .select('id')
+      .where('title', newState);
+    // If new state is submitted, update with a subbmission time.
+    if (newState === 'Submitted') {
+      await db('assessment_submissions')
+        .update({
+          assessment_submission_state_id: newStateId.id,
+          submitted_at: new Date().toISOString(),
+        })
+        .where('id', assessmentSubmission.id);
+    } else {
+      await db('assessment_submissions')
+        .update({ assessment_submission_state_id: newStateId.id })
+        .where('id', assessmentSubmission.id);
+    }
+  } else {
+    // participants should not update submission that is not opened nor in progress
+    console.log(
+      `Could not update submission by participant because the submission state is ${existingAssessmentSubmission.assessment_submission_state}`
+    );
+    return null;
+  }
+
+  const updatedSubmission: AssessmentSubmission = await getAssessmentSubmission(
+    assessmentSubmission.id,
+    true,
+    facilitatorOverride
+  );
+
+  return updatedSubmission;
 };
 
 /**
@@ -1256,16 +1397,42 @@ export const updateAssessmentSubmission = async (
 export const updateCurriculumAssessment = async (
   curriculumAssessment: CurriculumAssessment
 ): Promise<CurriculumAssessment> => {
-  // need to loop through and call updateAssessmentQuestion for each question that exists;
-  // need to createAssessmentQuestion for each question that does not exist;
-
+  const updatedQuestions = [];
+  const updatedCurriculumAssessment = {
+    ...curriculumAssessment
+  };
+  if (curriculumAssessment !== null) {
+    for (const question of curriculumAssessment.questions) {
+      if (typeof question.id !== "undefined") {
+        // need to createAssessmentQuestion for each question that does not exist;
+        // the question is new
+        const newQuestion = await createAssessmentQuestion(curriculumAssessment.id, question);
+        updatedQuestions.push(newQuestion);
+      } else {
+        // need to loop through and call updateAssessmentQuestion for each question that exists
+        //the question was updated
+        const updatedQuestion = await updateAssessmentQuestion(question);
+        updatedQuestions.push(updatedQuestion);
+      }
+    }
+  }
+  updatedCurriculumAssessment.questions = updatedQuestions;
   // need to update the curriculum_assessments table with any updated data for the curriculum assessment (refer to DB/model).
   // assessment_type_id turns into assessment_type. ignore assessment_type.
-
+  await db('curriculum_assessments')
+    .update({
+      title: curriculumAssessment.title,
+      assessment_type: curriculumAssessment.assessment_type,
+      description: curriculumAssessment.description,
+      max_score: curriculumAssessment.max_score,
+      max_num_submissions: curriculumAssessment.max_num_submissions,
+      time_limit: curriculumAssessment.time_limit,
+      questions: curriculumAssessment.questions
+    })
+    .where('id', curriculumAssessment.id);
   // refer to implementation of getCurriculumAssessment for knowledge on joins
   // (data in two different database tables that relate to one another), differences between database table and data type
-
-  return null;
+  return updatedCurriculumAssessment;
 };
 
 /**
