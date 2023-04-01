@@ -119,6 +119,7 @@ export interface AssessmentSubmission {
   score?: number;
   opened_at: string;
   submitted_at?: string;
+  last_modified: string;
   responses?: AssessmentResponse[];
 }
 

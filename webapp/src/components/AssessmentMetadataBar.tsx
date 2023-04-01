@@ -10,6 +10,7 @@ import {
   Tooltip,
   Typography,
   Switch,
+  Button,
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import TimerIcon from '@mui/icons-material/Timer';
@@ -19,10 +20,11 @@ import LightbulbIcon from '@mui/icons-material/Lightbulb';
 
 import { SavedAssessment } from '../types/api.d';
 import { formatDateTime } from '../helpers/dateTime';
+import { DateTime } from 'luxon';
 
 interface AssessmentMetadataBarProps {
   assessment: SavedAssessment;
-  endTime: Date;
+  endTime: DateTime;
   secondsRemaining: number | null;
   submissionDisabled: boolean;
 }
@@ -80,7 +82,10 @@ const AssessmentMetadataBar = ({
               {assessment.curriculum_assessment.description}
             </Typography>
             <ListItemText
-              secondary={`Type: ${assessment.curriculum_assessment.assessment_type}`}
+              secondary={`Type: ${
+                assessment.curriculum_assessment.assessment_type[0].toUpperCase() +
+                assessment.curriculum_assessment.assessment_type.slice(1)
+              }`}
             />
           </ListItemText>
         </ListItem>
@@ -106,22 +111,34 @@ const AssessmentMetadataBar = ({
             secondary="Status"
           />
         </ListItem>
-        {assessment.submission.assessment_submission_state === 'Graded' && (
-          <ListItem>
-            <ListItemAvatar>
-              <Avatar>
-                <CheckCircleIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              secondary="Score"
-              primary={assessment.submission.score!}
-            />
-          </ListItem>
-        )}
+        {assessment.submission.score &&
+          typeof assessment.submission.score === 'number' &&
+          assessment.submission.score > 0 && (
+            <ListItem>
+              <ListItemAvatar>
+                <Avatar>
+                  <CheckCircleIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                secondary="Score"
+                primary={assessment.submission.score}
+              />
+            </ListItem>
+          )}
 
         <ListItem>
-          <ListItemAvatar />
+          <ListItemAvatar>
+            <Avatar
+              sx={{
+                bgcolor: `${
+                  submissionDisabled ? disabledBgColor : enabledBgColor
+                }`,
+              }}
+            >
+              <CalendarMonthIcon />
+            </Avatar>
+          </ListItemAvatar>
           <ListItemText
             secondary="Opened Time"
             primary={formatDateTime(assessment.submission.opened_at)}
@@ -130,7 +147,17 @@ const AssessmentMetadataBar = ({
         {submissionDisabled &&
           (assessment.submission.submitted_at ? (
             <ListItem>
-              <ListItemAvatar />
+              <ListItemAvatar>
+                <Avatar
+                  sx={{
+                    bgcolor: `${
+                      submissionDisabled ? disabledBgColor : enabledBgColor
+                    }`,
+                  }}
+                >
+                  <TimerIcon />
+                </Avatar>
+              </ListItemAvatar>
               <ListItemText
                 secondary="Submitted At"
                 primary={formatDateTime(assessment.submission.submitted_at)}
@@ -138,10 +165,20 @@ const AssessmentMetadataBar = ({
             </ListItem>
           ) : (
             <ListItem>
-              <ListItemAvatar />
+              <ListItemAvatar>
+                <Avatar
+                  sx={{
+                    bgcolor: `${
+                      submissionDisabled ? disabledBgColor : enabledBgColor
+                    }`,
+                  }}
+                >
+                  <TimerIcon />
+                </Avatar>
+              </ListItemAvatar>
               <ListItemText
                 secondary="End Time"
-                primary={formatDateTime(endTime.toISOString())}
+                primary={formatDateTime(endTime.toISO())}
               />
             </ListItem>
           ))}
@@ -157,7 +194,7 @@ const AssessmentMetadataBar = ({
                     }`,
                   }}
                 >
-                  {showTimer ? <TimerIcon /> : <CalendarMonthIcon />}
+                  <TimerIcon />
                 </Avatar>
               </ListItemAvatar>
               <ListItemText
@@ -167,7 +204,7 @@ const AssessmentMetadataBar = ({
                     ? secondsRemaining !== null
                       ? formatTimeRemaining(secondsRemaining)
                       : 0
-                    : formatDateTime(endTime.toString())
+                    : formatDateTime(endTime.toISO())
                 }
               />
               <Tooltip
@@ -184,6 +221,14 @@ const AssessmentMetadataBar = ({
             </ListItem>
           </>
         )}
+        <ListItem>
+          <Button
+            href={`/assessments/${assessment.program_assessment.id}/submissions`}
+            variant="outlined"
+          >
+            &laquo; Submissions List
+          </Button>
+        </ListItem>
       </List>
     </>
   );

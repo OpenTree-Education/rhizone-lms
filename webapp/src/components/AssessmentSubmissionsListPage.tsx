@@ -70,7 +70,7 @@ const AssessmentSubmissionsListPage = () => {
 
   if (!assessmentSub || error) {
     return (
-      <Container fixed>
+      <Container>
         <p>There was an error loading the assessment submissions list.</p>
         <Button href={'/assessments'} variant="outlined">
           &laquo; Assessments List
@@ -92,7 +92,7 @@ const AssessmentSubmissionsListPage = () => {
     ) {
       return (
         <Button
-          href={`/assessments/${assessmentIdNumber}/new`}
+          href={`/assessments/${assessmentIdNumber}/submissions/new`}
           variant="contained"
         >
           New Submission
@@ -221,7 +221,7 @@ const AssessmentSubmissionsListPage = () => {
                           <Button
                             variant="contained"
                             size="small"
-                            href={`/assessments/${assessmentIdNumber}/${submission.id}`}
+                            href={`/assessments/${assessmentIdNumber}/submissions/${submission.id}`}
                           >
                             View
                           </Button>
@@ -229,7 +229,7 @@ const AssessmentSubmissionsListPage = () => {
                           <Button
                             variant="contained"
                             size="small"
-                            href={`/assessments/${assessmentIdNumber}/${submission.id}`}
+                            href={`/assessments/${assessmentIdNumber}/submissions/${submission.id}`}
                           >
                             Grade
                           </Button>
@@ -238,7 +238,7 @@ const AssessmentSubmissionsListPage = () => {
                         <Button
                           variant="contained"
                           size="small"
-                          href={`/assessments/${assessmentIdNumber}/${submission.id}`}
+                          href={`/assessments/${assessmentIdNumber}/submissions/${submission.id}`}
                         >
                           Review
                         </Button>

@@ -3,8 +3,10 @@ import { DependencyList, useEffect, useState } from 'react';
 import { APIError } from '../types/api';
 
 interface UseAPIDataArgs<ResponseDataType> {
+  body?: unknown;
   initialData?: ResponseDataType | null;
   deps?: DependencyList;
+  method?: string;
   path: string;
   sendCredentials?: boolean;
   shouldFetch?: () => boolean;
@@ -17,8 +19,10 @@ interface UseAPIDataState<ResponseDataType> {
 }
 
 const useApiData = <ResponseDataType>({
+  body = null,
   deps = [],
   initialData = null,
+  method = 'GET',
   path,
   sendCredentials = false,
   shouldFetch,
@@ -32,11 +36,25 @@ const useApiData = <ResponseDataType>({
         return;
       }
       setIsLoading(true);
+      const serializedBody =
+        body !== null &&
+        typeof body !== 'undefined' &&
+        ['POST', 'PUT'].includes(method)
+          ? JSON.stringify(body)
+          : null;
       const controller = new AbortController();
       const { signal } = controller;
+      console.debug(
+        `Initiating a request to the backend:\nPath: ${path} (${method})\nBody: ${body}\nSerialized Body: ${
+          body && JSON.stringify(serializedBody, null, 2)
+        }`
+      );
       fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
         credentials: sendCredentials ? 'include' : 'omit',
+        method,
         signal,
+        headers: { 'Content-Type': 'application/json' },
+        body: serializedBody,
       })
         .then(res => res.json())
         .then(

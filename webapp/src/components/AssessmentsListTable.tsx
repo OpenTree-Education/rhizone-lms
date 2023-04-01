@@ -79,13 +79,13 @@ const renderButtonByStatus = (
   switch (status) {
     case 'Active':
       buttonLabel = 'Start';
-      destinationPath = 'new';
+      destinationPath = 'submissions/new';
       break;
     case 'Opened':
     case 'In Progress':
       buttonLabel = 'Resume';
       // TODO: Path should be to submission number
-      destinationPath = 'new';
+      destinationPath = 'submissions/new';
       break;
     case 'Submitted':
     case 'Graded':

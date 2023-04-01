@@ -26,6 +26,7 @@ import {
   createAssessmentSubmission,
   createCurriculumAssessment,
   createProgramAssessment,
+  deleteCurriculumAssessment,
   deleteProgramAssessment,
   facilitatorProgramIdsMatchingCurriculum,
   findProgramAssessment,
@@ -779,7 +780,8 @@ assessmentsRouter.get(
       if (!existingAssessmentSubmissions) {
         assessmentSubmission = await createAssessmentSubmission(
           principalId,
-          programAssessmentIdParsed
+          programAssessmentIdParsed,
+          programAssessment.assessment_id
         );
       } else {
         const inProgressSubmissions: AssessmentSubmission[] =
@@ -788,8 +790,9 @@ assessmentsRouter.get(
               assessmentSubmission.assessment_submission_state
             )
           );
-
-        if (
+        if (inProgressSubmissions.length !== 0) {
+          [assessmentSubmission] = inProgressSubmissions;
+        } else if (
           existingAssessmentSubmissions.length >=
             curriculumAssessment.max_num_submissions &&
           inProgressSubmissions.length === 0
@@ -799,9 +802,13 @@ assessmentsRouter.get(
           throw new ForbiddenError(
             `Could not create a new submission as you have reached the maximum number of submissions for this assessment.`
           );
+        } else {
+          assessmentSubmission = await createAssessmentSubmission(
+            principalId,
+            programAssessmentIdParsed,
+            programAssessment.assessment_id
+          );
         }
-
-        [assessmentSubmission] = inProgressSubmissions;
       }
 
       const assessmentWithSubmission: SavedAssessment = {
@@ -1014,7 +1021,9 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       DateTime.fromISO(programAssessment.available_after) > DateTime.now()
     ) {
       throw new ForbiddenError(
-        `Could not update a submission of an assessment that's not yet available, will be avaiable at ${programAssessment.available_after} Z.`
+        `Could not update a submission of an assessment that's not yet available; it will be available at ${DateTime.fromISO(
+          programAssessment.available_after
+        )}.`
       );
     } else if (
       ['Opened', 'In Progress'].includes(
@@ -1036,10 +1045,6 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       await updateAssessmentSubmission(
         submissionFromUser,
         programRole === 'Facilitator'
-      );
-    } else {
-      throw new ForbiddenError(
-        `Could not update an existing submission with ${existingAssessmentSubmission.assessment_submission_state} state.`
       );
     }
     const updatedSubmission: AssessmentSubmission =

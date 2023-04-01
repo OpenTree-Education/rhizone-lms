@@ -178,6 +178,7 @@ export interface AssessmentSubmission extends Entity {
   score?: number;
   opened_at: string;
   submitted_at?: string;
+  last_modified: string;
   responses?: AssessmentResponse[];
 }
 
