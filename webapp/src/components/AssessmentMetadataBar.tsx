@@ -68,13 +68,16 @@ const AssessmentMetadataBar = ({
         {assessment.curriculum_assessment.description &&
           typeof assessment.curriculum_assessment.description === 'string' &&
           assessment.curriculum_assessment.description.length > 0 && (
-            <ListItem>
-              <ListItemText>
-                <Typography variant="body2">
-                  {assessment.curriculum_assessment.description}
-                </Typography>
-              </ListItemText>
-            </ListItem>
+            <>
+              <ListItem>
+                <ListItemText>
+                  <Typography variant="body2">
+                    {assessment.curriculum_assessment.description}
+                  </Typography>
+                </ListItemText>
+              </ListItem>
+              <Divider variant="middle" />
+            </>
           )}
         <ListItem>
           <ListItemAvatar>
@@ -123,19 +126,22 @@ const AssessmentMetadataBar = ({
         {assessment.submission.score &&
           typeof assessment.submission.score === 'number' &&
           assessment.submission.score > 0 && (
-            <ListItem>
-              <ListItemAvatar>
-                <Avatar>
-                  <CheckCircleIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                secondary="Score"
-                primary={assessment.submission.score}
-              />
-            </ListItem>
+            <>
+              <Divider variant="middle" />
+              <ListItem>
+                <ListItemAvatar>
+                  <Avatar>
+                    <CheckCircleIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  secondary="Score"
+                  primary={assessment.submission.score}
+                />
+              </ListItem>
+            </>
           )}
-
+        <Divider variant="middle" />
         <ListItem>
           <ListItemAvatar>
             <Avatar
@@ -155,41 +161,47 @@ const AssessmentMetadataBar = ({
         </ListItem>
         {submissionDisabled &&
           (assessment.submission.submitted_at ? (
-            <ListItem>
-              <ListItemAvatar>
-                <Avatar
-                  sx={{
-                    bgcolor: `${
-                      submissionDisabled ? disabledBgColor : enabledBgColor
-                    }`,
-                  }}
-                >
-                  <TimerIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                secondary="Submitted At"
-                primary={formatDateTime(assessment.submission.submitted_at)}
-              />
-            </ListItem>
+            <>
+              <Divider variant="middle" />
+              <ListItem>
+                <ListItemAvatar>
+                  <Avatar
+                    sx={{
+                      bgcolor: `${
+                        submissionDisabled ? disabledBgColor : enabledBgColor
+                      }`,
+                    }}
+                  >
+                    <TimerIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  secondary="Submitted At"
+                  primary={formatDateTime(assessment.submission.submitted_at)}
+                />
+              </ListItem>
+            </>
           ) : (
-            <ListItem>
-              <ListItemAvatar>
-                <Avatar
-                  sx={{
-                    bgcolor: `${
-                      submissionDisabled ? disabledBgColor : enabledBgColor
-                    }`,
-                  }}
-                >
-                  <TimerIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                secondary="End Time"
-                primary={formatDateTime(endTime.toISO())}
-              />
-            </ListItem>
+            <>
+              <Divider variant="middle" />
+              <ListItem>
+                <ListItemAvatar>
+                  <Avatar
+                    sx={{
+                      bgcolor: `${
+                        submissionDisabled ? disabledBgColor : enabledBgColor
+                      }`,
+                    }}
+                  >
+                    <TimerIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  secondary="End Time"
+                  primary={formatDateTime(endTime.toISO())}
+                />
+              </ListItem>
+            </>
           ))}
         {!submissionDisabled && endTime && (
           <>

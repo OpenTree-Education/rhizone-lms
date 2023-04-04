@@ -117,7 +117,7 @@ const AssessmentsListPage = () => {
   }
 
   // We have to deal with the state where no data is returned
-  if (!assessmentsList || error) {
+  if (error) {
     return (
       <Container>
         <Stack
@@ -135,7 +135,7 @@ const AssessmentsListPage = () => {
     );
   }
 
-  if (assessmentsList.length === 0) {
+  if (!assessmentsList || assessmentsList.length === 0) {
     return (
       <Container>
         <Stack

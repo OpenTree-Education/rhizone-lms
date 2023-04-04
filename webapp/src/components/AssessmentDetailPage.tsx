@@ -139,6 +139,15 @@ const AssessmentDetailPage = () => {
   }, [assessment, assessmentState]);
 
   useEffect(() => {
+    if (assessmentSubmission) {
+      if (
+        !['Opened', 'In Progress'].includes(
+          assessmentSubmission.assessment_submission_state
+        )
+      ) {
+        setSubmissionDisabled(true);
+      }
+    }
     if (
       assessmentState &&
       assessmentSubmission &&

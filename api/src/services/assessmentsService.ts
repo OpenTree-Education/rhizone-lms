@@ -28,7 +28,36 @@ import { findProgram, listProgramsForCurriculum } from './programsService';
 const assessmentSubmissionExpired = async (
   assessmentSubmissionId: number
 ): Promise<boolean> => {
-  return;
+  const assessmentSubmission = await getAssessmentSubmission(
+    assessmentSubmissionId
+  );
+  const programAssessment = await findProgramAssessment(
+    assessmentSubmission.assessment_id
+  );
+  const curriculumAssessment = await getCurriculumAssessment(
+    programAssessment.assessment_id
+  );
+
+  // State 1: Past program assessment due date
+  if (DateTime.now() > DateTime.fromISO(programAssessment.due_date)) {
+    return true;
+  }
+
+  // State 2: Past expiration time
+  if (
+    curriculumAssessment.time_limit &&
+    typeof curriculumAssessment.time_limit === 'number' &&
+    curriculumAssessment.time_limit > 0
+  ) {
+    const endTime = DateTime.fromISO(assessmentSubmission.opened_at).plus({
+      minutes: curriculumAssessment.time_limit,
+    });
+    if (DateTime.now() >= endTime) {
+      return true;
+    }
+  }
+
+  return false;
 };
 
 /**
@@ -474,7 +503,7 @@ const updateSubmissionResponse = async (
   assessmentResponse: AssessmentResponse,
   facilitatorGrading?: boolean
 ): Promise<AssessmentResponse> => {
-  if (facilitatorGrading) {
+  if (facilitatorGrading && facilitatorGrading === true) {
     await db('assessment_responses')
       .update({
         score: assessmentResponse.score,
@@ -1314,18 +1343,20 @@ export const facilitatorProgramIdsMatchingCurriculum = async (
 export const removeGradingInformation = (
   assessmentSubmissionWithGrades: AssessmentSubmission
 ): AssessmentSubmission => {
-  const gradeRemovedResponses = assessmentSubmissionWithGrades.responses.map(
-    response => {
-      const gradeRemovedResponse = structuredClone(response);
-      delete gradeRemovedResponse.score;
-      delete gradeRemovedResponse.grader_response;
-      return gradeRemovedResponse;
-    }
-  );
-
   const gradeRemovedSubmission = { ...assessmentSubmissionWithGrades };
   delete gradeRemovedSubmission.score;
-  gradeRemovedSubmission.responses = gradeRemovedResponses;
+
+  if (assessmentSubmissionWithGrades.responses) {
+    const gradeRemovedResponses = assessmentSubmissionWithGrades.responses.map(
+      response => {
+        const gradeRemovedResponse = structuredClone(response);
+        delete gradeRemovedResponse.score;
+        delete gradeRemovedResponse.grader_response;
+        return gradeRemovedResponse;
+      }
+    );
+    gradeRemovedSubmission.responses = gradeRemovedResponses;
+  }
 
   return gradeRemovedSubmission;
 };
@@ -1350,28 +1381,23 @@ export const updateAssessmentSubmission = async (
   assessmentSubmission: AssessmentSubmission,
   facilitatorOverride?: boolean
 ): Promise<AssessmentSubmission> => {
-  const programAssessment = await findProgramAssessment(
-    assessmentSubmission.assessment_id
-  );
-
   const existingAssessmentSubmission = await getAssessmentSubmission(
     assessmentSubmission.id,
     true,
-    false
+    facilitatorOverride || false
   );
+
+  const updatedSubmission = structuredClone(assessmentSubmission);
 
   let newState;
 
-  if (facilitatorOverride && assessmentSubmission.responses) {
+  if (facilitatorOverride) {
+    const updatedResponses: AssessmentResponse[] = [];
     // update each response's score and grading, only if there is a matching existing responses
     for (const assessmentResponse of assessmentSubmission.responses) {
-      if (
-        existingAssessmentSubmission.responses?.filter(
-          e => e.id === assessmentResponse.id
-        )?.length === 1
-      ) {
-        await updateSubmissionResponse(assessmentResponse, facilitatorOverride);
-      }
+      updatedResponses.push(
+        await updateSubmissionResponse(assessmentResponse, true)
+      );
     }
 
     // update submission state and score
@@ -1385,35 +1411,70 @@ export const updateAssessmentSubmission = async (
         score: assessmentSubmission.score,
       })
       .where('id', assessmentSubmission.id);
+
+    updatedSubmission.responses = updatedResponses;
+    updatedSubmission.assessment_submission_state = newState;
   } else if (
     ['Opened', 'In Progress'].includes(
       existingAssessmentSubmission.assessment_submission_state
     )
   ) {
+    const assessmentSubmissionNoGrades =
+      removeGradingInformation(assessmentSubmission);
     // participant could only update opened and in progress submssion that within due date.
-    if (DateTime.fromISO(programAssessment.due_date) < DateTime.now()) {
+    if (
+      assessmentSubmission.assessment_submission_state === 'Expired' ||
+      (await assessmentSubmissionExpired(assessmentSubmission.id))
+    ) {
       newState = 'Expired';
+
+      // Override to force frontend to update state
+      updatedSubmission.last_modified = DateTime.now()
+        .plus({ weeks: 1 })
+        .toISO();
     } else {
-      // participant could only update state to 'Submitted' or 'In Progress', defalut in progress.
+      // participant could only update state to 'Submitted' or 'In Progress', default in progress.
       newState =
         assessmentSubmission.assessment_submission_state === 'Submitted'
           ? 'Submitted'
           : 'In Progress';
 
+      const updatedResponses: AssessmentResponse[] = [];
+
       // if there is an existing response, update it, otherwise insert new response.
       if (assessmentSubmission.responses) {
-        for (const assessmentResponse of assessmentSubmission.responses) {
-          if (
+        for (const assessmentResponse of assessmentSubmissionNoGrades.responses) {
+          const matchingExistingResponses =
             existingAssessmentSubmission.responses?.filter(
               e => e.id === assessmentResponse.id
-            )?.length === 1
-          ) {
-            await updateSubmissionResponse(assessmentResponse);
+            );
+          if (matchingExistingResponses.length === 0) {
+            updatedResponses.push(
+              await createSubmissionResponse(assessmentResponse)
+            );
           } else {
-            await createSubmissionResponse(assessmentResponse);
+            const [existingResponse] = matchingExistingResponses;
+
+            if (
+              (typeof assessmentResponse.answer_id !== 'undefined' &&
+                assessmentResponse.answer_id !== null &&
+                existingResponse.answer_id !== assessmentResponse.answer_id) ||
+              (typeof assessmentResponse.response_text !== 'undefined' &&
+                assessmentResponse.response_text !== null &&
+                existingResponse.response_text !==
+                  assessmentResponse.response_text)
+            ) {
+              updatedResponses.push(
+                await updateSubmissionResponse(assessmentResponse, false)
+              );
+            } else {
+              updatedResponses.push(assessmentResponse);
+            }
           }
         }
       }
+
+      updatedSubmission.responses = updatedResponses;
     }
 
     const [newStateId] = await db('assessment_submission_states')
@@ -1432,15 +1493,9 @@ export const updateAssessmentSubmission = async (
         .update({ assessment_submission_state_id: newStateId.id })
         .where('id', assessmentSubmission.id);
     }
+
+    updatedSubmission.assessment_submission_state = newState;
   }
-
-  const updatedSubmission: AssessmentSubmission = await getAssessmentSubmission(
-    assessmentSubmission.id,
-    true,
-    facilitatorOverride
-  );
-
-  updatedSubmission.last_modified = DateTime.now().toISO();
 
   return updatedSubmission;
 };

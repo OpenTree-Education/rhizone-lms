@@ -791,7 +791,11 @@ assessmentsRouter.get(
             )
           );
         if (inProgressSubmissions.length !== 0) {
-          [assessmentSubmission] = inProgressSubmissions;
+          assessmentSubmission = await getAssessmentSubmission(
+            inProgressSubmissions[0].id,
+            true,
+            false
+          );
         } else if (
           existingAssessmentSubmissions.length >=
             curriculumAssessment.max_num_submissions &&
@@ -1011,9 +1015,11 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       );
     }
 
+    let updatedSubmission: AssessmentSubmission;
+
     if (programRole === 'Facilitator') {
       // for facilitator, they are able to grade and override the state, scores.
-      await updateAssessmentSubmission(
+      updatedSubmission = await updateAssessmentSubmission(
         submissionFromUser,
         programRole === 'Facilitator'
       );
@@ -1030,17 +1036,18 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
         existingAssessmentSubmission.assessment_submission_state
       )
     ) {
-      await updateAssessmentSubmission(
+      updatedSubmission = await updateAssessmentSubmission(
         submissionFromUser,
         programRole === 'Facilitator'
       );
-    }
-    const updatedSubmission: AssessmentSubmission =
-      await getAssessmentSubmission(
+    } else {
+      updatedSubmission = await getAssessmentSubmission(
         existingAssessmentSubmission.id,
         true,
         programRole === 'Facilitator'
       );
+    }
+
     res.json(itemEnvelope(updatedSubmission));
   } catch (err) {
     next(err);

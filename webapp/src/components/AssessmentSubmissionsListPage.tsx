@@ -234,6 +234,16 @@ const AssessmentSubmissionsListPage = () => {
                             Grade
                           </Button>
                         )
+                      ) : ['Opened', 'In Progress'].includes(
+                          submission.assessment_submission_state
+                        ) ? (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          href={`/assessments/${assessmentIdNumber}/submissions/${submission.id}`}
+                        >
+                          Resume
+                        </Button>
                       ) : (
                         <Button
                           variant="contained"
