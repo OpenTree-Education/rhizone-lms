@@ -30,7 +30,6 @@ const AssessmentDetailPage = () => {
   const submissionIdNumber = Number(submissionId);
 
   const [apiPath, setApiPath] = useState<string>('');
-  const [autoStateChecks, setAutoStateChecks] = useState(0);
   const [assessmentState, setAssessmentState] = useState<SavedAssessment>();
   const [numOfAnsweredQuestions, setNumOfAnsweredQuestions] = useState(0);
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
@@ -68,7 +67,7 @@ const AssessmentDetailPage = () => {
     // isLoading: isLoadingPut,
   } = useApiData<AssessmentSubmission>({
     body: assessmentState?.submission,
-    deps: [autoStateChecks, apiPath, assessmentState],
+    deps: [apiPath, assessmentState],
     method: 'PUT',
     path: `/assessments/${apiPath}`,
     sendCredentials: true,
@@ -171,10 +170,6 @@ const AssessmentDetailPage = () => {
           endTime.diff(DateTime.now()).as('seconds')
         );
         setSecondsRemaining(newSecondsRemaining);
-        // TODO: auto updates
-        // if (newSecondsRemaining % 60 === Math.random()) {
-        //   setAutoStateChecks(autoStateChecks + 1);
-        // }
       } else {
         setSecondsRemaining(0);
       }
@@ -194,7 +189,8 @@ const AssessmentDetailPage = () => {
         assessmentState.submission.assessment_submission_state === 'In Progress'
       ) {
         const completedAssessment = structuredClone(assessmentState);
-        completedAssessment!.submission.assessment_submission_state = 'Expired';
+        completedAssessment.submission.assessment_submission_state = 'Expired';
+        completedAssessment.submission.last_modified = DateTime.now().toISO();
         setAssessmentState(completedAssessment);
       }
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
@@ -225,6 +221,8 @@ const AssessmentDetailPage = () => {
       return;
     }
 
+    const [responseQuestion] = assessmentState.curriculum_assessment.questions!.filter(question => question.id === questionId)!;
+
     const assessmentWithUpdatedResponses = structuredClone(assessmentState);
 
     if (
@@ -233,11 +231,11 @@ const AssessmentDetailPage = () => {
       return;
     }
 
-    if (answerId) {
+    if (responseQuestion.question_type === 'single choice') {
       assessmentWithUpdatedResponses.submission.responses.find(
         response => response.question_id === questionId
       )!.answer_id = answerId;
-    } else if (responseText) {
+    } else if (responseQuestion.question_type === 'free response') {
       assessmentWithUpdatedResponses.submission.responses.find(
         response => response.question_id === questionId
       )!.response_text = responseText;
@@ -285,6 +283,8 @@ const AssessmentDetailPage = () => {
     if (putError) {
       completedAssessment.submission.assessment_submission_state =
         'In Progress';
+      completedAssessment.submission.submitted_at = undefined;
+      setAssessmentState(completedAssessment);
       setSubmissionDisabled(false);
     }
   };

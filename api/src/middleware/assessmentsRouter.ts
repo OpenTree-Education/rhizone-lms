@@ -1030,18 +1030,6 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
         existingAssessmentSubmission.assessment_submission_state
       )
     ) {
-      // participant could only update opened and in progress submssion that within due date.
-      if (DateTime.fromISO(programAssessment.due_date) < DateTime.now()) {
-        // use existing submission to call service function, it will handle and set state to expired
-        await updateAssessmentSubmission(
-          existingAssessmentSubmission,
-          programRole === 'Facilitator'
-        );
-        throw new ForbiddenError(
-          `Could not update a submission of an assessment that passed due date.`
-        );
-      }
-
       await updateAssessmentSubmission(
         submissionFromUser,
         programRole === 'Facilitator'
