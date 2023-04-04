@@ -370,10 +370,10 @@ const listSubmissionResponses = async (
         submission_id: submissionId,
         question_id: assessmentSubmissionsRow.question_id,
         answer_id: assessmentSubmissionsRow.answer_id,
-        response_text:
-          gradingsIncluded === true && assessmentSubmissionsRow.response,
+        response_text: assessmentSubmissionsRow.response,
         score: gradingsIncluded === true && assessmentSubmissionsRow.score,
-        grader_response: assessmentSubmissionsRow.grader_response,
+        grader_response:
+          gradingsIncluded === true && assessmentSubmissionsRow.grader_response,
       };
     });
 

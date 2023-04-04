@@ -58,6 +58,12 @@ const AssessmentSubmitBar = ({
   setShowSubmitDialog,
   submitButtonDisabled,
 }: AssessmentSubmitBarProps) => {
+  if (
+    !assessment.curriculum_assessment.questions ||
+    !assessment.submission.responses
+  ) {
+    return null;
+  }
   return (
     <>
       <List style={{ paddingLeft: 0 }}>
@@ -96,7 +102,10 @@ const AssessmentSubmitBar = ({
         <ListItem>
           <Box sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
             {assessment.curriculum_assessment
-              .questions!.sort((question: Question) => question.sort_order)
+              .questions!.sort(
+                (question1, question2) =>
+                  question1.sort_order - question2.sort_order
+              )
               .map((question: Question) => (
                 <StyledNumChip
                   sx={{ marginLeft: '1px', marginBottom: '3px' }}
