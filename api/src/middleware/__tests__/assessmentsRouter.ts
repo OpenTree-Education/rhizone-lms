@@ -1,45 +1,41 @@
 import {
-  itemEnvelope,
-  errorEnvelope,
   collectionEnvelope,
+  errorEnvelope,
+  itemEnvelope,
 } from '../responseEnvelope';
 import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
 
-import { AssessmentWithSummary, SavedAssessment } from '../../models';
 import {
+  curriculumAssessmentId,
+  exampleAssessmentSubmissionGraded,
+  exampleAssessmentSubmissionInProgress,
+  exampleAssessmentSubmissionOpened,
+  exampleAssessmentSubmissionSubmitted,
   exampleCurriculumAssessment,
   exampleCurriculumAssessmentWithCorrectAnswers,
-  exampleProgramAssessment,
-  exampleProgramAssessmentPastDue,
-  exampleProgramAssessmentNotAvailable,
-  exampleAssessmentSubmissionSubmitted,
-  exampleFacilitatorProgramIdsMatchingCurriculum,
-  facilitatorPrincipalId,
-  validFacilitatorPrincipalId,
   exampleCurriculumAssessmentWithQuestions,
-  exampleAssessmentSubmissionInProgress,
-  participantPrincipalId,
-  exampleAssessmentSubmissionGraded,
-  otherParticipantPrincipalId,
-  updatedProgramAssessmentsRow,
-  unenrolledPrincipalId,
-  exampleParticipantAssessmentSubmissionsSummary,
   exampleFacilitatorAssessmentSubmissionsSummary,
-  exampleAssessmentDetails,
-  exampleFacilitatorProgramIdsNoMatchingCurriculum,
-  exampleCurriculumAssessmentNoMatch,
-  updatedCurriculumAssessment,
-  newCurriculumAssessment,
-  // updatedCurriculumAssessmentsRow,
-  exampleOtherAssessmentSubmissionSubmitted,
-  exampleParticipantAssessmentWithSubmissions,
   exampleFacilitatorAssessmentWithSubmissions,
-  matchingAssessmentSubmissionOpenedRow,
-  matchingOtherAssessmentSubmissionSubmittedRow,
+  exampleOtherAssessmentSubmissionSubmitted,
+  exampleParticipantAssessmentSubmissionsSummary,
+  exampleParticipantAssessmentWithSubmissions,
   exampleParticipantOpenedSavedAssessment,
-  exampleAssessmentSubmissionOpened,
-  exampleProgramAssessmentsRow,
+  exampleProgramAssessment,
+  exampleProgramAssessmentNotAvailable,
+  exampleProgramAssessmentPastDue,
+  facilitatorPrincipalId,
+  facilitatorProgramIdsNotMatchingCurriculum,
+  facilitatorProgramIdsThatMatchCurriculum,
+  matchingOtherAssessmentSubmissionSubmittedRow,
+  otherParticipantPrincipalId,
+  participantPrincipalId,
+  sentNewCurriculumAssessment,
+  sentNewCurriculumAssessmentPostInsert,
+  sentUpdatedCurriculumAssessment,
+  unenrolledPrincipalId,
+  updatedProgramAssessmentsRow,
 } from '../../assets/data';
+import { AssessmentWithSummary, SavedAssessment } from '../../models';
 import {
   constructFacilitatorAssessmentSummary,
   constructParticipantAssessmentSummary,
@@ -355,22 +351,22 @@ describe('assessmentsRouter', () => {
         matchingFacilitatorPrograms
       );
       mockCreateCurriculumAssessment.mockResolvedValue(
-        updatedCurriculumAssessment
+        sentNewCurriculumAssessmentPostInsert
       );
       mockPrincipalId(facilitatorPrincipalId);
 
       appAgent
         .post(`/curriculum`)
-        .send(newCurriculumAssessment)
+        .send(sentNewCurriculumAssessment)
         .expect(201, err => {
           expect(
             mockFacilitatorProgramIdsMatchingCurriculum
           ).toHaveBeenCalledWith(
             facilitatorPrincipalId,
-            newCurriculumAssessment.curriculum_id
+            sentNewCurriculumAssessment.curriculum_id
           );
           expect(mockCreateCurriculumAssessment).toHaveBeenCalledWith(
-            newCurriculumAssessment
+            sentNewCurriculumAssessment
           );
 
           done(err);
@@ -383,7 +379,7 @@ describe('assessmentsRouter', () => {
 
       appAgent
         .post(`/curriculum`)
-        .send(newCurriculumAssessment)
+        .send(sentNewCurriculumAssessment)
         .expect(
           401,
           errorEnvelope(
@@ -394,12 +390,13 @@ describe('assessmentsRouter', () => {
               mockFacilitatorProgramIdsMatchingCurriculum
             ).toHaveBeenCalledWith(
               participantPrincipalId,
-              newCurriculumAssessment.curriculum_id
+              sentNewCurriculumAssessment.curriculum_id
             );
             done(err);
           }
         );
     });
+
     it('should reponse with BadRequestError if the information missing', done => {
       mockPrincipalId(facilitatorPrincipalId);
 
@@ -416,39 +413,45 @@ describe('assessmentsRouter', () => {
     });
   });
 
-  // describe('PUT /curriculum/:curriculumAssessmentId', () => {
-  //   it('should update a curriculum assessment if the logged-in principal ID is the program facilitator', done => {
-  //     const matchingFacilitatorPrograms=2;
-  //     mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue([matchingFacilitatorPrograms]);
-  //     mockGetCurriculumAssessment.mockResolvedValue(exampleCurriculumAssessmentWithCorrectAnswers);
-  //     mockUpdateCurriculumAssessment.mockResolvedValue(updatedCurriculumAssessmentsRow);
+  describe('PUT /curriculum/:curriculumAssessmentId', () => {
+    it('should update a curriculum assessment if the logged-in principal ID is the program facilitator', done => {
+      mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
+        facilitatorProgramIdsThatMatchCurriculum
+      );
+      mockGetCurriculumAssessment.mockResolvedValue(
+        exampleCurriculumAssessmentWithCorrectAnswers
+      );
+      mockUpdateCurriculumAssessment.mockResolvedValue(
+        sentUpdatedCurriculumAssessment
+      );
 
-  //     mockPrincipalId(facilitatorPrincipalId);
+      mockPrincipalId(facilitatorPrincipalId);
 
-  //     appAgent
-  //       .put(`/curriculum/${exampleCurriculumAssessment.id}`)
-  //       .send(updatedCurriculumAssessmentsRow)
-  //       .expect(201, err => {
-  //         expect(mockFacilitatorProgramIdsMatchingCurriculum).toHaveBeenCalledWith(
-  //           facilitatorPrincipalId, exampleCurriculumAssessment.id
-  //         );
+      appAgent
+        .put(`/curriculum/${exampleCurriculumAssessment.id}`)
+        .send(sentUpdatedCurriculumAssessment)
+        .expect(201, err => {
+          expect(
+            mockFacilitatorProgramIdsMatchingCurriculum
+          ).toHaveBeenCalledWith(
+            facilitatorPrincipalId,
+            curriculumAssessmentId
+          );
 
-  //         expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
-  //           exampleCurriculumAssessment.id,
-  //           true,
-  //           true
-  //         );
+          expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
+            curriculumAssessmentId,
+            true,
+            true
+          );
 
-  //         expect(mockUpdateCurriculumAssessment).toHaveBeenCalledWith(
-  //           updatedProgramAssessmentsRow
-  //         );
+          expect(mockUpdateCurriculumAssessment).toHaveBeenCalledWith(
+            sentUpdatedCurriculumAssessment
+          );
 
-  //         done(err);
-  //       });
-  //   });
-
-  // });
-  //describe('DELETE /curriculum/:curriculumAssessmentId', () => {});
+          done(err);
+        });
+    });
+  });
 
   describe('DELETE /curriculum/:curriculumAssessmentId', () => {
     it('should delete a curriculumAssessment if principal ID is a program facilitator of that curriculum', done => {
@@ -456,26 +459,27 @@ describe('assessmentsRouter', () => {
         exampleCurriculumAssessment
       );
       mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
-        exampleFacilitatorProgramIdsMatchingCurriculum
+        facilitatorProgramIdsThatMatchCurriculum
       );
       mockDeleteCurriculumAssessment.mockResolvedValue();
 
       // Exist in database
-      mockPrincipalId(validFacilitatorPrincipalId);
+      mockPrincipalId(facilitatorPrincipalId);
 
       appAgent
-        .post(`/curriculum`)
-        .send(exampleCurriculumAssessment)
-        .expect(201, err => {
+        .delete(`/curriculum/${curriculumAssessmentId}`)
+        .expect(204, err => {
           expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
-            exampleCurriculumAssessment.id
+            curriculumAssessmentId,
+            false,
+            false
           );
 
           expect(
             mockFacilitatorProgramIdsMatchingCurriculum
           ).toHaveBeenCalledWith(
-            validFacilitatorPrincipalId /*4*/,
-            exampleCurriculumAssessment.id /*12*/
+            facilitatorPrincipalId,
+            curriculumAssessmentId
           );
 
           expect(mockDeleteCurriculumAssessment).toHaveBeenCalledWith(
@@ -487,61 +491,72 @@ describe('assessmentsRouter', () => {
     });
 
     it('should respond with an Unauthorized Error if the the facilitator is not taking the program with the curriculum', done => {
-      mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
-        exampleFacilitatorProgramIdsNoMatchingCurriculum
+      mockGetCurriculumAssessment.mockResolvedValue(
+        exampleCurriculumAssessment
       );
-      mockPrincipalId(validFacilitatorPrincipalId);
+      mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
+        facilitatorProgramIdsNotMatchingCurriculum
+      );
+
+      mockPrincipalId(facilitatorPrincipalId);
+
       appAgent
-        .delete(`/curriculum/${exampleCurriculumAssessment.id}`)
-        .send(exampleCurriculumAssessment)
+        .delete(`/curriculum/${curriculumAssessmentId}`)
         .expect(
           401,
           errorEnvelope(
-            `No authorized to delete curriculum Assessment with ID ${exampleCurriculumAssessment.id}.`
+            `Not authorized to delete curriculum assessment with ID ${curriculumAssessmentId}.`
           ),
           err => {
+            expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
+              curriculumAssessmentId,
+              false,
+              false
+            );
+
             expect(
               mockFacilitatorProgramIdsMatchingCurriculum
             ).toHaveBeenCalledWith(
-              validFacilitatorPrincipalId,
-              exampleCurriculumAssessment.id
+              facilitatorPrincipalId,
+              curriculumAssessmentId
             );
+
             done(err);
           }
         );
     });
-    it('BadRequestError if the curriculumAssessment ID is not is not a valid number.', done => {
-      const invalidIdCurriculumAssessment = -2;
-      mockPrincipalId(otherParticipantPrincipalId);
+
+    it('should respond with a BadRequestError if the curriculumAssessment ID is not a valid number.', done => {
+      mockPrincipalId(facilitatorPrincipalId);
+
       appAgent
-        .put(`/curriculum/${exampleCurriculumAssessment.id}`)
-        .send(exampleCurriculumAssessment)
+        .delete(`/curriculum/test`)
         .expect(
           400,
-          errorEnvelope(
-            `"${Number(
-              invalidIdCurriculumAssessment
-            )}" is not a valid program assessment ID.`
-          ),
+          errorEnvelope(`"test" is not a valid program assessment ID.`),
           done
         );
     });
+
     it('should respond with a NotFoundError if the curriculum assessment ID was not found in the database', done => {
-      mockGetCurriculumAssessment.mockResolvedValue(
-        exampleCurriculumAssessmentNoMatch
-      );
+      mockGetCurriculumAssessment.mockResolvedValue(null);
+
+      mockPrincipalId(facilitatorPrincipalId);
+
       appAgent
-        .put(`/curriculum/${exampleCurriculumAssessmentNoMatch.id}`)
-        .send(exampleCurriculumAssessmentNoMatch)
+        .delete(`/curriculum/${curriculumAssessmentId}`)
         .expect(
           404,
           errorEnvelope(
-            `Could not find curriculum assessment with ID ${exampleCurriculumAssessmentNoMatch.id}.`
+            `Could not find curriculum assessment with ID ${curriculumAssessmentId}.`
           ),
           err => {
             expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
-              exampleCurriculumAssessmentNoMatch.id
+              curriculumAssessmentId,
+              false,
+              false
             );
+
             done(err);
           }
         );
@@ -549,8 +564,9 @@ describe('assessmentsRouter', () => {
   });
 
   describe('GET /program/:programAssessmentId', () => {});
+
   describe('POST /program', () => {
-    it('should update a program assessment if the logged-in principal ID is the program facilitator', done => {
+    it('should create a new program assessment if the logged-in principal ID is the program facilitator', done => {
       mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
       mockCreateProgramAssessment.mockResolvedValue(
         updatedProgramAssessmentsRow
@@ -599,7 +615,7 @@ describe('assessmentsRouter', () => {
         );
     });
 
-    it('should reponse with BadRequestError if the information missing', done => {
+    it('should respond with a BadRequestError if given an invalid program assessment', done => {
       mockPrincipalId(facilitatorPrincipalId);
 
       appAgent
@@ -694,7 +710,7 @@ describe('assessmentsRouter', () => {
         );
     });
 
-    it('should respond with an BadRequestError if the Was not given a valid program assessment.', done => {
+    it('should respond with an BadRequestError if not given a valid program assessment.', done => {
       const exampleAssessmentFormUser = 'test';
 
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
@@ -747,6 +763,7 @@ describe('assessmentsRouter', () => {
         );
     });
   });
+
   describe('DELETE /program/:programAssessmentId', () => {
     it('should delete a program assessment in the system if logged-in user is facilitator of that program', done => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
@@ -1101,6 +1118,7 @@ describe('assessmentsRouter', () => {
           }
         );
     });
+
     it('should return an error if no possible submissions remain for this participant and this assessment', done => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Participant');
@@ -1147,6 +1165,7 @@ describe('assessmentsRouter', () => {
           }
         );
     });
+
     it('should return the existing submission if one is currently opened or in progress', done => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Participant');
@@ -1512,6 +1531,7 @@ describe('assessmentsRouter', () => {
           }
         );
     });
+
     it('should respond with an Unauthorized Error if logged-in principal id is not enrolled in the program', done => {
       const programId = 1;
       mockGetAssessmentSubmission.mockResolvedValue(
@@ -1553,9 +1573,6 @@ describe('assessmentsRouter', () => {
       appAgent.get(`/submissions/${submissionId}`).expect(500, done);
     });
   });
-  //reference
-
-  describe('PUT /submissions/:submissionId', () => {});
 
   describe('PUT /submissions/:submissionId', () => {});
 });

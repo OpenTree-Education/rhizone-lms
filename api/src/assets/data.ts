@@ -20,11 +20,14 @@ export const facilitatorPrincipalId = 300;
 
 // Example Data: Other IDs
 
-export const curriculumId = 4
+export const curriculumId = 4;
 export const curriculumAssessmentId = 8;
+export const sentCurriculumAssessmentId = 9;
 export const programId = 12;
 export const programAssessmentId = 16;
+export const sentProgramAssessmentId = 17;
 export const activityId = 20;
+export const sentCAActivityId = 200;
 export const singleChoiceQuestionId = 24;
 export const freeResponseQuestionId = 24;
 export const singleChoiceAnswerId = 28;
@@ -34,12 +37,12 @@ export const assessmentSubmissionByOtherParticipantId = 36;
 export const assessmentSubmissionResponseSCId = 320;
 export const assessmentSubmissionResponseFRId = 321;
 
-export const facilitatorProgramIdsMatchingCurriculum: number[] = [
-  programId, 20, 30,
+export const facilitatorProgramIdsThatMatchCurriculum: number[] = [
+  programId,
+  20,
+  30,
 ];
-export const facilitatorProgramIdsNotMatchingCurriculum: number[] = [
-  40, 50,
-];
+export const facilitatorProgramIdsNotMatchingCurriculum: number[] = [40, 50];
 
 // Example Data: Database Table Rows
 
@@ -164,16 +167,9 @@ export const matchingAssessmentResponsesRowFRGraded = {
   submission_id: assessmentSubmissionId,
   question_id: freeResponseQuestionId,
   answer_id: null as number,
-  response: "<div>Hello world!</div>",
+  response: '<div>Hello world!</div>',
   score: 0,
   grader_response: 'Very close!',
-};
-
-// Example Data: Updated Database Table Rows
-
-export const updatedProgramAssessmentsRow = {
-  ...matchingProgramAssessmentsRow,
-  due_date: '2050-06-25 00:00:00',
 };
 
 // Example Data: Formatted Data
@@ -428,3 +424,48 @@ export const exampleFacilitatorAssessmentWithSubmissions: AssessmentWithSubmissi
       exampleOtherAssessmentSubmissionSubmitted,
     ],
   };
+
+// Example Data: Updated Database Table Rows
+
+export const updatedProgramAssessmentsRow = {
+  ...matchingProgramAssessmentsRow,
+  due_date: '2050-06-25 00:00:00',
+};
+
+export const newCurriculumAssessmentsRow = {
+  id: sentCurriculumAssessmentId,
+  title: 'New Curriculum Quiz',
+  description: null as string,
+  max_score: 42,
+  max_num_submissions: 13,
+  time_limit: 60,
+  curriculum_id: curriculumId,
+  activity_id: sentCAActivityId,
+  principal_id: facilitatorPrincipalId,
+};
+
+// Example Data: Data Sent From User: New Formatted Data
+
+export const sentNewCurriculumAssessment: CurriculumAssessment = {
+  title: newCurriculumAssessmentsRow.title,
+  assessment_type: 'quiz',
+  description: newCurriculumAssessmentsRow.description,
+  max_score: newCurriculumAssessmentsRow.max_score,
+  max_num_submissions: newCurriculumAssessmentsRow.max_num_submissions,
+  time_limit: newCurriculumAssessmentsRow.time_limit,
+  curriculum_id: curriculumId,
+  activity_id: sentCAActivityId,
+  principal_id: facilitatorPrincipalId,
+};
+
+export const sentUpdatedCurriculumAssessment: CurriculumAssessment = {
+  ...exampleCurriculumAssessment,
+  time_limit: 121,
+};
+
+// Example Data: Data Sent From User: Existing Formatted Data
+
+export const sentNewCurriculumAssessmentPostInsert: CurriculumAssessment = {
+  ...sentNewCurriculumAssessment,
+  id: sentCurriculumAssessmentId,
+};
