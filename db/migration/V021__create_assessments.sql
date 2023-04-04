@@ -136,7 +136,7 @@ CREATE TABLE assessment_responses (
   INDEX assessment_responses_assessment_id (assessment_id),
   FOREIGN KEY (assessment_id) REFERENCES program_assessments(id),
   INDEX assessment_responses_submission_id (submission_id),
-  FOREIGN KEY (submission_id) REFERENCES assessment_submissions(id),
+  FOREIGN KEY (submission_id) REFERENCES assessment_submissions(id) ON DELETE CASCADE,
   INDEX assessment_responses_question_id (question_id),
   FOREIGN KEY (question_id) REFERENCES assessment_questions(id),
   INDEX assessment_responses_answer_id (answer_id),
