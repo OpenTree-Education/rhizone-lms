@@ -302,7 +302,8 @@ describe('createAssessmentSubmission', () => {
     expect(
       await createAssessmentSubmission(
         participantPrincipalId,
-        exampleAssessmentSubmissionOpened.assessment_id
+        exampleAssessmentSubmissionOpened.assessment_id,
+        exampleProgramAssessment.assessment_id
       )
     ).toEqual(openedSubmission);
   });

@@ -221,7 +221,10 @@ const AssessmentDetailPage = () => {
       return;
     }
 
-    const [responseQuestion] = assessmentState.curriculum_assessment.questions!.filter(question => question.id === questionId)!;
+    const [responseQuestion] =
+      assessmentState.curriculum_assessment.questions!.filter(
+        question => question.id === questionId
+      )!;
 
     const assessmentWithUpdatedResponses = structuredClone(assessmentState);
 

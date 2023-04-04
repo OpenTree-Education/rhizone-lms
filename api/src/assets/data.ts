@@ -281,6 +281,7 @@ export const matchingAssessmentSubmissionOpenedRow = {
   principal_id: participantPrincipalId,
   assessment_submission_state: 'Opened',
   opened_at: '2023-02-09 12:00:00',
+  last_modified: '2023-02-09 12:00:00',
   submitted_at: null as string,
   score: null as number,
 };
@@ -291,11 +292,13 @@ export const exampleAssessmentSubmissionOpened: AssessmentSubmission = {
   principal_id: participantPrincipalId,
   assessment_submission_state: 'Opened',
   opened_at: '2023-02-09T12:00:00.000Z',
+  last_modified: '2023-02-09T12:00:00.000Z',
 };
 
 export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
   ...exampleAssessmentSubmissionOpened,
   assessment_submission_state: 'In Progress',
+  last_modified: '2023-02-09T12:05:00.000Z',
   responses: [
     {
       id: 1,
@@ -311,6 +314,7 @@ export const exampleAssessmentSubmissionSubmitted: AssessmentSubmission = {
   ...exampleAssessmentSubmissionOpened,
   assessment_submission_state: 'Submitted',
   submitted_at: '2023-02-09T13:23:45.000Z',
+  last_modified: '2023-02-09T13:23:45.000Z',
   responses: [
     {
       id: 1,
@@ -329,6 +333,7 @@ export const matchingOtherAssessmentSubmissionSubmittedRow = {
   assessment_submission_state: 'Submitted',
   opened_at: '2023-02-09 12:00:00',
   submitted_at: '2023-02-09 13:23:45',
+  last_modified: '2023-02-09 13:23:45',
   score: null as number,
 };
 
@@ -336,6 +341,7 @@ export const exampleOtherAssessmentSubmissionSubmitted: AssessmentSubmission = {
   ...exampleAssessmentSubmissionOpened,
   assessment_submission_state: 'Submitted',
   submitted_at: '2023-02-09T13:23:45.000Z',
+  last_modified: '2023-02-09T13:23:45.000Z',
   principal_id: otherParticipantPrincipalId,
   id: 3,
 };
@@ -348,6 +354,7 @@ export const assessmentSubmissionsRowGraded = {
   score: 4,
   opened_at: '2023-02-09 12:00:00',
   submitted_at: '2023-02-09 13:23:45',
+  last_modified: '2023-02-09 13:23:45',
 };
 
 export const assessmentResponsesRowGraded = {
@@ -365,6 +372,7 @@ export const exampleAssessmentSubmissionGradedNoResponses: AssessmentSubmission 
   {
     ...exampleAssessmentSubmissionOpened,
     submitted_at: '2023-02-09T13:23:45.000Z',
+    last_modified: '2023-02-09T13:23:45.000Z',
     assessment_submission_state: 'Graded',
     score: 4,
   };
@@ -372,6 +380,7 @@ export const exampleAssessmentSubmissionGradedNoResponses: AssessmentSubmission 
 export const exampleAssessmentSubmissionGraded: AssessmentSubmission = {
   ...exampleAssessmentSubmissionSubmitted,
   assessment_submission_state: 'Graded',
+  last_modified: '2023-02-09T13:23:45.000Z',
   score: 4,
   responses: [
     {
@@ -391,6 +400,7 @@ export const exampleAssessmentSubmissionGradedRemovedGrades: AssessmentSubmissio
   {
     ...exampleAssessmentSubmissionSubmitted,
     assessment_submission_state: 'Graded',
+    last_modified: '2023-02-09T13:23:45.000Z',
     responses: [
       {
         id: 1,

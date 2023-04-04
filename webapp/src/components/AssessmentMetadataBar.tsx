@@ -65,6 +65,17 @@ const AssessmentMetadataBar = ({
           maxWidth: 360,
         }}
       >
+        {assessment.curriculum_assessment.description &&
+          typeof assessment.curriculum_assessment.description === 'string' &&
+          assessment.curriculum_assessment.description.length > 0 && (
+            <ListItem>
+              <ListItemText>
+                <Typography variant="body2">
+                  {assessment.curriculum_assessment.description}
+                </Typography>
+              </ListItemText>
+            </ListItem>
+          )}
         <ListItem>
           <ListItemAvatar>
             <Avatar
@@ -78,14 +89,12 @@ const AssessmentMetadataBar = ({
             </Avatar>
           </ListItemAvatar>
           <ListItemText>
-            <Typography variant="body2">
-              {assessment.curriculum_assessment.description}
-            </Typography>
             <ListItemText
-              secondary={`Type: ${
+              primary={
                 assessment.curriculum_assessment.assessment_type[0].toUpperCase() +
                 assessment.curriculum_assessment.assessment_type.slice(1)
-              }`}
+              }
+              secondary="Assessment Type"
             />
           </ListItemText>
         </ListItem>
