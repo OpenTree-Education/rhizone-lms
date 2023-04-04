@@ -811,11 +811,11 @@ export const createProgramAssessment = async (
  *
  * @param {number} curriculumAssessmentId - The row ID of the
  *   curriculum_assessments table for a given curriculum assessment.
- * @returns {Promise<void>} Returns nothing if the deletion was successful.
+ * @returns {Promise<number>} Returns nothing if the deletion was successful.
  */
 export const deleteCurriculumAssessment = async (
   curriculumAssessmentId: number
-): Promise<void> => {
+): Promise<number> => {
   return db('curriculum_assessments')
     .where('id', curriculumAssessmentId)
     .delete();
@@ -829,20 +829,12 @@ export const deleteCurriculumAssessment = async (
  *
  * @param {number} programAssessmentId - The row ID of the program_assessments
  *   table for a given program assessment.
- * @returns {Promise<void>} Returns nothing if the deletion was successful.
+ * @returns {Promise<number>} Returns nothing if the deletion was successful.
  */
-//export const deleteProgramAssessment = async (programAssessmentId: number): Promise<void> => { return; };
-
 export const deleteProgramAssessment = async (
   programAssessmentId: number
-): Promise<void> => {
-  const matchingProgramAssessmentsRows = await db('program_assessments')
-    // fix this missing line using the knex documentation, using the correct command for delete: https://knexjs.org/guide/query-builder.html#common
-    .where('id', programAssessmentId);
-
-  if (matchingProgramAssessmentsRows.length === 0) {
-    return null;
-  }
+): Promise<number> => {
+  return db('program_assessments').where('id', programAssessmentId).delete();
 };
 
 /**
@@ -1519,6 +1511,7 @@ export const updateCurriculumAssessment = async (
   };
   if (curriculumAssessment !== null) {
     for (const question of curriculumAssessment.questions) {
+      // TODO: need to delete questions that no longer exist after this update
       if (typeof question.id !== 'undefined') {
         // need to createAssessmentQuestion for each question that does not exist;
         // the question is new
