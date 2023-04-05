@@ -431,6 +431,11 @@ export const updatedProgramAssessmentsRow = {
   ...matchingProgramAssessmentsRow,
   due_date: '2050-06-25 00:00:00',
 };
+//added by mays to test
+export const updatedProgramAssessments = {
+  ...matchingProgramAssessmentsRow,
+  id: 15,
+};
 
 export const newCurriculumAssessmentsRow = {
   id: sentCurriculumAssessmentId,
@@ -469,3 +474,14 @@ export const sentNewCurriculumAssessmentPostInsert: CurriculumAssessment = {
   ...sentNewCurriculumAssessment,
   id: sentCurriculumAssessmentId,
 };
+
+// mays for test
+
+export const exampleAssessmentSubmissionGradedNoResponse: AssessmentSubmission =
+  {
+    ...exampleAssessmentSubmissionOpened,
+    assessment_submission_state: 'Graded',
+    last_modified: '2023-02-09T13:23:45.000Z',
+    score: 4,
+    responses: null,
+  };
