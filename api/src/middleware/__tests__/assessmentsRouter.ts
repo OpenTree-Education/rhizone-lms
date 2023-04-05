@@ -27,6 +27,7 @@ import {
   facilitatorProgramIdsNotMatchingCurriculum,
   facilitatorProgramIdsThatMatchCurriculum,
   matchingOtherAssessmentSubmissionSubmittedRow,
+  matchingProgramAssessmentsRow,
   otherParticipantPrincipalId,
   participantPrincipalId,
   sentNewCurriculumAssessment,
@@ -461,7 +462,7 @@ describe('assessmentsRouter', () => {
       mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
         facilitatorProgramIdsThatMatchCurriculum
       );
-      mockDeleteCurriculumAssessment.mockResolvedValue();
+      mockDeleteCurriculumAssessment.mockResolvedValue(null);
 
       // Exist in database
       mockPrincipalId(facilitatorPrincipalId);
@@ -576,15 +577,15 @@ describe('assessmentsRouter', () => {
 
       appAgent
         .post(`/program`)
-        .send(exampleProgramAssessmentsRow)
+        .send(matchingProgramAssessmentsRow)
         .expect(201, err => {
           expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
             facilitatorPrincipalId,
-            exampleProgramAssessmentsRow.program_id
+            matchingProgramAssessmentsRow.program_id
           );
 
           expect(mockCreateProgramAssessment).toHaveBeenCalledWith(
-            exampleProgramAssessmentsRow
+            matchingProgramAssessmentsRow
           );
 
           done(err);
@@ -598,7 +599,7 @@ describe('assessmentsRouter', () => {
 
       appAgent
         .post(`/program`)
-        .send(exampleProgramAssessmentsRow)
+        .send(matchingProgramAssessmentsRow)
         .expect(
           401,
           errorEnvelope(
@@ -607,7 +608,7 @@ describe('assessmentsRouter', () => {
           err => {
             expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
               participantPrincipalId,
-              exampleProgramAssessmentsRow.program_id
+              matchingProgramAssessmentsRow.program_id
             );
 
             done(err);
