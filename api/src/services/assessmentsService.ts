@@ -91,12 +91,12 @@ const calculateNumParticipantsWithSubmissions = async (
 const calculateNumProgramParticipants = async (
   programId: number
 ): Promise<number> => {
-  const [numProgramParticipants] = await db('program_participants')
+  const [matchingProgramParticipantsResults] = await db('program_participants')
     .where('program_id', programId)
     .andWhere('role_id', 2)
     .count({ count: 'id' });
 
-  return numProgramParticipants.count;
+  return matchingProgramParticipantsResults.count;
 };
 
 /**

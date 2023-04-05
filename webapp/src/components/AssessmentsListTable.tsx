@@ -58,9 +58,9 @@ const TableCellWrapper = (props: TableCellWrapperProps) => {
 };
 
 const renderButtonByStatus = (
-  status: string,
   programAssessmentId: number,
-  principalRole: string
+  principalRole: string,
+  status?: string
 ) => {
   let buttonLabel = '';
   let destinationPath = '';
@@ -312,7 +312,7 @@ const AssessmentsListTable = ({
               showForParticipant={false}
               principalRoles={userRoles}
             >
-              Num Submissions
+              Participants
             </TableCellWrapper>
             <TableCellWrapper
               statusTab={currentStatusTab}
@@ -483,7 +483,13 @@ const AssessmentsListTable = ({
                 {assessment.participant_submissions_summary &&
                   assessment.program_assessment.id &&
                   renderButtonByStatus(
-                    assessment.participant_submissions_summary.highest_state,
+                    Number(assessment.program_assessment.id),
+                    assessment.principal_program_role,
+                    assessment.participant_submissions_summary.highest_state
+                  )}
+                {assessment.facilitator_submissions_summary &&
+                  assessment.program_assessment.id &&
+                  renderButtonByStatus(
                     Number(assessment.program_assessment.id),
                     assessment.principal_program_role
                   )}
