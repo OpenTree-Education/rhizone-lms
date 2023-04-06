@@ -78,7 +78,7 @@ assessmentsRouter.get('/', async (req, res, next) => {
             participant_submissions_summary:
               await constructParticipantAssessmentSummary(
                 principalId,
-                programAssessment.assessment_id
+                programAssessment
               ),
             principal_program_role: roleInProgram,
           });
@@ -93,10 +93,7 @@ assessmentsRouter.get('/', async (req, res, next) => {
             ),
             program_assessment: programAssessment,
             facilitator_submissions_summary:
-              await constructFacilitatorAssessmentSummary(
-                programAssessment.assessment_id,
-                programId
-              ),
+              await constructFacilitatorAssessmentSummary(programAssessment),
             principal_program_role: roleInProgram,
           });
         }

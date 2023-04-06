@@ -528,23 +528,22 @@ const updateSubmissionResponse = async (
  * Gathers the relevant information for constructing a
  * FacilitatorAssessmentSubmissionsSummary for a given program assessment.
  *
- * @param {number} programAssessmentId - The row ID of the program_assessments
- *   table for a given program assessment.
+ * @param {number} programAssessment - The program assessment for which we're
+ *   constructing a summary.
  * @returns {Promise<FacilitatorAssessmentSubmissionsSummary>} The program
  *   assessment submissions summary information for use by a program
  *   facilitator.
  */
 export const constructFacilitatorAssessmentSummary = async (
-  programAssessmentId: number,
-  programId: number
+  programAssessment: ProgramAssessment
 ): Promise<FacilitatorAssessmentSubmissionsSummary> => {
   const numParticipantsWithSubmissions =
-    await calculateNumParticipantsWithSubmissions(programAssessmentId);
+    await calculateNumParticipantsWithSubmissions(programAssessment.id);
   const numProgramParticipants = await calculateNumProgramParticipants(
-    programId
+    programAssessment.program_id
   );
   const numUngradedSubmissions = await calculateNumUngradedSubmissions(
-    programAssessmentId
+    programAssessment.id
   );
 
   const facilitatorAssessmentSummary: FacilitatorAssessmentSubmissionsSummary =
@@ -564,20 +563,16 @@ export const constructFacilitatorAssessmentSummary = async (
  *
  * @param {number} participantPrincipalId - The row ID of the principals table
  *   that corresponds with a given program participant.
- * @param {number} programAssessmentId - The row ID of the program_assessments
- *   table for a given program assessment.
+ * @param {number} programAssessment - The program assessment for which we're
+ *   constructing a summary.
  * @returns {Promise<ParticipantAssessmentSubmissionsSummary>} The program
  *   assessment submissions summary information for use by a program
  *   participant.
  */
 export const constructParticipantAssessmentSummary = async (
   participantPrincipalId: number,
-  programAssessmentId: number
+  programAssessment: ProgramAssessment
 ): Promise<ParticipantAssessmentSubmissionsSummary> => {
-  const programAssessment: ProgramAssessment = await findProgramAssessment(
-    programAssessmentId
-  );
-
   const assessmentActiveDate = DateTime.fromISO(
     programAssessment.available_after
   );
@@ -593,7 +588,7 @@ export const constructParticipantAssessmentSummary = async (
       'assessment_submissions.assessment_submission_state_id'
     )
     .where('assessment_submissions.principal_id', participantPrincipalId)
-    .andWhere('assessment_submissions.assessment_id', programAssessmentId)
+    .andWhere('assessment_submissions.assessment_id', programAssessment.id)
     .orderBy('assessment_submissions.assessment_submission_state_id', 'desc')
     .limit(1);
 
@@ -616,7 +611,7 @@ export const constructParticipantAssessmentSummary = async (
   const mostRecentSubmittedDateFromDB = await db('assessment_submissions')
     .select('submitted_at')
     .where('principal_id', participantPrincipalId)
-    .andWhere('assessment_id', programAssessmentId)
+    .andWhere('assessment_id', programAssessment.id)
     .orderBy('submitted_at', 'desc')
     .limit(1);
 
@@ -631,14 +626,14 @@ export const constructParticipantAssessmentSummary = async (
 
   const totalNumSubmissions = await listParticipantProgramAssessmentSubmissions(
     participantPrincipalId,
-    programAssessmentId
+    programAssessment.id
   );
 
   let highestScore;
   const highestScoreFromDB = await db('assessment_submissions')
     .select('score')
     .where('principal_id', participantPrincipalId)
-    .andWhere('assessment_id', programAssessmentId)
+    .andWhere('assessment_id', programAssessment.id)
     .orderBy('score', 'desc')
     .limit(1);
 
@@ -795,9 +790,17 @@ export const createProgramAssessment = async (
     due_date: programAssessment.due_date,
   });
 
+  const program = await findProgram(programAssessment.program_id);
+
   const updatedProgramAssessment: ProgramAssessment = {
     ...programAssessment,
     id: insertedProgramAssessmentRowId,
+    available_after: DateTime.fromSQL(programAssessment.available_after, {
+      zone: program.time_zone,
+    }).toISO(),
+    due_date: DateTime.fromSQL(programAssessment.due_date, {
+      zone: program.time_zone,
+    }).toISO(),
   };
 
   return updatedProgramAssessment;

@@ -113,14 +113,15 @@ describe('assessmentsRouter', () => {
     });
 
     it('should respond with a list of all assessments (without questions) for participant enrolled in one program', done => {
-      const ParticipantAssessmentSubmissionsSummary: AssessmentWithSummary [] = 
-       [ {
+      const ParticipantAssessmentSubmissionsSummary: AssessmentWithSummary[] = [
+        {
           curriculum_assessment: exampleCurriculumAssessment,
           program_assessment: exampleProgramAssessment,
           participant_submissions_summary:
             exampleParticipantAssessmentSubmissionsSummary,
           principal_program_role: 'Participant',
-        }]
+        },
+      ];
       mockListPrincipalEnrolledProgramIds.mockResolvedValue([
         exampleProgramAssessment.program_id,
       ]);
@@ -138,8 +139,9 @@ describe('assessmentsRouter', () => {
         .get('/')
         .expect(
           200,
-         collectionEnvelope(
-            ParticipantAssessmentSubmissionsSummary, ParticipantAssessmentSubmissionsSummary.length
+          collectionEnvelope(
+            ParticipantAssessmentSubmissionsSummary,
+            ParticipantAssessmentSubmissionsSummary.length
           ),
           err => {
             expect(mockListPrincipalEnrolledProgramIds).toHaveBeenCalledWith(
@@ -169,15 +171,15 @@ describe('assessmentsRouter', () => {
     });
 
     it('should respond with a list of all assessments (without questions) for facilitator of one program', done => {
-      const facilitatorAssessmentListResponse: AssessmentWithSummary [] = 
-        [{
+      const facilitatorAssessmentListResponse: AssessmentWithSummary[] = [
+        {
           curriculum_assessment: exampleCurriculumAssessment,
           program_assessment: exampleProgramAssessment,
           facilitator_submissions_summary:
             exampleFacilitatorAssessmentSubmissionsSummary,
           principal_program_role: 'Facilitator',
-        }
-      ]
+        },
+      ];
       mockListPrincipalEnrolledProgramIds.mockResolvedValue([
         exampleProgramAssessment.program_id,
       ]);
@@ -196,7 +198,10 @@ describe('assessmentsRouter', () => {
         .get('/')
         .expect(
           200,
-          collectionEnvelope(facilitatorAssessmentListResponse, facilitatorAssessmentListResponse.length),
+          collectionEnvelope(
+            facilitatorAssessmentListResponse,
+            facilitatorAssessmentListResponse.length
+          ),
           err => {
             expect(mockListPrincipalEnrolledProgramIds).toHaveBeenCalledWith(
               facilitatorPrincipalId

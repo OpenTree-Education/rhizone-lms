@@ -434,10 +434,10 @@ export const updatedProgramAssessmentsRow = {
   ...matchingProgramAssessmentsRow,
   due_date: '2050-06-25 00:00:00',
 };
-//added by mays to test
-export const updatedProgramAssessments = {
+
+export const newProgramAssessmentsRow = {
   ...matchingProgramAssessmentsRow,
-  id: 15,
+  id: programAssessmentId,
 };
 
 export const newCurriculumAssessmentsRow = {
@@ -471,20 +471,16 @@ export const sentUpdatedCurriculumAssessment: CurriculumAssessment = {
   time_limit: 121,
 };
 
+export const sentNewProgramAssessment: ProgramAssessment = {
+  program_id: programId,
+  assessment_id: curriculumAssessmentId,
+  available_after: '2023-02-06 00:00:00',
+  due_date: '2050-06-24 00:00:00',
+};
+
 // Example Data: Data Sent From User: Existing Formatted Data
 
 export const sentNewCurriculumAssessmentPostInsert: CurriculumAssessment = {
   ...sentNewCurriculumAssessment,
   id: sentCurriculumAssessmentId,
 };
-
-// mays for test
-
-export const exampleAssessmentSubmissionGradedNoResponse: AssessmentSubmission =
-  {
-    ...exampleAssessmentSubmissionOpened,
-    assessment_submission_state: 'Graded',
-    last_modified: '2023-02-09T13:23:45.000Z',
-    score: 4,
-    responses: null,
-  };

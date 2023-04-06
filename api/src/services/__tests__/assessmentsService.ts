@@ -52,10 +52,10 @@ import {
   matchingAssessmentResponsesRowSCGraded,
   matchingProgramParticipantRoleParticipantRow,
   matchingProgramParticipantRoleFacilitatorRow,
-  updatedProgramAssessments,
+  newProgramAssessmentsRow,
   matchingAssessmentResponsesRowFRGraded,
-  exampleAssessmentSubmissionGradedNoResponse,
   matchingAssessmentSubmissionsRowGraded,
+  sentNewProgramAssessment,
 } from '../../assets/data';
 
 // describe('constructFacilitatorAssessmentSummary', () => {
@@ -432,17 +432,23 @@ describe('createProgramAssessment', () => {
     mockQuery(
       'insert into `program_assessments` (`assessment_id`, `available_after`, `due_date`, `program_id`) values (?, ?, ?, ?)',
       [
-        matchingProgramAssessmentsRow.assessment_id,
-        matchingProgramAssessmentsRow.available_after,
-        matchingProgramAssessmentsRow.due_date,
-        matchingProgramAssessmentsRow.program_id,
+        sentNewProgramAssessment.assessment_id,
+        sentNewProgramAssessment.available_after,
+        sentNewProgramAssessment.due_date,
+        sentNewProgramAssessment.program_id,
       ],
-      [updatedProgramAssessments.id]
+      [newProgramAssessmentsRow.id]
     );
 
-    expect(
-      await createProgramAssessment(matchingProgramAssessmentsRow)
-    ).toEqual(updatedProgramAssessments);
+    mockQuery(
+      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
+      [sentNewProgramAssessment.program_id],
+      [matchingProgramRow]
+    );
+
+    expect(await createProgramAssessment(sentNewProgramAssessment)).toEqual(
+      exampleProgramAssessment
+    );
   });
 });
 
