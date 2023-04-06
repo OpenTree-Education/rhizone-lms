@@ -129,7 +129,7 @@ export const matchingAssessmentSubmissionOpenedRow = {
   assessment_submission_state: 'Opened',
   opened_at: '2023-02-09 12:00:00',
   submitted_at: null as string,
-  last_modified: '2023-02-09 12:00:00',
+  updated_at: '2023-02-09 12:00:00',
   score: null as number,
 };
 
@@ -140,14 +140,16 @@ export const matchingOtherAssessmentSubmissionSubmittedRow = {
   assessment_submission_state: 'Submitted',
   opened_at: '2023-02-09 12:01:00',
   submitted_at: '2023-02-09 13:23:45',
-  last_modified: '2023-02-09 13:23:45',
+  updated_at: '2023-02-09 13:23:45',
   score: null as number,
 };
 
 export const matchingAssessmentSubmissionsRowGraded = {
   ...matchingAssessmentSubmissionOpenedRow,
+  assessment_submission_state: 'Graded',
   submitted_at: '2023-02-09 13:23:45',
-  last_modified: '2023-02-09 13:23:45',
+  updated_at: '2023-02-09 13:23:45',
+  score: 4,
 };
 
 export const matchingAssessmentResponsesRowSCGraded = {
@@ -367,6 +369,7 @@ export const exampleAssessmentSubmissionGraded: AssessmentSubmission = {
   ...exampleAssessmentSubmissionOpened,
   assessment_submission_state: 'Graded',
   last_modified: '2023-02-09T13:23:45.000Z',
+  submitted_at: '2023-02-09T13:23:45.000Z',
   score: 4,
   responses: [
     {

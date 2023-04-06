@@ -55,6 +55,7 @@ import {
   updatedProgramAssessments,
   matchingAssessmentResponsesRowFRGraded,
   exampleAssessmentSubmissionGradedNoResponse,
+  matchingAssessmentSubmissionsRowGraded,
 } from '../../assets/data';
 
 // describe('constructFacilitatorAssessmentSummary', () => {
@@ -495,7 +496,7 @@ describe('findProgramAssessment', () => {
     mockQuery(
       'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
       [exampleProgramAssessment.id],
-      [exampleProgramAssessment]
+      [matchingProgramAssessmentsRow]
     );
 
     mockQuery(
@@ -531,7 +532,7 @@ describe('getAssessmentSubmission', () => {
     mockQuery(
       'select `assessment_submissions`.`assessment_id`, `assessment_submissions`.`principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
       [assessmentSubmissionId],
-      [exampleAssessmentSubmissionGradedNoResponses]
+      [matchingAssessmentSubmissionsRowGraded]
     );
 
     mockQuery(
@@ -557,7 +558,7 @@ describe('getAssessmentSubmission', () => {
     mockQuery(
       'select `assessment_submissions`.`assessment_id`, `assessment_submissions`.`principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
       [assessmentSubmissionId],
-      [exampleAssessmentSubmissionGradedNoResponses]
+      [matchingAssessmentSubmissionOpenedRow]
     );
 
     mockQuery(
@@ -572,7 +573,7 @@ describe('getAssessmentSubmission', () => {
         responsesIncluded,
         gradingsIncluded
       )
-    ).toEqual(exampleAssessmentSubmissionGradedNoResponse);
+    ).toEqual(exampleAssessmentSubmissionOpened);
   });
 
   it('should return null for a assessment submission ID that does not exist', async () => {
