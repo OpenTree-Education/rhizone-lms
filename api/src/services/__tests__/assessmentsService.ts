@@ -647,7 +647,7 @@ describe('getAssessmentSubmission', () => {
 describe('getPrincipalProgramRole', () => {
   it('should return the correct role for a facilitator based on principal ID and program ID', async () => {
     mockQuery(
-      'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
+      'select `program_participant_roles`.`title` from `program_participant_roles` inner join `program_participants` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
       [facilitatorPrincipalId, exampleProgramAssessment.program_id],
       [matchingProgramParticipantRoleFacilitatorRow]
     );
@@ -662,7 +662,7 @@ describe('getPrincipalProgramRole', () => {
 
   it('should return the correct role for a participant based on principal ID and program ID', async () => {
     mockQuery(
-      'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
+      'select `program_participant_roles`.`title` from `program_participant_roles` inner join `program_participants` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
       [participantPrincipalId, exampleProgramAssessment.program_id],
       [matchingProgramParticipantRoleParticipantRow]
     );
@@ -677,7 +677,7 @@ describe('getPrincipalProgramRole', () => {
 
   it('should return null for a user not enrolled in the program', async () => {
     mockQuery(
-      'select `program_participant_roles`.`title` from `program_participants` inner join `program_participant_roles` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
+      'select `program_participant_roles`.`title` from `program_participant_roles` inner join `program_participants` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
       [unenrolledPrincipalId, exampleProgramAssessment.program_id],
       []
     );

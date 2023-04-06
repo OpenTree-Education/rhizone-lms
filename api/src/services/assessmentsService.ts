@@ -1053,10 +1053,10 @@ export const getPrincipalProgramRole = async (
   principalId: number,
   programId: number
 ): Promise<string> => {
-  const matchingRoleRows = await db('program_participants')
+  const matchingRoleRows = await db('program_participant_roles')
     .select('program_participant_roles.title')
     .join(
-      'program_participant_roles',
+      'program_participants',
       'program_participant_roles.id',
       'program_participants.role_id'
     )
