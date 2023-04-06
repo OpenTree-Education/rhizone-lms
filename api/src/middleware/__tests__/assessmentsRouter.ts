@@ -163,7 +163,7 @@ describe('assessmentsRouter', () => {
               mockConstructParticipantAssessmentSummary
             ).toHaveBeenCalledWith(
               participantPrincipalId,
-              exampleProgramAssessment.assessment_id
+              exampleProgramAssessment
             );
             done(err);
           }
@@ -220,10 +220,7 @@ describe('assessmentsRouter', () => {
             );
             expect(
               mockConstructFacilitatorAssessmentSummary
-            ).toHaveBeenCalledWith(
-              exampleProgramAssessment.assessment_id,
-              exampleProgramAssessment.program_id
-            );
+            ).toHaveBeenCalledWith(exampleProgramAssessment);
             done(err);
           }
         );
