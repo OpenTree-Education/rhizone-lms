@@ -488,7 +488,7 @@ describe('assessmentsRouter', () => {
         exampleCurriculumAssessment
       );
       mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
-        facilitatorProgramIdsThatMatchCurriculum
+        []
       );
 
       mockPrincipalId(participantPrincipalId);
