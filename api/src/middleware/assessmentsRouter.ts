@@ -8,6 +8,7 @@ import {
   NotFoundError,
   UnauthorizedError,
   ValidationError,
+  ConflictError,
 } from './httpErrors';
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
 
@@ -311,7 +312,7 @@ assessmentsRouter.delete(
     ) {
       next(
         new BadRequestError(
-          `"$curriculumAssessmentIdParsed" is not a valid curriculum assessment ID`
+          `"${curriculumAssessmentIdParsed}" is not a valid curriculum assessment ID.`
         )
       );
       return;
@@ -324,7 +325,7 @@ assessmentsRouter.delete(
 
       if (!curriculumAssessmentExisting) {
         throw new NotFoundError(
-          `Could not find curriculum assessment with ID ${curriculumAssessmentIdParsed}`
+          `Could not find curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
         );
       }
 
@@ -339,7 +340,11 @@ assessmentsRouter.delete(
         );
       }
 
-      await deleteCurriculumAssessment(curriculumAssessmentIdParsed);
+      await deleteCurriculumAssessment(curriculumAssessmentIdParsed).catch(
+        error => {
+          throw new ConflictError(`Cannot delete a curriculum assessment.`);
+        }
+      );
 
       res.status(204).send();
     } catch (err) {
@@ -592,7 +597,11 @@ assessmentsRouter.delete(
       }
 
       // if they do, delete the program assessment
-      await deleteProgramAssessment(programAssessmentIdParsed);
+      await deleteProgramAssessment(programAssessmentIdParsed).catch(error => {
+        throw new ConflictError(
+          `Cannot delete a program assessment that has participant submissions.`
+        );
+      });
     } catch (err) {
       next(err);
       return;

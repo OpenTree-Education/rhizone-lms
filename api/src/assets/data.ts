@@ -19,8 +19,8 @@ export const otherParticipantPrincipalId = 32;
 export const facilitatorPrincipalId = 300;
 
 // Example Data: Other IDs
-
-export const curriculumId = 4;
+//mays changed curriculumId to 8 then the tests worked!!
+export const curriculumId = 8;
 export const curriculumAssessmentId = 8;
 export const sentCurriculumAssessmentId = 9;
 export const programId = 12;

@@ -56,6 +56,7 @@ import {
   matchingAssessmentResponsesRowFRGraded,
   matchingAssessmentSubmissionsRowGraded,
   sentNewProgramAssessment,
+  programAssessmentId,
 } from '../../assets/data';
 
 // describe('constructFacilitatorAssessmentSummary', () => {
@@ -452,9 +453,31 @@ describe('createProgramAssessment', () => {
   });
 });
 
-// describe('deleteCurriculumAssessment', () => {});
+describe('deleteCurriculumAssessment', () => {
+  it('should delete  a CurriculumAssessment from  the database', async () => {
+    mockQuery(
+      'delete from `curriculum_assessments` where `id` = ?',
+      [curriculumAssessmentId],
+      [1]
+    );
 
-// describe('deleteProgramAssessment', () => {});
+    expect(await deleteCurriculumAssessment(curriculumAssessmentId)).toEqual([
+      1,
+    ]);
+  });
+});
+
+describe('deleteProgramAssessment', () => {
+  it('should delete a ProgramAssessment from  the database', async () => {
+    mockQuery(
+      'delete from `program_assessments` where `id` = ?',
+      [programAssessmentId],
+      [1]
+    );
+
+    expect(await deleteProgramAssessment(programAssessmentId)).toEqual([1]);
+  });
+});
 
 // describe('facilitatorProgramIdsMatchingCurriculum', () => {
 //   it('should return an array of program IDs for a principal that is facilitator of at least one program', async () => {
