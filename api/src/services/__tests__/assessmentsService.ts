@@ -56,215 +56,190 @@ import {
   matchingAssessmentResponsesRowFRGraded,
   matchingAssessmentSubmissionsRowGraded,
   sentNewProgramAssessment,
+  exampleProgramAssessmentPastDue,
+  matchingProgramAssessmentNotAvailableRow,
 } from '../../assets/data';
 
-// describe('constructFacilitatorAssessmentSummary', () => {
-//   it('should gather the relevant information for constructing a FacilitatorAssessmentSubmissionsSummary for a given program assessment', async () => {
-//     mockQuery(
-//       'select count(distinct `principal_id`) as `count` from `assessment_submissions` where `assessment_id` = ?',
-//       [exampleProgramAssessment.assessment_id],
-//       [
-//         {
-//           count:
-//             exampleFacilitatorAssessmentSubmissionsSummary.num_participants_with_submissions,
-//         },
-//       ]
-//     );
-//     mockQuery(
-//       'select count(`id`) as `count` from `program_participants` where `program_id` = ? and `role_id` = ?',
-//       [exampleProgramAssessment.program_id, 2],
-//       [
-//         {
-//           count:
-//             exampleFacilitatorAssessmentSubmissionsSummary.num_program_participants,
-//         },
-//       ]
-//     );
-//     mockQuery(
-//       'select count(`id`) as `count` from `assessment_submissions` where `assessment_id` = ? and `score` is null',
-//       [exampleProgramAssessment.assessment_id],
-//       [
-//         {
-//           count:
-//             exampleFacilitatorAssessmentSubmissionsSummary.num_ungraded_submissions,
-//         },
-//       ]
-//     );
+describe('constructFacilitatorAssessmentSummary', () => {
+  it('should gather the relevant information for constructing a FacilitatorAssessmentSubmissionsSummary for a given program assessment', async () => {
+    mockQuery(
+      'select count(distinct `principal_id`) as `count` from `assessment_submissions` where `assessment_id` = ?',
+      [exampleProgramAssessment.id],
+      [
+        {
+          count:
+            exampleFacilitatorAssessmentSubmissionsSummary.num_participants_with_submissions,
+        },
+      ]
+    );
+    mockQuery(
+      'select count(`id`) as `count` from `program_participants` where `program_id` = ? and `role_id` = ?',
+      [exampleProgramAssessment.program_id, 2],
+      [
+        {
+          count:
+            exampleFacilitatorAssessmentSubmissionsSummary.num_program_participants,
+        },
+      ]
+    );
+    mockQuery(
+      'select count(`id`) as `count` from `assessment_submissions` where `assessment_id` = ? and `score` is null',
+      [exampleProgramAssessment.id],
+      [
+        {
+          count:
+            exampleFacilitatorAssessmentSubmissionsSummary.num_ungraded_submissions,
+        },
+      ]
+    );
 
-//     expect(
-//       await constructFacilitatorAssessmentSummary(
-//         exampleProgramAssessment.assessment_id,
-//         exampleProgramAssessment.program_id
-//       )
-//     ).toEqual(exampleFacilitatorAssessmentSubmissionsSummary);
-//   });
-// });
+    expect(
+      await constructFacilitatorAssessmentSummary(exampleProgramAssessment)
+    ).toEqual(exampleFacilitatorAssessmentSubmissionsSummary);
+  });
+});
 
-// describe('constructParticipantAssessmentSummary', () => {
-//   it('should gather the relevant information for constructing a ParticipantAssessmentSubmissionsSummary for a given program assessment', async () => {
-//     mockQuery(
-//       'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
-//       [exampleProgramAssessment.id],
-//       [exampleProgramAssessmentsRow]
-//     );
-//     mockQuery(
-//       'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
-//       [exampleProgramAssessmentsRow.program_id],
-//       [matchingProgramRow]
-//     );
-//     mockQuery(
-//       'select `assessment_submission_states`.`title` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submission_states`.`id` = `assessment_submissions`.`assessment_submission_state_id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ? order by `assessment_submissions`.`assessment_submission_state_id` desc limit ?',
-//       [participantPrincipalId, exampleProgramAssessment.id, 1],
-//       [{ title: assessmentSubmissionsRowGraded.assessment_submission_state }]
-//     );
-//     mockQuery(
-//       'select `submitted_at` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `submitted_at` desc limit ?',
-//       [participantPrincipalId, exampleProgramAssessment.id, 1],
-//       [
-//         {
-//           submitted_at: assessmentSubmissionsRowGraded.submitted_at,
-//         },
-//       ]
-//     );
-//     mockQuery(
-//       'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
-//       [participantPrincipalId, exampleProgramAssessment.id],
-//       [assessmentSubmissionsRowGraded]
-//     );
-//     mockQuery(
-//       'select `score` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `score` desc limit ?',
-//       [participantPrincipalId, exampleProgramAssessment.id, 1],
-//       [{ score: assessmentSubmissionsRowGraded.score }]
-//     );
+describe('constructParticipantAssessmentSummary', () => {
+  it('should gather the relevant information for constructing a ParticipantAssessmentSubmissionsSummary for a given program assessment', async () => {
+    mockQuery(
+      'select `assessment_submission_states`.`title` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submission_states`.`id` = `assessment_submissions`.`assessment_submission_state_id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ? order by `assessment_submissions`.`assessment_submission_state_id` desc limit ?',
+      [participantPrincipalId, exampleProgramAssessment.id, 1],
+      [
+        {
+          title:
+            matchingAssessmentSubmissionsRowGraded.assessment_submission_state,
+        },
+      ]
+    );
+    mockQuery(
+      'select `submitted_at` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `submitted_at` desc limit ?',
+      [participantPrincipalId, exampleProgramAssessment.id, 1],
+      [
+        {
+          submitted_at: matchingAssessmentSubmissionsRowGraded.submitted_at,
+        },
+      ]
+    );
+    mockQuery(
+      'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
+      [participantPrincipalId, exampleProgramAssessment.id],
+      [matchingAssessmentSubmissionsRowGraded]
+    );
+    mockQuery(
+      'select `score` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `score` desc limit ?',
+      [participantPrincipalId, exampleProgramAssessment.id, 1],
+      [{ score: matchingAssessmentSubmissionsRowGraded.score }]
+    );
 
-//     expect(
-//       await constructParticipantAssessmentSummary(
-//         participantPrincipalId,
-//         exampleProgramAssessment.id
-//       )
-//     ).toEqual(exampleParticipantAssessmentSubmissionsSummary);
-//   });
+    expect(
+      await constructParticipantAssessmentSummary(
+        participantPrincipalId,
+        exampleProgramAssessment
+      )
+    ).toEqual(exampleParticipantAssessmentSubmissionsSummary);
+  });
 
-//   it('should gather the relevant information for constructing a ParticipantAssessmentSubmissionsSummary even if no submissions, before assessment is active', async () => {
-//     mockQuery(
-//       'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
-//       [exampleProgramAssessment.id],
-//       [exampleProgramAssessmentNotAvailableRow]
-//     );
-//     mockQuery(
-//       'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
-//       [exampleProgramAssessmentNotAvailable.program_id],
-//       [matchingProgramRow]
-//     );
-//     mockQuery(
-//       'select `assessment_submission_states`.`title` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submission_states`.`id` = `assessment_submissions`.`assessment_submission_state_id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ? order by `assessment_submissions`.`assessment_submission_state_id` desc limit ?',
-//       [participantPrincipalId, exampleProgramAssessment.id, 1],
-//       []
-//     );
-//     mockQuery(
-//       'select `submitted_at` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `submitted_at` desc limit ?',
-//       [participantPrincipalId, exampleProgramAssessment.id, 1],
-//       []
-//     );
-//     mockQuery(
-//       'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
-//       [participantPrincipalId, exampleProgramAssessment.id],
-//       []
-//     );
-//     mockQuery(
-//       'select `score` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `score` desc limit ?',
-//       [participantPrincipalId, exampleProgramAssessment.id, 1],
-//       []
-//     );
+  it('should gather the relevant information for constructing a ParticipantAssessmentSubmissionsSummary even if no submissions, before assessment is active', async () => {
+    mockQuery(
+      'select `assessment_submission_states`.`title` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submission_states`.`id` = `assessment_submissions`.`assessment_submission_state_id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ? order by `assessment_submissions`.`assessment_submission_state_id` desc limit ?',
+      [participantPrincipalId, exampleProgramAssessment.id, 1],
+      []
+    );
+    mockQuery(
+      'select `submitted_at` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `submitted_at` desc limit ?',
+      [participantPrincipalId, exampleProgramAssessment.id, 1],
+      []
+    );
 
-//     expect(
-//       await constructParticipantAssessmentSummary(
-//         participantPrincipalId,
-//         exampleProgramAssessment.id
-//       )
-//     ).toEqual(exampleParticipantAssessmentSubmissionsInactive);
-//   });
+    mockQuery(
+      'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
+      [participantPrincipalId, exampleProgramAssessment.id],
+      []
+    );
+    mockQuery(
+      'select `score` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `score` desc limit ?',
+      [participantPrincipalId, exampleProgramAssessment.id, 1],
+      []
+    );
 
-//   it('should gather the relevant information for constructing a ParticipantAssessmentSubmissionsSummary even if no submissions, for an active assessment', async () => {
-//     mockQuery(
-//       'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
-//       [exampleProgramAssessment.id],
-//       [exampleProgramAssessmentsRow]
-//     );
-//     mockQuery(
-//       'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
-//       [exampleProgramAssessmentsRow.program_id],
-//       [matchingProgramRow]
-//     );
-//     mockQuery(
-//       'select `assessment_submission_states`.`title` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submission_states`.`id` = `assessment_submissions`.`assessment_submission_state_id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ? order by `assessment_submissions`.`assessment_submission_state_id` desc limit ?',
-//       [participantPrincipalId, exampleProgramAssessment.id, 1],
-//       []
-//     );
-//     mockQuery(
-//       'select `submitted_at` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `submitted_at` desc limit ?',
-//       [participantPrincipalId, exampleProgramAssessment.id, 1],
-//       []
-//     );
-//     mockQuery(
-//       'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
-//       [participantPrincipalId, exampleProgramAssessment.id],
-//       []
-//     );
-//     mockQuery(
-//       'select `score` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `score` desc limit ?',
-//       [participantPrincipalId, exampleProgramAssessment.id, 1],
-//       []
-//     );
+    expect(
+      await constructParticipantAssessmentSummary(
+        participantPrincipalId,
+        exampleProgramAssessmentNotAvailable
+      )
+    ).toEqual(exampleParticipantAssessmentSubmissionsInactive);
+  });
 
-//     expect(
-//       await constructParticipantAssessmentSummary(
-//         participantPrincipalId,
-//         exampleProgramAssessment.id
-//       )
-//     ).toEqual(exampleParticipantAssessmentSubmissionsActive);
-//   });
+  it('should gather the relevant information for constructing a ParticipantAssessmentSubmissionsSummary even if no submissions, for an active assessment', async () => {
+    mockQuery(
+      'select `assessment_submission_states`.`title` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submission_states`.`id` = `assessment_submissions`.`assessment_submission_state_id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ? order by `assessment_submissions`.`assessment_submission_state_id` desc limit ?',
+      [participantPrincipalId, exampleProgramAssessment.id, 1],
+      []
+    );
+    mockQuery(
+      'select `submitted_at` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `submitted_at` desc limit ?',
+      [participantPrincipalId, exampleProgramAssessment.id, 1],
+      []
+    );
+    mockQuery(
+      'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
+      [participantPrincipalId, exampleProgramAssessment.id],
+      []
+    );
+    mockQuery(
+      'select `score` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `score` desc limit ?',
+      [participantPrincipalId, exampleProgramAssessment.id, 1],
+      []
+    );
 
-//   it('should gather the relevant information for constructing a ParticipantAssessmentSubmissionsSummary even if no submissions, after assessment is due', async () => {
-//     mockQuery(
-//       'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
-//       [exampleProgramAssessment.id],
-//       [exampleProgramAssessmentPastDueRow]
-//     );
-//     mockQuery(
-//       'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
-//       [exampleProgramAssessmentPastDueRow.program_id],
-//       [matchingProgramRow]
-//     );
-//     mockQuery(
-//       'select `assessment_submission_states`.`title` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submission_states`.`id` = `assessment_submissions`.`assessment_submission_state_id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ? order by `assessment_submissions`.`assessment_submission_state_id` desc limit ?',
-//       [participantPrincipalId, exampleProgramAssessment.id, 1],
-//       []
-//     );
-//     mockQuery(
-//       'select `submitted_at` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `submitted_at` desc limit ?',
-//       [participantPrincipalId, exampleProgramAssessment.id, 1],
-//       []
-//     );
-//     mockQuery(
-//       'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
-//       [participantPrincipalId, exampleProgramAssessment.id],
-//       []
-//     );
-//     mockQuery(
-//       'select `score` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `score` desc limit ?',
-//       [participantPrincipalId, exampleProgramAssessment.id, 1],
-//       []
-//     );
+    expect(
+      await constructParticipantAssessmentSummary(
+        participantPrincipalId,
+        exampleProgramAssessment
+      )
+    ).toEqual(exampleParticipantAssessmentSubmissionsActive);
+  });
 
-//     expect(
-//       await constructParticipantAssessmentSummary(
-//         participantPrincipalId,
-//         exampleProgramAssessment.id
-//       )
-//     ).toEqual(exampleParticipantAssessmentSubmissionsPastDue);
-//   });
-// });
+  it('should gather the relevant information for constructing a ParticipantAssessmentSubmissionsSummary even if no submissions, after assessment is due', async () => {
+    // mockQuery(
+    //   'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
+    //   [exampleProgramAssessment],
+    //   [exampleProgramAssessmentPastDue]
+    // );
+    // mockQuery(
+    //   'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
+    //   [exampleProgramAssessmentPastDue.program_id],
+    //   [matchingProgramRow]
+    // );
+    mockQuery(
+      'select `assessment_submission_states`.`title` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submission_states`.`id` = `assessment_submissions`.`assessment_submission_state_id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ? order by `assessment_submissions`.`assessment_submission_state_id` desc limit ?',
+      [participantPrincipalId, exampleProgramAssessment.id, 1],
+      []
+    );
+    mockQuery(
+      'select `submitted_at` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `submitted_at` desc limit ?',
+      [participantPrincipalId, exampleProgramAssessment.id, 1],
+      []
+    );
+    mockQuery(
+      'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
+      [participantPrincipalId, exampleProgramAssessment.id],
+      [1]
+    );
+    mockQuery(
+      'select `score` from `assessment_submissions` where `principal_id` = ? and `assessment_id` = ? order by `score` desc limit ?',
+      [participantPrincipalId, exampleProgramAssessment.id, 1],
+      []
+    );
+
+    expect(
+      await constructParticipantAssessmentSummary(
+        participantPrincipalId,
+        exampleProgramAssessmentPastDue
+      )
+    ).toEqual(exampleParticipantAssessmentSubmissionsPastDue);
+  });
+});
 
 // describe('createAssessmentSubmission', () => {
 //   it('should create a new AssessmentSubmission for a program assessment', async () => {
@@ -427,30 +402,30 @@ import {
 //   });
 // });
 
-describe('createProgramAssessment', () => {
-  it('should insert a ProgramAssessment into the database', async () => {
-    mockQuery(
-      'insert into `program_assessments` (`assessment_id`, `available_after`, `due_date`, `program_id`) values (?, ?, ?, ?)',
-      [
-        sentNewProgramAssessment.assessment_id,
-        sentNewProgramAssessment.available_after,
-        sentNewProgramAssessment.due_date,
-        sentNewProgramAssessment.program_id,
-      ],
-      [newProgramAssessmentsRow.id]
-    );
+// describe('createProgramAssessment', () => {
+//   it('should insert a ProgramAssessment into the database', async () => {
+//     mockQuery(
+//       'insert into `program_assessments` (`assessment_id`, `available_after`, `due_date`, `program_id`) values (?, ?, ?, ?)',
+//       [
+//         sentNewProgramAssessment.assessment_id,
+//         sentNewProgramAssessment.available_after,
+//         sentNewProgramAssessment.due_date,
+//         sentNewProgramAssessment.program_id,
+//       ],
+//       [newProgramAssessmentsRow.id]
+//     );
 
-    mockQuery(
-      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
-      [sentNewProgramAssessment.program_id],
-      [matchingProgramRow]
-    );
+//     mockQuery(
+//       'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
+//       [sentNewProgramAssessment.program_id],
+//       [matchingProgramRow]
+//     );
 
-    expect(await createProgramAssessment(sentNewProgramAssessment)).toEqual(
-      exampleProgramAssessment
-    );
-  });
-});
+//     expect(await createProgramAssessment(sentNewProgramAssessment)).toEqual(
+//       exampleProgramAssessment
+//     );
+//   });
+// });
 
 // describe('deleteCurriculumAssessment', () => {});
 
@@ -497,107 +472,107 @@ describe('createProgramAssessment', () => {
 //   });
 // });
 
-describe('findProgramAssessment', () => {
-  it('should return a ProgramAssessment for an existing program assessment ID', async () => {
-    mockQuery(
-      'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
-      [exampleProgramAssessment.id],
-      [matchingProgramAssessmentsRow]
-    );
+// describe('findProgramAssessment', () => {
+//   it('should return a ProgramAssessment for an existing program assessment ID', async () => {
+//     mockQuery(
+//       'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
+//       [exampleProgramAssessment.id],
+//       [matchingProgramAssessmentsRow]
+//     );
 
-    mockQuery(
-      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
-      [exampleProgramAssessment.program_id],
-      [matchingProgramRow]
-    );
+//     mockQuery(
+//       'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
+//       [exampleProgramAssessment.program_id],
+//       [matchingProgramRow]
+//     );
 
-    expect(await findProgramAssessment(exampleProgramAssessment.id)).toEqual(
-      exampleProgramAssessment
-    );
-  });
+//     expect(await findProgramAssessment(exampleProgramAssessment.id)).toEqual(
+//       exampleProgramAssessment
+//     );
+//   });
 
-  it('should return null for a program assessment ID that does not exist', async () => {
-    mockQuery(
-      'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
-      [exampleProgramAssessment.id],
-      []
-    );
+//   it('should return null for a program assessment ID that does not exist', async () => {
+//     mockQuery(
+//       'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
+//       [exampleProgramAssessment.id],
+//       []
+//     );
 
-    expect(await findProgramAssessment(exampleProgramAssessment.id)).toEqual(
-      null
-    );
-  });
-});
+//     expect(await findProgramAssessment(exampleProgramAssessment.id)).toEqual(
+//       null
+//     );
+//   });
+// });
 
-describe('getAssessmentSubmission', () => {
-  it('should get assessment submission based on given submission ID', async () => {
-    const assessmentSubmissionId = exampleAssessmentSubmissionGraded.id;
-    const responsesIncluded = true;
-    const gradingsIncluded = true;
+// describe('getAssessmentSubmission', () => {
+//   it('should get assessment submission based on given submission ID', async () => {
+//     const assessmentSubmissionId = exampleAssessmentSubmissionGraded.id;
+//     const responsesIncluded = true;
+//     const gradingsIncluded = true;
 
-    mockQuery(
-      'select `assessment_submissions`.`assessment_id`, `assessment_submissions`.`principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
-      [assessmentSubmissionId],
-      [matchingAssessmentSubmissionsRowGraded]
-    );
+//     mockQuery(
+//       'select `assessment_submissions`.`assessment_id`, `assessment_submissions`.`principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
+//       [assessmentSubmissionId],
+//       [matchingAssessmentSubmissionsRowGraded]
+//     );
 
-    mockQuery(
-      'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
-      [assessmentSubmissionId],
-      [matchingAssessmentResponsesRowSCGraded]
-    );
+//     mockQuery(
+//       'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
+//       [assessmentSubmissionId],
+//       [matchingAssessmentResponsesRowSCGraded]
+//     );
 
-    expect(
-      await getAssessmentSubmission(
-        assessmentSubmissionId,
-        responsesIncluded,
-        gradingsIncluded
-      )
-    ).toEqual(exampleAssessmentSubmissionGraded);
-  });
+//     expect(
+//       await getAssessmentSubmission(
+//         assessmentSubmissionId,
+//         responsesIncluded,
+//         gradingsIncluded
+//       )
+//     ).toEqual(exampleAssessmentSubmissionGraded);
+//   });
 
-  it('should get assessment submission with null for responses (if no responses found) based on given submission ID', async () => {
-    const assessmentSubmissionId = matchingAssessmentSubmissionOpenedRow.id;
-    const responsesIncluded = true;
-    const gradingsIncluded = true;
+//   it('should get assessment submission with null for responses (if no responses found) based on given submission ID', async () => {
+//     const assessmentSubmissionId = matchingAssessmentSubmissionOpenedRow.id;
+//     const responsesIncluded = true;
+//     const gradingsIncluded = true;
 
-    mockQuery(
-      'select `assessment_submissions`.`assessment_id`, `assessment_submissions`.`principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
-      [assessmentSubmissionId],
-      [matchingAssessmentSubmissionOpenedRow]
-    );
+//     mockQuery(
+//       'select `assessment_submissions`.`assessment_id`, `assessment_submissions`.`principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
+//       [assessmentSubmissionId],
+//       [matchingAssessmentSubmissionOpenedRow]
+//     );
 
-    mockQuery(
-      'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
-      [assessmentSubmissionId],
-      []
-    );
+//     mockQuery(
+//       'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
+//       [assessmentSubmissionId],
+//       []
+//     );
 
-    expect(
-      await getAssessmentSubmission(
-        assessmentSubmissionId,
-        responsesIncluded,
-        gradingsIncluded
-      )
-    ).toEqual(exampleAssessmentSubmissionOpened);
-  });
+//     expect(
+//       await getAssessmentSubmission(
+//         assessmentSubmissionId,
+//         responsesIncluded,
+//         gradingsIncluded
+//       )
+//     ).toEqual(exampleAssessmentSubmissionOpened);
+//   });
 
-  it('should return null for a assessment submission ID that does not exist', async () => {
-    mockQuery(
-      'select `assessment_submissions`.`assessment_id`, `assessment_submissions`.`principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
-      [exampleAssessmentSubmissionGraded.id],
-      []
-    );
+//   it('should return null for a assessment submission ID that does not exist', async () => {
+//     mockQuery(
+//       'select `assessment_submissions`.`assessment_id`, `assessment_submissions`.`principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
+//       [exampleAssessmentSubmissionGraded.id],
+//       []
+//     );
 
-    expect(
-      await getAssessmentSubmission(
-        exampleAssessmentSubmissionGraded.id,
-        true,
-        true
-      )
-    ).toEqual(null);
-  });
-});
+//     expect(
+//       await getAssessmentSubmission(
+//         exampleAssessmentSubmissionGraded.id,
+//         true,
+//         true
+//       )
+//     ).toEqual(null);
+//   });
+// });
 
 // describe('getCurriculumAssessment', () => {
 //   it('should return a CurriculumAssessment for an existing curriculum assessment ID', async () => {
@@ -650,52 +625,52 @@ describe('getAssessmentSubmission', () => {
 //   });
 // });
 
-describe('getPrincipalProgramRole', () => {
-  it('should return the correct role for a facilitator based on principal ID and program ID', async () => {
-    mockQuery(
-      'select `program_participant_roles`.`title` from `program_participant_roles` inner join `program_participants` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
-      [facilitatorPrincipalId, exampleProgramAssessment.program_id],
-      [matchingProgramParticipantRoleFacilitatorRow]
-    );
+// describe('getPrincipalProgramRole', () => {
+//   it('should return the correct role for a facilitator based on principal ID and program ID', async () => {
+//     mockQuery(
+//       'select `program_participant_roles`.`title` from `program_participant_roles` inner join `program_participants` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
+//       [facilitatorPrincipalId, exampleProgramAssessment.program_id],
+//       [matchingProgramParticipantRoleFacilitatorRow]
+//     );
 
-    expect(
-      await getPrincipalProgramRole(
-        facilitatorPrincipalId,
-        exampleProgramAssessment.program_id
-      )
-    ).toEqual('Facilitator');
-  });
+//     expect(
+//       await getPrincipalProgramRole(
+//         facilitatorPrincipalId,
+//         exampleProgramAssessment.program_id
+//       )
+//     ).toEqual('Facilitator');
+//   });
 
-  it('should return the correct role for a participant based on principal ID and program ID', async () => {
-    mockQuery(
-      'select `program_participant_roles`.`title` from `program_participant_roles` inner join `program_participants` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
-      [participantPrincipalId, exampleProgramAssessment.program_id],
-      [matchingProgramParticipantRoleParticipantRow]
-    );
+//   it('should return the correct role for a participant based on principal ID and program ID', async () => {
+//     mockQuery(
+//       'select `program_participant_roles`.`title` from `program_participant_roles` inner join `program_participants` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
+//       [participantPrincipalId, exampleProgramAssessment.program_id],
+//       [matchingProgramParticipantRoleParticipantRow]
+//     );
 
-    expect(
-      await getPrincipalProgramRole(
-        participantPrincipalId,
-        exampleProgramAssessment.program_id
-      )
-    ).toEqual('Participant');
-  });
+//     expect(
+//       await getPrincipalProgramRole(
+//         participantPrincipalId,
+//         exampleProgramAssessment.program_id
+//       )
+//     ).toEqual('Participant');
+//   });
 
-  it('should return null for a user not enrolled in the program', async () => {
-    mockQuery(
-      'select `program_participant_roles`.`title` from `program_participant_roles` inner join `program_participants` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
-      [unenrolledPrincipalId, exampleProgramAssessment.program_id],
-      []
-    );
+//   it('should return null for a user not enrolled in the program', async () => {
+//     mockQuery(
+//       'select `program_participant_roles`.`title` from `program_participant_roles` inner join `program_participants` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
+//       [unenrolledPrincipalId, exampleProgramAssessment.program_id],
+//       []
+//     );
 
-    expect(
-      await getPrincipalProgramRole(
-        unenrolledPrincipalId,
-        exampleProgramAssessment.program_id
-      )
-    ).toEqual(null);
-  });
-});
+//     expect(
+//       await getPrincipalProgramRole(
+//         unenrolledPrincipalId,
+//         exampleProgramAssessment.program_id
+//       )
+//     ).toEqual(null);
+//   });
+// });
 
 // describe('listAssessmentQuestions', () => {
 //   it('should return all questions of a given curriculum assessment based on specified boolean parameter', async () => {
@@ -895,23 +870,23 @@ describe('getPrincipalProgramRole', () => {
 
 // describe('updateCurriculumAssessment', () => {});
 
-describe('updateProgramAssessment', () => {
-  it('should return update for an existing program assessment ID', async () => {
-    mockQuery(
-      'update `program_assessments` set `available_after` = ?, `due_date` = ? where `id` = ?',
-      [
-        updatedProgramAssessmentsRow.available_after,
-        updatedProgramAssessmentsRow.due_date,
-        updatedProgramAssessmentsRow.id,
-      ],
-      []
-    );
+// describe('updateProgramAssessment', () => {
+//   it('should return update for an existing program assessment ID', async () => {
+//     mockQuery(
+//       'update `program_assessments` set `available_after` = ?, `due_date` = ? where `id` = ?',
+//       [
+//         updatedProgramAssessmentsRow.available_after,
+//         updatedProgramAssessmentsRow.due_date,
+//         updatedProgramAssessmentsRow.id,
+//       ],
+//       []
+//     );
 
-    expect(await updateProgramAssessment(updatedProgramAssessmentsRow)).toEqual(
-      updatedProgramAssessmentsRow
-    );
-  });
-});
+//     expect(await updateProgramAssessment(updatedProgramAssessmentsRow)).toEqual(
+//       updatedProgramAssessmentsRow
+//     );
+//   });
+// });
 
 // describe('deleteCurriculumAssessment', () => {
 //   it('should delete a curriculum assessment', async () => {
