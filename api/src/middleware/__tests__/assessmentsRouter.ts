@@ -35,6 +35,7 @@ import {
   sentUpdatedCurriculumAssessment,
   unenrolledPrincipalId,
   updatedProgramAssessmentsRow,
+  exampleAssessmentWithCorrectAnswersDetails,
 } from '../../assets/data';
 import { AssessmentWithSummary, SavedAssessment } from '../../models';
 import {
@@ -487,9 +488,7 @@ describe('assessmentsRouter', () => {
       mockGetCurriculumAssessment.mockResolvedValue(
         exampleCurriculumAssessment
       );
-      mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
-        []
-      );
+      mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue([]);
 
       mockPrincipalId(participantPrincipalId);
 
@@ -590,7 +589,110 @@ describe('assessmentsRouter', () => {
     });
   });
 
-  // describe('GET /program/:programAssessmentId', () => {});
+  describe('GET /program/:programAssessmentId', () => {
+    it('should get a program assessment if the logged-in principal ID is the program facilitator', done => {
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
+      mockGetCurriculumAssessment.mockResolvedValue(
+        exampleCurriculumAssessmentWithCorrectAnswers
+      );
+
+      mockPrincipalId(facilitatorPrincipalId);
+
+      appAgent
+        .get(`/program/${exampleProgramAssessment.id}`)
+        .expect(
+          200,
+          itemEnvelope(exampleAssessmentWithCorrectAnswersDetails),
+          err => {
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.id
+            );
+
+            expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+              facilitatorPrincipalId,
+              exampleProgramAssessment.program_id
+            );
+            expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.assessment_id,
+              true,
+              true
+            );
+
+            done(err);
+          }
+        );
+    });
+
+    it('should respond with an Unauthorized Error if the logged-in principal id is not the facilitator', done => {
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue(null);
+
+      mockPrincipalId(otherParticipantPrincipalId);
+
+      appAgent
+        .get(`/program/${exampleProgramAssessment.id}`)
+        .expect(
+          401,
+          errorEnvelope(
+            `Could not access assessment with Program Assessment ID ${exampleProgramAssessment.id}.`
+          ),
+          err => {
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.id
+            );
+
+            expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+              otherParticipantPrincipalId,
+              exampleProgramAssessment.program_id
+            );
+
+            done(err);
+          }
+        );
+    });
+
+    it('should respond with an BadRequestError if the program assessment ID is not a number.', done => {
+      const exampleAssessmentFromUser = 'test';
+
+      mockPrincipalId(otherParticipantPrincipalId);
+
+      appAgent
+        .get(`/program/${exampleAssessmentFromUser}`)
+        .expect(
+          400,
+          errorEnvelope(
+            `"${Number(
+              exampleAssessmentFromUser
+            )}" is not a valid submission ID.`
+          ),
+          done
+        );
+    });
+
+    it('should respond with a NotFoundError if the program assessment ID was not found in the database', done => {
+      const programAssessmentId = 20;
+
+      mockFindProgramAssessment.mockResolvedValue(null);
+
+      mockPrincipalId(facilitatorPrincipalId);
+      appAgent
+        .get(`/program/${programAssessmentId}`)
+        .expect(
+          404,
+          errorEnvelope(
+            `Could not find program assessment with ID ${programAssessmentId}.`
+          ),
+          err => {
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              programAssessmentId
+            );
+
+            done(err);
+          }
+        );
+    });
+  });
 
   describe('POST /program', () => {
     it('should create a new program assessment if the logged-in principal ID is the program facilitator', done => {
