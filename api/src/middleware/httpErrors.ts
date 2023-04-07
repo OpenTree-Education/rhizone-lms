@@ -24,6 +24,11 @@ export class ForbiddenError extends HttpError {}
 ForbiddenError.prototype.message = 'Access to this resource is not allowed.';
 ForbiddenError.prototype.status = 403;
 
+export class ConflictError extends HttpError {}
+ConflictError.prototype.message =
+  'This request is in conflict with the state of the server.';
+ConflictError.prototype.status = 409;
+
 export class ValidationError extends HttpError {}
 ValidationError.prototype.message =
   'The provided data does not meet requirements.';
