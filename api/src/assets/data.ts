@@ -139,6 +139,7 @@ export const matchingOtherAssessmentSubmissionSubmittedRow = {
   principal_id: otherParticipantPrincipalId,
   assessment_submission_state: 'Submitted',
   opened_at: '2023-02-09 12:01:00',
+  last_modified: '2023-02-09 12:01:00',
   submitted_at: '2023-02-09 13:23:45',
   updated_at: '2023-02-09 13:23:45',
   score: null as number,

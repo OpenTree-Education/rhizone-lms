@@ -201,16 +201,6 @@ describe('constructParticipantAssessmentSummary', () => {
   });
 
   it('should gather the relevant information for constructing a ParticipantAssessmentSubmissionsSummary even if no submissions, after assessment is due', async () => {
-    // mockQuery(
-    //   'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
-    //   [exampleProgramAssessment],
-    //   [exampleProgramAssessmentPastDue]
-    // );
-    // mockQuery(
-    //   'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
-    //   [exampleProgramAssessmentPastDue.program_id],
-    //   [matchingProgramRow]
-    // );
     mockQuery(
       'select `assessment_submission_states`.`title` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submission_states`.`id` = `assessment_submissions`.`assessment_submission_state_id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ? order by `assessment_submissions`.`assessment_submission_state_id` desc limit ?',
       [participantPrincipalId, exampleProgramAssessment.id, 1],
