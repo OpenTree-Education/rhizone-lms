@@ -434,7 +434,7 @@ describe('assessmentsRouter', () => {
       appAgent
         .put(`/curriculum/${exampleCurriculumAssessment.id}`)
         .send(sentUpdatedCurriculumAssessment)
-        .expect(200, err => {
+        .expect(200, itemEnvelope(sentUpdatedCurriculumAssessment), err => {
           expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
             curriculumAssessmentId
           );
