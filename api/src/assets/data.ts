@@ -19,8 +19,8 @@ export const otherParticipantPrincipalId = 32;
 export const facilitatorPrincipalId = 300;
 
 // Example Data: Other IDs
-//mays changed curriculumId to 8 then the tests worked!!
-export const curriculumId = 8;
+
+export const curriculumId = 4;
 export const curriculumAssessmentId = 8;
 export const sentCurriculumAssessmentId = 9;
 export const programId = 12;
@@ -434,6 +434,18 @@ export const exampleFacilitatorAssessmentWithSubmissions: AssessmentWithSubmissi
 export const updatedProgramAssessmentsRow = {
   ...matchingProgramAssessmentsRow,
   due_date: '2050-06-25 00:00:00',
+};
+//mays
+export const updatedAssessmentSubmissionRow = {
+  ...exampleAssessmentSubmissionSubmitted,
+  assessment_submission_state_id: 7,
+  grader_response: 'comment',
+  score: 9,
+};
+//mays
+export const updatedAssessmentSubmissionRowP = {
+  ...exampleAssessmentSubmissionInProgress,
+  assessment_submission_state_id: 6,
 };
 
 export const newProgramAssessmentsRow = {
