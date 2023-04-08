@@ -7,11 +7,14 @@ import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
 
 import {
   curriculumAssessmentId,
+  curriculumId,
   exampleAssessmentSubmissionGraded,
   exampleAssessmentSubmissionInProgress,
   exampleAssessmentSubmissionOpened,
   exampleAssessmentSubmissionSubmitted,
+  exampleAssessmentWithCorrectAnswersDetails,
   exampleCurriculumAssessment,
+  exampleCurriculumAssessmentMultipleSubmissionsWithQuestions,
   exampleCurriculumAssessmentWithCorrectAnswers,
   exampleCurriculumAssessmentWithQuestions,
   exampleFacilitatorAssessmentSubmissionsSummary,
@@ -20,6 +23,7 @@ import {
   exampleParticipantAssessmentSubmissionsSummary,
   exampleParticipantAssessmentWithSubmissions,
   exampleParticipantOpenedSavedAssessment,
+  exampleParticipantOpenedSavedMultipleSubmissionsAssessment,
   exampleProgramAssessment,
   exampleProgramAssessmentNotAvailable,
   exampleProgramAssessmentPastDue,
@@ -35,8 +39,6 @@ import {
   sentUpdatedCurriculumAssessment,
   unenrolledPrincipalId,
   updatedProgramAssessmentsRow,
-  exampleAssessmentWithCorrectAnswersDetails,
-  curriculumId,
 } from '../../assets/data';
 import { AssessmentWithSummary, SavedAssessment } from '../../models';
 import {
@@ -1420,6 +1422,7 @@ describe('assessmentsRouter', () => {
           }
         );
     });
+
     it('should return a participant a new submission without including the correct answers', done => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Participant');
@@ -1438,6 +1441,62 @@ describe('assessmentsRouter', () => {
         .expect(
           200,
           itemEnvelope(exampleParticipantOpenedSavedAssessment),
+          err => {
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.id
+            );
+
+            expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+              participantPrincipalId,
+              exampleProgramAssessment.program_id
+            );
+
+            expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.assessment_id,
+              true,
+              false
+            );
+
+            expect(
+              mockListParticipantProgramAssessmentSubmissions
+            ).toHaveBeenCalledWith(
+              participantPrincipalId,
+              exampleProgramAssessment.id
+            );
+
+            expect(mockCreateAssessmentSubmission).toHaveBeenCalledWith(
+              participantPrincipalId,
+              exampleProgramAssessment.id,
+              exampleProgramAssessment.assessment_id
+            );
+
+            done(err);
+          }
+        );
+    });
+
+    it('should return a participant a new submission without including the correct answers, even if a prior submitted submission exists', done => {
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue('Participant');
+      mockGetCurriculumAssessment.mockResolvedValue(
+        exampleCurriculumAssessmentMultipleSubmissionsWithQuestions
+      );
+      mockListParticipantProgramAssessmentSubmissions.mockResolvedValue([
+        exampleAssessmentSubmissionSubmitted,
+      ]);
+      mockCreateAssessmentSubmission.mockResolvedValue(
+        exampleAssessmentSubmissionOpened
+      );
+
+      mockPrincipalId(participantPrincipalId);
+
+      appAgent
+        .get(`/program/${exampleProgramAssessment.id}/submissions/new`)
+        .expect(
+          200,
+          itemEnvelope(
+            exampleParticipantOpenedSavedMultipleSubmissionsAssessment
+          ),
           err => {
             expect(mockFindProgramAssessment).toHaveBeenCalledWith(
               exampleProgramAssessment.id

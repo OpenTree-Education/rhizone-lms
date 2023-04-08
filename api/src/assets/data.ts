@@ -235,6 +235,13 @@ export const exampleCurriculumAssessmentWithQuestions: CurriculumAssessment = {
   questions: exampleAssessmentQuestionsWithoutCorrectAnswers,
 };
 
+export const exampleCurriculumAssessmentMultipleSubmissionsWithQuestions: CurriculumAssessment =
+  {
+    ...exampleCurriculumAssessment,
+    questions: exampleAssessmentQuestionsWithoutCorrectAnswers,
+    max_num_submissions: 3,
+  };
+
 export const exampleCurriculumAssessmentWithCorrectAnswers: CurriculumAssessment =
   {
     ...exampleCurriculumAssessment,
@@ -417,6 +424,15 @@ export const exampleParticipantOpenedSavedAssessment: SavedAssessment = {
   principal_program_role: 'Participant',
   submission: exampleAssessmentSubmissionOpened,
 };
+
+export const exampleParticipantOpenedSavedMultipleSubmissionsAssessment: SavedAssessment =
+  {
+    curriculum_assessment:
+      exampleCurriculumAssessmentMultipleSubmissionsWithQuestions,
+    program_assessment: exampleProgramAssessment,
+    principal_program_role: 'Participant',
+    submission: exampleAssessmentSubmissionOpened,
+  };
 
 export const exampleFacilitatorAssessmentWithSubmissions: AssessmentWithSubmissions =
   {
