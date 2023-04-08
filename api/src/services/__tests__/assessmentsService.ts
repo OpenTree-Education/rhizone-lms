@@ -59,6 +59,9 @@ import {
   exampleProgramAssessmentPastDue,
   matchingProgramAssessmentNotAvailableRow,
   programAssessmentId,
+  updatedAssessmentResponsesSCRow,
+  sentUpdatedAssessmentSubmissionSCResponse,
+  sentUpdatedAssessmentSubmissionSCResponseGraded,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -879,9 +882,58 @@ describe('getPrincipalProgramRole', () => {
 //   });
 // });
 
-// describe('updateAssessmentSubmission', () => {});
+describe('updateAssessmentSubmission', () => {
+  it('should return update for an existing assessment submission for participant ', async () => {
+    mockQuery(
+      'update `assessment_responses` set `answer_id` = ?, `response` = ? where `id` = ? ',
+      [
+        sentUpdatedAssessmentSubmissionSCResponse.answer_id,
+        sentUpdatedAssessmentSubmissionSCResponse.response_text,
+        sentUpdatedAssessmentSubmissionSCResponse.id,
+      ],
 
-// describe('updateCurriculumAssessment', () => {});
+      1
+    );
+    mockQuery(
+      'update `assessment_submissions` set `assessment_submission_state_id` = ?, `score` = ? where `id` = ?',
+      [
+        updatedAssessmentResponsesSCRow.assessment_submission_state_id,
+        updatedAssessmentResponsesSCRow.score,
+        updatedAssessmentResponsesSCRow.id,
+      ],
+      []
+    );
+
+    expect(
+      await updateAssessmentSubmission(updatedAssessmentResponsesSCRow)
+    ).toEqual(updatedAssessmentResponsesSCRow);
+  });
+  it('should return update for an existing assessment submission for facilitator ', async () => {
+    mockQuery(
+      'update `assessment_responses` set `score` = ?, `grader_response` = ? where `id` = ? ',
+      [
+        sentUpdatedAssessmentSubmissionSCResponseGraded.score,
+        sentUpdatedAssessmentSubmissionSCResponseGraded.grader_response,
+        sentUpdatedAssessmentSubmissionSCResponseGraded.id,
+      ],
+
+      1
+    );
+    mockQuery(
+      'update `assessment_submissions` set `assessment_submission_state_id` = ?, `score` = ? where `id` = ?',
+      [
+        updatedAssessmentResponsesSCRow.assessment_submission_state_id,
+        updatedAssessmentResponsesSCRow.score,
+        updatedAssessmentResponsesSCRow.id,
+      ],
+      []
+    );
+
+    expect(
+      await updateAssessmentSubmission(updatedAssessmentResponsesSCRow)
+    ).toEqual(updatedAssessmentResponsesSCRow);
+  });
+});
 
 describe('updateProgramAssessment', () => {
   it('should return update for an existing program assessment ID', async () => {
@@ -900,3 +952,5 @@ describe('updateProgramAssessment', () => {
     );
   });
 });
+
+// describe('updateCurriculumAssessment', () => {});

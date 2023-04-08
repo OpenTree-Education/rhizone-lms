@@ -8,6 +8,7 @@ import {
   AssessmentDetails,
   AssessmentWithSubmissions,
   SavedAssessment,
+  AssessmentResponse,
 } from '../models';
 
 // Example Data: Principal IDs
@@ -173,6 +174,15 @@ export const matchingAssessmentResponsesRowFRGraded = {
   response: '<div>Hello world!</div>',
   score: 0,
   grader_response: 'Very close!',
+};
+export const matchingAssessmentSubmissionInProgressRow = {
+  ...matchingAssessmentSubmissionOpenedRow,
+};
+export const matchingAssessmentResponsesRowSCInProgress = {
+  ...matchingAssessmentResponsesRowSCGraded,
+};
+export const matchingAssessmentResponsesRowFRInProgress = {
+  ...matchingAssessmentResponsesRowFRGraded,
 };
 
 // Example Data: Formatted Data
@@ -451,13 +461,15 @@ export const updatedProgramAssessmentsRow = {
   ...matchingProgramAssessmentsRow,
   due_date: '2050-06-25 00:00:00',
 };
-//mays
-export const updatedAssessmentSubmissionRow = {
+
+export const updatedAssessmentResponsesSCRow = {
   ...exampleAssessmentSubmissionSubmitted,
   assessment_submission_state_id: 7,
   grader_response: 'comment',
   score: 9,
 };
+export const updatedAssessmentResponsesFRRow = {};
+export const updatedAssessmentSubmissionsRow = {};
 //mays
 export const updatedAssessmentSubmissionRowP = {
   ...exampleAssessmentSubmissionInProgress,
@@ -506,6 +518,52 @@ export const sentNewProgramAssessment: ProgramAssessment = {
   available_after: '2023-02-06 00:00:00',
   due_date: '2050-06-24 00:00:00',
 };
+
+export const sentUpdatedAssessmentSubmissionSCResponse: AssessmentResponse = {
+  id: 6,
+  assessment_id: 3,
+  submission_id: 2,
+  question_id: 1,
+  answer_id: 2,
+  response_text: 'test',
+  score: 2,
+  grader_response: 'Good Work',
+};
+export const sentUpdatedAssessmentSubmissionFRResponse: AssessmentResponse = {
+  id: 6,
+  assessment_id: 3,
+  submission_id: 2,
+  question_id: 1,
+  answer_id: 2,
+  response_text: 'test',
+  score: 2,
+  grader_response: 'Good Work',
+};
+export const sentUpdatedAssessmentSubmissionChangedResponse: AssessmentResponse =
+  {
+    id: 6,
+    assessment_id: 3,
+    submission_id: 2,
+    question_id: 1,
+    answer_id: 2,
+    response_text: 'test',
+    score: 2,
+    grader_response: 'Good Work',
+  };
+// export const sentUpdatedAssessmentSubmissionChangedResponse:AssessmentSubmission={
+
+// }
+export const sentUpdatedAssessmentSubmissionSCResponseGraded: AssessmentResponse =
+  {
+    id: 6,
+    assessment_id: 3,
+    submission_id: 2,
+    question_id: 1,
+    answer_id: 2,
+    response_text: 'test',
+    score: 2,
+    grader_response: 'Good Work',
+  };
 
 // Example Data: Data Sent From User: Existing Formatted Data
 
