@@ -597,7 +597,7 @@ assessmentsRouter.delete(
       }
 
       // if they do, delete the program assessment
-       // if they do, delete the program assessment
+      // if they do, delete the program assessment
       await deleteProgramAssessment(programAssessmentIdParsed).catch(error => {
         throw new ConflictError(
           `Cannot delete a program assessment that has participant submissions.`

@@ -36,6 +36,7 @@ import {
   unenrolledPrincipalId,
   updatedProgramAssessmentsRow,
   exampleAssessmentWithCorrectAnswersDetails,
+  curriculumId,
 } from '../../assets/data';
 import { AssessmentWithSummary, SavedAssessment } from '../../models';
 import {
@@ -471,10 +472,7 @@ describe('assessmentsRouter', () => {
           );
           expect(
             mockFacilitatorProgramIdsMatchingCurriculum
-          ).toHaveBeenCalledWith(
-            facilitatorPrincipalId,
-            curriculumAssessmentId
-          );
+          ).toHaveBeenCalledWith(facilitatorPrincipalId, curriculumId);
 
           expect(mockDeleteCurriculumAssessment).toHaveBeenCalledWith(
             exampleCurriculumAssessment.id
@@ -506,10 +504,7 @@ describe('assessmentsRouter', () => {
 
             expect(
               mockFacilitatorProgramIdsMatchingCurriculum
-            ).toHaveBeenCalledWith(
-              participantPrincipalId,
-              curriculumAssessmentId
-            );
+            ).toHaveBeenCalledWith(participantPrincipalId, curriculumId);
 
             done(err);
           }
@@ -541,7 +536,7 @@ describe('assessmentsRouter', () => {
         .expect(
           404,
           errorEnvelope(
-             `Could not find curriculum assessment with ID ${curriculumAssessmentId}.`
+            `Could not find curriculum assessment with ID ${curriculumAssessmentId}.`
           ),
           err => {
             expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
@@ -574,10 +569,7 @@ describe('assessmentsRouter', () => {
 
             expect(
               mockFacilitatorProgramIdsMatchingCurriculum
-            ).toHaveBeenCalledWith(
-              facilitatorPrincipalId,
-              curriculumAssessmentId
-            );
+            ).toHaveBeenCalledWith(facilitatorPrincipalId, curriculumId);
 
             expect(mockDeleteCurriculumAssessment).toHaveBeenCalledWith(
               exampleCurriculumAssessment.id
@@ -1332,7 +1324,9 @@ describe('assessmentsRouter', () => {
       mockListParticipantProgramAssessmentSubmissions.mockResolvedValue([
         exampleAssessmentSubmissionOpened,
       ]);
-      mockGetAssessmentSubmission.mockResolvedValue(exampleAssessmentSubmissionOpened)
+      mockGetAssessmentSubmission.mockResolvedValue(
+        exampleAssessmentSubmissionOpened
+      );
 
       mockPrincipalId(participantPrincipalId);
 
@@ -1364,7 +1358,11 @@ describe('assessmentsRouter', () => {
               exampleProgramAssessment.id
             );
 
-            expect(mockGetAssessmentSubmission).toHaveBeenCalledWith (exampleAssessmentSubmissionInProgress.id, true, false)
+            expect(mockGetAssessmentSubmission).toHaveBeenCalledWith(
+              exampleAssessmentSubmissionInProgress.id,
+              true,
+              false
+            );
 
             done(err);
           }
@@ -1422,7 +1420,7 @@ describe('assessmentsRouter', () => {
           }
         );
     });
- it('should return a participant a new submission without including the correct answers', done => {
+    it('should return a participant a new submission without including the correct answers', done => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Participant');
       mockGetCurriculumAssessment.mockResolvedValue(
@@ -1473,7 +1471,6 @@ describe('assessmentsRouter', () => {
           }
         );
     });
-
   });
 
   describe('GET /submissions/:submissionId', () => {
