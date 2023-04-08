@@ -3,12 +3,12 @@ import { DateTime } from 'luxon';
 
 import {
   BadRequestError,
+  ConflictError,
   ForbiddenError,
   InternalServerError,
   NotFoundError,
   UnauthorizedError,
   ValidationError,
-  ConflictError,
 } from './httpErrors';
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
 
@@ -597,6 +597,7 @@ assessmentsRouter.delete(
       }
 
       // if they do, delete the program assessment
+       // if they do, delete the program assessment
       await deleteProgramAssessment(programAssessmentIdParsed).catch(error => {
         throw new ConflictError(
           `Cannot delete a program assessment that has participant submissions.`

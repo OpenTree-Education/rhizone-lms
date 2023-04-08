@@ -541,7 +541,7 @@ describe('assessmentsRouter', () => {
         .expect(
           404,
           errorEnvelope(
-            `Could not find curriculum assessment with ID ${curriculumAssessmentId}.`
+             `Could not find curriculum assessment with ID ${curriculumAssessmentId}.`
           ),
           err => {
             expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
@@ -1323,102 +1323,157 @@ describe('assessmentsRouter', () => {
         );
     });
 
-    // it('should return the existing submission if one is currently opened or in progress', done => {
-    //   mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
-    //   mockGetPrincipalProgramRole.mockResolvedValue('Participant');
-    //   mockGetCurriculumAssessment.mockResolvedValue(
-    //     exampleCurriculumAssessmentWithQuestions
-    //   );
-    //   mockListParticipantProgramAssessmentSubmissions.mockResolvedValue([
-    //     exampleAssessmentSubmissionOpened,
-    //   ]);
+    it('should return the existing submission if one is currently opened or in progress', done => {
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue('Participant');
+      mockGetCurriculumAssessment.mockResolvedValue(
+        exampleCurriculumAssessmentWithQuestions
+      );
+      mockListParticipantProgramAssessmentSubmissions.mockResolvedValue([
+        exampleAssessmentSubmissionOpened,
+      ]);
+      mockGetAssessmentSubmission.mockResolvedValue(exampleAssessmentSubmissionOpened)
 
-    //   mockPrincipalId(participantPrincipalId);
+      mockPrincipalId(participantPrincipalId);
 
-    //   appAgent
-    //     .get(`/program/${exampleProgramAssessment.id}/submissions/new`)
-    //     .expect(
-    //       200,
-    //       itemEnvelope(exampleParticipantOpenedSavedAssessment),
-    //       err => {
-    //         expect(mockFindProgramAssessment).toHaveBeenCalledWith(
-    //           exampleProgramAssessment.id
-    //         );
+      appAgent
+        .get(`/program/${exampleProgramAssessment.id}/submissions/new`)
+        .expect(
+          200,
+          itemEnvelope(exampleParticipantOpenedSavedAssessment),
+          err => {
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.id
+            );
 
-    //         expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
-    //           participantPrincipalId,
-    //           exampleProgramAssessment.program_id
-    //         );
+            expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+              participantPrincipalId,
+              exampleProgramAssessment.program_id
+            );
 
-    //         expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
-    //           exampleProgramAssessment.assessment_id,
-    //           true,
-    //           false
-    //         );
+            expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.assessment_id,
+              true,
+              false
+            );
 
-    //         expect(
-    //           mockListParticipantProgramAssessmentSubmissions
-    //         ).toHaveBeenCalledWith(
-    //           participantPrincipalId,
-    //           exampleProgramAssessment.id
-    //         );
+            expect(
+              mockListParticipantProgramAssessmentSubmissions
+            ).toHaveBeenCalledWith(
+              participantPrincipalId,
+              exampleProgramAssessment.id
+            );
 
-    //         done(err);
-    //       }
-    //     );
-    // });
+            expect(mockGetAssessmentSubmission).toHaveBeenCalledWith (exampleAssessmentSubmissionInProgress.id, true, false)
 
-    // it('should return a participant a new submission without including the correct answers', done => {
-    //   mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
-    //   mockGetPrincipalProgramRole.mockResolvedValue('Participant');
-    //   mockGetCurriculumAssessment.mockResolvedValue(
-    //     exampleCurriculumAssessmentWithQuestions
-    //   );
-    //   mockListParticipantProgramAssessmentSubmissions.mockResolvedValue(null);
-    //   mockCreateAssessmentSubmission.mockResolvedValue(
-    //     exampleAssessmentSubmissionOpened
-    //   );
+            done(err);
+          }
+        );
+    });
 
-    //   mockPrincipalId(participantPrincipalId);
+    it('should return a participant a new submission without including the correct answers', done => {
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue('Participant');
+      mockGetCurriculumAssessment.mockResolvedValue(
+        exampleCurriculumAssessmentWithQuestions
+      );
+      mockListParticipantProgramAssessmentSubmissions.mockResolvedValue(null);
+      mockCreateAssessmentSubmission.mockResolvedValue(
+        exampleAssessmentSubmissionOpened
+      );
 
-    //   appAgent
-    //     .get(`/program/${exampleProgramAssessment.id}/submissions/new`)
-    //     .expect(
-    //       200,
-    //       itemEnvelope(exampleParticipantOpenedSavedAssessment),
-    //       err => {
-    //         expect(mockFindProgramAssessment).toHaveBeenCalledWith(
-    //           exampleProgramAssessment
-    //         );
+      mockPrincipalId(participantPrincipalId);
 
-    //         expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
-    //           participantPrincipalId,
-    //           exampleProgramAssessment.program_id
-    //         );
+      appAgent
+        .get(`/program/${exampleProgramAssessment.id}/submissions/new`)
+        .expect(
+          200,
+          itemEnvelope(exampleParticipantOpenedSavedAssessment),
+          err => {
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.id
+            );
 
-    //         expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
-    //           exampleProgramAssessment.assessment_id,
-    //           true,
-    //           false
-    //         );
+            expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+              participantPrincipalId,
+              exampleProgramAssessment.program_id
+            );
 
-    //         expect(
-    //           mockListParticipantProgramAssessmentSubmissions
-    //         ).toHaveBeenCalledWith(
-    //           participantPrincipalId,
-    //           exampleProgramAssessment.id
-    //         );
+            expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.assessment_id,
+              true,
+              false
+            );
 
-    //         expect(mockCreateAssessmentSubmission).toHaveBeenCalledWith(
-    //           participantPrincipalId,
-    //           exampleProgramAssessment.id,
-    //           exampleProgramAssessment.assessment_id
-    //         );
+            expect(
+              mockListParticipantProgramAssessmentSubmissions
+            ).toHaveBeenCalledWith(
+              participantPrincipalId,
+              exampleProgramAssessment.id
+            );
 
-    //         done(err);
-    //       }
-    //     );
-    // });
+            expect(mockCreateAssessmentSubmission).toHaveBeenCalledWith(
+              participantPrincipalId,
+              exampleProgramAssessment.id,
+              exampleProgramAssessment.assessment_id
+            );
+
+            done(err);
+          }
+        );
+    });
+ it('should return a participant a new submission without including the correct answers', done => {
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue('Participant');
+      mockGetCurriculumAssessment.mockResolvedValue(
+        exampleCurriculumAssessmentWithQuestions
+      );
+      mockListParticipantProgramAssessmentSubmissions.mockResolvedValue(null);
+      mockCreateAssessmentSubmission.mockResolvedValue(
+        exampleAssessmentSubmissionOpened
+      );
+
+      mockPrincipalId(participantPrincipalId);
+
+      appAgent
+        .get(`/program/${exampleProgramAssessment.id}/submissions/new`)
+        .expect(
+          200,
+          itemEnvelope(exampleParticipantOpenedSavedAssessment),
+          err => {
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.id
+            );
+
+            expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+              participantPrincipalId,
+              exampleProgramAssessment.program_id
+            );
+
+            expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.assessment_id,
+              true,
+              false
+            );
+
+            expect(
+              mockListParticipantProgramAssessmentSubmissions
+            ).toHaveBeenCalledWith(
+              participantPrincipalId,
+              exampleProgramAssessment.id
+            );
+
+            expect(mockCreateAssessmentSubmission).toHaveBeenCalledWith(
+              participantPrincipalId,
+              exampleProgramAssessment.id,
+              exampleProgramAssessment.assessment_id
+            );
+
+            done(err);
+          }
+        );
+    });
+
   });
 
   describe('GET /submissions/:submissionId', () => {
