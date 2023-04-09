@@ -251,7 +251,7 @@ assessmentsRouter.put(
       // step 5: check to make sure the curriculum assessment already exists
       // because our route is in charge of updating an *existing* curriculum
       // assessment, so error out if the curriculum assessment doesn't exist
-      const curriculumAssessmentExisting = getCurriculumAssessment(
+      const curriculumAssessmentExisting = await getCurriculumAssessment(
         curriculumAssessmentIdParsed
       );
 
@@ -266,7 +266,7 @@ assessmentsRouter.put(
       const matchingProgramAssessments =
         await facilitatorProgramIdsMatchingCurriculum(
           principalId,
-          curriculumAssessmentIdParsed
+          curriculumAssessmentExisting.curriculum_id
         );
 
       // If there are no matching program assessments with this curriculum ID,
