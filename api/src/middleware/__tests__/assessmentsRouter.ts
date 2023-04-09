@@ -40,7 +40,6 @@ import {
   unenrolledPrincipalId,
   updatedProgramAssessmentsRow,
   updatedAssessmentResponsesSCRow,
-  updatedAssessmentSubmissionRowP,
   exampleAssessmentSubmissionGradedNoResponses,
   matchingProgramAssessmentNotAvailableRow,
 } from '../../assets/data';
@@ -440,10 +439,7 @@ describe('assessmentsRouter', () => {
           );
           expect(
             mockFacilitatorProgramIdsMatchingCurriculum
-          ).toHaveBeenCalledWith(
-            facilitatorPrincipalId,
-            curriculumAssessmentId
-          );
+          ).toHaveBeenCalledWith(facilitatorPrincipalId, curriculumId);
           expect(mockUpdateCurriculumAssessment).toHaveBeenCalledWith(
             sentUpdatedCurriculumAssessment
           );
@@ -1877,10 +1873,11 @@ describe('assessmentsRouter', () => {
     //   appAgent
     //     .put(`/submissions/${exampleAssessmentSubmissionSubmitted.id}`)
     //     .send(exampleAssessmentSubmissionGraded)
-    //     .expect(201, itemEnvelope(exampleAssessmentSubmissionGraded), err => {
+    //     .expect(201,itemEnvelope(exampleAssessmentSubmissionGraded), err => {
     //       expect(mockGetAssessmentSubmission).toHaveBeenCalledWith(
     //         exampleAssessmentSubmissionSubmitted.id,
     //         true
+
     //       );
 
     //       expect(mockFindProgramAssessment).toHaveBeenCalledWith(
@@ -1893,8 +1890,8 @@ describe('assessmentsRouter', () => {
     //       );
 
     //       expect(mockUpdateAssessmentSubmission).toHaveBeenCalledWith(
-    //         exampleProgramAssessment.assessment_id,
-    //         true
+    //         exampleProgramAssessment.assessment_id,true
+
     //       );
 
     //       done(err);
