@@ -776,70 +776,70 @@ describe('listAllProgramAssessmentSubmissions', () => {
   });
 });
 
-// describe('listParticipantProgramAssessmentSubmissions', () => {
-//   it('should return program assessment submissions for a participant for a given program assessment', async () => {
-//     mockQuery(
-//       'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
-//       [participantPrincipalId, exampleAssessmentSubmissionOpened.assessment_id],
-//       [matchingAssessmentSubmissionOpenedRow]
-//     );
-//     expect(
-//       await listParticipantProgramAssessmentSubmissions(
-//         participantPrincipalId,
-//         exampleAssessmentSubmissionOpened.assessment_id
-//       )
-//     ).toEqual([exampleAssessmentSubmissionOpened]);
-//   });
+describe('listParticipantProgramAssessmentSubmissions', () => {
+  it('should return program assessment submissions for a participant for a given program assessment', async () => {
+    mockQuery(
+      'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
+      [participantPrincipalId, exampleAssessmentSubmissionOpened.assessment_id],
+      [matchingAssessmentSubmissionOpenedRow]
+    );
+    expect(
+      await listParticipantProgramAssessmentSubmissions(
+        participantPrincipalId,
+        exampleAssessmentSubmissionOpened.assessment_id
+      )
+    ).toEqual([exampleAssessmentSubmissionOpened]);
+  });
 
-//   it('should return null if no program assessment submissions for a given program assessment', async () => {
-//     mockQuery(
-//       'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `score`, `opened_at`, `submitted_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
-//       [participantPrincipalId, exampleAssessmentSubmissionOpened.assessment_id],
-//       []
-//     );
+  it('should return null if no program assessment submissions for a given program assessment', async () => {
+    mockQuery(
+      'select `assessment_submissions`.`id` as `id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`principal_id` = ? and `assessment_submissions`.`assessment_id` = ?',
+      [participantPrincipalId, exampleAssessmentSubmissionOpened.assessment_id],
+      []
+    );
 
-//     expect(
-//       await listParticipantProgramAssessmentSubmissions(
-//         participantPrincipalId,
-//         exampleAssessmentSubmissionOpened.assessment_id
-//       )
-//     ).toEqual(null);
-//   });
-// });
+    expect(
+      await listParticipantProgramAssessmentSubmissions(
+        participantPrincipalId,
+        exampleAssessmentSubmissionOpened.assessment_id
+      )
+    ).toEqual(null);
+  });
+});
 
 // describe('listPrincipalEnrolledProgramIds', () => {});
 
-// describe('listProgramAssessments', () => {
-//   it('should return all ProgramAssessments linked to a program ID', async () => {
-//     mockQuery(
-//       'select `id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `program_id` = ?',
-//       [matchingProgramAssessmentsRow.program_id],
-//       [matchingProgramAssessmentsRow]
-//     );
+describe('listProgramAssessments', () => {
+  it('should return all ProgramAssessments linked to a program ID', async () => {
+    mockQuery(
+      'select `id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `program_id` = ?',
+      [matchingProgramAssessmentsRow.program_id],
+      [matchingProgramAssessmentsRow]
+    );
 
-//     mockQuery(
-//       'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
-//       [matchingProgramAssessmentsRow.program_id],
-//       [matchingProgramRow]
-//     );
+    mockQuery(
+      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
+      [matchingProgramAssessmentsRow.program_id],
+      [matchingProgramRow]
+    );
 
-//     expect(
-//       await listProgramAssessments(matchingProgramAssessmentsRow.program_id)
-//     ).toEqual([exampleProgramAssessment]);
-//   });
+    expect(
+      await listProgramAssessments(matchingProgramAssessmentsRow.program_id)
+    ).toEqual([exampleProgramAssessment]);
+  });
 
-//   it('should return null if no ProgramAssessments linked to a program ID were found', async () => {
-//     mockQuery(
-//       'select `id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `program_id` = ?',
-//       [matchingProgramAssessmentsRow.program_id],
-//       []
-//     );
+  it('should return null if no ProgramAssessments linked to a program ID were found', async () => {
+    mockQuery(
+      'select `id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `program_id` = ?',
+      [matchingProgramAssessmentsRow.program_id],
+      []
+    );
 
-//     expect(
-//       await listProgramAssessments(matchingProgramAssessmentsRow.program_id)
-//     ).toEqual(null);
-//   });
-// });
+    expect(
+      await listProgramAssessments(matchingProgramAssessmentsRow.program_id)
+    ).toEqual(null);
+  });
+});
 
 // describe('removeGradingInformation', () => {
 //   it('should remove all grading-related information from an AssessmentSubmission', () => {
