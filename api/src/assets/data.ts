@@ -175,12 +175,15 @@ export const matchingAssessmentResponsesRowFRGraded = {
   score: 0,
   grader_response: 'Very close!',
 };
+//MA-matchingAssessmentSubmissionInProgressRow
 export const matchingAssessmentSubmissionInProgressRow = {
   ...matchingAssessmentSubmissionOpenedRow,
 };
+//MA-matchingAssessmentResponsesRowSCInProgress
 export const matchingAssessmentResponsesRowSCInProgress = {
   ...matchingAssessmentResponsesRowSCGraded,
 };
+//MA-matchingAssessmentResponsesRowFRInProgress
 export const matchingAssessmentResponsesRowFRInProgress = {
   ...matchingAssessmentResponsesRowFRGraded,
 };
@@ -459,26 +462,37 @@ export const exampleFacilitatorAssessmentWithSubmissions: AssessmentWithSubmissi
 
 export const updatedProgramAssessmentsRow = {
   ...matchingProgramAssessmentsRow,
-  due_date: '2050-06-25 00:00:00',
+  due_date: '2050-06-25T00:00:00.000-07:00',
 };
-
+// MA-updatedAssessmentResponsesSCRow
 export const updatedAssessmentResponsesSCRow = {
-  ...exampleAssessmentSubmissionSubmitted,
-  assessment_submission_state_id: 7,
-  grader_response: 'comment',
-  score: 9,
+  id: assessmentSubmissionResponseSCId,
+  assessment_id: curriculumAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: singleChoiceQuestionId,
+  answer_id: 2,
+  response_text: 'test',
+  score: null as number,
+  grader_response: 'Good Work',
 };
-export const updatedAssessmentResponsesFRRow = {};
-export const updatedAssessmentSubmissionsRow = {};
-//mays
-export const updatedAssessmentSubmissionRowP = {
-  ...exampleAssessmentSubmissionInProgress,
-  assessment_submission_state_id: 6,
+// MA-updatedAssessmentResponsesFRRow
+export const updatedAssessmentResponsesFRRow = {
+  id: assessmentSubmissionResponseFRId,
+  assessment_id: curriculumAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: freeResponseQuestionId,
+  answer_id: null as number,
+  response_text: 'test',
+  score: 1,
+  grader_response: 'Good Work',
 };
-
-export const newProgramAssessmentsRow = {
-  ...matchingProgramAssessmentsRow,
-  id: programAssessmentId,
+//MA-updatedAssessmentSubmissionsRow
+export const updatedAssessmentSubmissionsRow = {
+  ...matchingAssessmentSubmissionInProgressRow,
+  assessment_submission_state: 'Submitted',
+  submitted_at: '2023-02-09T13:23:45.000Z',
+  last_modified: '2023-02-09T13:23:45.000Z',
+  responses: [updatedAssessmentResponsesSCRow],
 };
 
 export const newCurriculumAssessmentsRow = {
@@ -491,6 +505,10 @@ export const newCurriculumAssessmentsRow = {
   curriculum_id: curriculumId,
   activity_id: sentCAActivityId,
   principal_id: facilitatorPrincipalId,
+};
+export const newProgramAssessmentsRow = {
+  ...matchingProgramAssessmentsRow,
+  id: programAssessmentId,
 };
 
 // Example Data: Data Sent From User: New Formatted Data
@@ -518,51 +536,48 @@ export const sentNewProgramAssessment: ProgramAssessment = {
   available_after: '2023-02-06 00:00:00',
   due_date: '2050-06-24 00:00:00',
 };
-
+// MA-sentUpdatedAssessmentSubmissionSCResponse
 export const sentUpdatedAssessmentSubmissionSCResponse: AssessmentResponse = {
-  id: 6,
-  assessment_id: 3,
-  submission_id: 2,
-  question_id: 1,
-  answer_id: 2,
-  response_text: 'test',
-  score: 2,
+  id: assessmentSubmissionResponseSCId,
+  assessment_id: curriculumAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: singleChoiceQuestionId,
+  answer_id: 1,
+  score: null as number,
   grader_response: 'Good Work',
 };
+//MA-sentUpdatedAssessmentSubmissionFRResponse
 export const sentUpdatedAssessmentSubmissionFRResponse: AssessmentResponse = {
-  id: 6,
-  assessment_id: 3,
-  submission_id: 2,
-  question_id: 1,
-  answer_id: 2,
+  id: assessmentSubmissionResponseFRId,
+  assessment_id: curriculumAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: freeResponseQuestionId,
+  answer_id: null as number,
   response_text: 'test',
-  score: 2,
+  score: 1,
   grader_response: 'Good Work',
 };
-export const sentUpdatedAssessmentSubmissionChangedResponse: AssessmentResponse =
-  {
-    id: 6,
-    assessment_id: 3,
-    submission_id: 2,
-    question_id: 1,
-    answer_id: 2,
-    response_text: 'test',
-    score: 2,
-    grader_response: 'Good Work',
-  };
-// export const sentUpdatedAssessmentSubmissionChangedResponse:AssessmentSubmission={
 
-// }
+//MA-sentUpdatedAssessmentSubmissionSCResponseGraded
 export const sentUpdatedAssessmentSubmissionSCResponseGraded: AssessmentResponse =
   {
-    id: 6,
-    assessment_id: 3,
-    submission_id: 2,
-    question_id: 1,
-    answer_id: 2,
-    response_text: 'test',
-    score: 2,
+    id: assessmentSubmissionResponseSCId,
+    assessment_id: curriculumAssessmentId,
+    submission_id: assessmentSubmissionId,
+    question_id: singleChoiceQuestionId,
+    answer_id: singleChoiceAnswerId,
+    score: 1,
     grader_response: 'Good Work',
+  };
+//MA-sentUpdatedAssessmentSubmissionChangedResponse
+
+export const sentUpdatedAssessmentSubmissionChangedResponse: AssessmentSubmission =
+  {
+    ...exampleAssessmentSubmissionOpened,
+    assessment_submission_state: 'Submitted',
+    submitted_at: '2023-02-09T13:23:45.000Z',
+    last_modified: '2023-02-09T13:23:45.000Z',
+    responses: [sentUpdatedAssessmentSubmissionSCResponse],
   };
 
 // Example Data: Data Sent From User: Existing Formatted Data
