@@ -470,7 +470,7 @@ export const updatedProgramAssessmentsRow = {
 // MA-updatedAssessmentResponsesSCRow
 export const updatedAssessmentResponsesSCRow = {
   id: assessmentSubmissionResponseSCId,
-  assessment_id: curriculumAssessmentId,
+  assessment_id: programAssessmentId,
   submission_id: assessmentSubmissionId,
   question_id: singleChoiceQuestionId,
   answer_id: 2,
@@ -480,7 +480,7 @@ export const updatedAssessmentResponsesSCRow = {
 // MA-updatedAssessmentResponsesFRRow
 export const updatedAssessmentResponsesFRRow = {
   id: assessmentSubmissionResponseFRId,
-  assessment_id: curriculumAssessmentId,
+  assessment_id: programAssessmentId,
   submission_id: assessmentSubmissionId,
   question_id: freeResponseQuestionId,
   response: 'test',
@@ -542,9 +542,10 @@ export const sentNewProgramAssessment: ProgramAssessment = {
   due_date: '2050-06-24 00:00:00',
 };
 // MA-sentUpdatedAssessmentSubmissionSCResponse
+
 export const sentUpdatedAssessmentSubmissionSCResponse: AssessmentResponse = {
   id: assessmentSubmissionResponseSCId,
-  assessment_id: curriculumAssessmentId,
+  assessment_id: programAssessmentId,
   submission_id: assessmentSubmissionId,
   question_id: singleChoiceQuestionId,
   answer_id: 1,
@@ -554,7 +555,7 @@ export const sentUpdatedAssessmentSubmissionSCResponse: AssessmentResponse = {
 //MA-sentUpdatedAssessmentSubmissionFRResponse
 export const sentUpdatedAssessmentSubmissionFRResponse: AssessmentResponse = {
   id: assessmentSubmissionResponseFRId,
-  assessment_id: curriculumAssessmentId,
+  assessment_id: programAssessmentId,
   submission_id: assessmentSubmissionId,
   question_id: freeResponseQuestionId,
   response_text: 'test',
@@ -566,7 +567,7 @@ export const sentUpdatedAssessmentSubmissionFRResponse: AssessmentResponse = {
 export const sentUpdatedAssessmentSubmissionSCResponseGraded: AssessmentResponse =
   {
     id: assessmentSubmissionResponseSCId,
-    assessment_id: curriculumAssessmentId,
+    assessment_id: programAssessmentId,
     submission_id: assessmentSubmissionId,
     question_id: singleChoiceQuestionId,
     answer_id: singleChoiceAnswerId,
@@ -580,7 +581,7 @@ export const sentUpdatedAssessmentSubmissionChangedResponse: AssessmentSubmissio
     ...exampleAssessmentSubmissionOpened,
     assessment_submission_state: 'Submitted',
     submitted_at: '2023-02-09T13:23:45.000Z',
-    last_modified: '2023-02-09T13:23:45.000Z',
+    last_modified: '2023-02-10T13:23:45.000Z',
     responses: [sentUpdatedAssessmentSubmissionSCResponse],
   };
 
