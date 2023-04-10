@@ -290,7 +290,7 @@ assessmentsRouter.put(
         );
       }
 
-      res.json(itemEnvelope(updatedCurriculumAssessment));
+      res.status(201).json(itemEnvelope(updatedCurriculumAssessment));
     } catch (err) {
       next(err);
       return;
@@ -774,13 +774,15 @@ assessmentsRouter.get(
         includeQuestionsAndAllAnswers,
         includeQuestionsAndCorrectAnswers
       );
-
+      // console.log("2-3",curriculumAssessment,programAssessment.assessment_id)
+      //  console.log("first step" ,curriculumAssessment )
       // get the list of the programm assessment submission
       const existingAssessmentSubmissions =
         await listParticipantProgramAssessmentSubmissions(
           principalId,
           programAssessment.id
         );
+      // console.log("3-3",curriculumAssessment,programAssessment.id)
 
       let assessmentSubmission: AssessmentSubmission;
 
@@ -790,6 +792,7 @@ assessmentsRouter.get(
           programAssessmentIdParsed,
           programAssessment.assessment_id
         );
+        // console.log("2",assessmentSubmission)
       } else {
         const inProgressSubmissions: AssessmentSubmission[] =
           existingAssessmentSubmissions.filter(assessmentSubmission =>
@@ -797,12 +800,14 @@ assessmentsRouter.get(
               assessmentSubmission.assessment_submission_state
             )
           );
+        // console.log("3",inProgressSubmissions)
         if (inProgressSubmissions.length !== 0) {
           assessmentSubmission = await getAssessmentSubmission(
             inProgressSubmissions[0].id,
             true,
             false
           );
+          // console.log("4",assessmentSubmission)
         } else if (
           existingAssessmentSubmissions.length >=
             curriculumAssessment.max_num_submissions &&
@@ -819,6 +824,7 @@ assessmentsRouter.get(
             programAssessmentIdParsed,
             programAssessment.assessment_id
           );
+          // console.log("5",assessmentSubmission)
         }
       }
 
@@ -828,6 +834,7 @@ assessmentsRouter.get(
         principal_program_role: programRole,
         submission: assessmentSubmission,
       };
+      // console.log("what is goig on modified ",assessmentWithSubmission)
 
       res.json(itemEnvelope(assessmentWithSubmission));
     } catch (err) {
@@ -1055,7 +1062,7 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       );
     }
 
-    res.json(itemEnvelope(updatedSubmission));
+    res.status(201).json(itemEnvelope(updatedSubmission));
   } catch (err) {
     next(err);
     return;
