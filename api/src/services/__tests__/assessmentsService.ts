@@ -711,47 +711,47 @@ describe('getPrincipalProgramRole', () => {
   });
 });
 
-// describe('listAssessmentQuestions', () => {
-//   it('should return all questions of a given curriculum assessment based on specified boolean parameter', async () => {
-//     const answersIncluded = true;
-//     mockQuery(
-//       'select `assessment_questions`.`id`, `assessment_questions`.`title`, `description`, `assessment_question_types`.`title` as `question_type`, `correct_answer_id`, `max_score`, `sort_order` from `assessment_questions` inner join `assessment_question_types` on `assessment_questions`.`question_type_id` = `assessment_question_types`.`id` where `assessment_questions`.`assessment_id` = ? order by `sort_order` asc',
-//       [exampleCurriculumAssessment.id],
-//       [matchingAssessmentQuestionsSCRow]
-//     );
+describe('listAssessmentQuestions', () => {
+  it('should return all questions of a given curriculum assessment based on specified boolean parameter', async () => {
+    const answersIncluded = true;
+    mockQuery(
+      'select `assessment_questions`.`id`, `assessment_questions`.`title`, `description`, `assessment_question_types`.`title` as `question_type`, `correct_answer_id`, `max_score`, `sort_order` from `assessment_questions` inner join `assessment_question_types` on `assessment_questions`.`question_type_id` = `assessment_question_types`.`id` where `assessment_questions`.`assessment_id` = ? order by `sort_order` asc',
+      [exampleCurriculumAssessment.id],
+      [matchingAssessmentQuestionsSCRow]
+    );
 
-//     const questionIds = [matchingAssessmentQuestionsSCRow.id];
+    const questionIds = [matchingAssessmentQuestionsSCRow.id];
 
-//     mockQuery(
-//       'select `id`, `question_id`, `title`, `description`, `sort_order` from `assessment_answers` where `question_id` = ? order by `sort_order` asc',
-//       [questionIds[0]],
-//       [matchingAssessmentAnswersSCRow]
-//     );
+    mockQuery(
+      'select `id`, `question_id`, `title`, `description`, `sort_order` from `assessment_answers` where `question_id` = ? order by `sort_order` asc',
+      [questionIds[0]],
+      [matchingAssessmentAnswersSCRow]
+    );
 
-//     expect(
-//       await listAssessmentQuestions(
-//         exampleCurriculumAssessment.id,
-//         answersIncluded
-//       )
-//     ).toEqual(exampleAssessmentQuestionSCWithCorrectAnswers);
-//   });
+    expect(
+      await listAssessmentQuestions(
+        exampleCurriculumAssessment.id,
+        answersIncluded
+      )
+    ).toEqual([exampleAssessmentQuestionSCWithCorrectAnswers]);
+  });
 
-//   it('should return null if no questions are found', async () => {
-//     const answersIncluded = true;
-//     mockQuery(
-//       'select `assessment_questions`.`id`, `assessment_questions`.`title`, `description`, `assessment_question_types`.`title` as `question_type`, `correct_answer_id`, `max_score`, `sort_order` from `assessment_questions` inner join `assessment_question_types` on `assessment_questions`.`question_type_id` = `assessment_question_types`.`id` where `assessment_questions`.`assessment_id` = ? order by `sort_order` asc',
-//       [exampleCurriculumAssessment.id],
-//       []
-//     );
+  it('should return null if no questions are found', async () => {
+    const answersIncluded = true;
+    mockQuery(
+      'select `assessment_questions`.`id`, `assessment_questions`.`title`, `description`, `assessment_question_types`.`title` as `question_type`, `correct_answer_id`, `max_score`, `sort_order` from `assessment_questions` inner join `assessment_question_types` on `assessment_questions`.`question_type_id` = `assessment_question_types`.`id` where `assessment_questions`.`assessment_id` = ? order by `sort_order` asc',
+      [exampleCurriculumAssessment.id],
+      []
+    );
 
-//     expect(
-//       await listAssessmentQuestions(
-//         exampleCurriculumAssessment.id,
-//         answersIncluded
-//       )
-//     ).toEqual(null);
-//   });
-// });
+    expect(
+      await listAssessmentQuestions(
+        exampleCurriculumAssessment.id,
+        answersIncluded
+      )
+    ).toEqual(null);
+  });
+});
 
 describe('listAllProgramAssessmentSubmissions', () => {
   it('should return all program assessment submissions for a given program assessment', async () => {
