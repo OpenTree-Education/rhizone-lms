@@ -609,6 +609,17 @@ export const sentUpdatedAssessmentSubmissionChangedResponse: AssessmentSubmissio
   {
     ...exampleAssessmentSubmissionOpened,
     assessment_submission_state: 'Submitted',
+    principal_id: facilitatorPrincipalId,
+    submitted_at: '2023-02-09T13:23:45.000Z',
+    last_modified: '2023-02-10T13:23:45.000Z',
+    responses: [sentUpdatedAssessmentSubmissionSCResponse],
+  };
+//MA-sentUpdatedAssessmentSubmissionChangedResponseParticipant
+
+export const sentUpdatedAssessmentSubmissionChangedResponseParticipant: AssessmentSubmission =
+  {
+    ...exampleAssessmentSubmissionOpened,
+    assessment_submission_state: 'Submitted',
     submitted_at: '2023-02-09T13:23:45.000Z',
     last_modified: '2023-02-10T13:23:45.000Z',
     responses: [sentUpdatedAssessmentSubmissionSCResponse],
