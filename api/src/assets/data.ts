@@ -9,6 +9,7 @@ import {
   AssessmentWithSubmissions,
   SavedAssessment,
   AssessmentResponse,
+  Answer,
 } from '../models';
 
 // Example Data: Principal IDs
@@ -212,6 +213,7 @@ export const exampleAssessmentQuestionsWithoutCorrectAnswers: Question[] = [
     answers: [
       {
         id: singleChoiceAnswerId,
+        description: matchingAssessmentAnswersSCRow.description,
         question_id: singleChoiceQuestionId,
         title: matchingAssessmentAnswersSCRow.title,
         sort_order: matchingAssessmentAnswersSCRow.sort_order,
@@ -222,6 +224,15 @@ export const exampleAssessmentQuestionsWithoutCorrectAnswers: Question[] = [
   },
 ];
 
+export const answer: Answer = {
+    id: singleChoiceAnswerId,
+    question_id: singleChoiceQuestionId,
+    description: matchingAssessmentAnswersSCRow.description,
+    title: matchingAssessmentAnswersSCRow.title,
+    sort_order: matchingAssessmentAnswersSCRow.sort_order,
+    correct_answer: matchingAssessmentAnswersSCRow.correct_answer
+}
+
 export const exampleAssessmentQuestionsWithCorrectAnswers: Question[] = [
   {
     id: singleChoiceQuestionId,
@@ -229,19 +240,37 @@ export const exampleAssessmentQuestionsWithCorrectAnswers: Question[] = [
     title: matchingAssessmentQuestionsRow.title,
     question_type: matchingAssessmentQuestionsRow.question_type,
     answers: [
-      {
-        id: singleChoiceAnswerId,
-        question_id: singleChoiceQuestionId,
-        title: matchingAssessmentAnswersSCRow.title,
-        sort_order: matchingAssessmentAnswersSCRow.sort_order,
-        correct_answer: matchingAssessmentAnswersSCRow.correct_answer,
-      },
+      answer
     ],
     correct_answer_id: singleChoiceAnswerId,
     max_score: matchingAssessmentQuestionsRow.max_score,
     sort_order: matchingAssessmentQuestionsRow.sort_order,
   },
 ];
+
+export const exampleAssessmentQuestionsWithNewAnswers: Question[] = [
+  {
+    id: singleChoiceQuestionId,
+    assessment_id: curriculumAssessmentId,
+    title: matchingAssessmentQuestionsRow.title,
+    question_type: matchingAssessmentQuestionsRow.question_type,
+    answers: [
+      {
+        question_id: singleChoiceQuestionId,
+        title: matchingAssessmentAnswersSCRow.title,
+        sort_order: matchingAssessmentAnswersSCRow.sort_order,
+        description: matchingAssessmentAnswersSCRow.description,
+      },
+    ],
+    max_score: matchingAssessmentQuestionsRow.max_score,
+    sort_order: matchingAssessmentQuestionsRow.sort_order,
+  },
+];
+
+export const exampleCurriculumAssessmentWithQuestionsNewAnswers: CurriculumAssessment = {
+  ...exampleCurriculumAssessment,
+  questions: exampleAssessmentQuestionsWithNewAnswers,
+};
 
 export const exampleCurriculumAssessmentWithQuestions: CurriculumAssessment = {
   ...exampleCurriculumAssessment,

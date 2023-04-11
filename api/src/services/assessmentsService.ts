@@ -428,7 +428,7 @@ const updateAssessmentQuestion = async (
   };
   if (question.answers !== null) {
     for (const answer of question.answers) {
-      if (typeof answer.id !== 'undefined') {
+      if (typeof answer.id === 'undefined') {
         // the answer is new
         const newAnswer = await createAssessmentQuestionAnswer(
           question.id,
@@ -964,7 +964,6 @@ export const getAssessmentSubmission = async (
       assessmentSubmission.responses = assessmentResponses;
     }
   }
-
   return assessmentSubmission;
 };
 
@@ -1515,7 +1514,7 @@ export const updateCurriculumAssessment = async (
   if (curriculumAssessment !== null) {
     for (const question of curriculumAssessment.questions) {
       // TODO: need to delete questions that no longer exist after this update
-      if (typeof question.id !== 'undefined') {
+      if (typeof question.id === 'undefined') {
         // need to createAssessmentQuestion for each question that does not exist;
         // the question is new
         const newQuestion = await createAssessmentQuestion(

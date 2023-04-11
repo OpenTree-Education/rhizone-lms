@@ -67,6 +67,12 @@ import {
   exampleAssessmentQuestionsWithoutCorrectAnswers,
   exampleAssessmentQuestionsWithCorrectAnswers,
   exampleCurriculumAssessmentWithQuestions,
+  sentUpdatedCurriculumAssessment,
+  singleChoiceAnswerId,
+  singleChoiceQuestionId,
+  matchingCurriculumAssessmentRow,
+  exampleCurriculumAssessmentWithQuestionsNewAnswers,
+  exampleAssessmentQuestionsWithNewAnswers,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -920,4 +926,90 @@ describe('updateProgramAssessment', () => {
   });
 });
 
-// describe('updateCurriculumAssessment', () => {});
+describe('updateCurriculumAssessment with existing questions and existing answers', () => {
+  it('should return', async () => {
+    mockQuery(
+      'update `assessment_answers` set `title` = ?, `description` = ?, `sort_order` = ? where `id` = ?',
+      [
+        matchingAssessmentAnswersSCRow.title,
+        null,
+        matchingAssessmentAnswersSCRow.sort_order,
+        singleChoiceAnswerId,
+      ],
+      [exampleCurriculumAssessmentWithQuestions.questions[0].answers[0]]
+    );
+    mockQuery(
+      'update `assessment_questions` set `title` = ?, `question_type` = ?, `max_score` = ?, `sort_order` = ? where `id` = ?',
+      [
+        matchingAssessmentQuestionsRow.title,
+        matchingAssessmentQuestionsRow.question_type,
+        matchingAssessmentQuestionsRow.max_score,
+        matchingAssessmentQuestionsRow.sort_order,
+        singleChoiceQuestionId,
+      ],
+      [exampleAssessmentQuestionsWithoutCorrectAnswers[0]]
+    );
+    mockQuery(
+      'update `curriculum_assessments` set `title` = ?, `assessment_type` = ?, `description` = ?, `max_score` = ?, `max_num_submissions` = ?, `time_limit` = ?, `questions` = ? where `id` = ?',
+      [
+        matchingCurriculumAssessmentRow.title,
+        exampleCurriculumAssessment.assessment_type,
+        matchingCurriculumAssessmentRow.description,
+        matchingCurriculumAssessmentRow.max_score,
+        matchingCurriculumAssessmentRow.max_num_submissions,
+        matchingCurriculumAssessmentRow.time_limit,
+        exampleAssessmentQuestionsWithoutCorrectAnswers,
+        curriculumAssessmentId,
+      ],
+      [exampleCurriculumAssessment]
+    );
+    expect(
+      await updateCurriculumAssessment(exampleCurriculumAssessmentWithQuestions)
+    ).toEqual(exampleCurriculumAssessmentWithQuestions);
+  });
+});
+
+describe('updateCurriculumAssessment with existing questions and no answers', () => {
+  it('should return', async () => {
+    mockQuery(
+      'insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)',
+      [
+        matchingAssessmentAnswersSCRow.description,
+        singleChoiceQuestionId,
+        matchingAssessmentAnswersSCRow.sort_order,
+        matchingAssessmentAnswersSCRow.title,
+      ],
+      [singleChoiceAnswerId]
+    );
+    mockQuery(
+      'update `assessment_questions` set `title` = ?, `question_type` = ?, `max_score` = ?, `sort_order` = ? where `id` = ?',
+      [
+        matchingAssessmentQuestionsRow.title,
+        matchingAssessmentQuestionsRow.question_type,
+        matchingAssessmentQuestionsRow.max_score,
+        matchingAssessmentQuestionsRow.sort_order,
+        singleChoiceQuestionId,
+      ],
+      [exampleAssessmentQuestionsWithNewAnswers[0]]
+    );
+    mockQuery(
+      'update `curriculum_assessments` set `title` = ?, `assessment_type` = ?, `description` = ?, `max_score` = ?, `max_num_submissions` = ?, `time_limit` = ?, `questions` = ? where `id` = ?',
+      [
+        matchingCurriculumAssessmentRow.title,
+        exampleCurriculumAssessment.assessment_type,
+        matchingCurriculumAssessmentRow.description,
+        matchingCurriculumAssessmentRow.max_score,
+        matchingCurriculumAssessmentRow.max_num_submissions,
+        matchingCurriculumAssessmentRow.time_limit,
+        exampleCurriculumAssessmentWithQuestionsNewAnswers.questions,
+        curriculumAssessmentId,
+      ],
+      [exampleCurriculumAssessmentWithQuestionsNewAnswers]
+    );
+    expect(
+      await updateCurriculumAssessment(
+        exampleCurriculumAssessmentWithQuestionsNewAnswers
+      )
+    ).toEqual(exampleCurriculumAssessmentWithQuestions);
+  });
+});

@@ -286,11 +286,11 @@ assessmentsRouter.put(
       // including questions and answers
       if (!updatedCurriculumAssessment) {
         throw new InternalServerError(
-          `Could not update curriculum assessment with ID ${curriculumAssessmentIdParsed}`
+          `Could not update curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
         );
       }
 
-      res.json(itemEnvelope(updatedCurriculumAssessment));
+      res.status(201).json(itemEnvelope(updatedCurriculumAssessment));
     } catch (err) {
       next(err);
       return;
@@ -982,7 +982,7 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
     };
 
     if (!isSubmission(submissionFromUser)) {
-      throw new BadRequestError(`Was not given a valid assessment submission.`);
+      throw new ValidationError(`Was not given a valid assessment submission.`);
     }
 
     // make sure the submssion id from param is the same from request body
@@ -1055,7 +1055,7 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       );
     }
 
-    res.json(itemEnvelope(updatedSubmission));
+    res.status(201).json(itemEnvelope(updatedSubmission));
   } catch (err) {
     next(err);
     return;
