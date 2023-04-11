@@ -6,6 +6,7 @@ import {
 import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
 
 import {
+  assessmentSubmissionId,
   curriculumAssessmentId,
   curriculumId,
   exampleAssessmentSubmissionGraded,
@@ -28,7 +29,6 @@ import {
   exampleProgramAssessmentNotAvailable,
   exampleProgramAssessmentPastDue,
   facilitatorPrincipalId,
-  facilitatorProgramIdsNotMatchingCurriculum,
   facilitatorProgramIdsThatMatchCurriculum,
   matchingOtherAssessmentSubmissionSubmittedRow,
   matchingProgramAssessmentsRow,
@@ -36,16 +36,12 @@ import {
   participantPrincipalId,
   sentNewCurriculumAssessment,
   sentNewCurriculumAssessmentPostInsert,
+  sentUpdatedAssessmentSubmissionChangedResponse,
+  sentUpdatedAssessmentSubmissionChangedResponseWithWrongID,
   sentUpdatedCurriculumAssessment,
   unenrolledPrincipalId,
-  updatedProgramAssessmentsRow,
   updatedAssessmentResponsesSCGradedRow,
-  exampleAssessmentSubmissionGradedNoResponses,
-  matchingProgramAssessmentNotAvailableRow,
-  sentUpdatedAssessmentSubmissionChangedResponse,
-  assessmentSubmissionId,
-  programAssessmentId,
-  sentUpdatedAssessmentSubmissionChangedResponseWithWrongID,
+  updatedProgramAssessmentsRow,
 } from '../../assets/data';
 import { AssessmentWithSummary, SavedAssessment } from '../../models';
 import {
