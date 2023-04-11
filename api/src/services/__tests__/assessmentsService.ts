@@ -70,9 +70,14 @@ import {
   sentUpdatedCurriculumAssessment,
   singleChoiceAnswerId,
   singleChoiceQuestionId,
-  matchingCurriculumAssessmentRow,
   exampleCurriculumAssessmentWithQuestionsNewAnswers,
   exampleAssessmentQuestionsWithNewAnswers,
+  matchingCurriculumAssessmentRow,
+  sentNewCurriculumAssessment,
+  sentUpdatedAssessmentSubmissionChangedResponse,
+  updatedAssessmentSubmissionsRow,
+  assessmentSubmissionId,
+  facilitatorProgramIdsThatMatchCurriculum,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -277,138 +282,131 @@ describe('constructParticipantAssessmentSummary', () => {
 //   });
 // });
 
-// describe('createCurriculumAssessment', () => {
-//   it('should create a curriculum assessment ID without question', async () => {
-//     mockQuery(
-//       'insert into `curriculum_assessments` (`activity_id`, `curriculum_id`, `description`, `max_num_submissions`, `max_score`, `principal_id`, `time_limit`, `title`) values (?, ?, ?, ?, ?, ?, ?, ?)',
-//       [
-//         newCurriculumAssessment.activity_id,
-//         newCurriculumAssessment.curriculum_id,
-//         newCurriculumAssessment.description,
-//         newCurriculumAssessment.max_num_submissions,
-//         newCurriculumAssessment.max_score,
-//         newCurriculumAssessment.principal_id,
-//         newCurriculumAssessment.time_limit,
-//         newCurriculumAssessment.title,
-//       ],
-//       [updatedCurriculumAssessment.id]
-//     );
-
-//     expect(await createCurriculumAssessment(newCurriculumAssessment)).toEqual(
-//       updatedCurriculumAssessment
-//     );
-//   });
-//   it('should create a curriculum assessment ID with a single choice question', async () => {
-//     mockQuery(
-//       'insert into `curriculum_assessments` (`activity_id`, `curriculum_id`, `description`, `max_num_submissions`, `max_score`, `principal_id`, `time_limit`, `title`) values (?, ?, ?, ?, ?, ?, ?, ?)',
-//       [
-//         newCurriculumAssessmentWithSingleChoiceQuestion.activity_id,
-//         newCurriculumAssessmentWithSingleChoiceQuestion.curriculum_id,
-//         newCurriculumAssessmentWithSingleChoiceQuestion.description,
-//         newCurriculumAssessmentWithSingleChoiceQuestion.max_num_submissions,
-//         newCurriculumAssessmentWithSingleChoiceQuestion.max_score,
-//         newCurriculumAssessmentWithSingleChoiceQuestion.principal_id,
-//         newCurriculumAssessmentWithSingleChoiceQuestion.time_limit,
-//         newCurriculumAssessmentWithSingleChoiceQuestion.title,
-//       ],
-//       [updatedCurriculumAssessment.id]
-//     );
-//     mockQuery(
-//       'insert into `assessment_questions` (`assessment_id`, `description`, `max_score`, `question_type_id`, `sort_order`, `title`) values (?, ?, ?, ?, ?, ?)',
-//       [
-//         updatedCurriculumAssessment.id,
-//         newCurriculumAssessmentWithSingleChoiceQuestion.questions[0]
-//           .description,
-//         newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].max_score,
-//         1,
-//         newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].sort_order,
-//         newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].title,
-//       ],
-//       [updatedSingleChoiceQuestion.id]
-//     );
-
-//     mockQuery(
-//       'insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)',
-//       [
-//         newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].answers[0]
-//           .description,
-//         updatedSingleChoiceQuestion.id,
-//         newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].answers[0]
-//           .sort_order,
-//         newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].answers[0]
-//           .title,
-//       ],
-//       [updatedSingleChoiceAnswer.id]
-//     );
-
-//     mockQuery(
-//       'update `assessment_questions` set `correct_answer_id` = ? where `id` = ?',
-//       [updatedSingleChoiceAnswer.id, updatedSingleChoiceQuestion.id],
-//       []
-//     );
-
-//     expect(
-//       await createCurriculumAssessment(
-//         newCurriculumAssessmentWithSingleChoiceQuestion
-//       )
-//     ).toEqual(updatedCurriculumAssessmentWithSingleChoiceQuestion);
-//   });
-//   it('should create a curriculum assessment ID with a free response question', async () => {
-//     mockQuery(
-//       'insert into `curriculum_assessments` (`activity_id`, `curriculum_id`, `description`, `max_num_submissions`, `max_score`, `principal_id`, `time_limit`, `title`) values (?, ?, ?, ?, ?, ?, ?, ?)',
-//       [
-//         newCurriculumAssessmentWithFreeResponseQuestion.activity_id,
-//         newCurriculumAssessmentWithFreeResponseQuestion.curriculum_id,
-//         newCurriculumAssessmentWithFreeResponseQuestion.description,
-//         newCurriculumAssessmentWithFreeResponseQuestion.max_num_submissions,
-//         newCurriculumAssessmentWithFreeResponseQuestion.max_score,
-//         newCurriculumAssessmentWithFreeResponseQuestion.principal_id,
-//         newCurriculumAssessmentWithFreeResponseQuestion.time_limit,
-//         newCurriculumAssessmentWithFreeResponseQuestion.title,
-//       ],
-//       [updatedCurriculumAssessment.id]
-//     );
-//     mockQuery(
-//       'insert into `assessment_questions` (`assessment_id`, `description`, `max_score`, `question_type_id`, `sort_order`, `title`) values (?, ?, ?, ?, ?, ?)',
-//       [
-//         updatedCurriculumAssessment.id,
-//         newCurriculumAssessmentWithFreeResponseQuestion.questions[0]
-//           .description,
-//         newCurriculumAssessmentWithFreeResponseQuestion.questions[0].max_score,
-//         2,
-//         newCurriculumAssessmentWithFreeResponseQuestion.questions[0].sort_order,
-//         newCurriculumAssessmentWithFreeResponseQuestion.questions[0].title,
-//       ],
-//       [updatedFreeResponseQuestion.id]
-//     );
-
-//     mockQuery(
-//       'insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)',
-//       [
-//         newCurriculumAssessmentWithFreeResponseQuestion.questions[0].answers[0]
-//           .description,
-//         updatedFreeResponseQuestion.id,
-//         newCurriculumAssessmentWithFreeResponseQuestion.questions[0].answers[0]
-//           .sort_order,
-//         newCurriculumAssessmentWithFreeResponseQuestion.questions[0].answers[0]
-//           .title,
-//       ],
-//       [updatedFreeResponseAnswer.id]
-//     );
-
-//     mockQuery(
-//       'update `assessment_questions` set `correct_answer_id` = ? where `id` = ?',
-//       [updatedFreeResponseAnswer.id, updatedFreeResponseQuestion.id],
-//       []
-//     );
-
-//     expect(
-//       await createCurriculumAssessment(
-//         newCurriculumAssessmentWithFreeResponseQuestion
-//       )
-//     ).toEqual(updatedCurriculumAssessmentWithFreeResponseQuestion);
-//   });
-// });
+describe('createCurriculumAssessment', () => {
+  // it('should create a curriculum assessment ID without question', async () => {
+  //   mockQuery(
+  //     'insert into `curriculum_assessments` (`activity_id`, `curriculum_id`, `description`, `max_num_submissions`, `max_score`, `principal_id`, `time_limit`, `title`) values (?, ?, ?, ?, ?, ?, ?, ?)',
+  //     [
+  //       sentNewCurriculumAssessment.activity_id,
+  //       sentNewCurriculumAssessment.curriculum_id,
+  //       sentNewCurriculumAssessment.description,
+  //       sentNewCurriculumAssessment.max_num_submissions,
+  //       sentNewCurriculumAssessment.max_score,
+  //       sentNewCurriculumAssessment.principal_id,
+  //       sentNewCurriculumAssessment.time_limit,
+  //       sentNewCurriculumAssessment.title,
+  //     ],
+  //     [updatedCurriculumAssessment.id]
+  //   );
+  //   expect(await createCurriculumAssessment(newCurriculumAssessment)).toEqual(
+  //     updatedCurriculumAssessment
+  //   );
+  // });
+  // it('should create a curriculum assessment ID with a single choice question', async () => {
+  //   mockQuery(
+  //     'insert into `curriculum_assessments` (`activity_id`, `curriculum_id`, `description`, `max_num_submissions`, `max_score`, `principal_id`, `time_limit`, `title`) values (?, ?, ?, ?, ?, ?, ?, ?)',
+  //     [
+  //       newCurriculumAssessmentWithSingleChoiceQuestion.activity_id,
+  //       newCurriculumAssessmentWithSingleChoiceQuestion.curriculum_id,
+  //       newCurriculumAssessmentWithSingleChoiceQuestion.description,
+  //       newCurriculumAssessmentWithSingleChoiceQuestion.max_num_submissions,
+  //       newCurriculumAssessmentWithSingleChoiceQuestion.max_score,
+  //       newCurriculumAssessmentWithSingleChoiceQuestion.principal_id,
+  //       newCurriculumAssessmentWithSingleChoiceQuestion.time_limit,
+  //       newCurriculumAssessmentWithSingleChoiceQuestion.title,
+  //     ],
+  //     [updatedCurriculumAssessment.id]
+  //   );
+  //   mockQuery(
+  //     'insert into `assessment_questions` (`assessment_id`, `description`, `max_score`, `question_type_id`, `sort_order`, `title`) values (?, ?, ?, ?, ?, ?)',
+  //     [
+  //       updatedCurriculumAssessment.id,
+  //       newCurriculumAssessmentWithSingleChoiceQuestion.questions[0]
+  //         .description,
+  //       newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].max_score,
+  //       1,
+  //       newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].sort_order,
+  //       newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].title,
+  //     ],
+  //     [updatedSingleChoiceQuestion.id]
+  //   );
+  //   mockQuery(
+  //     'insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)',
+  //     [
+  //       newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].answers[0]
+  //         .description,
+  //       updatedSingleChoiceQuestion.id,
+  //       newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].answers[0]
+  //         .sort_order,
+  //       newCurriculumAssessmentWithSingleChoiceQuestion.questions[0].answers[0]
+  //         .title,
+  //     ],
+  //     [updatedSingleChoiceAnswer.id]
+  //   );
+  //   mockQuery(
+  //     'update `assessment_questions` set `correct_answer_id` = ? where `id` = ?',
+  //     [updatedSingleChoiceAnswer.id, updatedSingleChoiceQuestion.id],
+  //     []
+  //   );
+  //   expect(
+  //     await createCurriculumAssessment(
+  //       newCurriculumAssessmentWithSingleChoiceQuestion
+  //     )
+  //   ).toEqual(updatedCurriculumAssessmentWithSingleChoiceQuestion);
+  // });
+  // it('should create a curriculum assessment ID with a free response question', async () => {
+  //   mockQuery(
+  //     'insert into `curriculum_assessments` (`activity_id`, `curriculum_id`, `description`, `max_num_submissions`, `max_score`, `principal_id`, `time_limit`, `title`) values (?, ?, ?, ?, ?, ?, ?, ?)',
+  //     [
+  //       newCurriculumAssessmentWithFreeResponseQuestion.activity_id,
+  //       newCurriculumAssessmentWithFreeResponseQuestion.curriculum_id,
+  //       newCurriculumAssessmentWithFreeResponseQuestion.description,
+  //       newCurriculumAssessmentWithFreeResponseQuestion.max_num_submissions,
+  //       newCurriculumAssessmentWithFreeResponseQuestion.max_score,
+  //       newCurriculumAssessmentWithFreeResponseQuestion.principal_id,
+  //       newCurriculumAssessmentWithFreeResponseQuestion.time_limit,
+  //       newCurriculumAssessmentWithFreeResponseQuestion.title,
+  //     ],
+  //     [updatedCurriculumAssessment.id]
+  //   );
+  //   mockQuery(
+  //     'insert into `assessment_questions` (`assessment_id`, `description`, `max_score`, `question_type_id`, `sort_order`, `title`) values (?, ?, ?, ?, ?, ?)',
+  //     [
+  //       updatedCurriculumAssessment.id,
+  //       newCurriculumAssessmentWithFreeResponseQuestion.questions[0]
+  //         .description,
+  //       newCurriculumAssessmentWithFreeResponseQuestion.questions[0].max_score,
+  //       2,
+  //       newCurriculumAssessmentWithFreeResponseQuestion.questions[0].sort_order,
+  //       newCurriculumAssessmentWithFreeResponseQuestion.questions[0].title,
+  //     ],
+  //     [updatedFreeResponseQuestion.id]
+  //   );
+  //   mockQuery(
+  //     'insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)',
+  //     [
+  //       newCurriculumAssessmentWithFreeResponseQuestion.questions[0].answers[0]
+  //         .description,
+  //       updatedFreeResponseQuestion.id,
+  //       newCurriculumAssessmentWithFreeResponseQuestion.questions[0].answers[0]
+  //         .sort_order,
+  //       newCurriculumAssessmentWithFreeResponseQuestion.questions[0].answers[0]
+  //         .title,
+  //     ],
+  //     [updatedFreeResponseAnswer.id]
+  //   );
+  //   mockQuery(
+  //     'update `assessment_questions` set `correct_answer_id` = ? where `id` = ?',
+  //     [updatedFreeResponseAnswer.id, updatedFreeResponseQuestion.id],
+  //     []
+  //   );
+  //   expect(
+  //     await createCurriculumAssessment(
+  //       newCurriculumAssessmentWithFreeResponseQuestion
+  //     )
+  //   ).toEqual(updatedCurriculumAssessmentWithFreeResponseQuestion);
+  // });
+});
 
 describe('createProgramAssessment', () => {
   it('should insert a ProgramAssessment into the database', async () => {
@@ -604,56 +602,56 @@ describe('getAssessmentSubmission', () => {
   });
 });
 
-// describe('getCurriculumAssessment', () => {
-//   it('should return a CurriculumAssessment for an existing curriculum assessment ID', async () => {
-//     const questionsAndAllAnswersIncluded = true,
-//       questionsAndCorrectAnswersIncluded = true;
+describe('getCurriculumAssessment', () => {
+  //  it('should return a CurriculumAssessment for an existing curriculum assessment ID', async () => {
+  //   const questionsAndAllAnswersIncluded = true,
+  //     questionsAndCorrectAnswersIncluded = true;
 
-//     mockQuery(
-//       'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
-//       [exampleCurriculumAssessmentWithCorrectAnswers.id],
-//       [matchingCurriculumAssessmentRows]
-//     );
-//     mockQuery(
-//       'select `activity_types`.`title` from `activity_types` inner join `activities` on `activities`.`activity_type_id` = `activity_types`.`id` where `activities`.`id` = ?',
-//       [matchingCurriculumAssessmentRows.activity_id],
-//       [{ title: exampleCurriculumAssessmentWithCorrectAnswers.assessment_type }]
-//     );
-//     mockQuery(
-//       'select `assessment_questions`.`id`, `assessment_questions`.`title`, `description`, `assessment_question_types`.`title` as `question_type`, `correct_answer_id`, `max_score`, `sort_order` from `assessment_questions` inner join `assessment_question_types` on `assessment_questions`.`question_type_id` = `assessment_question_types`.`id` where `assessment_questions`.`assessment_id` = ?',
-//       [exampleCurriculumAssessmentWithCorrectAnswers.id],
-//       [matchingAssessmentQuestionsRow]
-//     );
+  //   mockQuery(
+  //     'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
+  //     [curriculumAssessmentId],
+  //     [matchingCurriculumAssessmentRow]
+  //   );
+  //   mockQuery(
+  //     'select `activity_types`.`title` from `activity_types` inner join `activities` on `activities`.`activity_type_id` = `activity_types`.`id` where `activities`.`id` = ?',
+  //     [matchingCurriculumAssessmentRow.activity_id],
+  //     [{ title: exampleCurriculumAssessmentWithCorrectAnswers.assessment_type }]
+  //   );
+  //   mockQuery(
+  //     'select `assessment_questions`.`id`, `assessment_questions`.`title`, `description`, `assessment_question_types`.`title` as `question_type`, `correct_answer_id`, `max_score`, `sort_order` from `assessment_questions` inner join `assessment_question_types` on `assessment_questions`.`question_type_id` = `assessment_question_types`.`id` where `assessment_questions`.`assessment_id` = ? order by `sort_order` asc',
+  //     [exampleCurriculumAssessmentWithCorrectAnswers.id],
+  //     [matchingAssessmentQuestionsRow]
+  //   );
 
-//     const questionIds = [matchingAssessmentQuestionsRow.id];
+  //   const questionIds = [matchingAssessmentQuestionsRow.id];
 
-//     mockQuery(
-//       'select `id`, `question_id`, `title`, `description`, `sort_order` from `assessment_answers` where `question_id` = ?',
-//       [questionIds[0]],
-//       [matchingAssessmentAnswersRow]
-//     );
+  //   mockQuery(
+  //     'select `id`, `question_id`, `title`, `description`, `sort_order` from `assessment_answers` where `question_id` = ? order by `sort_order` asc',
+  //     [questionIds[0]],
+  //     [matchingAssessmentAnswersSCRow]
+  //   );
 
-//     expect(
-//       await getCurriculumAssessment(
-//         exampleCurriculumAssessmentWithCorrectAnswers.id,
-//         questionsAndAllAnswersIncluded,
-//         questionsAndCorrectAnswersIncluded
-//       )
-//     ).toEqual(exampleCurriculumAssessmentWithCorrectAnswers);
-//   });
+  //   expect(
+  //     await getCurriculumAssessment(
+  //       exampleCurriculumAssessmentWithCorrectAnswers.id,
+  //       questionsAndAllAnswersIncluded,
+  //       questionsAndCorrectAnswersIncluded
+  //     )
+  //   ).toEqual(exampleCurriculumAssessmentWithCorrectAnswers);
+  // });
 
-//   it('should return null for a curriculum assessment ID that does not exist', async () => {
-//     mockQuery(
-//       'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
-//       [curriculumAssessmentId],
-//       []
-//     );
+  it('should return null for a curriculum assessment ID that does not exist', async () => {
+    mockQuery(
+      'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
+      [curriculumAssessmentId],
+      []
+    );
 
-//     expect(
-//       await getCurriculumAssessment(curriculumAssessmentId, true, true)
-//     ).toEqual(null);
-//   });
-// });
+    expect(
+      await getCurriculumAssessment(curriculumAssessmentId, true, true)
+    ).toEqual(null);
+  });
+});
 
 describe('getPrincipalProgramRole', () => {
   it('should return the correct role for a facilitator based on principal ID and program ID', async () => {
@@ -813,7 +811,29 @@ describe('listParticipantProgramAssessmentSubmissions', () => {
   });
 });
 
-// describe('listPrincipalEnrolledProgramIds', () => {});
+describe('listPrincipalEnrolledProgramIds', () => {
+  const enrolledProgramsList = [{ program_id: 2 }];
+  it('should return program Id list for  which a principal is ficilitator ', async () => {
+    mockQuery(
+      'select `program_id` from `program_participants` where `principal_id` = ?',
+      [facilitatorPrincipalId],
+      enrolledProgramsList
+    );
+    expect(
+      await listPrincipalEnrolledProgramIds(facilitatorPrincipalId)
+    ).toEqual([enrolledProgramsList[0].program_id]);
+  });
+  it('should return program Id list for  which a principal is participant enrolloed in program ', async () => {
+    mockQuery(
+      'select `program_id` from `program_participants` where `principal_id` = ?',
+      [participantPrincipalId],
+      enrolledProgramsList
+    );
+    expect(
+      await listPrincipalEnrolledProgramIds(participantPrincipalId)
+    ).toEqual([enrolledProgramsList[0].program_id]);
+  });
+});
 
 describe('listProgramAssessments', () => {
   it('should return all ProgramAssessments linked to a program ID', async () => {
@@ -865,25 +885,33 @@ describe('listProgramAssessments', () => {
 //         sentUpdatedAssessmentSubmissionSCResponse.id,
 //       ],
 
-//       1
+//       []
 //     );
+//     mockQuery('select `id` from `assessment_submission_states` where `title` = ?',
+//     ['In Progress'],
+//     4)
 //     mockQuery(
 //       'update `assessment_submissions` set `assessment_submission_state_id` = ?, `score` = ? where `id` = ?',
 //       [
-//         updatedAssessmentResponsesSCRow.assessment_submission_state_id,
-//         updatedAssessmentResponsesSCRow.score,
-//         updatedAssessmentResponsesSCRow.id,
+//         4,
+//         sentUpdatedAssessmentSubmissionChangedResponse.score,
+//         sentUpdatedAssessmentSubmissionChangedResponse.id,
 //       ],
-//       []
+//       1
+
 //     );
 
 //     expect(
-//       await updateAssessmentSubmission(updatedAssessmentResponsesSCRow)
-//     ).toEqual(updatedAssessmentResponsesSCRow);
+//       await updateAssessmentSubmission(sentUpdatedAssessmentSubmissionChangedResponse)
+//     ).toEqual(updatedAssessmentSubmissionsRow);
 //   });
 //   it('should return update for an existing assessment submission for facilitator ', async () => {
+//   //  mockQuery('select `assessment_submissions`.`assessment_id`, `assessment_submissions`.`principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',[assessmentSubmissionId],[
+
+//   //  ])
+
 //     mockQuery(
-//       'update `assessment_responses` set `score` = ?, `grader_response` = ? where `id` = ? ',
+//       'update `assessment_responses` set `score` = ?, `grader_response` = ? where `id` = ?',
 //       [
 //         sentUpdatedAssessmentSubmissionSCResponseGraded.score,
 //         sentUpdatedAssessmentSubmissionSCResponseGraded.grader_response,
@@ -892,10 +920,13 @@ describe('listProgramAssessments', () => {
 
 //       1
 //     );
+//     mockQuery('select `id` from `assessment_submission_states` where `title` = ?',
+//     ['In Progress'],
+//     4)
 //     mockQuery(
 //       'update `assessment_submissions` set `assessment_submission_state_id` = ?, `score` = ? where `id` = ?',
 //       [
-//         updatedAssessmentResponsesSCRow.assessment_submission_state_id,
+//         4,
 //         updatedAssessmentResponsesSCRow.score,
 //         updatedAssessmentResponsesSCRow.id,
 //       ],
@@ -903,8 +934,8 @@ describe('listProgramAssessments', () => {
 //     );
 
 //     expect(
-//       await updateAssessmentSubmission(updatedAssessmentResponsesSCRow)
-//     ).toEqual(updatedAssessmentResponsesSCRow);
+//       await updateAssessmentSubmission(sentUpdatedAssessmentSubmissionChangedResponse)
+//     ).toEqual(updatedAssessmentSubmissionsRow);
 //   });
 // });
 
