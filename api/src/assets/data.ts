@@ -72,7 +72,6 @@ export const matchingAssessmentQuestionsSCRow = {
   id: singleChoiceQuestionId,
   assessment_id: curriculumAssessmentId,
   title: 'What is React?',
-  description: '',
   question_type: 'single choice',
   correct_answer_id: singleChoiceAnswerId,
   max_score: 1,
@@ -598,7 +597,6 @@ export const sentNewSCAssessmentAnswer: Answer = {
 export const sentNewSCAssessmentQuestion: Question = {
   assessment_id: curriculumAssessmentId,
   title: matchingAssessmentQuestionsSCRow.title,
-  description: matchingAssessmentQuestionsSCRow.description,
   question_type: matchingAssessmentQuestionsSCRow.question_type,
   answers: [sentNewSCAssessmentAnswer],
   max_score: matchingAssessmentQuestionsSCRow.max_score,
