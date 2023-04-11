@@ -6,7 +6,6 @@ import {
   CurriculumAssessment,
   FacilitatorAssessmentSubmissionsSummary,
   ParticipantAssessmentSubmissionsSummary,
-  Program,
   ProgramAssessment,
   Question,
 } from '../models';
@@ -249,7 +248,7 @@ const createSubmissionResponse = async (
  * @returns {Promise<void>} Returns nothing if the deletion was successful.
  */
 const deleteAssessmentQuestion = async (questionId: number): Promise<void> => {
-  return;
+  return db('assessment_questions').where('id', questionId).delete();
 };
 
 /**
@@ -263,7 +262,7 @@ const deleteAssessmentQuestion = async (questionId: number): Promise<void> => {
 const deleteAssessmentQuestionAnswer = async (
   answerId: number
 ): Promise<void> => {
-  return;
+  return db('assessment_answers').where('id', answerId).delete();
 };
 
 /**
@@ -426,6 +425,8 @@ const updateAssessmentQuestion = async (
   const updatedQuestion = {
     ...question,
   };
+
+  // TODO: deleteAssessmentQuestionAnswer() for any answers that no longer exist
   if (question.answers !== null) {
     for (const answer of question.answers) {
       if (typeof answer.id === 'undefined') {
@@ -1513,7 +1514,7 @@ export const updateCurriculumAssessment = async (
   };
   if (curriculumAssessment !== null) {
     for (const question of curriculumAssessment.questions) {
-      // TODO: need to delete questions that no longer exist after this update
+      // TODO: deleteAssessmentQuestion() any questions that no longer exist
       if (typeof question.id === 'undefined') {
         // need to createAssessmentQuestion for each question that does not exist;
         // the question is new

@@ -13,11 +13,11 @@ import {
   exampleAssessmentSubmissionInProgress,
   exampleAssessmentSubmissionOpened,
   exampleAssessmentSubmissionSubmitted,
-  exampleAssessmentWithCorrectAnswersDetails,
+  exampleAssessmentWithSCCorrectAnswersDetails,
   exampleCurriculumAssessment,
   exampleCurriculumAssessmentMultipleSubmissionsWithQuestions,
-  exampleCurriculumAssessmentWithCorrectAnswers,
-  exampleCurriculumAssessmentWithQuestions,
+  exampleCurriculumAssessmentWithSCCorrectAnswers,
+  exampleCurriculumAssessmentWithSCQuestions,
   exampleFacilitatorAssessmentSubmissionsSummary,
   exampleFacilitatorAssessmentWithSubmissions,
   exampleOtherAssessmentSubmissionSubmitted,
@@ -244,7 +244,7 @@ describe('assessmentsRouter', () => {
   describe('GET /curriculum/:curriculumAssessmentId', () => {
     it('should retrieve a curriculum assessment if the logged-in principal ID is the program facilitator', done => {
       mockGetCurriculumAssessment.mockResolvedValue(
-        exampleCurriculumAssessmentWithCorrectAnswers
+        exampleCurriculumAssessmentWithSCCorrectAnswers
       );
       mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue([
         exampleProgramAssessment.program_id,
@@ -253,13 +253,15 @@ describe('assessmentsRouter', () => {
       mockPrincipalId(facilitatorPrincipalId);
 
       appAgent
-        .get(`/curriculum/${exampleCurriculumAssessmentWithCorrectAnswers.id}`)
+        .get(
+          `/curriculum/${exampleCurriculumAssessmentWithSCCorrectAnswers.id}`
+        )
         .expect(
           200,
-          itemEnvelope(exampleCurriculumAssessmentWithCorrectAnswers),
+          itemEnvelope(exampleCurriculumAssessmentWithSCCorrectAnswers),
           err => {
             expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
-              exampleCurriculumAssessmentWithCorrectAnswers.id,
+              exampleCurriculumAssessmentWithSCCorrectAnswers.id,
               true,
               true
             );
@@ -267,7 +269,7 @@ describe('assessmentsRouter', () => {
               mockFacilitatorProgramIdsMatchingCurriculum
             ).toHaveBeenCalledWith(
               facilitatorPrincipalId,
-              exampleCurriculumAssessmentWithCorrectAnswers.curriculum_id
+              exampleCurriculumAssessmentWithSCCorrectAnswers.curriculum_id
             );
 
             done(err);
@@ -277,22 +279,24 @@ describe('assessmentsRouter', () => {
 
     it('should respond with an UnauthorizedError if the logged-in principal ID is not the program facilitator', done => {
       mockGetCurriculumAssessment.mockResolvedValue(
-        exampleCurriculumAssessmentWithCorrectAnswers
+        exampleCurriculumAssessmentWithSCCorrectAnswers
       );
       mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue([]);
 
       mockPrincipalId(participantPrincipalId);
 
       appAgent
-        .get(`/curriculum/${exampleCurriculumAssessmentWithCorrectAnswers.id}`)
+        .get(
+          `/curriculum/${exampleCurriculumAssessmentWithSCCorrectAnswers.id}`
+        )
         .expect(
           401,
           errorEnvelope(
-            `Not allowed to access curriculum assessment with ID ${exampleCurriculumAssessmentWithCorrectAnswers.id}.`
+            `Not allowed to access curriculum assessment with ID ${exampleCurriculumAssessmentWithSCCorrectAnswers.id}.`
           ),
           err => {
             expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
-              exampleCurriculumAssessmentWithCorrectAnswers.id,
+              exampleCurriculumAssessmentWithSCCorrectAnswers.id,
               true,
               true
             );
@@ -300,7 +304,7 @@ describe('assessmentsRouter', () => {
               mockFacilitatorProgramIdsMatchingCurriculum
             ).toHaveBeenCalledWith(
               participantPrincipalId,
-              exampleCurriculumAssessmentWithCorrectAnswers.curriculum_id
+              exampleCurriculumAssessmentWithSCCorrectAnswers.curriculum_id
             );
 
             done(err);
@@ -328,15 +332,17 @@ describe('assessmentsRouter', () => {
       mockPrincipalId(facilitatorPrincipalId);
 
       appAgent
-        .get(`/curriculum/${exampleCurriculumAssessmentWithCorrectAnswers.id}`)
+        .get(
+          `/curriculum/${exampleCurriculumAssessmentWithSCCorrectAnswers.id}`
+        )
         .expect(
           404,
           errorEnvelope(
-            `Could not find curriculum assessment with ID ${exampleCurriculumAssessmentWithCorrectAnswers.id}.`
+            `Could not find curriculum assessment with ID ${exampleCurriculumAssessmentWithSCCorrectAnswers.id}.`
           ),
           err => {
             expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
-              exampleCurriculumAssessmentWithCorrectAnswers.id,
+              exampleCurriculumAssessmentWithSCCorrectAnswers.id,
               true,
               true
             );
@@ -419,7 +425,7 @@ describe('assessmentsRouter', () => {
   describe('PUT /curriculum/:curriculumAssessmentId', () => {
     it('should update a curriculum assessment if the logged-in principal ID is the program facilitator', done => {
       mockGetCurriculumAssessment.mockResolvedValue(
-        exampleCurriculumAssessmentWithCorrectAnswers
+        exampleCurriculumAssessmentWithSCCorrectAnswers
       );
       mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
         facilitatorProgramIdsThatMatchCurriculum
@@ -534,7 +540,7 @@ describe('assessmentsRouter', () => {
 
     it('should respond with InternalServerError if curriculum assessment with given ID could not be updated', done => {
       mockGetCurriculumAssessment.mockResolvedValue(
-        exampleCurriculumAssessmentWithCorrectAnswers
+        exampleCurriculumAssessmentWithSCCorrectAnswers
       );
       mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
         facilitatorProgramIdsThatMatchCurriculum
@@ -704,7 +710,7 @@ describe('assessmentsRouter', () => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
       mockGetCurriculumAssessment.mockResolvedValue(
-        exampleCurriculumAssessmentWithCorrectAnswers
+        exampleCurriculumAssessmentWithSCCorrectAnswers
       );
 
       mockPrincipalId(facilitatorPrincipalId);
@@ -713,7 +719,7 @@ describe('assessmentsRouter', () => {
         .get(`/program/${exampleProgramAssessment.id}`)
         .expect(
           200,
-          itemEnvelope(exampleAssessmentWithCorrectAnswersDetails),
+          itemEnvelope(exampleAssessmentWithSCCorrectAnswersDetails),
           err => {
             expect(mockFindProgramAssessment).toHaveBeenCalledWith(
               exampleProgramAssessment.id
@@ -1407,7 +1413,7 @@ describe('assessmentsRouter', () => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Participant');
       mockGetCurriculumAssessment.mockResolvedValue(
-        exampleCurriculumAssessmentWithQuestions
+        exampleCurriculumAssessmentWithSCQuestions
       );
       mockListParticipantProgramAssessmentSubmissions.mockResolvedValue([
         matchingOtherAssessmentSubmissionSubmittedRow,
@@ -1454,7 +1460,7 @@ describe('assessmentsRouter', () => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Participant');
       mockGetCurriculumAssessment.mockResolvedValue(
-        exampleCurriculumAssessmentWithQuestions
+        exampleCurriculumAssessmentWithSCQuestions
       );
       mockListParticipantProgramAssessmentSubmissions.mockResolvedValue([
         exampleAssessmentSubmissionOpened,
@@ -1508,7 +1514,7 @@ describe('assessmentsRouter', () => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Participant');
       mockGetCurriculumAssessment.mockResolvedValue(
-        exampleCurriculumAssessmentWithQuestions
+        exampleCurriculumAssessmentWithSCQuestions
       );
       mockListParticipantProgramAssessmentSubmissions.mockResolvedValue(null);
       mockCreateAssessmentSubmission.mockResolvedValue(
@@ -1560,7 +1566,7 @@ describe('assessmentsRouter', () => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Participant');
       mockGetCurriculumAssessment.mockResolvedValue(
-        exampleCurriculumAssessmentWithQuestions
+        exampleCurriculumAssessmentWithSCQuestions
       );
       mockListParticipantProgramAssessmentSubmissions.mockResolvedValue(null);
       mockCreateAssessmentSubmission.mockResolvedValue(
@@ -1668,7 +1674,7 @@ describe('assessmentsRouter', () => {
   describe('GET /submissions/:submissionId', () => {
     it("should show a facilitator the full submission information for a participant's ungraded submitted assessment, including the correct answers", done => {
       const facilitatorFullResponse: SavedAssessment = {
-        curriculum_assessment: exampleCurriculumAssessmentWithCorrectAnswers,
+        curriculum_assessment: exampleCurriculumAssessmentWithSCCorrectAnswers,
         program_assessment: exampleProgramAssessment,
         principal_program_role: 'Facilitator',
         submission: exampleAssessmentSubmissionSubmitted,
@@ -1680,7 +1686,7 @@ describe('assessmentsRouter', () => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
       mockGetCurriculumAssessment.mockResolvedValue(
-        exampleCurriculumAssessmentWithCorrectAnswers
+        exampleCurriculumAssessmentWithSCCorrectAnswers
       );
 
       mockPrincipalId(facilitatorPrincipalId);
@@ -1714,7 +1720,7 @@ describe('assessmentsRouter', () => {
 
     it('should show a participant their submission information for an in-progress assessment without including the correct answers', done => {
       const participantInProgressAssessmentSubmission: SavedAssessment = {
-        curriculum_assessment: exampleCurriculumAssessmentWithQuestions,
+        curriculum_assessment: exampleCurriculumAssessmentWithSCQuestions,
         program_assessment: exampleProgramAssessment,
         principal_program_role: 'Participant',
         submission: exampleAssessmentSubmissionInProgress,
@@ -1726,7 +1732,7 @@ describe('assessmentsRouter', () => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Participant');
       mockGetCurriculumAssessment.mockResolvedValue(
-        exampleCurriculumAssessmentWithQuestions
+        exampleCurriculumAssessmentWithSCQuestions
       );
 
       mockPrincipalId(participantPrincipalId);
@@ -1764,7 +1770,7 @@ describe('assessmentsRouter', () => {
 
     it('should show a participant their submission information for an ungraded submitted assessment without including the correct answers', done => {
       const participantSubmittedAssessmentSubmission: SavedAssessment = {
-        curriculum_assessment: exampleCurriculumAssessmentWithQuestions,
+        curriculum_assessment: exampleCurriculumAssessmentWithSCQuestions,
         program_assessment: exampleProgramAssessment,
         principal_program_role: 'Participant',
         submission: exampleAssessmentSubmissionSubmitted,
@@ -1776,7 +1782,7 @@ describe('assessmentsRouter', () => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Participant');
       mockGetCurriculumAssessment.mockResolvedValue(
-        exampleCurriculumAssessmentWithQuestions
+        exampleCurriculumAssessmentWithSCQuestions
       );
 
       mockPrincipalId(participantPrincipalId);
@@ -1814,7 +1820,7 @@ describe('assessmentsRouter', () => {
 
     it('should show a participant their submission information for a graded submitted assessment including the correct answers', done => {
       const participantGradedAssessmentSubmission: SavedAssessment = {
-        curriculum_assessment: exampleCurriculumAssessmentWithCorrectAnswers,
+        curriculum_assessment: exampleCurriculumAssessmentWithSCCorrectAnswers,
         program_assessment: exampleProgramAssessment,
         principal_program_role: 'Participant',
         submission: exampleAssessmentSubmissionGraded,
@@ -1826,7 +1832,7 @@ describe('assessmentsRouter', () => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Participant');
       mockGetCurriculumAssessment.mockResolvedValue(
-        exampleCurriculumAssessmentWithCorrectAnswers
+        exampleCurriculumAssessmentWithSCCorrectAnswers
       );
 
       mockPrincipalId(participantPrincipalId);

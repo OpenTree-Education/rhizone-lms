@@ -68,13 +68,25 @@ export const matchingCurriculumAssessmentRow = {
   principal_id: administratorPrincipalId,
 };
 
-export const matchingAssessmentQuestionsRow = {
+export const matchingAssessmentQuestionsSCRow = {
   id: singleChoiceQuestionId,
   assessment_id: curriculumAssessmentId,
   title: 'What is React?',
   description: '',
   question_type: 'single choice',
   correct_answer_id: singleChoiceAnswerId,
+  max_score: 1,
+  sort_order: 1,
+};
+
+export const matchingAssessmentQuestionsFRRow = {
+  id: singleChoiceQuestionId,
+  assessment_id: curriculumAssessmentId,
+  title:
+    'What is the correct HTML syntax for a paragraph with the text "Hello, World!"?',
+  description: '',
+  question_type: 'free response',
+  correct_answer_id: freeResponseCorrectAnswerId,
   max_score: 1,
   sort_order: 1,
 };
@@ -223,72 +235,94 @@ export const exampleAssessmentSCAnswerWithCorrectAnswer: Answer = {
   correct_answer: matchingAssessmentAnswersSCRow.correct_answer,
 };
 
-export const exampleAssessmentQuestionsWithoutCorrectAnswers: Question[] = [
-  {
-    id: singleChoiceQuestionId,
-    assessment_id: curriculumAssessmentId,
-    title: matchingAssessmentQuestionsRow.title,
-    question_type: matchingAssessmentQuestionsRow.question_type,
-    answers: [exampleAssessmentSCAnswerWithoutCorrectAnswer],
-    max_score: matchingAssessmentQuestionsRow.max_score,
-    sort_order: matchingAssessmentQuestionsRow.sort_order,
-  },
-];
+export const exampleAssessmentFRAnswerWithoutCorrectAnswer: Answer = {
+  id: singleChoiceAnswerId,
+  question_id: singleChoiceQuestionId,
+  description: matchingAssessmentAnswersSCRow.description,
+  title: matchingAssessmentAnswersSCRow.title,
+  sort_order: matchingAssessmentAnswersSCRow.sort_order,
+};
 
-export const exampleAssessmentQuestionsWithCorrectAnswers: Question[] = [
-  {
-    id: singleChoiceQuestionId,
-    assessment_id: curriculumAssessmentId,
-    title: matchingAssessmentQuestionsRow.title,
-    question_type: matchingAssessmentQuestionsRow.question_type,
-    answers: [exampleAssessmentSCAnswerWithCorrectAnswer],
-    correct_answer_id: singleChoiceAnswerId,
-    max_score: matchingAssessmentQuestionsRow.max_score,
-    sort_order: matchingAssessmentQuestionsRow.sort_order,
-  },
-];
+export const exampleAssessmentFRAnswerWithCorrectAnswer: Answer = {
+  ...exampleAssessmentFRAnswerWithoutCorrectAnswer,
+  correct_answer: matchingAssessmentAnswersSCRow.correct_answer,
+};
 
-export const exampleAssessmentQuestionsWithNewAnswers: Question[] = [
+export const exampleAssessmentQuestionSCWithoutCorrectAnswers: Question = {
+  id: singleChoiceQuestionId,
+  assessment_id: curriculumAssessmentId,
+  title: matchingAssessmentQuestionsSCRow.title,
+  question_type: matchingAssessmentQuestionsSCRow.question_type,
+  answers: [exampleAssessmentSCAnswerWithoutCorrectAnswer],
+  max_score: matchingAssessmentQuestionsSCRow.max_score,
+  sort_order: matchingAssessmentQuestionsSCRow.sort_order,
+};
+
+export const exampleAssessmentQuestionSCWithCorrectAnswers: Question = {
+  id: singleChoiceQuestionId,
+  assessment_id: curriculumAssessmentId,
+  title: matchingAssessmentQuestionsSCRow.title,
+  question_type: matchingAssessmentQuestionsSCRow.question_type,
+  answers: [exampleAssessmentSCAnswerWithCorrectAnswer],
+  correct_answer_id: singleChoiceAnswerId,
+  max_score: matchingAssessmentQuestionsSCRow.max_score,
+  sort_order: matchingAssessmentQuestionsSCRow.sort_order,
+};
+
+export const exampleAssessmentQuestionFRWithCorrectAnswers: Question = {
+  id: singleChoiceQuestionId,
+  assessment_id: curriculumAssessmentId,
+  title: matchingAssessmentQuestionsFRRow.title,
+  question_type: matchingAssessmentQuestionsFRRow.question_type,
+  answers: [exampleAssessmentFRAnswerWithCorrectAnswer],
+  correct_answer_id: freeResponseCorrectAnswerId,
+  max_score: matchingAssessmentQuestionsFRRow.max_score,
+  sort_order: matchingAssessmentQuestionsFRRow.sort_order,
+};
+
+export const exampleAssessmentQuestionsWithFRNewAnswers: Question[] = [
   {
-    id: singleChoiceQuestionId,
+    id: freeResponseQuestionId,
     assessment_id: curriculumAssessmentId,
-    title: matchingAssessmentQuestionsRow.title,
-    question_type: matchingAssessmentQuestionsRow.question_type,
+    title: matchingAssessmentQuestionsFRRow.title,
+    question_type: matchingAssessmentQuestionsFRRow.question_type,
     answers: [
       {
         question_id: singleChoiceQuestionId,
+        description: matchingAssessmentAnswersSCRow.description,
         title: matchingAssessmentAnswersSCRow.title,
         sort_order: matchingAssessmentAnswersSCRow.sort_order,
-        description: matchingAssessmentAnswersSCRow.description,
+        correct_answer: true,
       },
     ],
-    max_score: matchingAssessmentQuestionsRow.max_score,
-    sort_order: matchingAssessmentQuestionsRow.sort_order,
+    max_score: matchingAssessmentQuestionsSCRow.max_score,
+    sort_order: matchingAssessmentQuestionsSCRow.sort_order,
   },
 ];
 
-export const exampleCurriculumAssessmentWithQuestionsNewAnswers: CurriculumAssessment =
+export const exampleCurriculumAssessmentWithFRQuestionsNewAnswers: CurriculumAssessment =
   {
     ...exampleCurriculumAssessment,
-    questions: exampleAssessmentQuestionsWithNewAnswers,
+    questions: exampleAssessmentQuestionsWithFRNewAnswers,
   };
 
-export const exampleCurriculumAssessmentWithQuestions: CurriculumAssessment = {
-  ...exampleCurriculumAssessment,
-  questions: exampleAssessmentQuestionsWithoutCorrectAnswers,
-};
+export const exampleCurriculumAssessmentWithSCQuestions: CurriculumAssessment =
+  {
+    ...exampleCurriculumAssessment,
+    questions: [exampleAssessmentQuestionSCWithoutCorrectAnswers],
+  };
 
 export const exampleCurriculumAssessmentMultipleSubmissionsWithQuestions: CurriculumAssessment =
   {
     ...exampleCurriculumAssessment,
-    questions: exampleAssessmentQuestionsWithoutCorrectAnswers,
+    questions: [exampleAssessmentQuestionSCWithCorrectAnswers],
     max_num_submissions: 3,
   };
 
-export const exampleCurriculumAssessmentWithCorrectAnswers: CurriculumAssessment =
+export const exampleCurriculumAssessmentWithSCCorrectAnswers: CurriculumAssessment =
   {
     ...exampleCurriculumAssessment,
-    questions: exampleAssessmentQuestionsWithCorrectAnswers,
+    questions: [exampleAssessmentQuestionSCWithCorrectAnswers],
   };
 
 export const exampleProgramAssessment: ProgramAssessment = {
@@ -315,8 +349,8 @@ export const exampleProgramAssessmentNotAvailable: ProgramAssessment = {
   due_date: '2050-06-23T00:00:00.000-07:00',
 };
 
-export const exampleAssessmentWithCorrectAnswersDetails: AssessmentDetails = {
-  curriculum_assessment: exampleCurriculumAssessmentWithCorrectAnswers,
+export const exampleAssessmentWithSCCorrectAnswersDetails: AssessmentDetails = {
+  curriculum_assessment: exampleCurriculumAssessmentWithSCCorrectAnswers,
   program_assessment: exampleProgramAssessment,
 };
 
@@ -463,7 +497,7 @@ export const exampleParticipantAssessmentWithSubmissions: AssessmentWithSubmissi
   };
 
 export const exampleParticipantOpenedSavedAssessment: SavedAssessment = {
-  curriculum_assessment: exampleCurriculumAssessmentWithQuestions,
+  curriculum_assessment: exampleCurriculumAssessmentWithSCQuestions,
   program_assessment: exampleProgramAssessment,
   principal_program_role: 'Participant',
   submission: exampleAssessmentSubmissionOpened,
@@ -554,6 +588,48 @@ export const sentNewCurriculumAssessment: CurriculumAssessment = {
   principal_id: facilitatorPrincipalId,
 };
 
+export const sentNewSCAssessmentAnswer: Answer = {
+  description: matchingAssessmentAnswersSCRow.description,
+  title: matchingAssessmentAnswersSCRow.title,
+  sort_order: matchingAssessmentAnswersSCRow.sort_order,
+  correct_answer: true,
+};
+
+export const sentNewSCAssessmentQuestion: Question = {
+  assessment_id: curriculumAssessmentId,
+  title: matchingAssessmentQuestionsSCRow.title,
+  question_type: matchingAssessmentQuestionsSCRow.question_type,
+  answers: [sentNewSCAssessmentAnswer],
+  max_score: matchingAssessmentQuestionsSCRow.max_score,
+  sort_order: matchingAssessmentQuestionsSCRow.sort_order,
+};
+
+export const sentNewFRAssessmentAnswer: Answer = {
+  description: matchingAssessmentAnswersFRRow.description,
+  title: matchingAssessmentAnswersFRRow.title,
+  sort_order: matchingAssessmentAnswersFRRow.sort_order,
+  correct_answer: true,
+};
+
+export const sentNewFRAssessmentQuestion: Question = {
+  assessment_id: curriculumAssessmentId,
+  title: matchingAssessmentQuestionsFRRow.title,
+  question_type: matchingAssessmentQuestionsFRRow.question_type,
+  answers: [sentNewFRAssessmentAnswer],
+  max_score: matchingAssessmentQuestionsFRRow.max_score,
+  sort_order: matchingAssessmentQuestionsFRRow.sort_order,
+};
+
+export const sentNewCurriculumAssessmentWithSCQuestion: CurriculumAssessment = {
+  ...sentNewCurriculumAssessment,
+  questions: [sentNewSCAssessmentQuestion],
+};
+
+export const sentNewCurriculumAssessmentWithFRQuestion: CurriculumAssessment = {
+  ...sentNewCurriculumAssessment,
+  questions: [sentNewSCAssessmentQuestion],
+};
+
 export const sentUpdatedCurriculumAssessment: CurriculumAssessment = {
   ...exampleCurriculumAssessment,
   time_limit: 121,
@@ -620,3 +696,17 @@ export const sentNewCurriculumAssessmentPostInsert: CurriculumAssessment = {
   ...sentNewCurriculumAssessment,
   id: sentCurriculumAssessmentId,
 };
+
+export const sentNewCurriculumAssessmentWithSCQuestionPostInsert: CurriculumAssessment =
+  {
+    ...sentNewCurriculumAssessment,
+    id: sentCurriculumAssessmentId,
+    questions: [exampleAssessmentQuestionSCWithCorrectAnswers],
+  };
+
+export const sentNewCurriculumAssessmentWithFRQuestionPostInsert: CurriculumAssessment =
+  {
+    ...sentNewCurriculumAssessment,
+    id: sentCurriculumAssessmentId,
+    questions: [exampleAssessmentQuestionFRWithCorrectAnswers],
+  };
