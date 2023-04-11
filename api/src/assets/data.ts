@@ -392,8 +392,8 @@ export const exampleAssessmentSubmissionGradedNoResponses: AssessmentSubmission 
 export const exampleAssessmentSubmissionGraded: AssessmentSubmission = {
   ...exampleAssessmentSubmissionOpened,
   assessment_submission_state: 'Graded',
-  last_modified: '2023-02-09T13:23:45.000Z',
   submitted_at: '2023-02-09T13:23:45.000Z',
+  last_modified: '2023-02-09T13:23:45.000Z',
   score: 4,
   responses: [
     {
@@ -413,6 +413,7 @@ export const exampleAssessmentSubmissionGradedRemovedGrades: AssessmentSubmissio
   {
     ...exampleAssessmentSubmissionOpened,
     assessment_submission_state: 'Graded',
+    submitted_at: '2023-02-09T13:23:45.000Z',
     last_modified: '2023-02-09T13:23:45.000Z',
     responses: [
       {
