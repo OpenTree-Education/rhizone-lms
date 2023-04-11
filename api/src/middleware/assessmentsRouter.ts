@@ -35,7 +35,6 @@ import {
   getCurriculumAssessment,
   getPrincipalProgramRole,
   listAllProgramAssessmentSubmissions,
-  listAssessmentQuestions,
   listParticipantProgramAssessmentSubmissions,
   listPrincipalEnrolledProgramIds,
   listProgramAssessments,
@@ -341,7 +340,7 @@ assessmentsRouter.delete(
       }
 
       await deleteCurriculumAssessment(curriculumAssessmentIdParsed).catch(
-        error => {
+        () => {
           throw new ConflictError(`Cannot delete a curriculum assessment.`);
         }
       );
@@ -597,8 +596,7 @@ assessmentsRouter.delete(
       }
 
       // if they do, delete the program assessment
-      // if they do, delete the program assessment
-      await deleteProgramAssessment(programAssessmentIdParsed).catch(error => {
+      await deleteProgramAssessment(programAssessmentIdParsed).catch(() => {
         throw new ConflictError(
           `Cannot delete a program assessment that has participant submissions.`
         );
