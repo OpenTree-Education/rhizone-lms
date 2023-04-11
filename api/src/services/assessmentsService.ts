@@ -764,8 +764,11 @@ export const createCurriculumAssessment = async (
   const updatedCurriculumAssessment: CurriculumAssessment = {
     ...curriculumAssessment,
     id: insertedCurriculumAssessmentRowId,
-    questions: insertedQuestions,
   };
+
+  if (insertedQuestions.length > 0) {
+    updatedCurriculumAssessment.questions = insertedQuestions;
+  }
 
   return updatedCurriculumAssessment;
 };

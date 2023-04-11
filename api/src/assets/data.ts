@@ -598,6 +598,7 @@ export const sentNewSCAssessmentAnswer: Answer = {
 export const sentNewSCAssessmentQuestion: Question = {
   assessment_id: curriculumAssessmentId,
   title: matchingAssessmentQuestionsSCRow.title,
+  description: matchingAssessmentQuestionsSCRow.description,
   question_type: matchingAssessmentQuestionsSCRow.question_type,
   answers: [sentNewSCAssessmentAnswer],
   max_score: matchingAssessmentQuestionsSCRow.max_score,
@@ -614,6 +615,7 @@ export const sentNewFRAssessmentAnswer: Answer = {
 export const sentNewFRAssessmentQuestion: Question = {
   assessment_id: curriculumAssessmentId,
   title: matchingAssessmentQuestionsFRRow.title,
+  description: matchingAssessmentQuestionsFRRow.description,
   question_type: matchingAssessmentQuestionsFRRow.question_type,
   answers: [sentNewFRAssessmentAnswer],
   max_score: matchingAssessmentQuestionsFRRow.max_score,
