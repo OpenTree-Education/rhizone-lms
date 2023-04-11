@@ -999,13 +999,6 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       );
     }
 
-    // make sure the principal id from session is the same from request body
-    if (submissionFromUser.principal_id !== principalId) {
-      throw new BadRequestError(
-        `The principal id from session(${principalId}) is not the same id as in the request body (${submissionFromUser.principal_id}).`
-      );
-    }
-
     // get program assessment
     const programAssessment = await findProgramAssessment(
       submissionFromUser.assessment_id
@@ -1026,6 +1019,16 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
     if (!programRole) {
       throw new UnauthorizedError(
         `Could not access the assessment and submssion without enrollment in the program or being a facilitator.`
+      );
+    }
+
+    // make sure the principal id from session is the same from request body
+    if (
+      submissionFromUser.principal_id !== principalId &&
+      programRole !== 'Facilitator'
+    ) {
+      throw new BadRequestError(
+        `The principal id from session(${principalId}) is not the same id as in the request body (${submissionFromUser.principal_id}).`
       );
     }
 

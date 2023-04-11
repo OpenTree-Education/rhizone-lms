@@ -58,8 +58,8 @@ import {
   exampleProgramAssessmentPastDue,
   matchingProgramAssessmentNotAvailableRow,
   programAssessmentId,
-  updatedAssessmentResponsesSCRow,
-  sentUpdatedAssessmentSubmissionSCResponse,
+  updatedAssessmentResponsesSCGradedRow,
+  sentUpdatedAssessmentSubmissionSCResponseSubmitted,
   sentUpdatedAssessmentSubmissionSCResponseGraded,
   newProgramAssessmentsRow,
   exampleAssessmentSubmissionSubmitted,
@@ -880,9 +880,9 @@ describe('removeGradingInformation', () => {
 //     mockQuery(
 //       'update `assessment_responses` set `answer_id` = ?, `response` = ? where `id` = ? ',
 //       [
-//         sentUpdatedAssessmentSubmissionSCResponse.answer_id,
-//         sentUpdatedAssessmentSubmissionSCResponse.response_text,
-//         sentUpdatedAssessmentSubmissionSCResponse.id,
+//         sentUpdatedAssessmentSubmissionSCResponseSubmitted.answer_id,
+//         sentUpdatedAssessmentSubmissionSCResponseSubmitted.response_text,
+//         sentUpdatedAssessmentSubmissionSCResponseSubmitted.id,
 //       ],
 
 //       []
@@ -927,8 +927,8 @@ describe('removeGradingInformation', () => {
 //       'update `assessment_submissions` set `assessment_submission_state_id` = ?, `score` = ? where `id` = ?',
 //       [
 //         4,
-//         updatedAssessmentResponsesSCRow.score,
-//         updatedAssessmentResponsesSCRow.id,
+//         updatedAssessmentResponsesSCGradedRow.score,
+//         updatedAssessmentResponsesSCGradedRow.id,
 //       ],
 //       []
 //     );

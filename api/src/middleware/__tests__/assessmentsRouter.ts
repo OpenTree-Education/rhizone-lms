@@ -39,13 +39,12 @@ import {
   sentUpdatedCurriculumAssessment,
   unenrolledPrincipalId,
   updatedProgramAssessmentsRow,
-  updatedAssessmentResponsesSCRow,
+  updatedAssessmentResponsesSCGradedRow,
   exampleAssessmentSubmissionGradedNoResponses,
   matchingProgramAssessmentNotAvailableRow,
   sentUpdatedAssessmentSubmissionChangedResponse,
   assessmentSubmissionId,
   programAssessmentId,
-  sentUpdatedAssessmentSubmissionChangedResponseParticipant,
 } from '../../assets/data';
 import { AssessmentWithSummary, SavedAssessment } from '../../models';
 import {
@@ -2031,19 +2030,17 @@ describe('assessmentsRouter', () => {
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
       mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
       mockUpdateAssessmentSubmission.mockResolvedValue(
-        sentUpdatedAssessmentSubmissionChangedResponseParticipant
+        sentUpdatedAssessmentSubmissionChangedResponse
       );
 
       mockPrincipalId(participantPrincipalId);
 
       appAgent
         .put(`/submissions/${exampleAssessmentSubmissionSubmitted.id}`)
-        .send(sentUpdatedAssessmentSubmissionChangedResponseParticipant)
+        .send(sentUpdatedAssessmentSubmissionChangedResponse)
         .expect(
           201,
-          itemEnvelope(
-            sentUpdatedAssessmentSubmissionChangedResponseParticipant
-          ),
+          itemEnvelope(sentUpdatedAssessmentSubmissionChangedResponse),
           err => {
             expect(mockGetAssessmentSubmission).toHaveBeenCalledWith(
               exampleAssessmentSubmissionSubmitted.id,
@@ -2060,7 +2057,7 @@ describe('assessmentsRouter', () => {
             );
 
             expect(mockUpdateAssessmentSubmission).toHaveBeenCalledWith(
-              sentUpdatedAssessmentSubmissionChangedResponseParticipant,
+              sentUpdatedAssessmentSubmissionChangedResponse,
               true
             );
 
@@ -2074,7 +2071,7 @@ describe('assessmentsRouter', () => {
 
       appAgent
         .put(`/submissions/${submissionId}`)
-        .send(updatedAssessmentResponsesSCRow)
+        .send(updatedAssessmentResponsesSCGradedRow)
         .expect(
           400,
           errorEnvelope(
@@ -2154,7 +2151,7 @@ describe('assessmentsRouter', () => {
       mockPrincipalId(participantPrincipalId);
       appAgent
         .put(`/submissions/${submssionId}`)
-        .send(sentUpdatedAssessmentSubmissionChangedResponseParticipant)
+        .send(sentUpdatedAssessmentSubmissionChangedResponse)
         .expect(
           400,
           errorEnvelope(

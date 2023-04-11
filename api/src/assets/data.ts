@@ -135,6 +135,11 @@ export const matchingAssessmentSubmissionOpenedRow = {
   score: null as number,
 };
 
+export const matchingAssessmentSubmissionInProgressRow = {
+  ...matchingAssessmentSubmissionOpenedRow,
+  assessment_submission_state: 'In Progress',
+};
+
 export const matchingOtherAssessmentSubmissionSubmittedRow = {
   id: assessmentSubmissionByOtherParticipantId,
   assessment_id: programAssessmentId,
@@ -155,41 +160,38 @@ export const matchingAssessmentSubmissionsRowGraded = {
   score: 4,
 };
 
-export const matchingAssessmentResponsesRowSCGraded = {
+export const matchingAssessmentResponsesRowSCInProgress = {
   id: assessmentSubmissionResponseSCId,
   assessment_id: programAssessmentId,
   submission_id: assessmentSubmissionId,
   question_id: singleChoiceQuestionId,
   answer_id: singleChoiceAnswerId,
   response: null as string,
+  score: null as number,
+  grader_response: null as string,
+};
+
+export const matchingAssessmentResponsesRowSCGraded = {
+  ...matchingAssessmentResponsesRowSCInProgress,
   score: 1,
   grader_response: 'Well done!',
 };
 
-export const matchingAssessmentResponsesRowFRGraded = {
+export const matchingAssessmentResponsesRowFRInProgress = {
   id: assessmentSubmissionResponseFRId,
   assessment_id: programAssessmentId,
   submission_id: assessmentSubmissionId,
   question_id: freeResponseQuestionId,
   answer_id: null as number,
   response: '<div>Hello world!</div>',
+  score: null as number,
+  grader_response: null as string,
+};
+
+export const matchingAssessmentResponsesRowFRGraded = {
+  ...matchingAssessmentResponsesRowFRInProgress,
   score: 0,
   grader_response: 'Very close!',
-};
-//MA-matchingAssessmentSubmissionInProgressRow
-export const matchingAssessmentSubmissionInProgressRow = {
-  ...matchingAssessmentSubmissionOpenedRow,
-  assessment_submission_state: 'In Progress',
-};
-//MA-matchingAssessmentResponsesRowSCInProgress
-export const matchingAssessmentResponsesRowSCInProgress = {
-  ...matchingAssessmentResponsesRowSCGraded,
-  score: null as string,
-};
-//MA-matchingAssessmentResponsesRowFRInProgress
-export const matchingAssessmentResponsesRowFRInProgress = {
-  ...matchingAssessmentResponsesRowFRGraded,
-  score: null as string,
 };
 
 // Example Data: Formatted Data
@@ -207,34 +209,30 @@ export const exampleCurriculumAssessment: CurriculumAssessment = {
   principal_id: administratorPrincipalId,
 };
 
+export const exampleAssessmentSCAnswerWithoutCorrectAnswer: Answer = {
+  id: singleChoiceAnswerId,
+  question_id: singleChoiceQuestionId,
+  description: matchingAssessmentAnswersSCRow.description,
+  title: matchingAssessmentAnswersSCRow.title,
+  sort_order: matchingAssessmentAnswersSCRow.sort_order,
+};
+
+export const exampleAssessmentSCAnswerWithCorrectAnswer: Answer = {
+  ...exampleAssessmentSCAnswerWithoutCorrectAnswer,
+  correct_answer: matchingAssessmentAnswersSCRow.correct_answer,
+};
+
 export const exampleAssessmentQuestionsWithoutCorrectAnswers: Question[] = [
   {
     id: singleChoiceQuestionId,
     assessment_id: curriculumAssessmentId,
     title: matchingAssessmentQuestionsRow.title,
     question_type: matchingAssessmentQuestionsRow.question_type,
-    answers: [
-      {
-        id: singleChoiceAnswerId,
-        description: matchingAssessmentAnswersSCRow.description,
-        question_id: singleChoiceQuestionId,
-        title: matchingAssessmentAnswersSCRow.title,
-        sort_order: matchingAssessmentAnswersSCRow.sort_order,
-      },
-    ],
+    answers: [exampleAssessmentSCAnswerWithoutCorrectAnswer],
     max_score: matchingAssessmentQuestionsRow.max_score,
     sort_order: matchingAssessmentQuestionsRow.sort_order,
   },
 ];
-
-export const answer: Answer = {
-  id: singleChoiceAnswerId,
-  question_id: singleChoiceQuestionId,
-  description: matchingAssessmentAnswersSCRow.description,
-  title: matchingAssessmentAnswersSCRow.title,
-  sort_order: matchingAssessmentAnswersSCRow.sort_order,
-  correct_answer: matchingAssessmentAnswersSCRow.correct_answer,
-};
 
 export const exampleAssessmentQuestionsWithCorrectAnswers: Question[] = [
   {
@@ -242,7 +240,7 @@ export const exampleAssessmentQuestionsWithCorrectAnswers: Question[] = [
     assessment_id: curriculumAssessmentId,
     title: matchingAssessmentQuestionsRow.title,
     question_type: matchingAssessmentQuestionsRow.question_type,
-    answers: [answer],
+    answers: [exampleAssessmentSCAnswerWithCorrectAnswer],
     correct_answer_id: singleChoiceAnswerId,
     max_score: matchingAssessmentQuestionsRow.max_score,
     sort_order: matchingAssessmentQuestionsRow.sort_order,
@@ -496,8 +494,8 @@ export const updatedProgramAssessmentsRow = {
   ...matchingProgramAssessmentsRow,
   due_date: '2050-06-26 00:00:00',
 };
-// MA-updatedAssessmentResponsesSCRow
-export const updatedAssessmentResponsesSCRow = {
+
+export const updatedAssessmentResponsesSCGradedRow = {
   id: assessmentSubmissionResponseSCId,
   assessment_id: programAssessmentId,
   submission_id: assessmentSubmissionId,
@@ -506,8 +504,8 @@ export const updatedAssessmentResponsesSCRow = {
   score: null as number,
   grader_response: 'Good Work',
 };
-// MA-updatedAssessmentResponsesFRRow
-export const updatedAssessmentResponsesFRRow = {
+
+export const updatedAssessmentResponsesFRGradedRow = {
   id: assessmentSubmissionResponseFRId,
   assessment_id: programAssessmentId,
   submission_id: assessmentSubmissionId,
@@ -516,13 +514,12 @@ export const updatedAssessmentResponsesFRRow = {
   score: 1,
   grader_response: 'Good Work',
 };
-//MA-updatedAssessmentSubmissionsRow
+
 export const updatedAssessmentSubmissionsRow = {
   ...matchingAssessmentSubmissionInProgressRow,
   assessment_submission_state: 'Submitted',
-  submitted_at: '2023-02-09T13:23:45.000Z',
-  last_modified: '2023-02-09T13:23:45.000Z',
-  responses: [updatedAssessmentResponsesSCRow],
+  submitted_at: '2023-02-09 13:23:45',
+  last_modified: '2023-02-09 13:23:45',
 };
 
 export const newCurriculumAssessmentsRow = {
@@ -536,13 +533,10 @@ export const newCurriculumAssessmentsRow = {
   activity_id: sentCAActivityId,
   principal_id: facilitatorPrincipalId,
 };
+
 export const newProgramAssessmentsRow = {
   ...matchingProgramAssessmentsRow,
   id: programAssessmentId,
-};
-export const newCurriculumAssessments = {
-  ...matchingCurriculumAssessmentRow,
-  id: curriculumAssessmentId,
 };
 
 // Example Data: Data Sent From User: New Formatted Data
@@ -570,59 +564,43 @@ export const sentNewProgramAssessment: ProgramAssessment = {
   available_after: '2023-02-06 00:00:00',
   due_date: '2050-06-24 00:00:00',
 };
-// MA-sentUpdatedAssessmentSubmissionSCResponse
 
-export const sentUpdatedAssessmentSubmissionSCResponse: AssessmentResponse = {
-  id: assessmentSubmissionResponseSCId,
-  assessment_id: programAssessmentId,
-  submission_id: assessmentSubmissionId,
-  question_id: singleChoiceQuestionId,
-  answer_id: 1,
-  score: null as number,
-  grader_response: 'Good Work',
-};
-//MA-sentUpdatedAssessmentSubmissionFRResponse
-export const sentUpdatedAssessmentSubmissionFRResponse: AssessmentResponse = {
-  id: assessmentSubmissionResponseFRId,
-  assessment_id: programAssessmentId,
-  submission_id: assessmentSubmissionId,
-  question_id: freeResponseQuestionId,
-  response_text: 'test',
-  score: 1,
-  grader_response: 'Good Work',
-};
-
-//MA-sentUpdatedAssessmentSubmissionSCResponseGraded
-export const sentUpdatedAssessmentSubmissionSCResponseGraded: AssessmentResponse =
+export const sentUpdatedAssessmentSubmissionSCResponseSubmitted: AssessmentResponse =
   {
     id: assessmentSubmissionResponseSCId,
     assessment_id: programAssessmentId,
     submission_id: assessmentSubmissionId,
     question_id: singleChoiceQuestionId,
-    answer_id: singleChoiceAnswerId,
+    answer_id: 1,
+    score: null as number,
+    grader_response: null as string,
+  };
+
+export const sentUpdatedAssessmentSubmissionSCResponseGraded: AssessmentResponse =
+  {
+    ...sentUpdatedAssessmentSubmissionSCResponseSubmitted,
     score: 1,
     grader_response: 'Good Work',
   };
-//MA-sentUpdatedAssessmentSubmissionChangedResponse
+
+export const sentUpdatedAssessmentSubmissionFRResponseGraded: AssessmentResponse =
+  {
+    id: assessmentSubmissionResponseFRId,
+    assessment_id: programAssessmentId,
+    submission_id: assessmentSubmissionId,
+    question_id: freeResponseQuestionId,
+    response_text: 'test',
+    score: 1,
+    grader_response: 'Good Work',
+  };
 
 export const sentUpdatedAssessmentSubmissionChangedResponse: AssessmentSubmission =
   {
     ...exampleAssessmentSubmissionOpened,
     assessment_submission_state: 'Submitted',
-    principal_id: facilitatorPrincipalId,
     submitted_at: '2023-02-09T13:23:45.000Z',
     last_modified: '2023-02-10T13:23:45.000Z',
-    responses: [sentUpdatedAssessmentSubmissionSCResponse],
-  };
-//MA-sentUpdatedAssessmentSubmissionChangedResponseParticipant
-
-export const sentUpdatedAssessmentSubmissionChangedResponseParticipant: AssessmentSubmission =
-  {
-    ...exampleAssessmentSubmissionOpened,
-    assessment_submission_state: 'Submitted',
-    submitted_at: '2023-02-09T13:23:45.000Z',
-    last_modified: '2023-02-10T13:23:45.000Z',
-    responses: [sentUpdatedAssessmentSubmissionSCResponse],
+    responses: [sentUpdatedAssessmentSubmissionSCResponseSubmitted],
   };
 
 // Example Data: Data Sent From User: Existing Formatted Data
