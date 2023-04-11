@@ -228,13 +228,13 @@ export const exampleAssessmentQuestionsWithoutCorrectAnswers: Question[] = [
 ];
 
 export const answer: Answer = {
-    id: singleChoiceAnswerId,
-    question_id: singleChoiceQuestionId,
-    description: matchingAssessmentAnswersSCRow.description,
-    title: matchingAssessmentAnswersSCRow.title,
-    sort_order: matchingAssessmentAnswersSCRow.sort_order,
-    correct_answer: matchingAssessmentAnswersSCRow.correct_answer
-}
+  id: singleChoiceAnswerId,
+  question_id: singleChoiceQuestionId,
+  description: matchingAssessmentAnswersSCRow.description,
+  title: matchingAssessmentAnswersSCRow.title,
+  sort_order: matchingAssessmentAnswersSCRow.sort_order,
+  correct_answer: matchingAssessmentAnswersSCRow.correct_answer,
+};
 
 export const exampleAssessmentQuestionsWithCorrectAnswers: Question[] = [
   {
@@ -242,9 +242,7 @@ export const exampleAssessmentQuestionsWithCorrectAnswers: Question[] = [
     assessment_id: curriculumAssessmentId,
     title: matchingAssessmentQuestionsRow.title,
     question_type: matchingAssessmentQuestionsRow.question_type,
-    answers: [
-      answer
-    ],
+    answers: [answer],
     correct_answer_id: singleChoiceAnswerId,
     max_score: matchingAssessmentQuestionsRow.max_score,
     sort_order: matchingAssessmentQuestionsRow.sort_order,
@@ -270,10 +268,11 @@ export const exampleAssessmentQuestionsWithNewAnswers: Question[] = [
   },
 ];
 
-export const exampleCurriculumAssessmentWithQuestionsNewAnswers: CurriculumAssessment = {
-  ...exampleCurriculumAssessment,
-  questions: exampleAssessmentQuestionsWithNewAnswers,
-};
+export const exampleCurriculumAssessmentWithQuestionsNewAnswers: CurriculumAssessment =
+  {
+    ...exampleCurriculumAssessment,
+    questions: exampleAssessmentQuestionsWithNewAnswers,
+  };
 
 export const exampleCurriculumAssessmentWithQuestions: CurriculumAssessment = {
   ...exampleCurriculumAssessment,
