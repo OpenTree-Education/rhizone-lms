@@ -867,13 +867,13 @@ describe('listProgramAssessments', () => {
   });
 });
 
-// describe('removeGradingInformation', () => {
-//   it('should remove all grading-related information from an AssessmentSubmission', () => {
-//     expect(removeGradingInformation(exampleAssessmentSubmissionGraded)).toEqual(
-//       exampleAssessmentSubmissionGradedRemovedGrades
-//     );
-//   });
-// });
+describe('removeGradingInformation', () => {
+  it('should remove all grading-related information from an AssessmentSubmission', () => {
+    expect(removeGradingInformation(exampleAssessmentSubmissionGraded)).toEqual(
+      exampleAssessmentSubmissionGradedRemovedGrades
+    );
+  });
+});
 
 // describe('updateAssessmentSubmission', () => {
 //   it('should return update for an existing assessment submission for participant ', async () => {
