@@ -35,6 +35,7 @@ export const freeResponseQuestionId = 24;
 export const singleChoiceAnswerId = 28;
 export const freeResponseCorrectAnswerId = 29;
 export const assessmentSubmissionId = 32;
+export const assessmentSubmissionWrongId = 33;
 export const assessmentSubmissionByOtherParticipantId = 36;
 export const assessmentSubmissionResponseSCId = 320;
 export const assessmentSubmissionResponseFRId = 321;
@@ -597,6 +598,16 @@ export const sentUpdatedAssessmentSubmissionFRResponseGraded: AssessmentResponse
 export const sentUpdatedAssessmentSubmissionChangedResponse: AssessmentSubmission =
   {
     ...exampleAssessmentSubmissionOpened,
+    assessment_submission_state: 'Submitted',
+    submitted_at: '2023-02-09T13:23:45.000Z',
+    last_modified: '2023-02-10T13:23:45.000Z',
+    responses: [sentUpdatedAssessmentSubmissionSCResponseSubmitted],
+  };
+
+export const sentUpdatedAssessmentSubmissionChangedResponseWithWrongID: AssessmentSubmission =
+  {
+    ...exampleAssessmentSubmissionOpened,
+    id: assessmentSubmissionWrongId,
     assessment_submission_state: 'Submitted',
     submitted_at: '2023-02-09T13:23:45.000Z',
     last_modified: '2023-02-10T13:23:45.000Z',

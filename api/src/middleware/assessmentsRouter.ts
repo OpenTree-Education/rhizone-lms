@@ -968,19 +968,6 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       );
     }
 
-    // get the submission and responses
-    const existingAssessmentSubmission = await getAssessmentSubmission(
-      submissionIdParsed,
-      true
-    );
-
-    // if the submission is null/falsy, that means there's no matching submission. send an error back to the user.
-    if (!existingAssessmentSubmission) {
-      throw new NotFoundError(
-        `Could not find submission with ID ${submissionIdParsed}.`
-      );
-    }
-
     // make sure it is a valid submission from body with an id.
     const isSubmission = (
       possibleSubmission: unknown
@@ -999,16 +986,23 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       );
     }
 
+    // get the submission and responses
+    const existingAssessmentSubmission = await getAssessmentSubmission(
+      submissionIdParsed,
+      true
+    );
+
+    // if the submission is null/falsy, that means there's no matching submission. send an error back to the user.
+    if (!existingAssessmentSubmission) {
+      throw new NotFoundError(
+        `Could not find submission with ID ${submissionIdParsed}.`
+      );
+    }
+
     // get program assessment
     const programAssessment = await findProgramAssessment(
       submissionFromUser.assessment_id
     );
-
-    if (!programAssessment) {
-      throw new NotFoundError(
-        `Could not find program assessment(with ID ${submissionFromUser.assessment_id}) provided by submission body.`
-      );
-    }
 
     // Get program assessment role
     const programRole = await getPrincipalProgramRole(
@@ -1027,8 +1021,8 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       submissionFromUser.principal_id !== principalId &&
       programRole !== 'Facilitator'
     ) {
-      throw new BadRequestError(
-        `The principal id from session(${principalId}) is not the same id as in the request body (${submissionFromUser.principal_id}).`
+      throw new UnauthorizedError(
+        `You may not update an assessment that is not your own.`
       );
     }
 
@@ -1039,14 +1033,6 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       updatedSubmission = await updateAssessmentSubmission(
         submissionFromUser,
         programRole === 'Facilitator'
-      );
-    } else if (
-      DateTime.fromISO(programAssessment.available_after) > DateTime.now()
-    ) {
-      throw new ForbiddenError(
-        `Could not update a submission of an assessment that's not yet available; it will be available at ${DateTime.fromISO(
-          programAssessment.available_after
-        )}.`
       );
     } else if (
       ['Opened', 'In Progress'].includes(

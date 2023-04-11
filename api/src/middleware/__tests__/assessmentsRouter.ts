@@ -45,6 +45,7 @@ import {
   sentUpdatedAssessmentSubmissionChangedResponse,
   assessmentSubmissionId,
   programAssessmentId,
+  sentUpdatedAssessmentSubmissionChangedResponseWithWrongID,
 } from '../../assets/data';
 import { AssessmentWithSummary, SavedAssessment } from '../../models';
 import {
@@ -2025,22 +2026,62 @@ describe('assessmentsRouter', () => {
 
     it('should update submission if the logged-in principal ID is the program participant', done => {
       mockGetAssessmentSubmission.mockResolvedValue(
-        exampleAssessmentSubmissionSubmitted
+        exampleAssessmentSubmissionInProgress
       );
       mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
-      mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
+      mockGetPrincipalProgramRole.mockResolvedValue('Participant');
       mockUpdateAssessmentSubmission.mockResolvedValue(
-        sentUpdatedAssessmentSubmissionChangedResponse
+        exampleAssessmentSubmissionInProgress
       );
 
       mockPrincipalId(participantPrincipalId);
 
       appAgent
-        .put(`/submissions/${exampleAssessmentSubmissionSubmitted.id}`)
-        .send(sentUpdatedAssessmentSubmissionChangedResponse)
+        .put(`/submissions/${exampleAssessmentSubmissionInProgress.id}`)
+        .send(exampleAssessmentSubmissionInProgress)
         .expect(
           201,
-          itemEnvelope(sentUpdatedAssessmentSubmissionChangedResponse),
+          itemEnvelope(exampleAssessmentSubmissionInProgress),
+          err => {
+            expect(mockGetAssessmentSubmission).toHaveBeenCalledWith(
+              exampleAssessmentSubmissionInProgress.id,
+              true
+            );
+
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              exampleAssessmentSubmissionInProgress.assessment_id
+            );
+
+            expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+              participantPrincipalId,
+              exampleProgramAssessment.program_id
+            );
+
+            expect(mockUpdateAssessmentSubmission).toHaveBeenCalledWith(
+              exampleAssessmentSubmissionInProgress,
+              false
+            );
+
+            done(err);
+          }
+        );
+    });
+
+    it('should do nothing if the logged-in principal ID is the program participant and the assessment was already submitted', done => {
+      mockGetAssessmentSubmission.mockResolvedValue(
+        exampleAssessmentSubmissionSubmitted
+      );
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue('Participant');
+
+      mockPrincipalId(participantPrincipalId);
+
+      appAgent
+        .put(`/submissions/${exampleAssessmentSubmissionSubmitted.id}`)
+        .send(exampleAssessmentSubmissionSubmitted)
+        .expect(
+          201,
+          itemEnvelope(exampleAssessmentSubmissionSubmitted),
           err => {
             expect(mockGetAssessmentSubmission).toHaveBeenCalledWith(
               exampleAssessmentSubmissionSubmitted.id,
@@ -2056,9 +2097,10 @@ describe('assessmentsRouter', () => {
               exampleProgramAssessment.program_id
             );
 
-            expect(mockUpdateAssessmentSubmission).toHaveBeenCalledWith(
-              sentUpdatedAssessmentSubmissionChangedResponse,
-              true
+            expect(mockGetAssessmentSubmission).toHaveBeenCalledWith(
+              exampleAssessmentSubmissionSubmitted.id,
+              true,
+              false
             );
 
             done(err);
@@ -2080,26 +2122,36 @@ describe('assessmentsRouter', () => {
           done
         );
     });
-    it('should respond with an internal server error if a database error occurs', done => {
-      const submissionId = 10;
-      mockGetAssessmentSubmission.mockRejectedValue(new Error());
-      appAgent.put(`/submissions/${submissionId}`).expect(500, done);
+
+    it('should respond with a ValidationError if given an invalid AssessmentSubmission', done => {
+      mockPrincipalId(participantPrincipalId);
+
+      appAgent
+        .put(`/submissions/${exampleAssessmentSubmissionSubmitted.id}`)
+        .send({ test: 'Hello' })
+        .expect(
+          422,
+          errorEnvelope(`Was not given a valid assessment submission.`),
+          done
+        );
     });
-    it('should respond with a NotFoundError if the submission id was not found in the database ', done => {
-      const submissionId = 8;
+
+    it('should respond with a NotFoundError if the submission id was not found in the database', done => {
       mockGetAssessmentSubmission.mockResolvedValue(null);
 
       mockPrincipalId(participantPrincipalId);
 
       appAgent
-        .put(`/submissions/${submissionId}`)
+        .put(`/submissions/${assessmentSubmissionId}`)
         .send(exampleAssessmentSubmissionGraded)
         .expect(
           404,
-          errorEnvelope(`Could not find submission with ID ${submissionId}.`),
+          errorEnvelope(
+            `Could not find submission with ID ${assessmentSubmissionId}.`
+          ),
           err => {
             expect(mockGetAssessmentSubmission).toHaveBeenCalledWith(
-              submissionId,
+              assessmentSubmissionId,
               true
             );
 
@@ -2108,7 +2160,7 @@ describe('assessmentsRouter', () => {
         );
     });
 
-    it('should respond with an Unauthorized Error if user is not a member of the submission’s program', done => {
+    it('should respond with an Unauthorized Error if user is not a member of the program of the submission', done => {
       mockGetAssessmentSubmission.mockResolvedValue(
         exampleAssessmentSubmissionSubmitted
       );
@@ -2142,30 +2194,65 @@ describe('assessmentsRouter', () => {
           }
         );
     });
-    it('should respond with a BadRequestError if submssion id from param is not the same from request body.', done => {
-      const submssionId = 8;
+
+    it('should respond with an Unauthorized Error if user is participant but not the owner of the submission', done => {
       mockGetAssessmentSubmission.mockResolvedValue(
         exampleAssessmentSubmissionSubmitted
       );
+      mockFindProgramAssessment.mockResolvedValue(exampleProgramAssessment);
+      mockGetPrincipalProgramRole.mockResolvedValue('Participant');
 
-      mockPrincipalId(participantPrincipalId);
+      mockPrincipalId(otherParticipantPrincipalId);
+
       appAgent
-        .put(`/submissions/${submssionId}`)
-        .send(sentUpdatedAssessmentSubmissionChangedResponse)
+        .put(`/submissions/${exampleAssessmentSubmissionSubmitted.id}`)
+        .send(exampleAssessmentSubmissionGraded)
         .expect(
-          400,
+          401,
           errorEnvelope(
-            `The submission id in the parameter(${submssionId}) is not the same id as in the request body (${exampleAssessmentSubmissionSubmitted.id}).`
+            `You may not update an assessment that is not your own.`
           ),
           err => {
             expect(mockGetAssessmentSubmission).toHaveBeenCalledWith(
-              submssionId,
+              exampleAssessmentSubmissionSubmitted.id,
               true
             );
+            expect(mockFindProgramAssessment).toHaveBeenCalledWith(
+              exampleProgramAssessment.id
+            );
 
+            expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
+              otherParticipantPrincipalId,
+              exampleProgramAssessment.program_id
+            );
             done(err);
           }
         );
+    });
+
+    it('should respond with a BadRequestError if submssion id from param is not the same from request body.', done => {
+      mockPrincipalId(participantPrincipalId);
+
+      appAgent
+        .put(`/submissions/${assessmentSubmissionId}`)
+        .send(sentUpdatedAssessmentSubmissionChangedResponseWithWrongID)
+        .expect(
+          400,
+          errorEnvelope(
+            `The submission id in the parameter(${assessmentSubmissionId}) is not the same id as in the request body (${sentUpdatedAssessmentSubmissionChangedResponseWithWrongID.id}).`
+          ),
+          err => {
+            done(err);
+          }
+        );
+    });
+
+    it('should respond with an internal server error if a database error occurs', done => {
+      mockGetAssessmentSubmission.mockRejectedValue(new Error());
+      appAgent
+        .put(`/submissions/${assessmentSubmissionId}`)
+        .send(exampleAssessmentSubmissionGraded)
+        .expect(500, done);
     });
   });
 });
