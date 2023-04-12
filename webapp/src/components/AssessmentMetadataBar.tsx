@@ -198,7 +198,7 @@ const AssessmentMetadataBar = ({
                 </ListItemAvatar>
                 <ListItemText
                   secondary="End Time"
-                  primary={formatDateTime(endTime.toISO())}
+                  primary={formatDateTime(endTime.toISO()!)}
                 />
               </ListItem>
             </>
@@ -225,7 +225,7 @@ const AssessmentMetadataBar = ({
                     ? secondsRemaining !== null
                       ? formatTimeRemaining(secondsRemaining)
                       : 0
-                    : formatDateTime(endTime.toISO())
+                    : formatDateTime(endTime.toISO()!)
                 }
               />
               <Tooltip

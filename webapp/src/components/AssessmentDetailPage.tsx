@@ -199,7 +199,8 @@ const AssessmentDetailPage = () => {
       ) {
         const completedAssessment = structuredClone(assessmentState);
         completedAssessment.submission.assessment_submission_state = 'Expired';
-        completedAssessment.submission.last_modified = DateTime.now().toISO();
+        completedAssessment.submission.last_modified =
+          DateTime.now().toISO() || new Date().toISOString();
         setAssessmentState(completedAssessment);
       }
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
@@ -254,7 +255,7 @@ const AssessmentDetailPage = () => {
     }
 
     assessmentWithUpdatedResponses.submission.last_modified =
-      DateTime.now().toISO();
+      DateTime.now().toISO() || new Date().toISOString();
 
     setNumOfAnsweredQuestions(
       assessmentWithUpdatedResponses.submission.responses.filter(
@@ -287,8 +288,10 @@ const AssessmentDetailPage = () => {
     if (requestRef.current) cancelAnimationFrame(requestRef.current);
     const completedAssessment = structuredClone(assessmentState);
     completedAssessment.submission.assessment_submission_state = 'Submitted';
-    completedAssessment.submission.submitted_at = DateTime.now().toISO();
-    completedAssessment.submission.last_modified = DateTime.now().toISO();
+    completedAssessment.submission.submitted_at =
+      DateTime.now().toISO() || new Date().toISOString();
+    completedAssessment.submission.last_modified =
+      DateTime.now().toISO() || new Date().toISOString();
     setSubmissionDisabled(true);
     setAssessmentState(completedAssessment);
 
