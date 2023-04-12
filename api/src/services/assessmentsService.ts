@@ -163,17 +163,18 @@ const createAssessmentQuestion = async (
     insertedAnswers.push(insertedAnswer);
   }
 
-  if (correctAnswerId) {
-    await db('assessment_questions')
-      .update('correct_answer_id', correctAnswerId)
-      .where('id', insertedAssessmentQuestionId);
-  }
-
   const updatedAssessmentQuestion = {
     ...question,
     id: insertedAssessmentQuestionId,
     answers: insertedAnswers,
   };
+
+  if (correctAnswerId) {
+    await db('assessment_questions')
+      .update('correct_answer_id', correctAnswerId)
+      .where('id', insertedAssessmentQuestionId);
+    updatedAssessmentQuestion.correct_answer_id = correctAnswerId;
+  }
 
   return updatedAssessmentQuestion;
 };

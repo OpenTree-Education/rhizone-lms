@@ -84,7 +84,7 @@ export const matchingAssessmentQuestionsFRRow = {
   assessment_id: curriculumAssessmentId,
   title:
     'What is the correct HTML syntax for a paragraph with the text "Hello, World!"?',
-  description: '',
+  description: null as string,
   question_type: 'free response',
   correct_answer_id: freeResponseCorrectAnswerId,
   max_score: 1,
@@ -238,14 +238,15 @@ export const exampleAssessmentSCAnswerWithCorrectAnswer: Answer = {
 export const exampleAssessmentFRAnswerWithoutCorrectAnswer: Answer = {
   id: singleChoiceAnswerId,
   question_id: singleChoiceQuestionId,
-  description: matchingAssessmentAnswersSCRow.description,
-  title: matchingAssessmentAnswersSCRow.title,
-  sort_order: matchingAssessmentAnswersSCRow.sort_order,
+  description: matchingAssessmentAnswersFRRow.description,
+  title: matchingAssessmentAnswersFRRow.title,
+  sort_order: matchingAssessmentAnswersFRRow.sort_order,
 };
 
 export const exampleAssessmentFRAnswerWithCorrectAnswer: Answer = {
   ...exampleAssessmentFRAnswerWithoutCorrectAnswer,
-  correct_answer: matchingAssessmentAnswersSCRow.correct_answer,
+  id: freeResponseCorrectAnswerId,
+  correct_answer: true,
 };
 
 export const exampleAssessmentQuestionSCWithoutCorrectAnswers: Question = {
@@ -271,9 +272,10 @@ export const exampleAssessmentQuestionSCWithCorrectAnswers: Question = {
 };
 
 export const exampleAssessmentQuestionFRWithCorrectAnswers: Question = {
-  id: singleChoiceQuestionId,
+  id: freeResponseQuestionId,
   assessment_id: curriculumAssessmentId,
   title: matchingAssessmentQuestionsFRRow.title,
+  description: matchingAssessmentQuestionsFRRow.description,
   question_type: matchingAssessmentQuestionsFRRow.question_type,
   answers: [exampleAssessmentFRAnswerWithCorrectAnswer],
   correct_answer_id: freeResponseCorrectAnswerId,
@@ -599,6 +601,7 @@ export const sentNewSCAssessmentAnswer: Answer = {
 export const sentNewSCAssessmentQuestion: Question = {
   assessment_id: curriculumAssessmentId,
   title: matchingAssessmentQuestionsSCRow.title,
+  description: matchingAssessmentQuestionsSCRow.description,
   question_type: matchingAssessmentQuestionsSCRow.question_type,
   answers: [sentNewSCAssessmentAnswer],
   max_score: matchingAssessmentQuestionsSCRow.max_score,
@@ -629,7 +632,7 @@ export const sentNewCurriculumAssessmentWithSCQuestion: CurriculumAssessment = {
 
 export const sentNewCurriculumAssessmentWithFRQuestion: CurriculumAssessment = {
   ...sentNewCurriculumAssessment,
-  questions: [sentNewSCAssessmentQuestion],
+  questions: [sentNewFRAssessmentQuestion],
 };
 
 export const sentUpdatedCurriculumAssessment: CurriculumAssessment = {
