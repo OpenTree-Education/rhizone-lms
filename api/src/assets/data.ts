@@ -173,6 +173,17 @@ export const matchingAssessmentSubmissionsRowGraded = {
   score: 4,
 };
 
+export const matchingAssessmentResponsesRowSCOpened = {
+  id: assessmentSubmissionResponseSCId,
+  assessment_id: programAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: singleChoiceQuestionId,
+  answer_id: null as number,
+  response: null as string,
+  score: null as number,
+  grader_response: null as string,
+};
+
 export const matchingAssessmentResponsesRowSCInProgress = {
   id: assessmentSubmissionResponseSCId,
   assessment_id: programAssessmentId,

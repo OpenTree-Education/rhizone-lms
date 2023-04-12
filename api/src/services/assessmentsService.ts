@@ -18,23 +18,22 @@ import { findProgram, listProgramsForCurriculum } from './programsService';
  * Determines whether or not a specific program assessment submission has
  * expired and is no longer allowed to be updated by the participant.
  *
- * @param assessmentSubmissionId - The row ID of the assessment_submissions
- *   table for a given program assessment submission.
+ * @param assessmentSubmission - The assessment submission to check for
+ *   expiration, passed as an AssessmentSubmission object.
  * @returns {Promise<boolean>} If true, a participant should be prevented from
  *   submitting any updates to their program assessment submission, other than
  *   to mark it as "Expired" instead of "Opened" or "In Progress".
  */
 const assessmentSubmissionExpired = async (
-  assessmentSubmissionId: number
+  assessmentSubmission: AssessmentSubmission
 ): Promise<boolean> => {
-  const assessmentSubmission = await getAssessmentSubmission(
-    assessmentSubmissionId
-  );
   const programAssessment = await findProgramAssessment(
     assessmentSubmission.assessment_id
   );
   const curriculumAssessment = await getCurriculumAssessment(
-    programAssessment.assessment_id
+    programAssessment.assessment_id,
+    false,
+    false
   );
 
   // State 1: Past program assessment due date
@@ -1390,7 +1389,7 @@ export const updateAssessmentSubmission = async (
 
   let newState;
 
-  if (facilitatorOverride) {
+  if (facilitatorOverride && facilitatorOverride === true) {
     const updatedResponses: AssessmentResponse[] = [];
     // update each response's score and grading, only if there is a matching existing responses
     for (const assessmentResponse of assessmentSubmission.responses) {
@@ -1423,7 +1422,7 @@ export const updateAssessmentSubmission = async (
     // participant could only update opened and in progress submssion that within due date.
     if (
       assessmentSubmission.assessment_submission_state === 'Expired' ||
-      (await assessmentSubmissionExpired(assessmentSubmission.id))
+      (await assessmentSubmissionExpired(assessmentSubmission))
     ) {
       newState = 'Expired';
 
