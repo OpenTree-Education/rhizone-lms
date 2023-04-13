@@ -221,6 +221,8 @@ const createAssessmentQuestionAnswer = async (
 const createSubmissionResponse = async (
   assessmentResponse: AssessmentResponse
 ): Promise<AssessmentResponse> => {
+  // TODO: Check to see if question relates to submission,
+  // answer relates to question?
   const [newSubmissionId] = await db('assessment_responses').insert({
     assessment_id: assessmentResponse.assessment_id,
     submission_id: assessmentResponse.submission_id,
@@ -504,6 +506,8 @@ const updateSubmissionResponse = async (
   assessmentResponse: AssessmentResponse,
   facilitatorGrading?: boolean
 ): Promise<AssessmentResponse> => {
+  // TODO: Check to see if question relates to submission,
+  // answer relates to question?
   if (facilitatorGrading && facilitatorGrading === true) {
     await db('assessment_responses')
       .update({

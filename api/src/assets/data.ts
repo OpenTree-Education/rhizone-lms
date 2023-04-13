@@ -704,13 +704,17 @@ export const sentNewProgramAssessment: ProgramAssessment = {
   due_date: '2050-06-24 00:00:00',
 };
 
+export const sentNewSCAssessmentResponse: AssessmentResponse = {
+  assessment_id: programAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: singleChoiceQuestionId,
+  answer_id: singleChoiceAnswerId,
+};
+
 export const sentUpdatedAssessmentSubmissionSCResponseSubmitted: AssessmentResponse =
   {
+    ...sentNewSCAssessmentResponse,
     id: assessmentSubmissionResponseSCId,
-    assessment_id: programAssessmentId,
-    submission_id: assessmentSubmissionId,
-    question_id: singleChoiceQuestionId,
-    answer_id: 1,
     score: null as number,
     grader_response: null as string,
   };
@@ -731,6 +735,13 @@ export const sentUpdatedAssessmentSubmissionFRResponseGraded: AssessmentResponse
     response_text: 'test',
     score: 1,
     grader_response: 'Good Work',
+  };
+
+export const sentUpdatedAssessmentSubmissionWithNewSCResponse: AssessmentSubmission =
+  {
+    ...exampleAssessmentSubmissionOpened,
+    last_modified: '2023-02-09T12:05:00.000Z',
+    responses: [sentNewSCAssessmentResponse],
   };
 
 export const sentUpdatedAssessmentSubmissionChangedResponse: AssessmentSubmission =

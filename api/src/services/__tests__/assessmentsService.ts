@@ -96,6 +96,7 @@ import {
   exampleAssessmentSubmissionOpenedWithResponse,
   matchingProgramAssessmentPastDueRow,
   matchingAssessmentResponsesRowSCSubmitted,
+  sentUpdatedAssessmentSubmissionWithNewSCResponse,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -1028,7 +1029,7 @@ describe('updateAssessmentSubmission', () => {
     mockQuery(
       'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
       [assessmentSubmissionId],
-      [] // if we don't have response so we should get empty ?
+      []
     );
     mockQuery(
       'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
@@ -1055,13 +1056,13 @@ describe('updateAssessmentSubmission', () => {
         },
       ]
     );
-    // insert instead of update ?
     mockQuery(
-      'insert into `assessment_responses` (`answer_id`, `assessment_id`, `question_id`, `response`, `submission_id`) values (DEFAULT, ?, ?, DEFAULT, ?)',
+      'insert into `assessment_responses` (`answer_id`, `assessment_id`, `question_id`, `response`, `submission_id`) values (?, ?, ?, DEFAULT, ?)',
       [
-        exampleProgramAssessment.id,
+        singleChoiceAnswerId,
+        programAssessmentId,
         singleChoiceQuestionId,
-        exampleAssessmentSubmissionOpenedWithResponse.id,
+        exampleAssessmentSubmissionInProgress.id,
       ],
       [assessmentSubmissionResponseSCId]
     );
@@ -1072,13 +1073,13 @@ describe('updateAssessmentSubmission', () => {
     );
     mockQuery(
       'update `assessment_submissions` set `assessment_submission_state_id` = ? where `id` = ?',
-      [4, sentUpdatedAssessmentSubmissionChangedResponse.id], //not sure if need new data
+      [4, exampleAssessmentSubmissionInProgress.id],
       1
     );
 
     expect(
       await updateAssessmentSubmission(
-        exampleAssessmentSubmissionInProgress,
+        sentUpdatedAssessmentSubmissionWithNewSCResponse,
         false
       )
     ).toEqual(exampleAssessmentSubmissionInProgress);
