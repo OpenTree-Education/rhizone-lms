@@ -152,6 +152,7 @@ export const matchingAssessmentSubmissionInProgressRow = {
   ...matchingAssessmentSubmissionOpenedRow,
   assessment_submission_state: 'In Progress',
 };
+
 export const matchingAssessmentSubmissionExpiredRow = {
   ...matchingAssessmentSubmissionOpenedRow,
   assessment_submission_state: 'Expired',
@@ -440,6 +441,12 @@ export const exampleAssessmentResponseSCAnswered: AssessmentResponse = {
   answer_id: singleChoiceAnswerId,
 };
 
+export const exampleAssessmentResponseSCGraded: AssessmentResponse = {
+  ...exampleAssessmentResponseSCAnswered,
+  score: 1,
+  grader_response: 'Well done!',
+};
+
 export const exampleAssessmentSubmissionOpenedWithResponse: AssessmentSubmission =
   {
     id: assessmentSubmissionId,
@@ -505,18 +512,7 @@ export const exampleAssessmentSubmissionGraded: AssessmentSubmission = {
   submitted_at: '2023-02-09T13:23:45.000Z',
   last_modified: '2023-02-09T13:23:45.000Z',
   score: 4,
-  responses: [
-    {
-      id: assessmentSubmissionResponseSCId,
-      assessment_id: programAssessmentId,
-      submission_id: assessmentSubmissionId,
-      question_id: singleChoiceQuestionId,
-      response_text: null,
-      answer_id: singleChoiceAnswerId,
-      score: 1,
-      grader_response: 'Well done!',
-    },
-  ],
+  responses: [exampleAssessmentResponseSCGraded],
 };
 
 export const exampleAssessmentSubmissionGradedRemovedGrades: AssessmentSubmission =
@@ -525,16 +521,7 @@ export const exampleAssessmentSubmissionGradedRemovedGrades: AssessmentSubmissio
     assessment_submission_state: 'Graded',
     submitted_at: '2023-02-09T13:23:45.000Z',
     last_modified: '2023-02-09T13:23:45.000Z',
-    responses: [
-      {
-        id: assessmentSubmissionResponseSCId,
-        assessment_id: programAssessmentId,
-        submission_id: assessmentSubmissionId,
-        question_id: singleChoiceQuestionId,
-        response_text: null,
-        answer_id: singleChoiceAnswerId,
-      },
-    ],
+    responses: [exampleAssessmentResponseSCAnswered],
   };
 
 export const exampleParticipantAssessmentWithSubmissions: AssessmentWithSubmissions =

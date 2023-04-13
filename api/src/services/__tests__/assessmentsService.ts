@@ -1223,58 +1223,15 @@ describe('updateAssessmentSubmission', () => {
       [assessmentSubmissionId],
       [matchingAssessmentResponsesRowSCInProgress]
     );
-    mockQuery(
-      'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
-      [exampleProgramAssessment.id],
-      [matchingProgramAssessmentPastDueRow]
-    );
-    mockQuery(
-      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
-      [exampleProgramAssessment.program_id],
-      [matchingProgramRow]
-    );
-    mockQuery(
-      'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
-      [curriculumAssessmentId],
-      [matchingCurriculumAssessmentRow]
-    );
-    mockQuery(
-      'select `activity_types`.`title` from `activity_types` inner join `activities` on `activities`.`activity_type_id` = `activity_types`.`id` where `activities`.`id` = ?',
-      [matchingCurriculumAssessmentRow.activity_id],
-      [
-        {
-          title:
-            exampleCurriculumAssessmentWithSCCorrectAnswers.assessment_type,
-        },
-      ]
-    );
-    // again my understanding we don't reach this point
-    mockQuery(
-      'update `assessment_responses` set `answer_id` = ? where `id` = ?',
-      [
-        matchingAssessmentResponsesRowSCInProgress.answer_id,
-        matchingAssessmentResponsesRowSCInProgress.id,
-      ],
-      []
-    );
-    mockQuery(
-      'select `id` from `assessment_submission_states` where `title` = ?',
-      ['Expired'],
-      [{ id: 5 }]
-    );
-    mockQuery(
-      'update `assessment_submissions` set `assessment_submission_state_id` = ? where `id` = ?',
-      [5, sentUpdatedAssessmentSubmissionChangedResponse.id],
-      []
-    );
 
     expect(
       await updateAssessmentSubmission(
-        exampleAssessmentSubmissionExpired,
+        exampleAssessmentSubmissionInProgress,
         false
       )
     ).toEqual(exampleAssessmentSubmissionExpired);
   });
+
   it('should not allow a participant to update grading information for themselves', async () => {
     const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
     Settings.now = () => expectedNow.toMillis();

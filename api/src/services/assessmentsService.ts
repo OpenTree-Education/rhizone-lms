@@ -376,7 +376,7 @@ const listSubmissionResponses = async (
   submissionId: number,
   gradingsIncluded?: boolean
 ): Promise<AssessmentResponse[]> => {
-  const matchingAssessmentSubmissionsRows = await db('assessment_responses')
+  const matchingAssessmentResponsesRows = await db('assessment_responses')
     .select(
       'id',
       'assessment_id',
@@ -388,26 +388,38 @@ const listSubmissionResponses = async (
     )
     .where('submission_id', submissionId);
 
-  if (matchingAssessmentSubmissionsRows.length === 0) {
+  if (matchingAssessmentResponsesRows.length === 0) {
     return null;
   }
 
-  const assessmentSubmissions: AssessmentResponse[] =
-    matchingAssessmentSubmissionsRows.map(assessmentSubmissionsRow => {
-      return {
-        id: assessmentSubmissionsRow.id,
-        assessment_id: assessmentSubmissionsRow.assessment_id,
+  const assessmentResponses: AssessmentResponse[] =
+    matchingAssessmentResponsesRows.map(assessmentResponsesRow => {
+      const assessmentResponse: AssessmentResponse = {
+        id: assessmentResponsesRow.id,
+        assessment_id: assessmentResponsesRow.assessment_id,
         submission_id: submissionId,
-        question_id: assessmentSubmissionsRow.question_id,
-        answer_id: assessmentSubmissionsRow.answer_id,
-        response_text: assessmentSubmissionsRow.response,
-        score: gradingsIncluded === true && assessmentSubmissionsRow.score,
-        grader_response:
-          gradingsIncluded === true && assessmentSubmissionsRow.grader_response,
+        question_id: assessmentResponsesRow.question_id,
       };
+
+      if (
+        assessmentResponsesRow.answer_id === null &&
+        assessmentResponsesRow.response !== null
+      ) {
+        assessmentResponse.response_text = assessmentResponsesRow.response;
+      } else if (assessmentResponsesRow.answer_id !== null) {
+        assessmentResponse.answer_id = assessmentResponsesRow.answer_id;
+      }
+
+      if (gradingsIncluded && gradingsIncluded === true) {
+        assessmentResponse.score = assessmentResponsesRow.score;
+        assessmentResponse.grader_response =
+          assessmentResponsesRow.grader_response;
+      }
+
+      return assessmentResponse;
     });
 
-  return assessmentSubmissions;
+  return assessmentResponses;
 };
 
 /**
@@ -1416,6 +1428,12 @@ export const updateAssessmentSubmission = async (
 
     updatedSubmission.responses = updatedResponses;
     updatedSubmission.assessment_submission_state = newState;
+  } else if (
+    ['Expired'].includes(
+      existingAssessmentSubmission.assessment_submission_state
+    )
+  ) {
+    return existingAssessmentSubmission;
   } else if (
     ['Opened', 'In Progress'].includes(
       existingAssessmentSubmission.assessment_submission_state
