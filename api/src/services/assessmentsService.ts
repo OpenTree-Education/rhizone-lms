@@ -1450,7 +1450,10 @@ export const updateAssessmentSubmission = async (
             existingAssessmentSubmission.responses?.filter(
               e => e.id === assessmentResponse.id
             );
-          if (matchingExistingResponses.length === 0) {
+          if (
+            !Array.isArray(existingAssessmentSubmission.responses) ||
+            matchingExistingResponses.length === 0
+          ) {
             updatedResponses.push(
               await createSubmissionResponse(assessmentResponse)
             );
