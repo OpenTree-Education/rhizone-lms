@@ -97,6 +97,7 @@ import {
   matchingProgramAssessmentPastDueRow,
   matchingAssessmentResponsesRowSCSubmitted,
   sentUpdatedAssessmentSubmissionWithNewSCResponse,
+  exampleAssessmentSubmissionPastDueDate,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -1149,8 +1150,9 @@ describe('updateAssessmentSubmission', () => {
       )
     ).toEqual(exampleAssessmentSubmissionSubmitted);
   });
+
   it('should automatically expire an in-progress assessment submission after the due date', async () => {
-    const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
+    const expectedNow = DateTime.utc(2023, 2, 10, 0, 0, 10);
     Settings.now = () => expectedNow.toMillis();
 
     mockQuery(
@@ -1189,22 +1191,13 @@ describe('updateAssessmentSubmission', () => {
       ]
     );
     mockQuery(
-      'update `assessment_responses` set `answer_id` = ? where `id` = ?',
-      [
-        matchingAssessmentResponsesRowSCInProgress.answer_id,
-        matchingAssessmentResponsesRowSCInProgress.id,
-      ],
-      []
-    );
-    mockQuery(
       'select `id` from `assessment_submission_states` where `title` = ?',
       ['Expired'],
       [{ id: 5 }]
     );
-    //not sure what data should insert or we even reach this point
     mockQuery(
       'update `assessment_submissions` set `assessment_submission_state_id` = ? where `id` = ?',
-      [5],
+      [5, exampleAssessmentSubmissionInProgress.id],
       []
     );
 
@@ -1213,8 +1206,9 @@ describe('updateAssessmentSubmission', () => {
         exampleAssessmentSubmissionInProgress,
         false
       )
-    ).toEqual(exampleAssessmentSubmissionExpired);
+    ).toEqual(exampleAssessmentSubmissionPastDueDate);
   });
+
   it('should not allow a participant to modify their responses to an expired submission', async () => {
     const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
     Settings.now = () => expectedNow.toMillis();

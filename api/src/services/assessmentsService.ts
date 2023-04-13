@@ -1433,6 +1433,7 @@ export const updateAssessmentSubmission = async (
       // Override to force frontend to update state
       updatedSubmission.last_modified = DateTime.now()
         .plus({ weeks: 1 })
+        .toUTC()
         .toISO();
     } else {
       // participant could only update state to 'Submitted' or 'In Progress', default in progress.
