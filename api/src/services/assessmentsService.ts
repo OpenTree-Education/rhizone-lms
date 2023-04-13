@@ -1494,7 +1494,7 @@ export const updateAssessmentSubmission = async (
       await db('assessment_submissions')
         .update({
           assessment_submission_state_id: newStateId.id,
-          submitted_at: DateTime.now().toUTC().toSQL({ includeOffset: false }),
+          submitted_at: db.fn.now(),
         })
         .where('id', assessmentSubmission.id);
     } else {
