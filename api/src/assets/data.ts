@@ -419,6 +419,23 @@ export const exampleAssessmentSubmissionOpened: AssessmentSubmission = {
   last_modified: '2023-02-09T12:00:00.000Z',
 };
 
+export const exampleAssessmentSubmissionOpenedWithResponse: AssessmentSubmission = {
+  id: assessmentSubmissionId,
+  assessment_id: programAssessmentId,
+  principal_id: participantPrincipalId,
+  assessment_submission_state: 'Opened',
+  opened_at: '2023-02-09T04:05:00.000-08:00',
+  last_modified: '2023-02-09T04:05:00.000-08:00',
+   responses: [
+    {
+      id: assessmentSubmissionResponseSCId,
+      assessment_id: programAssessmentId,
+      submission_id: assessmentSubmissionId,
+      question_id: singleChoiceQuestionId
+    },
+  ],
+};
+
 export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
   ...exampleAssessmentSubmissionOpened,
   assessment_submission_state: 'In Progress',
