@@ -271,45 +271,45 @@ describe('constructParticipantAssessmentSummary', () => {
   });
 });
 
-// describe('createAssessmentSubmission', () => {
-//   it('should create a new AssessmentSubmission for a program assessment', async () => {
-//     const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
-//     Settings.now = () => expectedNow.toMillis();
+describe('createAssessmentSubmission', () => {
+  it('should create a new AssessmentSubmission for a program assessment', async () => {
+    const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
+    Settings.now = () => expectedNow.toMillis();
 
-//     mockQuery(
-//       'select `id` from `assessment_submission_states` where `title` = ?',
-//       ['Opened'],
-//       [3]
-//     );
-//     mockQuery(
-//       'insert into `assessment_submissions` (`assessment_id`, `assessment_submission_state_id`, `principal_id`) values (?, DEFAULT, ?)',
-//       [exampleProgramAssessment.id, participantPrincipalId],
-//       [exampleAssessmentSubmissionOpenedWithResponse.id]
-//     );
-//     mockQuery(
-//       'select `id` from `assessment_questions` where `assessment_id` = ?',
-//       [exampleProgramAssessment.assessment_id],
-//       [{ id: singleChoiceQuestionId }]
-//     );
-//     mockQuery(
-//       'insert into `assessment_responses` (`answer_id`, `assessment_id`, `question_id`, `response`, `submission_id`) values (DEFAULT, ?, ?, DEFAULT, ?)',
-//       [
-//         exampleProgramAssessment.id,
-//         singleChoiceQuestionId,
-//         exampleAssessmentSubmissionOpenedWithResponse.id,
-//       ],
-//       [assessmentSubmissionResponseSCId]
-//     );
+    mockQuery(
+      'select `id` from `assessment_submission_states` where `title` = ?',
+      ['Opened'],
+      [3]
+    );
+    mockQuery(
+      'insert into `assessment_submissions` (`assessment_id`, `assessment_submission_state_id`, `principal_id`) values (?, DEFAULT, ?)',
+      [exampleProgramAssessment.id, participantPrincipalId],
+      [exampleAssessmentSubmissionOpenedWithResponse.id]
+    );
+    mockQuery(
+      'select `id` from `assessment_questions` where `assessment_id` = ?',
+      [exampleProgramAssessment.assessment_id],
+      [{ id: singleChoiceQuestionId }]
+    );
+    mockQuery(
+      'insert into `assessment_responses` (`answer_id`, `assessment_id`, `question_id`, `response`, `submission_id`) values (DEFAULT, ?, ?, DEFAULT, ?)',
+      [
+        exampleProgramAssessment.id,
+        singleChoiceQuestionId,
+        exampleAssessmentSubmissionOpenedWithResponse.id,
+      ],
+      [assessmentSubmissionResponseSCId]
+    );
 
-//     expect(
-//       await createAssessmentSubmission(
-//         participantPrincipalId,
-//         exampleProgramAssessment.id,
-//         exampleProgramAssessment.assessment_id
-//       )
-//     ).toEqual(exampleAssessmentSubmissionOpenedWithResponse);
-//   });
-// });
+    expect(
+      await createAssessmentSubmission(
+        participantPrincipalId,
+        exampleProgramAssessment.id,
+        exampleProgramAssessment.assessment_id
+      )
+    ).toEqual(exampleAssessmentSubmissionOpenedWithResponse);
+  });
+});
 
 describe('createCurriculumAssessment', () => {
   it('should create a curriculum assessment ID without question', async () => {
