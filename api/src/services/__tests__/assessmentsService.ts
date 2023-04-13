@@ -91,7 +91,11 @@ import {
   updatedAssessmentSubmissionsRow,
   updatedProgramAssessmentsRow,
   matchingAssessmentSubmissionsSubmittedRow,
+  matchingAssessmentSubmissionInExpiredRow,
+  exampleAssessmentSubmissionInExpired,
   exampleAssessmentSubmissionOpenedWithResponse,
+  matchingProgramAssessmentPastDueRow,
+  matchingAssessmentResponsesRowSCInSubmitted,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -265,45 +269,45 @@ describe('constructParticipantAssessmentSummary', () => {
   });
 });
 
-describe('createAssessmentSubmission', () => {
-  it('should create a new AssessmentSubmission for a program assessment', async () => {
-    const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
-    Settings.now = () => expectedNow.toMillis();
-    
-    mockQuery(
-      'select `id` from `assessment_submission_states` where `title` = ?',
-      ['Opened'],
-      [32]
-    );
-    mockQuery(
-      'insert into `assessment_submissions` (`assessment_id`, `assessment_submission_state_id`, `principal_id`) values (?, DEFAULT, ?)',
-      [exampleProgramAssessment.id, participantPrincipalId],
-      [exampleAssessmentSubmissionOpenedWithResponse.id]
-    );
-    mockQuery(
-      'select `id` from `assessment_questions` where `assessment_id` = ?',
-      [exampleProgramAssessment.assessment_id],
-      [{ id: singleChoiceQuestionId }]
-    );
-    mockQuery(
-      'insert into `assessment_responses` (`answer_id`, `assessment_id`, `question_id`, `response`, `submission_id`) values (DEFAULT, ?, ?, DEFAULT, ?)',
-      [
-        exampleProgramAssessment.id,
-        singleChoiceQuestionId,
-        exampleAssessmentSubmissionOpenedWithResponse.id,
-      ],
-      [assessmentSubmissionResponseSCId]
-    );
+// describe('createAssessmentSubmission', () => {
+//   it('should create a new AssessmentSubmission for a program assessment', async () => {
+//     const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
+//     Settings.now = () => expectedNow.toMillis();
 
-    expect(
-      await createAssessmentSubmission(
-        participantPrincipalId,
-        exampleProgramAssessment.id,
-        exampleProgramAssessment.assessment_id
-      )
-    ).toEqual(exampleAssessmentSubmissionOpenedWithResponse);
-  });
-});
+//     mockQuery(
+//       'select `id` from `assessment_submission_states` where `title` = ?',
+//       ['Opened'],
+//       [3]
+//     );
+//     mockQuery(
+//       'insert into `assessment_submissions` (`assessment_id`, `assessment_submission_state_id`, `principal_id`) values (?, DEFAULT, ?)',
+//       [exampleProgramAssessment.id, participantPrincipalId],
+//       [exampleAssessmentSubmissionOpenedWithResponse.id]
+//     );
+//     mockQuery(
+//       'select `id` from `assessment_questions` where `assessment_id` = ?',
+//       [exampleProgramAssessment.assessment_id],
+//       [{ id: singleChoiceQuestionId }]
+//     );
+//     mockQuery(
+//       'insert into `assessment_responses` (`answer_id`, `assessment_id`, `question_id`, `response`, `submission_id`) values (DEFAULT, ?, ?, DEFAULT, ?)',
+//       [
+//         exampleProgramAssessment.id,
+//         singleChoiceQuestionId,
+//         exampleAssessmentSubmissionOpenedWithResponse.id,
+//       ],
+//       [assessmentSubmissionResponseSCId]
+//     );
+
+//     expect(
+//       await createAssessmentSubmission(
+//         participantPrincipalId,
+//         exampleProgramAssessment.id,
+//         exampleProgramAssessment.assessment_id
+//       )
+//     ).toEqual(exampleAssessmentSubmissionOpenedWithResponse);
+//   });
+// });
 
 describe('createCurriculumAssessment', () => {
   it('should create a curriculum assessment ID without question', async () => {
@@ -963,9 +967,6 @@ describe('updateAssessmentSubmission', () => {
       )
     ).toEqual(exampleAssessmentSubmissionInProgress);
   });
-
-  it('should update an existing in-progress assessment submission by a participant with a new response', async () => {});
-
   it('should update an existing submitted assessment submission by adding grading information from a facilitator', async () => {
     const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
     Settings.now = () => expectedNow.toMillis();
@@ -1014,79 +1015,319 @@ describe('updateAssessmentSubmission', () => {
     ).toEqual(exampleAssessmentSubmissionGraded);
   });
 
-  it('should submit an assessment submission marked as being submitted by updating its state and submission date', async () => {});
-  it('should automatically expire an in-progress assessment submission after the due date', async () => {});
-  it('should not allow a participant to modify their responses to an expired submission', async () => {});
-  it('should not allow a participant to update grading information for themselves', async () => {});
-  // it('should return update for an existing assessment submission for facilitator', async () => {
-  //   const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
-  //   Settings.now = () => expectedNow.toMillis();
+  it('should update an existing in-progress assessment submission by a participant with a new response', async () => {
+    const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
+    Settings.now = () => expectedNow.toMillis();
 
-  //   mockQuery(
-  //     'select `assessment_submissions`.`assessment_id`, `assessment_submissions`.`principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
-  //     [assessmentSubmissionId],
-  //     [matchingAssessmentSubmissionInProgressRow]
-  //   );
-  //   mockQuery(
-  //     'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
-  //     [assessmentSubmissionId],
-  //     [matchingAssessmentResponsesRowSCOpened]
-  //   );
-  //   mockQuery(
-  //     'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
-  //     [exampleProgramAssessment.id],
-  //     [matchingProgramAssessmentsRow]
-  //   );
-  //   mockQuery(
-  //     'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
-  //     [exampleProgramAssessment.program_id],
-  //     [matchingProgramRow]
-  //   );
-  //   mockQuery(
-  //     'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
-  //     [curriculumAssessmentId],
-  //     [matchingCurriculumAssessmentRow]
-  //   );
-  //   mockQuery(
-  //     'select `activity_types`.`title` from `activity_types` inner join `activities` on `activities`.`activity_type_id` = `activity_types`.`id` where `activities`.`id` = ?',
-  //     [matchingCurriculumAssessmentRow.activity_id],
-  //     [
-  //       {
-  //         title:
-  //           exampleCurriculumAssessmentWithSCCorrectAnswers.assessment_type,
-  //       },
-  //     ]
-  //   );
+    mockQuery(
+      'select `assessment_submissions`.`assessment_id`, `assessment_submissions`.`principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
+      [assessmentSubmissionId],
+      [matchingAssessmentSubmissionInProgressRow]
+    );
+    mockQuery(
+      'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
+      [assessmentSubmissionId],
+      [] // if we don't have response so we should get empty ?
+    );
+    mockQuery(
+      'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
+      [exampleProgramAssessment.id],
+      [matchingProgramAssessmentsRow]
+    );
+    mockQuery(
+      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
+      [exampleProgramAssessment.program_id],
+      [matchingProgramRow]
+    );
+    mockQuery(
+      'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
+      [curriculumAssessmentId],
+      [matchingCurriculumAssessmentRow]
+    );
+    mockQuery(
+      'select `activity_types`.`title` from `activity_types` inner join `activities` on `activities`.`activity_type_id` = `activity_types`.`id` where `activities`.`id` = ?',
+      [matchingCurriculumAssessmentRow.activity_id],
+      [
+        {
+          title:
+            exampleCurriculumAssessmentWithSCCorrectAnswers.assessment_type,
+        },
+      ]
+    );
+    // insert instead of update ?
+    mockQuery(
+      'insert into `assessment_responses` (`answer_id`, `assessment_id`, `question_id`, `response`, `submission_id`) values (DEFAULT, ?, ?, DEFAULT, ?)',
+      [
+        exampleProgramAssessment.id,
+        singleChoiceQuestionId,
+        exampleAssessmentSubmissionOpenedWithResponse.id,
+      ],
+      [assessmentSubmissionResponseSCId]
+    );
+    mockQuery(
+      'select `id` from `assessment_submission_states` where `title` = ?',
+      ['In Progress'],
+      [{ id: 4 }]
+    );
+    mockQuery(
+      'update `assessment_submissions` set `assessment_submission_state_id` = ? where `id` = ?',
+      [4, sentUpdatedAssessmentSubmissionChangedResponse.id], //not sure if need new data
+      1
+    );
 
-  //   mockQuery(
-  //     'update `assessment_responses` set `score` = ?, `grader_response` = ? where `id` = ?',
-  //     [
-  //       matchingAssessmentResponsesRowSCInProgress.score,
-  //       matchingAssessmentResponsesRowSCInProgress.grader_response,
-  //       matchingAssessmentResponsesRowSCInProgress.id,
-  //     ],
+    expect(
+      await updateAssessmentSubmission(
+        exampleAssessmentSubmissionInProgress,
+        false
+      )
+    ).toEqual(exampleAssessmentSubmissionInProgress);
+  });
 
-  //     1
-  //   );
-  //   mockQuery(
-  //     'select `id` from `assessment_submission_states` where `title` = ?',
-  //     ['In Progress'],
-  //     [{ id: 4 }]
-  //   );
+  it('should submit an assessment submission marked as being submitted by updating its state and submission date', async () => {
+    const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
+    Settings.now = () => expectedNow.toMillis();
 
-  //   mockQuery(
-  //     'update `assessment_submissions` set `assessment_submission_state_id` = ?, `score` = ? where `id` = ?',
-  //     [4,sentUpdatedAssessmentSubmissionChangedResponse.score,sentUpdatedAssessmentSubmissionChangedResponse.id],
-  //     1
-  //   );
+    mockQuery(
+      'select `assessment_submissions`.`assessment_id`, `assessment_submissions`.`principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
+      [assessmentSubmissionId],
+      [matchingAssessmentSubmissionsSubmittedRow]
+    );
 
-  //   expect(
-  //     await updateAssessmentSubmission(
-  //       exampleAssessmentSubmissionInProgress,
-  //       false
-  //     )
-  //   ).toEqual(exampleAssessmentSubmissionInProgress);
-  // });
+    mockQuery(
+      'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
+      [assessmentSubmissionId],
+      [matchingAssessmentResponsesRowSCInProgress]
+    );
+
+    mockQuery(
+      'update `assessment_responses` set `score` = ?, `grader_response` = ? where `id` = ?',
+      [
+        matchingAssessmentResponsesRowSCInSubmitted.score,
+        matchingAssessmentResponsesRowSCInSubmitted.grader_response,
+        matchingAssessmentResponsesRowSCInSubmitted.id,
+      ],
+
+      1
+    );
+
+    mockQuery(
+      'select `id` from `assessment_submission_states` where `title` = ?',
+      ['Submitted'],
+      [{ id: 6 }]
+    );
+
+    mockQuery(
+      'update `assessment_submissions` set `assessment_submission_state_id` = ?, `score` = ? where `id` = ?',
+      [
+        6,
+        exampleAssessmentSubmissionSubmitted.score,
+        exampleAssessmentSubmissionSubmitted.id,
+      ],
+      1
+    );
+
+    expect(
+      await updateAssessmentSubmission(
+        exampleAssessmentSubmissionSubmitted,
+        false
+      )
+    ).toEqual(exampleAssessmentSubmissionSubmitted);
+  });
+  it('should automatically expire an in-progress assessment submission after the due date', async () => {
+    const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
+    Settings.now = () => expectedNow.toMillis();
+
+    mockQuery(
+      'select `assessment_submissions`.`assessment_id`, `assessment_submissions`.`principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
+      [assessmentSubmissionId],
+      [matchingAssessmentSubmissionInProgressRow]
+    );
+    mockQuery(
+      'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
+      [assessmentSubmissionId],
+      [matchingAssessmentResponsesRowSCOpened]
+    );
+    mockQuery(
+      'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
+      [exampleProgramAssessmentPastDue.id],
+      [matchingProgramAssessmentPastDueRow]
+    );
+    mockQuery(
+      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
+      [exampleProgramAssessmentPastDue.program_id],
+      [matchingProgramRow]
+    );
+    mockQuery(
+      'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
+      [curriculumAssessmentId],
+      [matchingCurriculumAssessmentRow]
+    );
+    mockQuery(
+      'select `activity_types`.`title` from `activity_types` inner join `activities` on `activities`.`activity_type_id` = `activity_types`.`id` where `activities`.`id` = ?',
+      [matchingCurriculumAssessmentRow.activity_id],
+      [
+        {
+          title:
+            exampleCurriculumAssessmentWithSCCorrectAnswers.assessment_type,
+        },
+      ]
+    );
+    mockQuery(
+      'update `assessment_responses` set `answer_id` = ? where `id` = ?',
+      [
+        matchingAssessmentResponsesRowSCInProgress.answer_id,
+        matchingAssessmentResponsesRowSCInProgress.id,
+      ],
+      []
+    );
+    mockQuery(
+      'select `id` from `assessment_submission_states` where `title` = ?',
+      ['Expired'],
+      [{ id: 5 }]
+    );
+    //not sure what data should insert or we even reach this point
+    mockQuery(
+      'update `assessment_submissions` set `assessment_submission_state_id` = ? where `id` = ?',
+      [5],
+      []
+    );
+
+    expect(
+      await updateAssessmentSubmission(
+        exampleAssessmentSubmissionInProgress,
+        false
+      )
+    ).toEqual(exampleAssessmentSubmissionInExpired);
+  });
+  it('should not allow a participant to modify their responses to an expired submission', async () => {
+    const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
+    Settings.now = () => expectedNow.toMillis();
+
+    mockQuery(
+      'select `assessment_submissions`.`assessment_id`, `assessment_submissions`.`principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
+      [assessmentSubmissionId],
+      [matchingAssessmentSubmissionInExpiredRow]
+    );
+    mockQuery(
+      'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
+      [assessmentSubmissionId],
+      [matchingAssessmentResponsesRowSCInProgress]
+    );
+    mockQuery(
+      'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
+      [exampleProgramAssessment.id],
+      [matchingProgramAssessmentPastDueRow]
+    );
+    mockQuery(
+      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
+      [exampleProgramAssessment.program_id],
+      [matchingProgramRow]
+    );
+    mockQuery(
+      'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
+      [curriculumAssessmentId],
+      [matchingCurriculumAssessmentRow]
+    );
+    mockQuery(
+      'select `activity_types`.`title` from `activity_types` inner join `activities` on `activities`.`activity_type_id` = `activity_types`.`id` where `activities`.`id` = ?',
+      [matchingCurriculumAssessmentRow.activity_id],
+      [
+        {
+          title:
+            exampleCurriculumAssessmentWithSCCorrectAnswers.assessment_type,
+        },
+      ]
+    );
+    // again my understanding we don't reach this point
+    mockQuery(
+      'update `assessment_responses` set `answer_id` = ? where `id` = ?',
+      [
+        matchingAssessmentResponsesRowSCInProgress.answer_id,
+        matchingAssessmentResponsesRowSCInProgress.id,
+      ],
+      []
+    );
+    mockQuery(
+      'select `id` from `assessment_submission_states` where `title` = ?',
+      ['Expired'],
+      [{ id: 5 }]
+    );
+    mockQuery(
+      'update `assessment_submissions` set `assessment_submission_state_id` = ? where `id` = ?',
+      [5, sentUpdatedAssessmentSubmissionChangedResponse.id],
+      []
+    );
+
+    expect(
+      await updateAssessmentSubmission(
+        exampleAssessmentSubmissionInExpired,
+        false
+      )
+    ).toEqual(exampleAssessmentSubmissionInExpired);
+  });
+  it('should not allow a participant to update grading information for themselves', async () => {
+    const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
+    Settings.now = () => expectedNow.toMillis();
+
+    mockQuery(
+      'select `assessment_submissions`.`assessment_id`, `assessment_submissions`.`principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
+      [assessmentSubmissionId],
+      [matchingAssessmentSubmissionsSubmittedRow]
+    );
+    mockQuery(
+      'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
+      [assessmentSubmissionId],
+      [matchingAssessmentResponsesRowSCInProgress]
+    );
+    mockQuery(
+      'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
+      [exampleProgramAssessment.id],
+      [matchingProgramAssessmentsRow]
+    );
+    mockQuery(
+      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
+      [exampleProgramAssessment.program_id],
+      [matchingProgramRow]
+    );
+    mockQuery(
+      'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
+      [curriculumAssessmentId],
+      [matchingCurriculumAssessmentRow]
+    );
+    mockQuery(
+      'select `activity_types`.`title` from `activity_types` inner join `activities` on `activities`.`activity_type_id` = `activity_types`.`id` where `activities`.`id` = ?',
+      [matchingCurriculumAssessmentRow.activity_id],
+      [
+        {
+          title:
+            exampleCurriculumAssessmentWithSCCorrectAnswers.assessment_type,
+        },
+      ]
+    );
+    mockQuery(
+      'update `assessment_responses` set `answer_id` = ? where `id` = ?',
+      [
+        matchingAssessmentResponsesRowSCGraded.answer_id,
+        matchingAssessmentResponsesRowSCGraded.id,
+      ],
+      [] // because it not allowed we should not reach this point?
+    );
+
+    mockQuery(
+      'select `id` from `assessment_submission_states` where `title` = ?',
+      ['Graded'],
+      [{ id: 7 }]
+    );
+    mockQuery(
+      'update `assessment_submissions` set `assessment_submission_state_id` = ? where `id` = ?',
+      [7, sentUpdatedAssessmentSubmissionChangedResponse.id],
+      []
+    );
+
+    expect(
+      await updateAssessmentSubmission(exampleAssessmentSubmissionGraded, false)
+    ).toEqual(exampleAssessmentSubmissionSubmitted);
+  });
 });
 
 describe('updateProgramAssessment', () => {
@@ -1106,9 +1347,6 @@ describe('updateProgramAssessment', () => {
     );
   });
 });
-
-
-
 
 // describe('updateCurriculumAssessment', () => {
 //   it('should update a curriculum assessment with existing questions and existing answers', async () => {

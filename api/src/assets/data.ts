@@ -152,6 +152,10 @@ export const matchingAssessmentSubmissionInProgressRow = {
   ...matchingAssessmentSubmissionOpenedRow,
   assessment_submission_state: 'In Progress',
 };
+export const matchingAssessmentSubmissionInExpiredRow = {
+  ...matchingAssessmentSubmissionOpenedRow,
+  assessment_submission_state: 'Expired',
+};
 
 export const matchingAssessmentSubmissionsSubmittedRow = {
   ...matchingAssessmentSubmissionOpenedRow,
@@ -190,6 +194,16 @@ export const matchingAssessmentResponsesRowSCOpened = {
 };
 
 export const matchingAssessmentResponsesRowSCInProgress = {
+  id: assessmentSubmissionResponseSCId,
+  assessment_id: programAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: singleChoiceQuestionId,
+  answer_id: singleChoiceAnswerId,
+  response: null as string,
+  score: null as number,
+  grader_response: null as string,
+};
+export const matchingAssessmentResponsesRowSCInSubmitted = {
   id: assessmentSubmissionResponseSCId,
   assessment_id: programAssessmentId,
   submission_id: assessmentSubmissionId,
@@ -419,26 +433,41 @@ export const exampleAssessmentSubmissionOpened: AssessmentSubmission = {
   last_modified: '2023-02-09T12:00:00.000Z',
 };
 
-export const exampleAssessmentSubmissionOpenedWithResponse: AssessmentSubmission = {
-  id: assessmentSubmissionId,
-  assessment_id: programAssessmentId,
-  principal_id: participantPrincipalId,
-  assessment_submission_state: 'Opened',
-  opened_at: '2023-02-09T04:05:00.000-08:00',
-  last_modified: '2023-02-09T04:05:00.000-08:00',
-   responses: [
-    {
-      id: assessmentSubmissionResponseSCId,
-      assessment_id: programAssessmentId,
-      submission_id: assessmentSubmissionId,
-      question_id: singleChoiceQuestionId
-    },
-  ],
-};
+export const exampleAssessmentSubmissionOpenedWithResponse: AssessmentSubmission =
+  {
+    id: assessmentSubmissionId,
+    assessment_id: programAssessmentId,
+    principal_id: participantPrincipalId,
+    assessment_submission_state: 'Opened',
+    opened_at: '2023-02-09T04:05:00.000-08:00',
+    last_modified: '2023-02-09T04:05:00.000-08:00',
+    responses: [
+      {
+        id: assessmentSubmissionResponseSCId,
+        assessment_id: programAssessmentId,
+        submission_id: assessmentSubmissionId,
+        question_id: singleChoiceQuestionId,
+      },
+    ],
+  };
 
 export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
   ...exampleAssessmentSubmissionOpened,
   assessment_submission_state: 'In Progress',
+  last_modified: '2023-02-09T12:05:00.000Z',
+  responses: [
+    {
+      id: assessmentSubmissionResponseSCId,
+      assessment_id: programAssessmentId,
+      submission_id: assessmentSubmissionId,
+      question_id: singleChoiceQuestionId,
+      answer_id: singleChoiceAnswerId,
+    },
+  ],
+};
+export const exampleAssessmentSubmissionInExpired: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'Expired',
   last_modified: '2023-02-09T12:05:00.000Z',
   responses: [
     {
