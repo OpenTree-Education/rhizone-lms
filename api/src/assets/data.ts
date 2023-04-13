@@ -428,6 +428,18 @@ export const exampleAssessmentSubmissionOpened: AssessmentSubmission = {
   last_modified: '2023-02-09T12:00:00.000Z',
 };
 
+export const exampleAssessmentResponseSCUnanswered: AssessmentResponse = {
+  id: assessmentSubmissionResponseSCId,
+  assessment_id: programAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: singleChoiceQuestionId,
+};
+
+export const exampleAssessmentResponseSCAnswered: AssessmentResponse = {
+  ...exampleAssessmentResponseSCUnanswered,
+  answer_id: singleChoiceAnswerId,
+};
+
 export const exampleAssessmentSubmissionOpenedWithResponse: AssessmentSubmission =
   {
     id: assessmentSubmissionId,
@@ -436,43 +448,28 @@ export const exampleAssessmentSubmissionOpenedWithResponse: AssessmentSubmission
     assessment_submission_state: 'Opened',
     opened_at: '2023-02-09T04:05:00.000-08:00',
     last_modified: '2023-02-09T04:05:00.000-08:00',
-    responses: [
-      {
-        id: assessmentSubmissionResponseSCId,
-        assessment_id: programAssessmentId,
-        submission_id: assessmentSubmissionId,
-        question_id: singleChoiceQuestionId,
-      },
-    ],
+    responses: [exampleAssessmentResponseSCUnanswered],
   };
 
 export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
   ...exampleAssessmentSubmissionOpened,
   assessment_submission_state: 'In Progress',
   last_modified: '2023-02-09T12:05:00.000Z',
-  responses: [
-    {
-      id: assessmentSubmissionResponseSCId,
-      assessment_id: programAssessmentId,
-      submission_id: assessmentSubmissionId,
-      question_id: singleChoiceQuestionId,
-      answer_id: singleChoiceAnswerId,
-    },
-  ],
+  responses: [exampleAssessmentResponseSCAnswered],
 };
+
+export const exampleAssessmentSubmissionPastDueDate: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'Expired',
+  last_modified: '2023-02-17T00:00:10.000Z',
+  responses: [exampleAssessmentResponseSCAnswered],
+};
+
 export const exampleAssessmentSubmissionExpired: AssessmentSubmission = {
   ...exampleAssessmentSubmissionOpened,
   assessment_submission_state: 'Expired',
   last_modified: '2023-02-09T14:00:00.000Z',
-  responses: [
-    {
-      id: assessmentSubmissionResponseSCId,
-      assessment_id: programAssessmentId,
-      submission_id: assessmentSubmissionId,
-      question_id: singleChoiceQuestionId,
-      answer_id: singleChoiceAnswerId,
-    },
-  ],
+  responses: [exampleAssessmentResponseSCAnswered],
 };
 
 export const exampleAssessmentSubmissionSubmitted: AssessmentSubmission = {
@@ -480,15 +477,7 @@ export const exampleAssessmentSubmissionSubmitted: AssessmentSubmission = {
   assessment_submission_state: 'Submitted',
   submitted_at: '2023-02-09T13:23:45.000Z',
   last_modified: '2023-02-09T13:23:45.000Z',
-  responses: [
-    {
-      id: assessmentSubmissionResponseSCId,
-      assessment_id: programAssessmentId,
-      submission_id: assessmentSubmissionId,
-      question_id: singleChoiceQuestionId,
-      answer_id: singleChoiceAnswerId,
-    },
-  ],
+  responses: [exampleAssessmentResponseSCAnswered],
 };
 
 export const exampleOtherAssessmentSubmissionSubmitted: AssessmentSubmission = {
