@@ -153,6 +153,13 @@ export const matchingAssessmentSubmissionInProgressRow = {
   assessment_submission_state: 'In Progress',
 };
 
+export const matchingAssessmentSubmissionsSubmittedRow = {
+  ...matchingAssessmentSubmissionOpenedRow,
+  assessment_submission_state: 'Submitted',
+  submitted_at: '2023-02-09 13:23:45',
+  updated_at: '2023-02-09 13:23:45',
+};
+
 export const matchingOtherAssessmentSubmissionSubmittedRow = {
   id: assessmentSubmissionByOtherParticipantId,
   assessment_id: programAssessmentId,
@@ -166,10 +173,8 @@ export const matchingOtherAssessmentSubmissionSubmittedRow = {
 };
 
 export const matchingAssessmentSubmissionsRowGraded = {
-  ...matchingAssessmentSubmissionOpenedRow,
+  ...matchingAssessmentSubmissionsSubmittedRow,
   assessment_submission_state: 'Graded',
-  submitted_at: '2023-02-09 13:23:45',
-  updated_at: '2023-02-09 13:23:45',
   score: 4,
 };
 
