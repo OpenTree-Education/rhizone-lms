@@ -1442,10 +1442,8 @@ export const updateAssessmentSubmission = async (
       // if there is an existing response, update it, otherwise insert new response.
       if (
         assessmentSubmission.responses &&
-        Array.isArray(
-          assessmentSubmission.responses &&
-            assessmentSubmission.responses.length > 0
-        )
+        Array.isArray(assessmentSubmission.responses) &&
+        assessmentSubmission.responses.length > 0
       ) {
         for (const assessmentResponse of assessmentSubmissionNoGrades.responses) {
           const matchingExistingResponses =

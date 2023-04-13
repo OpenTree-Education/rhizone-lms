@@ -967,6 +967,7 @@ describe('updateAssessmentSubmission', () => {
       )
     ).toEqual(exampleAssessmentSubmissionInProgress);
   });
+
   it('should update an existing submitted assessment submission by adding grading information from a facilitator', async () => {
     const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
     Settings.now = () => expectedNow.toMillis();
