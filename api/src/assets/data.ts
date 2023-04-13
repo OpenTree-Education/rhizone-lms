@@ -194,6 +194,15 @@ export const matchingAssessmentResponsesRowSCOpened = {
   score: null as number,
   grader_response: null as string,
 };
+export const matchingAssessmentResponsesRowFROpened = {
+  id: assessmentSubmissionResponseFRId,
+  assessment_id: programAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: freeResponseQuestionId,
+  response: null as string,
+  score: null as number,
+  grader_response: null as string,
+};
 
 export const matchingAssessmentResponsesRowSCInProgress = {
   id: assessmentSubmissionResponseSCId,
@@ -262,8 +271,8 @@ export const exampleAssessmentSCAnswerWithCorrectAnswer: Answer = {
 };
 
 export const exampleAssessmentFRAnswerWithoutCorrectAnswer: Answer = {
-  id: singleChoiceAnswerId,
-  question_id: singleChoiceQuestionId,
+  id: freeResponseCorrectAnswerId,
+  question_id: freeResponseQuestionId,
   description: matchingAssessmentAnswersFRRow.description,
   title: matchingAssessmentAnswersFRRow.title,
   sort_order: matchingAssessmentAnswersFRRow.sort_order,
@@ -353,6 +362,11 @@ export const exampleCurriculumAssessmentWithSCCorrectAnswers: CurriculumAssessme
     ...exampleCurriculumAssessment,
     questions: [exampleAssessmentQuestionSCWithCorrectAnswers],
   };
+export const exampleCurriculumAssessmentWithFRCorrectAnswers: CurriculumAssessment =
+  {
+    ...exampleCurriculumAssessment,
+    questions: [exampleAssessmentQuestionFRWithCorrectAnswers],
+  };
 
 export const exampleProgramAssessment: ProgramAssessment = {
   id: programAssessmentId,
@@ -440,6 +454,13 @@ export const exampleAssessmentResponseSCAnswered: AssessmentResponse = {
   ...exampleAssessmentResponseSCUnanswered,
   answer_id: singleChoiceAnswerId,
 };
+export const exampleAssessmentResponseFRAnswered: AssessmentResponse = {
+  id: assessmentSubmissionResponseFRId,
+  assessment_id: programAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: freeResponseQuestionId,
+  response_text: 'test',
+};
 
 export const exampleAssessmentResponseSCGraded: AssessmentResponse = {
   ...exampleAssessmentResponseSCAnswered,
@@ -464,6 +485,12 @@ export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
   last_modified: '2023-02-09T12:05:00.000Z',
   responses: [exampleAssessmentResponseSCAnswered],
 };
+export const exampleAssessmentSubmissionFRInProgress: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'In Progress',
+  last_modified: '2023-02-09T12:05:00.000Z',
+  responses: [exampleAssessmentResponseFRAnswered],
+};
 
 export const exampleAssessmentSubmissionPastDueDate: AssessmentSubmission = {
   ...exampleAssessmentSubmissionOpened,
@@ -485,6 +512,13 @@ export const exampleAssessmentSubmissionSubmitted: AssessmentSubmission = {
   submitted_at: '2023-02-09T13:23:45.000Z',
   last_modified: '2023-02-09T13:23:45.000Z',
   responses: [exampleAssessmentResponseSCAnswered],
+};
+export const exampleAssessmentSubmissionFRSubmitted: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'Submitted',
+  submitted_at: '2023-02-09T13:23:45.000Z',
+  last_modified: '2023-02-09T13:23:45.000Z',
+  responses: [exampleAssessmentResponseFRAnswered],
 };
 
 export const exampleOtherAssessmentSubmissionSubmitted: AssessmentSubmission = {
@@ -581,7 +615,7 @@ export const updatedAssessmentResponsesFRGradedRow = {
   assessment_id: programAssessmentId,
   submission_id: assessmentSubmissionId,
   question_id: freeResponseQuestionId,
-  response: 'test',
+  response_text: 'test',
   score: 1,
   grader_response: 'Good Work',
 };
@@ -686,11 +720,24 @@ export const sentNewSCAssessmentResponse: AssessmentResponse = {
   question_id: singleChoiceQuestionId,
   answer_id: singleChoiceAnswerId,
 };
+export const sentNewFRAssessmentResponse: AssessmentResponse = {
+  assessment_id: programAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: freeResponseQuestionId,
+  response_text: 'test',
+};
 
 export const sentUpdatedAssessmentSubmissionSCResponseSubmitted: AssessmentResponse =
   {
     ...sentNewSCAssessmentResponse,
     id: assessmentSubmissionResponseSCId,
+    score: null as number,
+    grader_response: null as string,
+  };
+export const sentUpdatedAssessmentSubmissionFRResponseSubmitted: AssessmentResponse =
+  {
+    ...sentNewFRAssessmentResponse,
+    id: assessmentSubmissionResponseFRId,
     score: null as number,
     grader_response: null as string,
   };
@@ -719,6 +766,12 @@ export const sentUpdatedAssessmentSubmissionWithNewSCResponse: AssessmentSubmiss
     last_modified: '2023-02-09T12:05:00.000Z',
     responses: [sentNewSCAssessmentResponse],
   };
+export const sentUpdatedAssessmentSubmissionWithNewFRResponse: AssessmentSubmission =
+  {
+    ...exampleAssessmentSubmissionOpened,
+    last_modified: '2023-02-09T12:05:00.000Z',
+    responses: [sentNewFRAssessmentResponse],
+  };
 
 export const sentUpdatedAssessmentSubmissionChangedResponse: AssessmentSubmission =
   {
@@ -727,6 +780,14 @@ export const sentUpdatedAssessmentSubmissionChangedResponse: AssessmentSubmissio
     submitted_at: '2023-02-09T13:23:45.000Z',
     last_modified: '2023-02-10T13:23:45.000Z',
     responses: [sentUpdatedAssessmentSubmissionSCResponseSubmitted],
+  };
+export const sentUpdatedAssessmentSubmissionChangedFRResponse: AssessmentSubmission =
+  {
+    ...exampleAssessmentSubmissionOpened,
+    assessment_submission_state: 'Submitted',
+    submitted_at: '2023-02-09T13:23:45.000Z',
+    last_modified: '2023-02-10T13:23:45.000Z',
+    responses: [sentUpdatedAssessmentSubmissionFRResponseSubmitted],
   };
 
 export const sentUpdatedAssessmentSubmissionChangedResponseWithWrongID: AssessmentSubmission =
