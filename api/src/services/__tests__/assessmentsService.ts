@@ -1244,51 +1244,7 @@ describe('updateAssessmentSubmission', () => {
     mockQuery(
       'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
       [assessmentSubmissionId],
-      [matchingAssessmentResponsesRowSCInProgress]
-    );
-    mockQuery(
-      'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
-      [exampleProgramAssessment.id],
-      [matchingProgramAssessmentsRow]
-    );
-    mockQuery(
-      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
-      [exampleProgramAssessment.program_id],
-      [matchingProgramRow]
-    );
-    mockQuery(
-      'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
-      [curriculumAssessmentId],
-      [matchingCurriculumAssessmentRow]
-    );
-    mockQuery(
-      'select `activity_types`.`title` from `activity_types` inner join `activities` on `activities`.`activity_type_id` = `activity_types`.`id` where `activities`.`id` = ?',
-      [matchingCurriculumAssessmentRow.activity_id],
-      [
-        {
-          title:
-            exampleCurriculumAssessmentWithSCCorrectAnswers.assessment_type,
-        },
-      ]
-    );
-    mockQuery(
-      'update `assessment_responses` set `answer_id` = ? where `id` = ?',
-      [
-        matchingAssessmentResponsesRowSCGraded.answer_id,
-        matchingAssessmentResponsesRowSCGraded.id,
-      ],
-      [] // because it not allowed we should not reach this point?
-    );
-
-    mockQuery(
-      'select `id` from `assessment_submission_states` where `title` = ?',
-      ['Graded'],
-      [{ id: 7 }]
-    );
-    mockQuery(
-      'update `assessment_submissions` set `assessment_submission_state_id` = ? where `id` = ?',
-      [7, sentUpdatedAssessmentSubmissionChangedResponse.id],
-      []
+      [matchingAssessmentResponsesRowSCSubmitted]
     );
 
     expect(

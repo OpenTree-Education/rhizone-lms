@@ -1429,7 +1429,7 @@ export const updateAssessmentSubmission = async (
     updatedSubmission.responses = updatedResponses;
     updatedSubmission.assessment_submission_state = newState;
   } else if (
-    ['Expired'].includes(
+    ['Expired', 'Submitted', 'Graded'].includes(
       existingAssessmentSubmission.assessment_submission_state
     )
   ) {
