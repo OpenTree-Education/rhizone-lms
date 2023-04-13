@@ -960,6 +960,9 @@ describe('updateAssessmentSubmission', () => {
     ).toEqual(exampleAssessmentSubmissionInProgress);
   });
   it('should return update for an existing assessment submission for facilitator', async () => {
+
+  it('should update an existing in-progress assessment submission by a participant with a new response', async () => {});
+
     const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
     Settings.now = () => expectedNow.toMillis();
 
@@ -1053,6 +1056,11 @@ describe('updateAssessmentSubmission', () => {
       )
     ).toEqual(exampleAssessmentSubmissionInProgress);
   });
+
+  it('should submit an assessment submission marked as being submitted by updating its state and submission date', async () => {});
+  it('should automatically expire an in-progress assessment submission after the due date', async () => {});
+  it('should not allow a participant to modify their responses to an expired submission', async () => {});
+  it('should not allow a participant to update grading information for themselves', async () => {});
   // it('should return update for an existing assessment submission for facilitator', async () => {
   //   const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
   //   Settings.now = () => expectedNow.toMillis();
