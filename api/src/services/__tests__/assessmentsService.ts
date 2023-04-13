@@ -279,11 +279,11 @@ describe('createAssessmentSubmission', () => {
     mockQuery(
       'select `id` from `assessment_submission_states` where `title` = ?',
       ['Opened'],
-      [3]
+      [{ id: 3 }]
     );
     mockQuery(
-      'insert into `assessment_submissions` (`assessment_id`, `assessment_submission_state_id`, `principal_id`) values (?, DEFAULT, ?)',
-      [exampleProgramAssessment.id, participantPrincipalId],
+      'insert into `assessment_submissions` (`assessment_id`, `assessment_submission_state_id`, `principal_id`) values (?, ?, ?)',
+      [exampleProgramAssessment.id, 3, participantPrincipalId],
       [exampleAssessmentSubmissionOpenedWithResponse.id]
     );
     mockQuery(
