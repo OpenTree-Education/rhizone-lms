@@ -152,9 +152,10 @@ export const matchingAssessmentSubmissionInProgressRow = {
   ...matchingAssessmentSubmissionOpenedRow,
   assessment_submission_state: 'In Progress',
 };
-export const matchingAssessmentSubmissionInExpiredRow = {
+export const matchingAssessmentSubmissionExpiredRow = {
   ...matchingAssessmentSubmissionOpenedRow,
   assessment_submission_state: 'Expired',
+  updated_at: '2023-02-09 14:00:00',
 };
 
 export const matchingAssessmentSubmissionsSubmittedRow = {
@@ -203,15 +204,9 @@ export const matchingAssessmentResponsesRowSCInProgress = {
   score: null as number,
   grader_response: null as string,
 };
-export const matchingAssessmentResponsesRowSCInSubmitted = {
-  id: assessmentSubmissionResponseSCId,
-  assessment_id: programAssessmentId,
-  submission_id: assessmentSubmissionId,
-  question_id: singleChoiceQuestionId,
-  answer_id: singleChoiceAnswerId,
-  response: null as string,
-  score: null as number,
-  grader_response: null as string,
+
+export const matchingAssessmentResponsesRowSCSubmitted = {
+  ...matchingAssessmentResponsesRowSCInProgress,
 };
 
 export const matchingAssessmentResponsesRowSCGraded = {
@@ -465,10 +460,10 @@ export const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
     },
   ],
 };
-export const exampleAssessmentSubmissionInExpired: AssessmentSubmission = {
+export const exampleAssessmentSubmissionExpired: AssessmentSubmission = {
   ...exampleAssessmentSubmissionOpened,
   assessment_submission_state: 'Expired',
-  last_modified: '2023-02-09T12:05:00.000Z',
+  last_modified: '2023-02-09T14:00:00.000Z',
   responses: [
     {
       id: assessmentSubmissionResponseSCId,

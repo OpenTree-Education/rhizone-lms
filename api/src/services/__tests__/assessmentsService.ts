@@ -91,11 +91,11 @@ import {
   updatedAssessmentSubmissionsRow,
   updatedProgramAssessmentsRow,
   matchingAssessmentSubmissionsSubmittedRow,
-  matchingAssessmentSubmissionInExpiredRow,
-  exampleAssessmentSubmissionInExpired,
+  matchingAssessmentSubmissionExpiredRow,
+  exampleAssessmentSubmissionExpired,
   exampleAssessmentSubmissionOpenedWithResponse,
   matchingProgramAssessmentPastDueRow,
-  matchingAssessmentResponsesRowSCInSubmitted,
+  matchingAssessmentResponsesRowSCSubmitted,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -1102,9 +1102,9 @@ describe('updateAssessmentSubmission', () => {
     mockQuery(
       'update `assessment_responses` set `score` = ?, `grader_response` = ? where `id` = ?',
       [
-        matchingAssessmentResponsesRowSCInSubmitted.score,
-        matchingAssessmentResponsesRowSCInSubmitted.grader_response,
-        matchingAssessmentResponsesRowSCInSubmitted.id,
+        matchingAssessmentResponsesRowSCSubmitted.score,
+        matchingAssessmentResponsesRowSCSubmitted.grader_response,
+        matchingAssessmentResponsesRowSCSubmitted.id,
       ],
 
       1
@@ -1197,7 +1197,7 @@ describe('updateAssessmentSubmission', () => {
         exampleAssessmentSubmissionInProgress,
         false
       )
-    ).toEqual(exampleAssessmentSubmissionInExpired);
+    ).toEqual(exampleAssessmentSubmissionExpired);
   });
   it('should not allow a participant to modify their responses to an expired submission', async () => {
     const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
@@ -1206,7 +1206,7 @@ describe('updateAssessmentSubmission', () => {
     mockQuery(
       'select `assessment_submissions`.`assessment_id`, `assessment_submissions`.`principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
       [assessmentSubmissionId],
-      [matchingAssessmentSubmissionInExpiredRow]
+      [matchingAssessmentSubmissionExpiredRow]
     );
     mockQuery(
       'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
@@ -1260,10 +1260,10 @@ describe('updateAssessmentSubmission', () => {
 
     expect(
       await updateAssessmentSubmission(
-        exampleAssessmentSubmissionInExpired,
+        exampleAssessmentSubmissionExpired,
         false
       )
-    ).toEqual(exampleAssessmentSubmissionInExpired);
+    ).toEqual(exampleAssessmentSubmissionExpired);
   });
   it('should not allow a participant to update grading information for themselves', async () => {
     const expectedNow = DateTime.utc(2023, 2, 9, 12, 5, 0);
