@@ -21,8 +21,7 @@ import {
   listProgramAssessments,
   removeGradingInformation,
   updateAssessmentSubmission,
-  updateCurriculumAssessment,
-  updateProgramAssessment,
+  updateProgramAssessment
 } from '../assessmentsService';
 
 import {
@@ -30,14 +29,17 @@ import {
   assessmentSubmissionResponseSCId,
   curriculumAssessmentId,
   exampleAssessmentQuestionSCWithCorrectAnswers,
+  exampleAssessmentSubmissionExpired,
   exampleAssessmentSubmissionGraded,
   exampleAssessmentSubmissionGradedNoResponses,
   exampleAssessmentSubmissionGradedRemovedGrades,
   exampleAssessmentSubmissionInProgress,
-  exampleAssessmentSubmissionSubmitted,
+  exampleAssessmentSubmissionInProgressSCFR,
   exampleAssessmentSubmissionOpened,
+  exampleAssessmentSubmissionOpenedWithResponse,
+  exampleAssessmentSubmissionPastDueDate,
+  exampleAssessmentSubmissionSubmitted,
   exampleCurriculumAssessment,
-  exampleCurriculumAssessmentWithFRQuestionsNewAnswers,
   exampleCurriculumAssessmentWithSCCorrectAnswers,
   exampleFacilitatorAssessmentSubmissionsSummary,
   exampleOtherAssessmentSubmissionSubmitted,
@@ -51,18 +53,22 @@ import {
   facilitatorPrincipalId,
   freeResponseCorrectAnswerId,
   freeResponseQuestionId,
-  matchingAssessmentAnswersFRRow,
   matchingAssessmentAnswersSCRow,
-  matchingAssessmentQuestionsFRRow,
   matchingAssessmentQuestionsSCRow,
+  matchingAssessmentResponsesRowFRInProgress,
+  matchingAssessmentResponsesRowFROpened,
   matchingAssessmentResponsesRowSCGraded,
   matchingAssessmentResponsesRowSCInProgress,
   matchingAssessmentResponsesRowSCOpened,
+  matchingAssessmentResponsesRowSCSubmitted,
+  matchingAssessmentSubmissionExpiredRow,
   matchingAssessmentSubmissionInProgressRow,
   matchingAssessmentSubmissionOpenedRow,
   matchingAssessmentSubmissionsRowGraded,
+  matchingAssessmentSubmissionsSubmittedRow,
   matchingCurriculumAssessmentRow,
   matchingOtherAssessmentSubmissionSubmittedRow,
+  matchingProgramAssessmentPastDueRow,
   matchingProgramAssessmentsRow,
   matchingProgramParticipantRoleFacilitatorRow,
   matchingProgramParticipantRoleParticipantRow,
@@ -82,22 +88,11 @@ import {
   sentNewSCAssessmentAnswer,
   sentNewSCAssessmentQuestion,
   sentUpdatedAssessmentSubmissionChangedResponse,
-  sentUpdatedAssessmentSubmissionSCResponseGraded,
-  sentUpdatedAssessmentSubmissionSCResponseSubmitted,
+  sentUpdatedAssessmentSubmissionWithNewSCResponse,
   singleChoiceAnswerId,
   singleChoiceQuestionId,
   unenrolledPrincipalId,
-  updatedAssessmentResponsesSCGradedRow,
-  updatedAssessmentSubmissionsRow,
-  updatedProgramAssessmentsRow,
-  matchingAssessmentSubmissionsSubmittedRow,
-  matchingAssessmentSubmissionExpiredRow,
-  exampleAssessmentSubmissionExpired,
-  exampleAssessmentSubmissionOpenedWithResponse,
-  matchingProgramAssessmentPastDueRow,
-  matchingAssessmentResponsesRowSCSubmitted,
-  sentUpdatedAssessmentSubmissionWithNewSCResponse,
-  exampleAssessmentSubmissionPastDueDate,
+  updatedProgramAssessmentsRow
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -916,7 +911,10 @@ describe('updateAssessmentSubmission', () => {
     mockQuery(
       'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
       [assessmentSubmissionId],
-      [matchingAssessmentResponsesRowSCOpened]
+      [
+        matchingAssessmentResponsesRowSCOpened,
+        matchingAssessmentResponsesRowFROpened,
+      ]
     );
     mockQuery(
       'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
@@ -952,6 +950,14 @@ describe('updateAssessmentSubmission', () => {
       1
     );
     mockQuery(
+      'update `assessment_responses` set `response` = ? where `id` = ?',
+      [
+        matchingAssessmentResponsesRowFRInProgress.response,
+        matchingAssessmentResponsesRowFRInProgress.id,
+      ],
+      1
+    );
+    mockQuery(
       'select `id` from `assessment_submission_states` where `title` = ?',
       ['In Progress'],
       [{ id: 4 }]
@@ -964,10 +970,10 @@ describe('updateAssessmentSubmission', () => {
 
     expect(
       await updateAssessmentSubmission(
-        exampleAssessmentSubmissionInProgress,
+        exampleAssessmentSubmissionInProgressSCFR,
         false
       )
-    ).toEqual(exampleAssessmentSubmissionInProgress);
+    ).toEqual(exampleAssessmentSubmissionInProgressSCFR);
   });
 
   it('should update an existing submitted assessment submission by adding grading information from a facilitator', async () => {
@@ -1163,7 +1169,10 @@ describe('updateAssessmentSubmission', () => {
     mockQuery(
       'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
       [assessmentSubmissionId],
-      [matchingAssessmentResponsesRowSCOpened]
+      [
+        matchingAssessmentResponsesRowSCOpened,
+        matchingAssessmentResponsesRowFRInProgress,
+      ]
     );
     mockQuery(
       'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
@@ -1203,7 +1212,7 @@ describe('updateAssessmentSubmission', () => {
 
     expect(
       await updateAssessmentSubmission(
-        exampleAssessmentSubmissionInProgress,
+        exampleAssessmentSubmissionInProgressSCFR,
         false
       )
     ).toEqual(exampleAssessmentSubmissionPastDueDate);
