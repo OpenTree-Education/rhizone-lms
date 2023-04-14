@@ -1575,7 +1575,6 @@ export const updateCurriculumAssessment = async (
       max_score: curriculumAssessment.max_score,
       max_num_submissions: curriculumAssessment.max_num_submissions,
       time_limit: curriculumAssessment.time_limit,
-      questions: curriculumAssessment.questions,
     })
     .where('id', curriculumAssessment.id);
   // refer to implementation of getCurriculumAssessment for knowledge on joins
