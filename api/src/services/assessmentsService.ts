@@ -1573,8 +1573,14 @@ export const updateCurriculumAssessment = async (
     }
   }
 
-  for (const deletedQuestion of existingCurriculumAssessment.questions) {
-    await deleteAssessmentQuestion(deletedQuestion.id);
+  if (
+    existingCurriculumAssessment.questions &&
+    Array.isArray(existingCurriculumAssessment.questions) &&
+    existingCurriculumAssessment.questions.length > 0
+  ) {
+    for (const deletedQuestion of existingCurriculumAssessment.questions) {
+      await deleteAssessmentQuestion(deletedQuestion.id);
+    }
   }
 
   const newQuestionList: Question[] = [];
