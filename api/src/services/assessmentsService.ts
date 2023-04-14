@@ -472,7 +472,6 @@ const updateAssessmentQuestion = async (
     .update({
       title: question.title,
       description: question.description,
-      question_type: question.question_type,
       correct_answer_id: correctAnswerId,
       max_score: question.max_score,
       sort_order: question.sort_order,
@@ -497,7 +496,6 @@ const updateAssessmentQuestionAnswer = async (
       title: answer.title,
       description: answer.description,
       sort_order: answer.sort_order,
-      correct_answer: answer.correct_answer,
     })
     .where('id', answer.id);
   return answer;
@@ -1541,12 +1539,18 @@ export const updateAssessmentSubmission = async (
 export const updateCurriculumAssessment = async (
   curriculumAssessment: CurriculumAssessment
 ): Promise<CurriculumAssessment> => {
-  const updatedQuestions = [];
-  const updatedCurriculumAssessment = {
-    ...curriculumAssessment,
-  };
+  const updatedQuestions: Question[] = [];
+  const existingCurriculumAssessment = await getCurriculumAssessment(
+    curriculumAssessment.curriculum_id,
+    true,
+    true
+  );
+  const updatedCurriculumAssessment = structuredClone(
+    existingCurriculumAssessment
+  );
+  // console.log("test",existingCurriculumAssessment)
   if (curriculumAssessment !== null) {
-    for (const question of curriculumAssessment.questions) {
+    for (const question of existingCurriculumAssessment.questions) {
       // TODO: deleteAssessmentQuestion() any questions that no longer exist
       if (typeof question.id === 'undefined') {
         // need to createAssessmentQuestion for each question that does not exist;
@@ -1570,7 +1574,6 @@ export const updateCurriculumAssessment = async (
   await db('curriculum_assessments')
     .update({
       title: curriculumAssessment.title,
-      assessment_type: curriculumAssessment.assessment_type,
       description: curriculumAssessment.description,
       max_score: curriculumAssessment.max_score,
       max_num_submissions: curriculumAssessment.max_num_submissions,
