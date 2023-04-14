@@ -101,6 +101,10 @@ import {
   assessmentSubmissionResponseFRId,
   sentUpdatedAssessmentSubmissionWithNewFRResponse,
   sentNewFRAssessmentResponse,
+  matchingAssessmentAnswersFRRow,
+  matchingAssessmentQuestionsFRRow,
+  exampleCurriculumAssessmentWithFRQuestionsNewAnswers,
+  sentNewCurriculumAssessmentWithFRQuestionPostInsertFR,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -1398,27 +1402,71 @@ describe('updateCurriculumAssessment', () => {
       )
     ).toEqual(exampleCurriculumAssessmentWithSCCorrectAnswers);
   });
-  // it('should update a curriculum assessment with existing questions and new answers', async () => {
+  it('should update a curriculum assessment with existing questions and new answers', async () => {
+    mockQuery(
+      'insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)',
+      [
+        matchingAssessmentAnswersFRRow.description,
+        freeResponseQuestionId,
+        matchingAssessmentAnswersFRRow.sort_order,
+        matchingAssessmentAnswersFRRow.title,
+      ],
+      [freeResponseCorrectAnswerId]
+    );
+    mockQuery(
+      'update `assessment_questions` set `title` = ?, `question_type` = ?, `correct_answer_id` = ?, `max_score` = ?, `sort_order` = ? where `id` = ?',
+      [
+        matchingAssessmentQuestionsFRRow.title,
+        matchingAssessmentQuestionsFRRow.question_type,
+        matchingAssessmentQuestionsFRRow.correct_answer_id,
+        matchingAssessmentQuestionsFRRow.max_score,
+        matchingAssessmentQuestionsFRRow.sort_order,
+        freeResponseQuestionId,
+      ],
+      [1]
+    );
+    mockQuery(
+      'update `curriculum_assessments` set `title` = ?, `assessment_type` = ?, `description` = ?, `max_score` = ?, `max_num_submissions` = ?, `time_limit` = ? where `id` = ?',
+      [
+        matchingCurriculumAssessmentRow.title,
+        exampleCurriculumAssessment.assessment_type,
+        matchingCurriculumAssessmentRow.description,
+        matchingCurriculumAssessmentRow.max_score,
+        matchingCurriculumAssessmentRow.max_num_submissions,
+        matchingCurriculumAssessmentRow.time_limit,
+        curriculumAssessmentId,
+      ],
+      [1]
+    );
+    expect(
+      await updateCurriculumAssessment(
+        exampleCurriculumAssessmentWithFRQuestionsNewAnswers
+      )
+    ).toEqual(sentNewCurriculumAssessmentWithFRQuestionPostInsertFR);
+  });
+  // it('should update a curriculum assessment with new  questions', async () => {
   //   mockQuery(
   //     'insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)',
   //     [
-  //       matchingAssessmentAnswersFRRow.description,
-  //       freeResponseQuestionId,
-  //       matchingAssessmentAnswersFRRow.sort_order,
-  //       matchingAssessmentAnswersFRRow.title,
+  //       matchingAssessmentAnswersSCRow.description,
+  //       singleChoiceQuestionId,
+  //       matchingAssessmentAnswersSCRow.sort_order,
+  //       matchingAssessmentAnswersSCRow.title
   //     ],
-  //     [freeResponseCorrectAnswerId]
+  //     [singleChoiceAnswerId]
   //   );
+
   //   mockQuery(
-  //     'update `assessment_questions` set `title` = ?, `question_type` = ?, `max_score` = ?, `sort_order` = ? where `id` = ?',
+  //     'insert into `assessment_questions` (`title`, `description`, `question_type`, `correct_answer_id`, `max_score`, `sort_order`) values(?, ?, ?, ?, ?)',
   //     [
-  //       matchingAssessmentQuestionsFRRow.title,
-  //       matchingAssessmentQuestionsFRRow.question_type,
-  //       matchingAssessmentQuestionsFRRow.max_score,
-  //       matchingAssessmentQuestionsFRRow.sort_order,
-  //       freeResponseQuestionId,
+  //       matchingAssessmentQuestionsSCRow.title,
+  //       matchingAssessmentQuestionsSCRow.description,
+  //       matchingAssessmentQuestionsSCRow.question_type,
+  //       matchingAssessmentQuestionsSCRow.correct_answer_id,
+  //       matchingAssessmentQuestionsSCRow.max_score,
+  //       matchingAssessmentQuestionsSCRow.sort_order
   //     ],
-  //     [1]
+  //     [singleChoiceQuestionId]
   //   );
   //   mockQuery(
   //     'update `curriculum_assessments` set `title` = ?, `assessment_type` = ?, `description` = ?, `max_score` = ?, `max_num_submissions` = ?, `time_limit` = ? where `id` = ?',
@@ -1431,12 +1479,12 @@ describe('updateCurriculumAssessment', () => {
   //       matchingCurriculumAssessmentRow.time_limit,
   //       curriculumAssessmentId,
   //     ],
-  //     [1]
+  //     [exampleCurriculumAssessment]
   //   );
   //   expect(
   //     await updateCurriculumAssessment(
-  //       exampleCurriculumAssessmentWithFRQuestionsNewAnswers
+  //       exampleCurriculumAssessmentWithSCCorrectAnswers
   //     )
-  //   ).toEqual(sentNewCurriculumAssessmentWithFRQuestionPostInsert);
+  //   ).toEqual(exampleCurriculumAssessmentWithSCCorrectAnswers);
   // });
 });

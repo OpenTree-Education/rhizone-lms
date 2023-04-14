@@ -80,7 +80,7 @@ export const matchingAssessmentQuestionsSCRow = {
 };
 
 export const matchingAssessmentQuestionsFRRow = {
-  id: singleChoiceQuestionId,
+  id: freeResponseQuestionId,
   assessment_id: curriculumAssessmentId,
   title:
     'What is the correct HTML syntax for a paragraph with the text "Hello, World!"?',
@@ -320,15 +320,15 @@ export const exampleAssessmentQuestionsWithFRNewAnswers: Question[] = [
     question_type: matchingAssessmentQuestionsFRRow.question_type,
     answers: [
       {
-        question_id: singleChoiceQuestionId,
-        description: matchingAssessmentAnswersSCRow.description,
-        title: matchingAssessmentAnswersSCRow.title,
-        sort_order: matchingAssessmentAnswersSCRow.sort_order,
+        question_id: freeResponseQuestionId,
+        description: matchingAssessmentAnswersFRRow.description,
+        title: matchingAssessmentAnswersFRRow.title,
+        sort_order: matchingAssessmentAnswersFRRow.sort_order,
         correct_answer: true,
       },
     ],
-    max_score: matchingAssessmentQuestionsSCRow.max_score,
-    sort_order: matchingAssessmentQuestionsSCRow.sort_order,
+    max_score: matchingAssessmentQuestionsFRRow.max_score,
+    sort_order: matchingAssessmentQuestionsFRRow.sort_order,
   },
 ];
 
@@ -836,5 +836,10 @@ export const sentNewCurriculumAssessmentWithFRQuestionPostInsert: CurriculumAsse
   {
     ...sentNewCurriculumAssessment,
     id: sentCurriculumAssessmentId,
+    questions: [exampleAssessmentQuestionFRWithCorrectAnswers],
+  };
+export const sentNewCurriculumAssessmentWithFRQuestionPostInsertFR: CurriculumAssessment =
+  {
+    ...exampleCurriculumAssessment,
     questions: [exampleAssessmentQuestionFRWithCorrectAnswers],
   };
