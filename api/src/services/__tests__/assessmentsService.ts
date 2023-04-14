@@ -45,8 +45,8 @@ import {
   exampleAssessmentSubmissionSubmitted,
   exampleCurriculumAssessment,
   exampleCurriculumAssessmentWithFRCorrectAnswers,
-  exampleCurriculumAssessmentWithFRQuestionsNewAnswers,
   exampleCurriculumAssessmentWithSCCorrectAnswers,
+  exampleCurriculumAssessmentWithUpdatedSCCorrectAnswer,
   exampleFacilitatorAssessmentSubmissionsSummary,
   exampleOtherAssessmentSubmissionSubmitted,
   exampleParticipantAssessmentSubmissionsActive,
@@ -84,6 +84,9 @@ import {
   newProgramAssessmentsRow,
   participantPrincipalId,
   programAssessmentId,
+  sentAssessmentQuestionSCWithUpdatedCorrectAnswer,
+  sentCurriculumAssessmentWithNewSCQuestion,
+  sentCurriculumAssessmentWithSCQuestionNewAnswer,
   sentNewCurriculumAssessment,
   sentNewCurriculumAssessmentPostInsert,
   sentNewCurriculumAssessmentWithFRQuestion,
@@ -103,6 +106,7 @@ import {
   singleChoiceAnswerId,
   singleChoiceQuestionId,
   unenrolledPrincipalId,
+  updatedAssessmentAnswersSCRow,
   updatedProgramAssessmentsRow,
 } from '../../assets/data';
 
@@ -1357,133 +1361,243 @@ describe('updateProgramAssessment', () => {
 });
 
 describe('updateCurriculumAssessment', () => {
-  it('should update a curriculum assessment with existing questions and existing answers', async () => {
+  it('should update a curriculum assessment with existing questions and updated answers', async () => {
     mockQuery(
-      'update `assessment_answers` set `title` = ?, `description` = ?, `sort_order` = ?, `correct_answer` = ? where `id` = ?',
+      'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
+      [curriculumAssessmentId],
+      [matchingCurriculumAssessmentRow]
+    );
+
+    mockQuery(
+      'select `activity_types`.`title` from `activity_types` inner join `activities` on `activities`.`activity_type_id` = `activity_types`.`id` where `activities`.`id` = ?',
+      [matchingCurriculumAssessmentRow.activity_id],
       [
-        matchingAssessmentAnswersSCRow.title,
-        matchingAssessmentAnswersSCRow.description,
-        matchingAssessmentAnswersSCRow.sort_order,
-        matchingAssessmentAnswersSCRow.correct_answer,
-        singleChoiceAnswerId,
+        {
+          title:
+            exampleCurriculumAssessmentWithSCCorrectAnswers.assessment_type,
+        },
+      ]
+    );
+
+    mockQuery(
+      'select `assessment_questions`.`id`, `assessment_questions`.`title`, `description`, `assessment_question_types`.`title` as `question_type`, `correct_answer_id`, `max_score`, `sort_order` from `assessment_questions` inner join `assessment_question_types` on `assessment_questions`.`question_type_id` = `assessment_question_types`.`id` where `assessment_questions`.`assessment_id` = ? order by `sort_order` asc',
+      [exampleCurriculumAssessmentWithSCCorrectAnswers.id],
+      [matchingAssessmentQuestionsSCRow]
+    );
+
+    mockQuery(
+      'select `id`, `question_id`, `title`, `description`, `sort_order` from `assessment_answers` where `question_id` = ? order by `sort_order` asc',
+      [matchingAssessmentQuestionsSCRow.id],
+      [matchingAssessmentAnswersSCRow]
+    );
+
+    mockQuery(
+      'update `assessment_answers` set `title` = ?, `description` = ?, `sort_order` = ? where `id` = ?',
+      [
+        updatedAssessmentAnswersSCRow.title,
+        updatedAssessmentAnswersSCRow.description,
+        updatedAssessmentAnswersSCRow.sort_order,
+        updatedAssessmentAnswersSCRow.id,
       ],
       [1]
     );
+
     mockQuery(
-      'update `assessment_questions` set `title` = ?, `description` = ?, `question_type` = ?, `correct_answer_id` = ?, `max_score` = ?, `sort_order` = ? where `id` = ?',
+      'update `assessment_questions` set `title` = ?, `description` = ?, `correct_answer_id` = ?, `max_score` = ?, `sort_order` = ? where `id` = ?',
       [
         matchingAssessmentQuestionsSCRow.title,
         matchingAssessmentQuestionsSCRow.description,
-        matchingAssessmentQuestionsSCRow.question_type,
         matchingAssessmentQuestionsSCRow.correct_answer_id,
         matchingAssessmentQuestionsSCRow.max_score,
         matchingAssessmentQuestionsSCRow.sort_order,
+        matchingAssessmentQuestionsSCRow.id,
+      ],
+      [1]
+    );
+
+    mockQuery(
+      'update `curriculum_assessments` set `title` = ?, `description` = ?, `max_score` = ?, `max_num_submissions` = ?, `time_limit` = ?, `activity_id` = ? where `id` = ?',
+      [
+        matchingCurriculumAssessmentRow.title,
+        matchingCurriculumAssessmentRow.description,
+        matchingCurriculumAssessmentRow.max_score,
+        matchingCurriculumAssessmentRow.max_num_submissions,
+        matchingCurriculumAssessmentRow.time_limit,
+        matchingCurriculumAssessmentRow.activity_id,
+        matchingCurriculumAssessmentRow.id,
+      ],
+      [1]
+    );
+
+    expect(
+      await updateCurriculumAssessment(
+        exampleCurriculumAssessmentWithUpdatedSCCorrectAnswer
+      )
+    ).toEqual(exampleCurriculumAssessmentWithUpdatedSCCorrectAnswer);
+  });
+
+  it('should update a curriculum assessment with existing questions and new answers', async () => {
+    mockQuery(
+      'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
+      [curriculumAssessmentId],
+      [matchingCurriculumAssessmentRow]
+    );
+
+    mockQuery(
+      'select `activity_types`.`title` from `activity_types` inner join `activities` on `activities`.`activity_type_id` = `activity_types`.`id` where `activities`.`id` = ?',
+      [matchingCurriculumAssessmentRow.activity_id],
+      [
+        {
+          title:
+            exampleCurriculumAssessmentWithSCCorrectAnswers.assessment_type,
+        },
+      ]
+    );
+
+    mockQuery(
+      'select `assessment_questions`.`id`, `assessment_questions`.`title`, `description`, `assessment_question_types`.`title` as `question_type`, `correct_answer_id`, `max_score`, `sort_order` from `assessment_questions` inner join `assessment_question_types` on `assessment_questions`.`question_type_id` = `assessment_question_types`.`id` where `assessment_questions`.`assessment_id` = ? order by `sort_order` asc',
+      [exampleCurriculumAssessmentWithSCCorrectAnswers.id],
+      [matchingAssessmentQuestionsSCRow]
+    );
+
+    mockQuery(
+      'select `id`, `question_id`, `title`, `description`, `sort_order` from `assessment_answers` where `question_id` = ? order by `sort_order` asc',
+      [matchingAssessmentQuestionsSCRow.id],
+      []
+    );
+
+    mockQuery(
+      'insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)',
+      [
+        sentNewSCAssessmentAnswer.description,
+        matchingAssessmentQuestionsSCRow.id,
+        sentNewSCAssessmentAnswer.sort_order,
+        sentNewSCAssessmentAnswer.title,
+      ],
+      [singleChoiceAnswerId]
+    );
+
+    mockQuery(
+      'update `assessment_questions` set `title` = ?, `description` = ?, `correct_answer_id` = ?, `max_score` = ?, `sort_order` = ? where `id` = ?',
+      [
+        matchingAssessmentQuestionsSCRow.title,
+        matchingAssessmentQuestionsSCRow.description,
+        singleChoiceAnswerId,
+        matchingAssessmentQuestionsSCRow.max_score,
+        matchingAssessmentQuestionsSCRow.sort_order,
+        matchingAssessmentQuestionsSCRow.id,
+      ],
+      [1]
+    );
+
+    mockQuery(
+      'update `curriculum_assessments` set `title` = ?, `description` = ?, `max_score` = ?, `max_num_submissions` = ?, `time_limit` = ?, `activity_id` = ? where `id` = ?',
+      [
+        matchingCurriculumAssessmentRow.title,
+        matchingCurriculumAssessmentRow.description,
+        matchingCurriculumAssessmentRow.max_score,
+        matchingCurriculumAssessmentRow.max_num_submissions,
+        matchingCurriculumAssessmentRow.time_limit,
+        matchingCurriculumAssessmentRow.activity_id,
+        matchingCurriculumAssessmentRow.id,
+      ],
+      [1]
+    );
+
+    expect(
+      await updateCurriculumAssessment(
+        sentCurriculumAssessmentWithSCQuestionNewAnswer
+      )
+    ).toEqual(exampleCurriculumAssessmentWithSCCorrectAnswers);
+  });
+
+  it('should update a curriculum assessment with new question and delete old questions', async () => {
+    mockQuery(
+      'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
+      [curriculumAssessmentId],
+      [matchingCurriculumAssessmentRow]
+    );
+
+    mockQuery(
+      'select `activity_types`.`title` from `activity_types` inner join `activities` on `activities`.`activity_type_id` = `activity_types`.`id` where `activities`.`id` = ?',
+      [matchingCurriculumAssessmentRow.activity_id],
+      [
+        {
+          title:
+            exampleCurriculumAssessmentWithFRCorrectAnswers.assessment_type,
+        },
+      ]
+    );
+
+    mockQuery(
+      'select `assessment_questions`.`id`, `assessment_questions`.`title`, `description`, `assessment_question_types`.`title` as `question_type`, `correct_answer_id`, `max_score`, `sort_order` from `assessment_questions` inner join `assessment_question_types` on `assessment_questions`.`question_type_id` = `assessment_question_types`.`id` where `assessment_questions`.`assessment_id` = ? order by `sort_order` asc',
+      [exampleCurriculumAssessmentWithFRCorrectAnswers.id],
+      [matchingAssessmentQuestionsFRRow]
+    );
+
+    mockQuery(
+      'select `id`, `question_id`, `title`, `description`, `sort_order` from `assessment_answers` where `question_id` = ? order by `sort_order` asc',
+      [matchingAssessmentQuestionsFRRow.id],
+      [matchingAssessmentAnswersFRRow]
+    );
+
+    mockQuery(
+      'delete from `assessment_questions` where `id` = ?',
+      [matchingAssessmentQuestionsFRRow.id],
+      [1]
+    );
+
+    mockQuery(
+      'insert into `assessment_questions` (`assessment_id`, `description`, `max_score`, `question_type_id`, `sort_order`, `title`) values (?, ?, ?, ?, ?, ?)',
+      [
+        curriculumAssessmentId,
+        sentNewSCAssessmentQuestion.description,
+        sentNewSCAssessmentQuestion.max_score,
+        1,
+        sentNewSCAssessmentQuestion.sort_order,
+        sentNewSCAssessmentQuestion.title,
+      ],
+      [singleChoiceQuestionId]
+    );
+
+    mockQuery(
+      'insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)',
+      [
+        sentNewSCAssessmentAnswer.description,
+        singleChoiceQuestionId,
+        sentNewSCAssessmentAnswer.sort_order,
+        sentNewSCAssessmentAnswer.title,
+      ],
+      [singleChoiceAnswerId]
+    );
+
+    mockQuery(
+      'update `assessment_questions` set `correct_answer_id` = ? where `id` = ?',
+      [
+        matchingAssessmentQuestionsSCRow.correct_answer_id,
         singleChoiceQuestionId,
       ],
       [1]
     );
+
     mockQuery(
-      'update `curriculum_assessments` set `title` = ?, `assessment_type` = ?, `description` = ?, `max_score` = ?, `max_num_submissions` = ?, `time_limit` = ? where `id` = ?',
+      'update `curriculum_assessments` set `title` = ?, `description` = ?, `max_score` = ?, `max_num_submissions` = ?, `time_limit` = ?, `activity_id` = ? where `id` = ?',
       [
         matchingCurriculumAssessmentRow.title,
-        exampleCurriculumAssessment.assessment_type,
         matchingCurriculumAssessmentRow.description,
         matchingCurriculumAssessmentRow.max_score,
         matchingCurriculumAssessmentRow.max_num_submissions,
         matchingCurriculumAssessmentRow.time_limit,
-        curriculumAssessmentId,
+        matchingCurriculumAssessmentRow.activity_id,
+        matchingCurriculumAssessmentRow.id,
       ],
-      [exampleCurriculumAssessment]
+      [1]
     );
+
     expect(
       await updateCurriculumAssessment(
-        exampleCurriculumAssessmentWithSCCorrectAnswers
+        sentCurriculumAssessmentWithNewSCQuestion
       )
     ).toEqual(exampleCurriculumAssessmentWithSCCorrectAnswers);
   });
-  it('should update a curriculum assessment with existing questions and new answers', async () => {
-    mockQuery(
-      'insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)',
-      [
-        matchingAssessmentAnswersFRRow.description,
-        freeResponseQuestionId,
-        matchingAssessmentAnswersFRRow.sort_order,
-        matchingAssessmentAnswersFRRow.title,
-      ],
-      [freeResponseCorrectAnswerId]
-    );
-    mockQuery(
-      'update `assessment_questions` set `title` = ?, `question_type` = ?, `correct_answer_id` = ?, `max_score` = ?, `sort_order` = ? where `id` = ?',
-      [
-        matchingAssessmentQuestionsFRRow.title,
-        matchingAssessmentQuestionsFRRow.question_type,
-        matchingAssessmentQuestionsFRRow.correct_answer_id,
-        matchingAssessmentQuestionsFRRow.max_score,
-        matchingAssessmentQuestionsFRRow.sort_order,
-        freeResponseQuestionId,
-      ],
-      [1]
-    );
-    mockQuery(
-      'update `curriculum_assessments` set `title` = ?, `assessment_type` = ?, `description` = ?, `max_score` = ?, `max_num_submissions` = ?, `time_limit` = ? where `id` = ?',
-      [
-        matchingCurriculumAssessmentRow.title,
-        exampleCurriculumAssessment.assessment_type,
-        matchingCurriculumAssessmentRow.description,
-        matchingCurriculumAssessmentRow.max_score,
-        matchingCurriculumAssessmentRow.max_num_submissions,
-        matchingCurriculumAssessmentRow.time_limit,
-        curriculumAssessmentId,
-      ],
-      [1]
-    );
-    expect(
-      await updateCurriculumAssessment(
-        exampleCurriculumAssessmentWithFRQuestionsNewAnswers
-      )
-    ).toEqual(sentNewCurriculumAssessmentWithFRQuestionPostInsert);
-  });
-  // it('should update a curriculum assessment with new  questions', async () => {
-  //   mockQuery(
-  //     'insert into `assessment_answers` (`description`, `question_id`, `sort_order`, `title`) values (?, ?, ?, ?)',
-  //     [
-  //       matchingAssessmentAnswersSCRow.description,
-  //       singleChoiceQuestionId,
-  //       matchingAssessmentAnswersSCRow.sort_order,
-  //       matchingAssessmentAnswersSCRow.title
-  //     ],
-  //     [singleChoiceAnswerId]
-  //   );
-
-  //   mockQuery(
-  //     'insert into `assessment_questions` (`title`, `description`, `question_type`, `correct_answer_id`, `max_score`, `sort_order`) values(?, ?, ?, ?, ?)',
-  //     [
-  //       matchingAssessmentQuestionsSCRow.title,
-  //       matchingAssessmentQuestionsSCRow.description,
-  //       matchingAssessmentQuestionsSCRow.question_type,
-  //       matchingAssessmentQuestionsSCRow.correct_answer_id,
-  //       matchingAssessmentQuestionsSCRow.max_score,
-  //       matchingAssessmentQuestionsSCRow.sort_order
-  //     ],
-  //     [singleChoiceQuestionId]
-  //   );
-  //   mockQuery(
-  //     'update `curriculum_assessments` set `title` = ?, `assessment_type` = ?, `description` = ?, `max_score` = ?, `max_num_submissions` = ?, `time_limit` = ? where `id` = ?',
-  //     [
-  //       matchingCurriculumAssessmentRow.title,
-  //       exampleCurriculumAssessment.assessment_type,
-  //       matchingCurriculumAssessmentRow.description,
-  //       matchingCurriculumAssessmentRow.max_score,
-  //       matchingCurriculumAssessmentRow.max_num_submissions,
-  //       matchingCurriculumAssessmentRow.time_limit,
-  //       curriculumAssessmentId,
-  //     ],
-  //     [exampleCurriculumAssessment]
-  //   );
-  //   expect(
-  //     await updateCurriculumAssessment(
-  //       exampleCurriculumAssessmentWithSCCorrectAnswers
-  //     )
-  //   ).toEqual(exampleCurriculumAssessmentWithSCCorrectAnswers);
-  // });
 });

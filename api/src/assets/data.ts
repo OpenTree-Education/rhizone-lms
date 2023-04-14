@@ -33,6 +33,7 @@ export const sentCAActivityId = 200;
 export const singleChoiceQuestionId = 24;
 export const freeResponseQuestionId = 24;
 export const singleChoiceAnswerId = 28;
+export const newSingleChoiceAnswerId = 280;
 export const freeResponseCorrectAnswerId = 29;
 export const assessmentSubmissionId = 32;
 export const assessmentSubmissionWrongId = 33;
@@ -312,32 +313,6 @@ export const exampleAssessmentQuestionFRWithCorrectAnswers: Question = {
   sort_order: matchingAssessmentQuestionsFRRow.sort_order,
 };
 
-export const exampleAssessmentQuestionsWithFRNewAnswers: Question[] = [
-  {
-    id: freeResponseQuestionId,
-    assessment_id: curriculumAssessmentId,
-    title: matchingAssessmentQuestionsFRRow.title,
-    question_type: matchingAssessmentQuestionsFRRow.question_type,
-    answers: [
-      {
-        question_id: freeResponseQuestionId,
-        description: matchingAssessmentAnswersFRRow.description,
-        title: matchingAssessmentAnswersFRRow.title,
-        sort_order: matchingAssessmentAnswersFRRow.sort_order,
-        correct_answer: true,
-      },
-    ],
-    max_score: matchingAssessmentQuestionsFRRow.max_score,
-    sort_order: matchingAssessmentQuestionsFRRow.sort_order,
-  },
-];
-
-export const exampleCurriculumAssessmentWithFRQuestionsNewAnswers: CurriculumAssessment =
-  {
-    ...exampleCurriculumAssessment,
-    questions: exampleAssessmentQuestionsWithFRNewAnswers,
-  };
-
 export const exampleCurriculumAssessmentWithSCQuestions: CurriculumAssessment =
   {
     ...exampleCurriculumAssessment,
@@ -356,6 +331,7 @@ export const exampleCurriculumAssessmentWithSCCorrectAnswers: CurriculumAssessme
     ...exampleCurriculumAssessment,
     questions: [exampleAssessmentQuestionSCWithCorrectAnswers],
   };
+
 export const exampleCurriculumAssessmentWithFRCorrectAnswers: CurriculumAssessment =
   {
     ...exampleCurriculumAssessment,
@@ -613,6 +589,15 @@ export const exampleFacilitatorAssessmentWithSubmissions: AssessmentWithSubmissi
 
 // Example Data: Updated Database Table Rows
 
+export const updatedAssessmentAnswersSCRow = {
+  id: singleChoiceAnswerId,
+  question_id: singleChoiceQuestionId,
+  title: 'A relational database management system',
+  description: 'Also known as a DBMS.',
+  sort_order: 1,
+  correct_answer: true,
+};
+
 export const updatedProgramAssessmentsRow = {
   ...matchingProgramAssessmentsRow,
   due_date: '2050-06-26 00:00:00',
@@ -725,6 +710,23 @@ export const sentUpdatedCurriculumAssessment: CurriculumAssessment = {
   time_limit: 121,
 };
 
+export const sentCurriculumAssessmentWithNewSCQuestion: CurriculumAssessment = {
+  ...exampleCurriculumAssessment,
+  questions: [sentNewSCAssessmentQuestion],
+};
+
+export const sentAssessmentSCQuestionNewAnswer: Question = {
+  ...exampleAssessmentQuestionSCWithoutCorrectAnswers,
+  description: null as string,
+  answers: [sentNewSCAssessmentAnswer],
+};
+
+export const sentCurriculumAssessmentWithSCQuestionNewAnswer: CurriculumAssessment =
+  {
+    ...exampleCurriculumAssessment,
+    questions: [sentAssessmentSCQuestionNewAnswer],
+  };
+
 export const sentNewProgramAssessment: ProgramAssessment = {
   program_id: programId,
   assessment_id: curriculumAssessmentId,
@@ -744,6 +746,22 @@ export const sentNewFRAssessmentResponse: AssessmentResponse = {
   question_id: freeResponseQuestionId,
   response_text: 'test',
 };
+
+export const sentAssessmentSCAnswerWithUpdatedCorrectAnswer: Answer = {
+  ...exampleAssessmentSCAnswerWithCorrectAnswer,
+  description: updatedAssessmentAnswersSCRow.description,
+};
+
+export const sentAssessmentQuestionSCWithUpdatedCorrectAnswer: Question = {
+  ...exampleAssessmentQuestionSCWithCorrectAnswers,
+  answers: [sentAssessmentSCAnswerWithUpdatedCorrectAnswer],
+};
+
+export const exampleCurriculumAssessmentWithUpdatedSCCorrectAnswer: CurriculumAssessment =
+  {
+    ...exampleCurriculumAssessment,
+    questions: [sentAssessmentQuestionSCWithUpdatedCorrectAnswer],
+  };
 
 export const sentUpdatedAssessmentSubmissionSCResponseSubmitted: AssessmentResponse =
   {
