@@ -1549,21 +1549,27 @@ export const updateCurriculumAssessment = async (
   const newQuestions: Question[] = [];
   const updatedQuestions: Question[] = [];
 
-  for (const question of curriculumAssessment.questions) {
-    if (question.id && question.id !== 0) {
-      if (
-        existingCurriculumAssessment.questions &&
-        Array.isArray(existingCurriculumAssessment.questions) &&
-        existingCurriculumAssessment.questions.length > 0
-      ) {
-        const eqIndex = existingCurriculumAssessment.questions.findIndex(
-          existingQuestion => existingQuestion.id === question.id
-        );
-        existingCurriculumAssessment.questions.splice(eqIndex, 1);
+  if (
+    curriculumAssessment.questions &&
+    Array.isArray(curriculumAssessment.questions) &&
+    curriculumAssessment.questions.length > 0
+  ) {
+    for (const question of curriculumAssessment.questions) {
+      if (question.id && question.id !== 0) {
+        if (
+          existingCurriculumAssessment.questions &&
+          Array.isArray(existingCurriculumAssessment.questions) &&
+          existingCurriculumAssessment.questions.length > 0
+        ) {
+          const eqIndex = existingCurriculumAssessment.questions.findIndex(
+            existingQuestion => existingQuestion.id === question.id
+          );
+          existingCurriculumAssessment.questions.splice(eqIndex, 1);
+        }
+        updatedQuestions.push(question);
+      } else {
+        newQuestions.push(question);
       }
-      updatedQuestions.push(question);
-    } else {
-      newQuestions.push(question);
     }
   }
 
