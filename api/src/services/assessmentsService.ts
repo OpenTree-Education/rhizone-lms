@@ -1539,38 +1539,50 @@ export const updateAssessmentSubmission = async (
 export const updateCurriculumAssessment = async (
   curriculumAssessment: CurriculumAssessment
 ): Promise<CurriculumAssessment> => {
-  const updatedQuestions: Question[] = [];
   const existingCurriculumAssessment = await getCurriculumAssessment(
-    curriculumAssessment.curriculum_id,
+    curriculumAssessment.id,
     true,
     true
   );
-  const updatedCurriculumAssessment = structuredClone(
-    existingCurriculumAssessment
-  );
-  // console.log("test",existingCurriculumAssessment)
-  if (curriculumAssessment !== null) {
-    for (const question of existingCurriculumAssessment.questions) {
-      // TODO: deleteAssessmentQuestion() any questions that no longer exist
-      if (typeof question.id === 'undefined') {
-        // need to createAssessmentQuestion for each question that does not exist;
-        // the question is new
-        const newQuestion = await createAssessmentQuestion(
-          curriculumAssessment.id,
-          question
+
+  // Determine which questions are new, updated, or deleted.
+  const newQuestions: Question[] = [];
+  const updatedQuestions: Question[] = [];
+
+  for (const question of curriculumAssessment.questions) {
+    if (question.id && question.id !== 0) {
+      if (
+        existingCurriculumAssessment.questions &&
+        Array.isArray(existingCurriculumAssessment.questions) &&
+        existingCurriculumAssessment.questions.length > 0
+      ) {
+        const eqIndex = existingCurriculumAssessment.questions.findIndex(
+          existingQuestion => existingQuestion.id === question.id
         );
-        updatedQuestions.push(newQuestion);
-      } else {
-        // need to loop through and call updateAssessmentQuestion for each question that exists
-        //the question was updated
-        const updatedQuestion = await updateAssessmentQuestion(question);
-        updatedQuestions.push(updatedQuestion);
+        existingCurriculumAssessment.questions.splice(eqIndex, 1);
       }
+      updatedQuestions.push(question);
+    } else {
+      newQuestions.push(question);
     }
   }
-  updatedCurriculumAssessment.questions = updatedQuestions;
-  // need to update the curriculum_assessments table with any updated data for the curriculum assessment (refer to DB/model).
-  // assessment_type_id turns into assessment_type. ignore assessment_type.
+
+  for (const deletedQuestion of existingCurriculumAssessment.questions) {
+    await deleteAssessmentQuestion(deletedQuestion.id);
+  }
+
+  const newQuestionList: Question[] = [];
+
+  for (const updatedQuestion of updatedQuestions) {
+    newQuestionList.push(await updateAssessmentQuestion(updatedQuestion));
+  }
+
+  for (const newQuestion of newQuestions) {
+    newQuestionList.push(
+      await createAssessmentQuestion(curriculumAssessment.id, newQuestion)
+    );
+  }
+
   await db('curriculum_assessments')
     .update({
       title: curriculumAssessment.title,
@@ -1578,11 +1590,13 @@ export const updateCurriculumAssessment = async (
       max_score: curriculumAssessment.max_score,
       max_num_submissions: curriculumAssessment.max_num_submissions,
       time_limit: curriculumAssessment.time_limit,
+      activity_id: curriculumAssessment.activity_id,
     })
     .where('id', curriculumAssessment.id);
-  // refer to implementation of getCurriculumAssessment for knowledge on joins
-  // (data in two different database tables that relate to one another), differences between database table and data type
-  return updatedCurriculumAssessment;
+
+  curriculumAssessment.questions = newQuestionList;
+
+  return curriculumAssessment;
 };
 
 /**
