@@ -623,9 +623,9 @@ export const updatedAssessmentResponsesSCGradedRow = {
   assessment_id: programAssessmentId,
   submission_id: assessmentSubmissionId,
   question_id: singleChoiceQuestionId,
-  answer_id: 2,
+  answer_id: singleChoiceAnswerId,
   score: null as number,
-  grader_response: 'Good Work',
+  grader_response: 'Well done!',
 };
 
 export const updatedAssessmentResponsesFRGradedRow = {
@@ -633,9 +633,9 @@ export const updatedAssessmentResponsesFRGradedRow = {
   assessment_id: programAssessmentId,
   submission_id: assessmentSubmissionId,
   question_id: freeResponseQuestionId,
-  response_text: 'test',
-  score: 1,
-  grader_response: 'Good Work',
+  response: '<div>Hello world!</div>',
+  score: 0,
+  grader_response: 'Very close!',
 };
 
 export const updatedAssessmentSubmissionsRow = {
@@ -764,7 +764,7 @@ export const sentUpdatedAssessmentSubmissionSCResponseGraded: AssessmentResponse
   {
     ...sentUpdatedAssessmentSubmissionSCResponseSubmitted,
     score: 1,
-    grader_response: 'Good Work',
+    grader_response: 'Well done!',
   };
 
 export const sentUpdatedAssessmentSubmissionFRResponseGraded: AssessmentResponse =
@@ -773,9 +773,9 @@ export const sentUpdatedAssessmentSubmissionFRResponseGraded: AssessmentResponse
     assessment_id: programAssessmentId,
     submission_id: assessmentSubmissionId,
     question_id: freeResponseQuestionId,
-    response_text: 'test',
-    score: 1,
-    grader_response: 'Good Work',
+    response_text: '<div>Hello world!</div>',
+    score: 0,
+    grader_response: 'Very close!',
   };
 
 export const sentUpdatedAssessmentSubmissionWithNewSCResponse: AssessmentSubmission =
@@ -836,10 +836,5 @@ export const sentNewCurriculumAssessmentWithFRQuestionPostInsert: CurriculumAsse
   {
     ...sentNewCurriculumAssessment,
     id: sentCurriculumAssessmentId,
-    questions: [exampleAssessmentQuestionFRWithCorrectAnswers],
-  };
-export const sentNewCurriculumAssessmentWithFRQuestionPostInsertFR: CurriculumAssessment =
-  {
-    ...exampleCurriculumAssessment,
     questions: [exampleAssessmentQuestionFRWithCorrectAnswers],
   };

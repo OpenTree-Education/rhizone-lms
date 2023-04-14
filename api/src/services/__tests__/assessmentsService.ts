@@ -21,16 +21,19 @@ import {
   listProgramAssessments,
   removeGradingInformation,
   updateAssessmentSubmission,
-  updateProgramAssessment,
   updateCurriculumAssessment,
+  updateProgramAssessment,
 } from '../assessmentsService';
 
 import {
   assessmentSubmissionId,
+  assessmentSubmissionResponseFRId,
   assessmentSubmissionResponseSCId,
   curriculumAssessmentId,
+  exampleAssessmentQuestionFRWithCorrectAnswers,
   exampleAssessmentQuestionSCWithCorrectAnswers,
   exampleAssessmentSubmissionExpired,
+  exampleAssessmentSubmissionFRInProgress,
   exampleAssessmentSubmissionGraded,
   exampleAssessmentSubmissionGradedNoResponses,
   exampleAssessmentSubmissionGradedRemovedGrades,
@@ -41,6 +44,8 @@ import {
   exampleAssessmentSubmissionPastDueDate,
   exampleAssessmentSubmissionSubmitted,
   exampleCurriculumAssessment,
+  exampleCurriculumAssessmentWithFRCorrectAnswers,
+  exampleCurriculumAssessmentWithFRQuestionsNewAnswers,
   exampleCurriculumAssessmentWithSCCorrectAnswers,
   exampleFacilitatorAssessmentSubmissionsSummary,
   exampleOtherAssessmentSubmissionSubmitted,
@@ -54,7 +59,9 @@ import {
   facilitatorPrincipalId,
   freeResponseCorrectAnswerId,
   freeResponseQuestionId,
+  matchingAssessmentAnswersFRRow,
   matchingAssessmentAnswersSCRow,
+  matchingAssessmentQuestionsFRRow,
   matchingAssessmentQuestionsSCRow,
   matchingAssessmentResponsesRowFRInProgress,
   matchingAssessmentResponsesRowFROpened,
@@ -85,26 +92,18 @@ import {
   sentNewCurriculumAssessmentWithSCQuestionPostInsert,
   sentNewFRAssessmentAnswer,
   sentNewFRAssessmentQuestion,
+  sentNewFRAssessmentResponse,
   sentNewProgramAssessment,
   sentNewSCAssessmentAnswer,
   sentNewSCAssessmentQuestion,
+  sentUpdatedAssessmentSubmissionChangedFRResponse,
   sentUpdatedAssessmentSubmissionChangedResponse,
+  sentUpdatedAssessmentSubmissionWithNewFRResponse,
   sentUpdatedAssessmentSubmissionWithNewSCResponse,
   singleChoiceAnswerId,
   singleChoiceQuestionId,
   unenrolledPrincipalId,
   updatedProgramAssessmentsRow,
-  exampleAssessmentQuestionFRWithCorrectAnswers,
-  exampleCurriculumAssessmentWithFRCorrectAnswers,
-  sentUpdatedAssessmentSubmissionChangedFRResponse,
-  exampleAssessmentSubmissionFRInProgress,
-  assessmentSubmissionResponseFRId,
-  sentUpdatedAssessmentSubmissionWithNewFRResponse,
-  sentNewFRAssessmentResponse,
-  matchingAssessmentAnswersFRRow,
-  matchingAssessmentQuestionsFRRow,
-  exampleCurriculumAssessmentWithFRQuestionsNewAnswers,
-  sentNewCurriculumAssessmentWithFRQuestionPostInsertFR,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -1442,7 +1441,7 @@ describe('updateCurriculumAssessment', () => {
       await updateCurriculumAssessment(
         exampleCurriculumAssessmentWithFRQuestionsNewAnswers
       )
-    ).toEqual(sentNewCurriculumAssessmentWithFRQuestionPostInsertFR);
+    ).toEqual(sentNewCurriculumAssessmentWithFRQuestionPostInsert);
   });
   // it('should update a curriculum assessment with new  questions', async () => {
   //   mockQuery(
