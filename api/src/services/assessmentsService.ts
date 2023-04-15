@@ -223,7 +223,7 @@ const createSubmissionResponse = async (
 ): Promise<AssessmentResponse> => {
   // TODO: Check to see if question relates to submission,
   // answer relates to question?
-  const [newSubmissionId] = await db('assessment_responses').insert({
+  const [newSubmissionResponseId] = await db('assessment_responses').insert({
     assessment_id: assessmentResponse.assessment_id,
     submission_id: assessmentResponse.submission_id,
     question_id: assessmentResponse.question_id,
@@ -231,14 +231,20 @@ const createSubmissionResponse = async (
     response: assessmentResponse.response_text,
   });
 
-  return {
-    id: newSubmissionId,
+  const newSubmissionResponse: AssessmentResponse = {
+    id: newSubmissionResponseId,
     assessment_id: assessmentResponse.assessment_id,
     submission_id: assessmentResponse.submission_id,
     question_id: assessmentResponse.question_id,
-    answer_id: assessmentResponse.answer_id,
-    response: assessmentResponse.response_text,
-  } as AssessmentResponse;
+  };
+
+  if (assessmentResponse.answer_id) {
+    newSubmissionResponse.answer_id = assessmentResponse.answer_id;
+  } else if (assessmentResponse.response_text) {
+    newSubmissionResponse.response_text = assessmentResponse.response_text;
+  }
+
+  return newSubmissionResponse;
 };
 
 /**
@@ -779,8 +785,8 @@ export const createAssessmentSubmission = async (
     assessment_id: programAssessmentId,
     principal_id: participantPrincipalId,
     assessment_submission_state: openedStateTitle,
-    opened_at: DateTime.now().toISO(),
-    last_modified: DateTime.now().toISO(),
+    opened_at: DateTime.now().toUTC().toISO(),
+    last_modified: DateTime.now().toUTC().toISO(),
     responses: submissionResponses,
   };
 

@@ -450,12 +450,7 @@ export const exampleAssessmentResponseFRGraded: AssessmentResponse = {
 
 export const exampleAssessmentSubmissionOpenedWithResponse: AssessmentSubmission =
   {
-    id: assessmentSubmissionId,
-    assessment_id: programAssessmentId,
-    principal_id: participantPrincipalId,
-    assessment_submission_state: 'Opened',
-    opened_at: '2023-02-09T04:05:00.000-08:00',
-    last_modified: '2023-02-09T04:05:00.000-08:00',
+    ...exampleAssessmentSubmissionOpened,
     responses: [exampleAssessmentResponseSCUnanswered],
   };
 
@@ -765,11 +760,12 @@ export const sentNewSCAssessmentResponse: AssessmentResponse = {
   question_id: singleChoiceQuestionId,
   answer_id: singleChoiceAnswerId,
 };
+
 export const sentNewFRAssessmentResponse: AssessmentResponse = {
   assessment_id: programAssessmentId,
   submission_id: assessmentSubmissionId,
   question_id: freeResponseQuestionId,
-  response_text: 'test',
+  response_text: '<div>Hello world!</div>',
 };
 
 export const sentAssessmentSCAnswerWithUpdatedCorrectAnswer: Answer = {
