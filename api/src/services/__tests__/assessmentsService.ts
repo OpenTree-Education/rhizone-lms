@@ -33,12 +33,14 @@ import {
   exampleAssessmentQuestionSCWithCorrectAnswers,
   exampleAssessmentSCAnswerWithCorrectAnswer,
   exampleAssessmentSubmissionExpired,
+  exampleAssessmentSubmissionExpiredPlusWeek,
   exampleAssessmentSubmissionFRInProgress,
   exampleAssessmentSubmissionGraded,
   exampleAssessmentSubmissionGradedNoResponses,
   exampleAssessmentSubmissionGradedRemovedGrades,
   exampleAssessmentSubmissionInProgress,
   exampleAssessmentSubmissionInProgressSCFR,
+  exampleAssessmentSubmissionInProgressSCFRLateStart,
   exampleAssessmentSubmissionOpened,
   exampleAssessmentSubmissionOpenedWithResponse,
   exampleAssessmentSubmissionPastDueDate,
@@ -1132,7 +1134,7 @@ describe('updateAssessmentSubmission', () => {
   });
 
   it('should automatically expire an in-progress assessment submission after the due date', async () => {
-    const expectedNow = DateTime.utc(2023, 2, 10, 0, 0, 10);
+    const expectedNow = DateTime.utc(2023, 2, 10, 8, 0, 10);
     Settings.now = () => expectedNow.toMillis();
 
     mockQuery(
@@ -1186,10 +1188,68 @@ describe('updateAssessmentSubmission', () => {
 
     expect(
       await updateAssessmentSubmission(
-        exampleAssessmentSubmissionInProgressSCFR,
+        exampleAssessmentSubmissionInProgressSCFRLateStart,
         false
       )
     ).toEqual(exampleAssessmentSubmissionPastDueDate);
+  });
+
+  it('should automatically expire an in-progress assessment submission after the time limit', async () => {
+    const expectedNow = DateTime.utc(2023, 2, 9, 14, 0, 10);
+    Settings.now = () => expectedNow.toMillis();
+
+    mockQuery(
+      'select `assessment_submissions`.`assessment_id`, `assessment_submissions`.`principal_id`, `assessment_submission_states`.`title` as `assessment_submission_state`, `assessment_submissions`.`score`, `assessment_submissions`.`opened_at`, `assessment_submissions`.`submitted_at`, `assessment_submissions`.`updated_at` from `assessment_submissions` inner join `assessment_submission_states` on `assessment_submissions`.`assessment_submission_state_id` = `assessment_submission_states`.`id` where `assessment_submissions`.`id` = ?',
+      [assessmentSubmissionId],
+      [matchingAssessmentSubmissionInProgressRow]
+    );
+    mockQuery(
+      'select `id`, `assessment_id`, `question_id`, `answer_id`, `response`, `score`, `grader_response` from `assessment_responses` where `submission_id` = ?',
+      [assessmentSubmissionId],
+      [matchingAssessmentResponsesRowSCOpened]
+    );
+    mockQuery(
+      'select `program_id`, `assessment_id`, `available_after`, `due_date` from `program_assessments` where `id` = ?',
+      [exampleProgramAssessment.id],
+      [matchingProgramAssessmentsRow]
+    );
+    mockQuery(
+      'select `id`, `title`, `start_date`, `end_date`, `time_zone`, `curriculum_id` from `programs` where `id` = ?',
+      [exampleProgramAssessmentPastDue.program_id],
+      [matchingProgramRow]
+    );
+    mockQuery(
+      'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
+      [curriculumAssessmentId],
+      [matchingCurriculumAssessmentRow]
+    );
+    mockQuery(
+      'select `activity_types`.`title` from `activity_types` inner join `activities` on `activities`.`activity_type_id` = `activity_types`.`id` where `activities`.`id` = ?',
+      [matchingCurriculumAssessmentRow.activity_id],
+      [
+        {
+          title:
+            exampleCurriculumAssessmentWithSCCorrectAnswers.assessment_type,
+        },
+      ]
+    );
+    mockQuery(
+      'select `id` from `assessment_submission_states` where `title` = ?',
+      ['Expired'],
+      [{ id: 5 }]
+    );
+    mockQuery(
+      'update `assessment_submissions` set `assessment_submission_state_id` = ? where `id` = ?',
+      [5, exampleAssessmentSubmissionInProgress.id],
+      []
+    );
+
+    expect(
+      await updateAssessmentSubmission(
+        exampleAssessmentSubmissionInProgress,
+        false
+      )
+    ).toEqual(exampleAssessmentSubmissionExpiredPlusWeek);
   });
 
   it('should not allow a participant to modify their responses to an expired submission', async () => {

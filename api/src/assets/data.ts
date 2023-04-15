@@ -482,10 +482,23 @@ export const exampleAssessmentSubmissionInProgressSCFR: AssessmentSubmission = {
   ],
 };
 
+export const exampleAssessmentSubmissionInProgressSCFRLateStart: AssessmentSubmission =
+  {
+    ...exampleAssessmentSubmissionOpened,
+    assessment_submission_state: 'In Progress',
+    opened_at: '2023-02-10T07:00:00.000Z',
+    last_modified: '2023-02-10T07:05:00.000Z',
+    responses: [
+      exampleAssessmentResponseSCAnswered,
+      exampleAssessmentResponseFRAnswered,
+    ],
+  };
+
 export const exampleAssessmentSubmissionPastDueDate: AssessmentSubmission = {
   ...exampleAssessmentSubmissionOpened,
   assessment_submission_state: 'Expired',
-  last_modified: '2023-02-17T00:00:10.000Z',
+  opened_at: '2023-02-10T07:00:00.000Z',
+  last_modified: '2023-02-17T08:00:10.000Z',
   responses: [
     exampleAssessmentResponseSCAnswered,
     exampleAssessmentResponseFRAnswered,
@@ -498,6 +511,14 @@ export const exampleAssessmentSubmissionExpired: AssessmentSubmission = {
   last_modified: '2023-02-09T14:00:00.000Z',
   responses: [exampleAssessmentResponseSCAnswered],
 };
+
+export const exampleAssessmentSubmissionExpiredPlusWeek: AssessmentSubmission =
+  {
+    ...exampleAssessmentSubmissionOpened,
+    assessment_submission_state: 'Expired',
+    last_modified: '2023-02-16T14:00:10.000Z',
+    responses: [exampleAssessmentResponseSCAnswered],
+  };
 
 export const exampleAssessmentSubmissionSubmitted: AssessmentSubmission = {
   ...exampleAssessmentSubmissionOpened,
