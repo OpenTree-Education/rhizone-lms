@@ -279,26 +279,25 @@ export const exampleAssessmentFRAnswerWithCorrectAnswer: Answer = {
   correct_answer: true,
 };
 
-export const exampleAssessmentQuestionSCWithoutCorrectAnswers: Question = {
-  id: singleChoiceQuestionId,
-  assessment_id: curriculumAssessmentId,
-  title: matchingAssessmentQuestionsSCRow.title,
-  question_type: matchingAssessmentQuestionsSCRow.question_type,
-  answers: [exampleAssessmentSCAnswerWithoutCorrectAnswer],
-  max_score: matchingAssessmentQuestionsSCRow.max_score,
-  sort_order: matchingAssessmentQuestionsSCRow.sort_order,
-};
-
-export const exampleAssessmentQuestionSCWithCorrectAnswers: Question = {
+const exampleAssessmentQuestionSCBase: Question = {
   id: singleChoiceQuestionId,
   assessment_id: curriculumAssessmentId,
   title: matchingAssessmentQuestionsSCRow.title,
   description: matchingAssessmentQuestionsSCRow.description,
   question_type: matchingAssessmentQuestionsSCRow.question_type,
-  answers: [exampleAssessmentSCAnswerWithCorrectAnswer],
-  correct_answer_id: singleChoiceAnswerId,
   max_score: matchingAssessmentQuestionsSCRow.max_score,
   sort_order: matchingAssessmentQuestionsSCRow.sort_order,
+};
+
+export const exampleAssessmentQuestionSCWithoutCorrectAnswers: Question = {
+  ...exampleAssessmentQuestionSCBase,
+  answers: [exampleAssessmentSCAnswerWithoutCorrectAnswer],
+};
+
+export const exampleAssessmentQuestionSCWithCorrectAnswers: Question = {
+  ...exampleAssessmentQuestionSCBase,
+  answers: [exampleAssessmentSCAnswerWithCorrectAnswer],
+  correct_answer_id: exampleAssessmentSCAnswerWithCorrectAnswer.id,
 };
 
 export const exampleAssessmentQuestionFRWithCorrectAnswers: Question = {
@@ -715,9 +714,14 @@ export const sentCurriculumAssessmentWithNewSCQuestion: CurriculumAssessment = {
   questions: [sentNewSCAssessmentQuestion],
 };
 
+export const sentCurriculumAssessmentWithNewSCQuestion2: CurriculumAssessment =
+  {
+    ...exampleCurriculumAssessment,
+    questions: [sentNewSCAssessmentQuestion],
+  };
+
 export const sentAssessmentSCQuestionNewAnswer: Question = {
-  ...exampleAssessmentQuestionSCWithoutCorrectAnswers,
-  description: null as string,
+  ...exampleAssessmentQuestionSCBase,
   answers: [sentNewSCAssessmentAnswer],
 };
 

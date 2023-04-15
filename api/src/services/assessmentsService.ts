@@ -296,6 +296,9 @@ const listAssessmentQuestionAnswers = async (
  *
  * @param {number} curriculumAssessmentId - The row ID of the
  *   curriculum_assessments table for a given curriculum assessment.
+ * @param {boolean} [answersIncluded] - Optional specifier to determine whether
+ *   or not the answers for the questions should be included or removed from the
+ *   return value.
  * @param {boolean} [correctAnswersIncluded] - Optional specifier to determine
  *   whether or not the correct answer information should be included or removed
  *   from the return value.
@@ -304,6 +307,7 @@ const listAssessmentQuestionAnswers = async (
  */
 const listAssessmentQuestions = async (
   curriculumAssessmentId: number,
+  answersIncluded?: boolean,
   correctAnswersIncluded?: boolean
 ): Promise<Question[]> => {
   const matchingAssessmentQuestionsRows = await db('assessment_questions')
@@ -339,17 +343,22 @@ const listAssessmentQuestions = async (
       question_type: assessmentQuestionsRow.question_type,
       max_score: assessmentQuestionsRow.max_score,
       sort_order: assessmentQuestionsRow.sort_order,
-      answers: await listAssessmentQuestionAnswers(assessmentQuestionsRow.id),
     };
 
-    if (correctAnswersIncluded) {
-      assessmentQuestion.correct_answer_id =
-        assessmentQuestionsRow.correct_answer_id;
-      const correctAnswer = assessmentQuestion.answers.find(
-        answer => answer.id === assessmentQuestionsRow.correct_answer_id
+    if (answersIncluded && answersIncluded === true) {
+      assessmentQuestion.answers = await listAssessmentQuestionAnswers(
+        assessmentQuestionsRow.id
       );
-      if (correctAnswer) {
-        correctAnswer.correct_answer = true;
+
+      if (correctAnswersIncluded && correctAnswersIncluded === true) {
+        assessmentQuestion.correct_answer_id =
+          assessmentQuestionsRow.correct_answer_id;
+        const correctAnswer = assessmentQuestion.answers.find(
+          answer => answer.id === assessmentQuestionsRow.correct_answer_id
+        );
+        if (correctAnswer) {
+          correctAnswer.correct_answer = true;
+        }
       }
     }
 
@@ -434,52 +443,16 @@ const listSubmissionResponses = async (
 const updateAssessmentQuestion = async (
   question: Question
 ): Promise<Question> => {
-  let correctAnswerId = question.correct_answer_id;
+  const existingAnswers = await listAssessmentQuestionAnswers(question.id);
+
   const updatedAnswers: Answer[] = [];
   const newAnswers: Answer[] = [];
-  const newAnswersList: Answer[] = [];
+
   const updatedQuestion = {
     ...question,
   };
 
-  // TODO: deleteAssessmentQuestionAnswer() for any answers that no longer exist
-  // if (question.answers !== null) {
-
-  //   for (const answer of question.answers) {
-  //     if ( typeof answer.id === 'undefined') {
-  //       // the answer is new
-  //       const newAnswer = await createAssessmentQuestionAnswer(
-  //         question.id,
-  //         answer
-  //       );
-  //       correctAnswerId =
-  //         newAnswer.correct_answer && newAnswer.correct_answer === true
-  //           ? newAnswer.id
-  //           : correctAnswerId;
-  //       updatedAnswers.push(newAnswer);
-  //     } else {
-  //       // the answer was updated
-  //       const updatedAnswer = await updateAssessmentQuestionAnswer(answer);
-  //       correctAnswerId =
-  //         updatedAnswer.correct_answer && updatedAnswer.correct_answer === true
-  //           ? updatedAnswer.id
-  //           : correctAnswerId;
-  //       updatedAnswers.push(updatedAnswer);
-  //     }
-  //   }
-  // }
-  // if (
-  //   question.answers &&
-  //   Array.isArray(question.answers) &&
-  //   question.answers.length > 0
-  // ) {
-  //   for (const deletedAnswer of question.answers) {
-  //     await deleteAssessmentQuestionAnswer(deletedAnswer.id);
-  //   }
-  // }
-
-  // updatedQuestion.answers = updatedAnswers;
-  // updatedQuestion.correct_answer_id = correctAnswerId;
+  let correctAnswerId = question.correct_answer_id;
 
   if (
     question.answers &&
@@ -487,64 +460,59 @@ const updateAssessmentQuestion = async (
     question.answers.length > 0
   ) {
     for (const answer of question.answers) {
-      if (answer.id && answer.id !== 0) {
+      if (answer.id && typeof answer.id === 'number' && answer.id > 0) {
         if (
-          question.answers &&
-          Array.isArray(question.answers) &&
-          question.answers.length > 0
+          existingAnswers &&
+          Array.isArray(existingAnswers) &&
+          existingAnswers.length > 0
         ) {
-          const eqIndex = question.answers.findIndex(
+          const eqIndex = existingAnswers.findIndex(
             existingAnswer => existingAnswer.id === answer.id
           );
-          question.answers.splice(eqIndex, 1);
+          existingAnswers.splice(eqIndex, 1);
         }
         updatedAnswers.push(answer);
+
+        if (answer.correct_answer && answer.correct_answer === true) {
+          correctAnswerId = answer.id;
+        }
       } else {
         newAnswers.push(answer);
       }
     }
   }
+
   if (
-    question.answers &&
-    Array.isArray(question.answers) &&
-    question.answers.length > 0
+    existingAnswers &&
+    Array.isArray(existingAnswers) &&
+    existingAnswers.length > 0
   ) {
-    for (const deletedAnswer of question.answers) {
+    for (const deletedAnswer of existingAnswers) {
       await deleteAssessmentQuestionAnswer(deletedAnswer.id);
     }
   }
+
+  const newAnswersList: Answer[] = [];
+
   for (const newAnswer of newAnswers) {
-    // newAnswersList.push(await createAssessmentQuestionAnswer(
-    //   question.id,
-    //   updatedAnswer
-    // ));
-    const newAnswerList = await createAssessmentQuestionAnswer(
+    const newAnswerInserted = await createAssessmentQuestionAnswer(
       question.id,
       newAnswer
     );
-    correctAnswerId =
-      newAnswerList.correct_answer && newAnswerList.correct_answer === true
-        ? newAnswerList.id
-        : correctAnswerId;
-    newAnswersList.push(newAnswerList);
+
+    if (newAnswer.correct_answer && newAnswer.correct_answer === true) {
+      correctAnswerId = newAnswerInserted.id;
+    }
+
+    newAnswersList.push(newAnswerInserted);
   }
 
   for (const updatedAnswer of updatedAnswers) {
-    // newAnswersList.push(
-    //   await updateAssessmentQuestionAnswer(newAnswer)
-    // );
-    const updatedAnswerList = await updateAssessmentQuestionAnswer(
-      updatedAnswer
-    );
-    correctAnswerId =
-      updatedAnswerList.correct_answer &&
-      updatedAnswerList.correct_answer === true
-        ? updatedAnswerList.id
-        : correctAnswerId;
-    newAnswersList.push(updatedAnswerList);
+    newAnswersList.push(await updateAssessmentQuestionAnswer(updatedAnswer));
   }
-  updatedQuestion.answers = newAnswersList;
+
   updatedQuestion.correct_answer_id = correctAnswerId;
+
   await db('assessment_questions')
     .update({
       title: question.title,
@@ -554,6 +522,9 @@ const updateAssessmentQuestion = async (
       sort_order: question.sort_order,
     })
     .where('id', question.id);
+
+  updatedQuestion.answers = newAnswersList;
+
   return updatedQuestion;
 };
 
@@ -766,6 +737,8 @@ export const constructParticipantAssessmentSummary = async (
  *   that corresponds with a given program participant.
  * @param {number} programAssessmentId - The row ID of the program_assessments
  *   table for a given program assessment.
+ * @param {number} curriculumAssessmentId - The row ID of the
+ *   curriculum_assessments table, to save us a database query.
  * @returns {Promise<AssessmentSubmission>} An AssessmentSubmission object
  *   constructed from the inserted row in the assessment_submissions table.
  */
@@ -1126,6 +1099,7 @@ export const getCurriculumAssessment = async (
   if (questionsAndAllAnswersIncluded === true) {
     curriculumAssessment.questions = await listAssessmentQuestions(
       curriculumAssessmentId,
+      questionsAndAllAnswersIncluded,
       questionsAndCorrectAnswersIncluded
     );
   }
@@ -1616,10 +1590,10 @@ export const updateAssessmentSubmission = async (
 export const updateCurriculumAssessment = async (
   curriculumAssessment: CurriculumAssessment
 ): Promise<CurriculumAssessment> => {
-  const existingCurriculumAssessment = await getCurriculumAssessment(
+  const existingQuestions = await listAssessmentQuestions(
     curriculumAssessment.id,
-    true,
-    true
+    false,
+    false
   );
 
   // Determine which questions are new, updated, or deleted.
@@ -1632,16 +1606,16 @@ export const updateCurriculumAssessment = async (
     curriculumAssessment.questions.length > 0
   ) {
     for (const question of curriculumAssessment.questions) {
-      if (question.id && question.id !== 0) {
+      if (question.id && typeof question.id === 'number' && question.id > 0) {
         if (
-          existingCurriculumAssessment.questions &&
-          Array.isArray(existingCurriculumAssessment.questions) &&
-          existingCurriculumAssessment.questions.length > 0
+          existingQuestions &&
+          Array.isArray(existingQuestions) &&
+          existingQuestions.length > 0
         ) {
-          const eqIndex = existingCurriculumAssessment.questions.findIndex(
+          const eqIndex = existingQuestions.findIndex(
             existingQuestion => existingQuestion.id === question.id
           );
-          existingCurriculumAssessment.questions.splice(eqIndex, 1);
+          existingQuestions.splice(eqIndex, 1);
         }
         updatedQuestions.push(question);
       } else {
@@ -1651,11 +1625,11 @@ export const updateCurriculumAssessment = async (
   }
 
   if (
-    existingCurriculumAssessment.questions &&
-    Array.isArray(existingCurriculumAssessment.questions) &&
-    existingCurriculumAssessment.questions.length > 0
+    existingQuestions &&
+    Array.isArray(existingQuestions) &&
+    existingQuestions.length > 0
   ) {
-    for (const deletedQuestion of existingCurriculumAssessment.questions) {
+    for (const deletedQuestion of existingQuestions) {
       await deleteAssessmentQuestion(deletedQuestion.id);
     }
   }
