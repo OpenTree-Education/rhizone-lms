@@ -302,7 +302,7 @@ const listAssessmentQuestionAnswers = async (
  * @returns {Promise<Question[]>} An array of Question objects, including or
  *   omitting the correct answer metadata as specified.
  */
-export const listAssessmentQuestions = async (
+const listAssessmentQuestions = async (
   curriculumAssessmentId: number,
   correctAnswersIncluded?: boolean
 ): Promise<Question[]> => {
