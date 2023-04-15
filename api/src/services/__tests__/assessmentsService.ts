@@ -108,6 +108,7 @@ import {
   unenrolledPrincipalId,
   updatedAssessmentAnswersSCRow,
   updatedProgramAssessmentsRow,
+  exampleAssessmentSCAnswerWithCorrectAnswer,
 } from '../../assets/data';
 
 describe('constructFacilitatorAssessmentSummary', () => {
@@ -1597,6 +1598,85 @@ describe('updateCurriculumAssessment', () => {
     expect(
       await updateCurriculumAssessment(
         sentCurriculumAssessmentWithNewSCQuestion
+      )
+    ).toEqual(exampleCurriculumAssessmentWithSCCorrectAnswers);
+  });
+  it('should update a curriculum assessment with new answer and delete answer', async () => {
+    mockQuery(
+      'select `curriculum_assessments`.`title`, `curriculum_assessments`.`max_score`, `curriculum_assessments`.`max_num_submissions`, `curriculum_assessments`.`time_limit`, `curriculum_assessments`.`curriculum_id`, `curriculum_assessments`.`activity_id`, `curriculum_assessments`.`principal_id` from `curriculum_assessments` inner join `activities` on `curriculum_assessments`.`curriculum_id` = `activities`.`id` where `curriculum_assessments`.`id` = ?',
+      [curriculumAssessmentId],
+      [matchingCurriculumAssessmentRow]
+    );
+
+    mockQuery(
+      'select `activity_types`.`title` from `activity_types` inner join `activities` on `activities`.`activity_type_id` = `activity_types`.`id` where `activities`.`id` = ?',
+      [matchingCurriculumAssessmentRow.activity_id],
+      [
+        {
+          title:
+            exampleCurriculumAssessmentWithSCCorrectAnswers.assessment_type,
+        },
+      ]
+    );
+
+    mockQuery(
+      'select `assessment_questions`.`id`, `assessment_questions`.`title`, `description`, `assessment_question_types`.`title` as `question_type`, `correct_answer_id`, `max_score`, `sort_order` from `assessment_questions` inner join `assessment_question_types` on `assessment_questions`.`question_type_id` = `assessment_question_types`.`id` where `assessment_questions`.`assessment_id` = ? order by `sort_order` asc',
+      [exampleCurriculumAssessmentWithSCCorrectAnswers.id],
+      [matchingAssessmentQuestionsSCRow]
+    );
+
+    mockQuery(
+      'select `id`, `question_id`, `title`, `description`, `sort_order` from `assessment_answers` where `question_id` = ? order by `sort_order` asc',
+      [matchingAssessmentQuestionsSCRow.id],
+      [matchingAssessmentQuestionsSCRow]
+    );
+
+    mockQuery(
+      'delete from `assessment_answers` where `id` = ?',
+      [matchingAssessmentAnswersSCRow.id],
+      [1]
+    );
+
+    mockQuery(
+      'update `assessment_answers` set `title` = ?, `description` = ?, `sort_order` = ? where `id` = ?',
+      [
+        sentNewSCAssessmentAnswer.title,
+        sentNewSCAssessmentAnswer.description,
+        sentNewSCAssessmentAnswer.sort_order,
+        singleChoiceAnswerId,
+      ],
+      [1]
+    );
+    mockQuery(
+      'update `assessment_questions` set `title` = ?, `description` = ?, `correct_answer_id` = ?, `max_score` = ?, `sort_order` = ? where `id` = ?',
+      [
+        matchingAssessmentQuestionsSCRow.title,
+        matchingAssessmentQuestionsSCRow.description,
+        matchingAssessmentQuestionsSCRow.correct_answer_id,
+        matchingAssessmentQuestionsSCRow.max_score,
+        matchingAssessmentQuestionsSCRow.sort_order,
+        matchingAssessmentQuestionsSCRow.id,
+      ],
+      [1]
+    );
+
+    mockQuery(
+      'update `curriculum_assessments` set `title` = ?, `description` = ?, `max_score` = ?, `max_num_submissions` = ?, `time_limit` = ?, `activity_id` = ? where `id` = ?',
+      [
+        matchingCurriculumAssessmentRow.title,
+        matchingCurriculumAssessmentRow.description,
+        matchingCurriculumAssessmentRow.max_score,
+        matchingCurriculumAssessmentRow.max_num_submissions,
+        matchingCurriculumAssessmentRow.time_limit,
+        matchingCurriculumAssessmentRow.activity_id,
+        matchingCurriculumAssessmentRow.id,
+      ],
+      [1]
+    );
+
+    expect(
+      await updateCurriculumAssessment(
+        sentCurriculumAssessmentWithSCQuestionNewAnswer
       )
     ).toEqual(exampleCurriculumAssessmentWithSCCorrectAnswers);
   });

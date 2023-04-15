@@ -465,6 +465,12 @@ const updateAssessmentQuestion = async (
       }
     }
   }
+  if (question.answers && Array.isArray(question) && question.length > 0) {
+    for (const deletedAnswer of question.answers) {
+      await deleteAssessmentQuestionAnswer(deletedAnswer.id);
+    }
+  }
+
   updatedQuestion.answers = updatedAnswers;
   updatedQuestion.correct_answer_id = correctAnswerId;
 
