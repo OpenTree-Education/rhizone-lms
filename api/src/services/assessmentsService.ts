@@ -435,33 +435,72 @@ const updateAssessmentQuestion = async (
   question: Question
 ): Promise<Question> => {
   let correctAnswerId = question.correct_answer_id;
-  const updatedAnswers = [];
+  const updatedAnswers: Answer[] = [];
+  const newAnswers: Answer[] = [];
+  const newAnswersList: Answer[] = [];
   const updatedQuestion = {
     ...question,
   };
 
   // TODO: deleteAssessmentQuestionAnswer() for any answers that no longer exist
-  if (question.answers !== null) {
+  // if (question.answers !== null) {
+
+  //   for (const answer of question.answers) {
+  //     if ( typeof answer.id === 'undefined') {
+  //       // the answer is new
+  //       const newAnswer = await createAssessmentQuestionAnswer(
+  //         question.id,
+  //         answer
+  //       );
+  //       correctAnswerId =
+  //         newAnswer.correct_answer && newAnswer.correct_answer === true
+  //           ? newAnswer.id
+  //           : correctAnswerId;
+  //       updatedAnswers.push(newAnswer);
+  //     } else {
+  //       // the answer was updated
+  //       const updatedAnswer = await updateAssessmentQuestionAnswer(answer);
+  //       correctAnswerId =
+  //         updatedAnswer.correct_answer && updatedAnswer.correct_answer === true
+  //           ? updatedAnswer.id
+  //           : correctAnswerId;
+  //       updatedAnswers.push(updatedAnswer);
+  //     }
+  //   }
+  // }
+  // if (
+  //   question.answers &&
+  //   Array.isArray(question.answers) &&
+  //   question.answers.length > 0
+  // ) {
+  //   for (const deletedAnswer of question.answers) {
+  //     await deleteAssessmentQuestionAnswer(deletedAnswer.id);
+  //   }
+  // }
+
+  // updatedQuestion.answers = updatedAnswers;
+  // updatedQuestion.correct_answer_id = correctAnswerId;
+
+  if (
+    question.answers &&
+    Array.isArray(question.answers) &&
+    question.answers.length > 0
+  ) {
     for (const answer of question.answers) {
-      if (typeof answer.id === 'undefined') {
-        // the answer is new
-        const newAnswer = await createAssessmentQuestionAnswer(
-          question.id,
-          answer
-        );
-        correctAnswerId =
-          newAnswer.correct_answer && newAnswer.correct_answer === true
-            ? newAnswer.id
-            : correctAnswerId;
-        updatedAnswers.push(newAnswer);
+      if (answer.id && answer.id !== 0) {
+        if (
+          question.answers &&
+          Array.isArray(question.answers) &&
+          question.answers.length > 0
+        ) {
+          const eqIndex = question.answers.findIndex(
+            existingAnswer => existingAnswer.id === answer.id
+          );
+          question.answers.splice(eqIndex, 1);
+        }
+        updatedAnswers.push(answer);
       } else {
-        // the answer was updated
-        const updatedAnswer = await updateAssessmentQuestionAnswer(answer);
-        correctAnswerId =
-          updatedAnswer.correct_answer && updatedAnswer.correct_answer === true
-            ? updatedAnswer.id
-            : correctAnswerId;
-        updatedAnswers.push(updatedAnswer);
+        newAnswers.push(answer);
       }
     }
   }
@@ -474,10 +513,38 @@ const updateAssessmentQuestion = async (
       await deleteAssessmentQuestionAnswer(deletedAnswer.id);
     }
   }
+  for (const newAnswer of newAnswers) {
+    // newAnswersList.push(await createAssessmentQuestionAnswer(
+    //   question.id,
+    //   updatedAnswer
+    // ));
+    const newAnswerList = await createAssessmentQuestionAnswer(
+      question.id,
+      newAnswer
+    );
+    correctAnswerId =
+      newAnswerList.correct_answer && newAnswerList.correct_answer === true
+        ? newAnswerList.id
+        : correctAnswerId;
+    newAnswersList.push(newAnswerList);
+  }
 
-  updatedQuestion.answers = updatedAnswers;
+  for (const updatedAnswer of updatedAnswers) {
+    // newAnswersList.push(
+    //   await updateAssessmentQuestionAnswer(newAnswer)
+    // );
+    const updatedAnswerList = await updateAssessmentQuestionAnswer(
+      updatedAnswer
+    );
+    correctAnswerId =
+      updatedAnswerList.correct_answer &&
+      updatedAnswerList.correct_answer === true
+        ? updatedAnswerList.id
+        : correctAnswerId;
+    newAnswersList.push(updatedAnswerList);
+  }
+  updatedQuestion.answers = newAnswersList;
   updatedQuestion.correct_answer_id = correctAnswerId;
-
   await db('assessment_questions')
     .update({
       title: question.title,

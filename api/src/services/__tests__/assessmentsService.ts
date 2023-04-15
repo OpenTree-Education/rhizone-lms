@@ -1628,7 +1628,7 @@ describe('updateCurriculumAssessment', () => {
     mockQuery(
       'select `id`, `question_id`, `title`, `description`, `sort_order` from `assessment_answers` where `question_id` = ? order by `sort_order` asc',
       [matchingAssessmentQuestionsSCRow.id],
-      [matchingAssessmentQuestionsSCRow]
+      [matchingAssessmentAnswersSCRow]
     );
 
     mockQuery(
