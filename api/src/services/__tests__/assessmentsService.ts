@@ -1300,24 +1300,6 @@ describe('updateAssessmentSubmission', () => {
   });
 });
 
-describe('updateProgramAssessment', () => {
-  it('should return update for an existing program assessment ID', async () => {
-    mockQuery(
-      'update `program_assessments` set `available_after` = ?, `due_date` = ? where `id` = ?',
-      [
-        updatedProgramAssessmentsRow.available_after,
-        updatedProgramAssessmentsRow.due_date,
-        updatedProgramAssessmentsRow.id,
-      ],
-      []
-    );
-
-    expect(await updateProgramAssessment(updatedProgramAssessmentsRow)).toEqual(
-      updatedProgramAssessmentsRow
-    );
-  });
-});
-
 describe('updateCurriculumAssessment', () => {
   it('should update a curriculum assessment with existing questions and updated answers', async () => {
     mockQuery(
@@ -1636,5 +1618,23 @@ describe('updateCurriculumAssessment', () => {
         sentCurriculumAssessmentWithSCQuestionNewAnswer
       )
     ).toEqual(exampleCurriculumAssessmentWithSCCorrectAnswers);
+  });
+});
+
+describe('updateProgramAssessment', () => {
+  it('should return update for an existing program assessment ID', async () => {
+    mockQuery(
+      'update `program_assessments` set `available_after` = ?, `due_date` = ? where `id` = ?',
+      [
+        updatedProgramAssessmentsRow.available_after,
+        updatedProgramAssessmentsRow.due_date,
+        updatedProgramAssessmentsRow.id,
+      ],
+      []
+    );
+
+    expect(await updateProgramAssessment(updatedProgramAssessmentsRow)).toEqual(
+      updatedProgramAssessmentsRow
+    );
   });
 });
