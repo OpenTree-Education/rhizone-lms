@@ -10,7 +10,7 @@ interface AssessmentsDisplayProps {
   handleUpdatedResponse: (
     questionId: number,
     answerId?: number,
-    response?: string
+    responseText?: string
   ) => void;
   questionsDisabled: boolean;
 }
@@ -71,7 +71,10 @@ const AssessmentDisplay = ({
         </Card>
       </Grid>
       {assessment.curriculum_assessment.questions
-        .sort(question => question.sort_order)
+        .sort(
+          (firstQuestion, secondQuestion) =>
+            firstQuestion.sort_order - secondQuestion.sort_order
+        )
         .map(question => (
           <Grid item key={question.id} xs={10} sx={{ margin: '1em auto' }}>
             <AssessmentQuestionCard

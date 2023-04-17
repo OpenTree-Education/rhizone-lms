@@ -23,7 +23,7 @@ describe('assessmentsDummyRouter', () => {
     it('should return program id and principal id for program_participants', done => {
       const programId = 2;
       const principalId = 3;
-      const roleId = 1;
+      const roleId = 2;
       const participantRow = [
         {
           id: 1,
@@ -211,7 +211,7 @@ describe('assessmentsDummyRouter', () => {
     it('should return program id and  principal Id for program_participants', done => {
       const programId = 2;
       const principalId = 3;
-      const roleId = 2;
+      const roleId = 1;
       const participantRow = [
         {
           id: 1,

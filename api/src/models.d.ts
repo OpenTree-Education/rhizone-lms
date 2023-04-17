@@ -119,6 +119,7 @@ export interface AssessmentSubmission {
   score?: number;
   opened_at: string;
   submitted_at?: string;
+  last_modified: string;
   responses?: AssessmentResponse[];
 }
 
@@ -158,21 +159,24 @@ export interface ProgramAssessment {
   due_date: string;
 }
 
-interface Assessment {
+export interface AssessmentDetails {
   curriculum_assessment: CurriculumAssessment;
   program_assessment: ProgramAssessment;
+}
+
+interface AssessmentWithRole extends AssessmentDetails {
   principal_program_role: string;
 }
 
-export interface AssessmentWithSummary extends Assessment {
+export interface AssessmentWithSummary extends AssessmentWithRole {
   participant_submissions_summary?: ParticipantAssessmentSubmissionsSummary;
   facilitator_submissions_summary?: FacilitatorAssessmentSubmissionsSummary;
 }
 
-export interface SavedAssessment extends Assessment {
+export interface SavedAssessment extends AssessmentWithRole {
   submission: AssessmentSubmission;
 }
 
-export interface AssessmentWithSubmissions extends Assessment {
+export interface AssessmentWithSubmissions extends AssessmentWithRole {
   submissions: AssessmentSubmission[];
 }

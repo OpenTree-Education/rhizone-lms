@@ -55,9 +55,9 @@ VALUES
 INSERT INTO `program_assessments`
   (`program_id`, `assessment_id`, `available_after`, `due_date`)
 VALUES
-  (2, 1, "2023-02-06", "2023-02-10"),
-  (2, 2, "2023-02-06", "2023-03-24"),
-  (2, 3, "2023-03-20", "2023-03-31");
+  (2, 1, "2023-02-06", "2023-06-10"),
+  (2, 2, "2023-02-06", "2023-06-24"),
+  (2, 3, "2023-02-20", "2023-06-30");
 
 INSERT INTO `assessment_questions`
   (`assessment_id`, `title`, `description`, `question_type_id`, `correct_answer_id`, `max_score`, `sort_order`)

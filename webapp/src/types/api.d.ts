@@ -178,10 +178,11 @@ export interface AssessmentSubmission extends Entity {
   score?: number;
   opened_at: string;
   submitted_at?: string;
+  last_modified: string;
   responses?: AssessmentResponse[];
 }
 
-export interface AssessmentSubmissionsSummary {
+export interface ParticipantAssessmentSubmissionsSummary {
   principal_id: number;
   highest_state: string;
   total_num_submissions: number;

@@ -71,18 +71,18 @@ const App = () => {
             }
           />
           <Route
-            path="/assessments/:assessmentId/:submissionId"
-            element={
-              <RequireAuth>
-                <AssessmentsDetailPage />
-              </RequireAuth>
-            }
-          />
-          <Route
             path="/assessments/:assessmentId/submissions"
             element={
               <RequireAuth>
                 <AssessmentSubmissionsListPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/assessments/:assessmentId/submissions/:submissionId"
+            element={
+              <RequireAuth>
+                <AssessmentsDetailPage />
               </RequireAuth>
             }
           />

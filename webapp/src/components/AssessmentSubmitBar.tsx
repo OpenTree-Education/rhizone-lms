@@ -58,6 +58,13 @@ const AssessmentSubmitBar = ({
   setShowSubmitDialog,
   submitButtonDisabled,
 }: AssessmentSubmitBarProps) => {
+  if (
+    !assessment.curriculum_assessment.questions ||
+    !Array.isArray(assessment.curriculum_assessment.questions) ||
+    !assessment.submission.responses
+  ) {
+    return null;
+  }
   return (
     <>
       <List style={{ paddingLeft: 0 }}>
@@ -70,7 +77,7 @@ const AssessmentSubmitBar = ({
           <Button
             variant={`${
               numOfAnsweredQuestions ===
-              assessment.curriculum_assessment.questions!.length
+              assessment.curriculum_assessment.questions.length
                 ? 'contained'
                 : 'outlined'
             }`}
@@ -89,15 +96,14 @@ const AssessmentSubmitBar = ({
           <ListItemText
             primary={LinearProgressWithLabel(
               numOfAnsweredQuestions,
-              assessment.curriculum_assessment.questions!.length
+              assessment.curriculum_assessment.questions.length
             )}
           />
         </ListItem>
         <ListItem>
           <Box sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
-            {assessment.curriculum_assessment
-              .questions!.sort((question: Question) => question.sort_order)
-              .map((question: Question) => (
+            {assessment.curriculum_assessment.questions.map(
+              (question: Question) => (
                 <StyledNumChip
                   sx={{ marginLeft: '1px', marginBottom: '3px' }}
                   label={question.sort_order}
@@ -113,7 +119,8 @@ const AssessmentSubmitBar = ({
                       : 'default'
                   }`}
                 />
-              ))}
+              )
+            )}
           </Box>
         </ListItem>
       </List>

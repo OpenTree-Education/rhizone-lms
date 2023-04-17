@@ -20,7 +20,7 @@ interface QuestionCardProps {
   handleUpdatedResponse: (
     questionId: number,
     answerId?: number,
-    response?: string
+    responseText?: string
   ) => void;
   disabled: boolean;
 }
