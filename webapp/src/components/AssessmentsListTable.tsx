@@ -84,7 +84,6 @@ const renderButtonByStatus = (
     case 'Opened':
     case 'In Progress':
       buttonLabel = 'Resume';
-      // TODO: Path should be to submission number
       destinationPath = 'submissions/new';
       break;
     case 'Submitted':

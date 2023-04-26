@@ -211,7 +211,9 @@ const createAssessmentQuestionAnswer = async (
 
 /**
  * Inserts a response for a user for a given curriculum assessment question into
- * the assessment_responses table.
+ * the assessment_responses table. It does not check if the question relates to
+ * the curriculum assessment for which the submission relates, nor does it check
+ * to see if the answer relates to the question (for single choice questions).
  *
  * @param {AssessmentResponse} assessmentResponse - An object containing the
  * assessment response data.
@@ -221,8 +223,6 @@ const createAssessmentQuestionAnswer = async (
 const createSubmissionResponse = async (
   assessmentResponse: AssessmentResponse
 ): Promise<AssessmentResponse> => {
-  // TODO: Check to see if question relates to submission,
-  // answer relates to question?
   const [newSubmissionResponseId] = await db('assessment_responses').insert({
     assessment_id: assessmentResponse.assessment_id,
     submission_id: assessmentResponse.submission_id,
@@ -556,7 +556,10 @@ const updateAssessmentQuestionAnswer = async (
 };
 
 /**
- * Updates an existing assessment submission response with updated metadata.
+ * Updates an existing assessment submission response with updated metadata. It
+ * does not check if the question relates to the curriculum assessment for which
+ * the submission relates, nor does it check to see if the answer relates to the
+ * question (for single choice questions).
  *
  * @param {AssessmentResponse} assessmentResponse - The AssessmentResponse
  *   object for a given program assessment submission response with updated
@@ -570,8 +573,6 @@ const updateSubmissionResponse = async (
   assessmentResponse: AssessmentResponse,
   facilitatorGrading?: boolean
 ): Promise<AssessmentResponse> => {
-  // TODO: Check to see if question relates to submission,
-  // answer relates to question?
   if (facilitatorGrading && facilitatorGrading === true) {
     await db('assessment_responses')
       .update({
