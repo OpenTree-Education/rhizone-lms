@@ -22,7 +22,6 @@ import { loggedIn } from './middleware/authMiddleware';
 import meetingsRouter from './middleware/meetingsRouter';
 import { participantExists } from './services/meetingsService';
 import programsRouter from './middleware/programsRouter';
-import assessmentsDummyRouter from './middleware/assessmentsDummyRouter';
 import questionnairesRouter from './middleware/questionnairesRouter';
 import reflectionsRouter from './middleware/reflectionsRouter';
 import settingsRouter from './middleware/settingsRouter';
@@ -155,7 +154,6 @@ const start = async () => {
   app.use('/docs', withCors, docsRouter);
   app.use('/meetings', withCors, loggedIn, meetingsRouter);
   app.use('/programs', withCors, loggedIn, programsRouter);
-  app.use('/assessmentsDummy', withCors, loggedIn, assessmentsDummyRouter);
   app.use('/questionnaires', withCors, loggedIn, questionnairesRouter);
   app.use('/reflections', withCors, loggedIn, reflectionsRouter);
   app.use('/settings', withCors, settingsRouter);
