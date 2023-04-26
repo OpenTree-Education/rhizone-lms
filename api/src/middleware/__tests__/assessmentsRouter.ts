@@ -585,7 +585,6 @@ describe('assessmentsRouter', () => {
       );
       mockDeleteCurriculumAssessment.mockResolvedValue(null);
 
-      // Exist in database
       mockPrincipalId(facilitatorPrincipalId);
 
       appAgent

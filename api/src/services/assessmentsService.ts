@@ -12,14 +12,13 @@ import {
 import db from './db';
 import { findProgram, listProgramsForCurriculum } from './programsService';
 
-// Helper functions
-
 /**
  * Determines whether or not a specific program assessment submission has
  * expired and is no longer allowed to be updated by the participant.
  *
- * @param assessmentSubmission - The assessment submission to check for
- *   expiration, passed as an AssessmentSubmission object.
+ * @param {AssessmentSubmission} assessmentSubmission - The assessment
+ *   submission to check for expiration, passed as an AssessmentSubmission
+ *   object.
  * @returns {Promise<boolean>} If true, a participant should be prevented from
  *   submitting any updates to their program assessment submission, other than
  *   to mark it as "Expired" instead of "Opened" or "In Progress".
@@ -36,12 +35,10 @@ const assessmentSubmissionExpired = async (
     false
   );
 
-  // State 1: Past program assessment due date
   if (DateTime.now() > DateTime.fromISO(programAssessment.due_date)) {
     return true;
   }
 
-  // State 2: Past expiration time
   if (
     curriculumAssessment.time_limit &&
     typeof curriculumAssessment.time_limit === 'number' &&
@@ -565,8 +562,9 @@ const updateAssessmentQuestionAnswer = async (
  *   object for a given program assessment submission response with updated
  *   information.
  * @param {boolean} [facilitatorGrading] - Optional specifier for when the
- *   program facilitator is the one updating a program assessment submission response,
- *   they are allowed to modify the score, and grader response.
+ *   program facilitator is the one updating a program assessment submission
+ *   response, so that a facilitator is allowed to modify the score and grader
+ *   response instead of a participant who is allowed to update their answer.
  * @returns {Promise<AssessmentResponse>} The updated AssessmentResponse object.
  */
 const updateSubmissionResponse = async (
@@ -591,8 +589,6 @@ const updateSubmissionResponse = async (
 
   return assessmentResponse;
 };
-
-// Callable from router
 
 /**
  * Gathers the relevant information for constructing a
@@ -633,8 +629,8 @@ export const constructFacilitatorAssessmentSummary = async (
  *
  * @param {number} participantPrincipalId - The row ID of the principals table
  *   that corresponds with a given program participant.
- * @param {number} programAssessment - The program assessment for which we're
- *   constructing a summary.
+ * @param {ProgramAssessment} programAssessment - The program assessment for
+ *   which we're constructing a summary.
  * @returns {Promise<ParticipantAssessmentSubmissionsSummary>} The program
  *   assessment submissions summary information for use by a program
  *   participant.
@@ -889,11 +885,11 @@ export const createProgramAssessment = async (
  *
  * @param {number} curriculumAssessmentId - The row ID of the
  *   curriculum_assessments table for a given curriculum assessment.
- * @returns {Promise<number>} Returns nothing if the deletion was successful.
+ * @returns {Promise<void>} Returns nothing if the deletion was successful.
  */
 export const deleteCurriculumAssessment = async (
   curriculumAssessmentId: number
-): Promise<number> => {
+): Promise<void> => {
   return db('curriculum_assessments')
     .where('id', curriculumAssessmentId)
     .delete();
@@ -907,11 +903,11 @@ export const deleteCurriculumAssessment = async (
  *
  * @param {number} programAssessmentId - The row ID of the program_assessments
  *   table for a given program assessment.
- * @returns {Promise<number>} Returns nothing if the deletion was successful.
+ * @returns {Promise<void>} Returns nothing if the deletion was successful.
  */
 export const deleteProgramAssessment = async (
   programAssessmentId: number
-): Promise<number> => {
+): Promise<void> => {
   return db('program_assessments').where('id', programAssessmentId).delete();
 };
 
@@ -1299,7 +1295,7 @@ export const listParticipantProgramAssessmentSubmissions = async (
  */
 export const listPrincipalEnrolledProgramIds = async (
   principalId: number
-): Promise<number[] | null> => {
+): Promise<number[]> => {
   const enrolledProgramsList = await db('program_participants')
     .select('program_id')
     .where({ principal_id: principalId });
@@ -1463,14 +1459,13 @@ export const updateAssessmentSubmission = async (
 
   if (facilitatorOverride && facilitatorOverride === true) {
     const updatedResponses: AssessmentResponse[] = [];
-    // update each response's score and grading, only if there is a matching existing responses
+
     for (const assessmentResponse of assessmentSubmission.responses) {
       updatedResponses.push(
         await updateSubmissionResponse(assessmentResponse, true)
       );
     }
 
-    // update submission state and score
     newState = assessmentSubmission.assessment_submission_state;
     const [gradedStateId] = await db('assessment_submission_states')
       .select('id')
@@ -1497,20 +1492,18 @@ export const updateAssessmentSubmission = async (
   ) {
     const assessmentSubmissionNoGrades =
       removeGradingInformation(assessmentSubmission);
-    // participant could only update opened and in progress submssion that within due date.
+
     if (
       assessmentSubmission.assessment_submission_state === 'Expired' ||
       (await assessmentSubmissionExpired(assessmentSubmission))
     ) {
       newState = 'Expired';
 
-      // Override to force frontend to update state
       updatedSubmission.last_modified = DateTime.now()
         .plus({ weeks: 1 })
         .toUTC()
         .toISO();
     } else {
-      // participant could only update state to 'Submitted' or 'In Progress', default in progress.
       newState =
         assessmentSubmission.assessment_submission_state === 'Submitted'
           ? 'Submitted'
@@ -1518,7 +1511,6 @@ export const updateAssessmentSubmission = async (
 
       const updatedResponses: AssessmentResponse[] = [];
 
-      // if there is an existing response, update it, otherwise insert new response.
       if (
         assessmentSubmission.responses &&
         Array.isArray(assessmentSubmission.responses) &&
@@ -1529,6 +1521,7 @@ export const updateAssessmentSubmission = async (
             existingAssessmentSubmission.responses?.filter(
               e => e.id === assessmentResponse.id
             );
+
           if (
             !Array.isArray(existingAssessmentSubmission.responses) ||
             matchingExistingResponses.length === 0
@@ -1564,7 +1557,7 @@ export const updateAssessmentSubmission = async (
     const [newStateId] = await db('assessment_submission_states')
       .select('id')
       .where('title', newState);
-    // If new state is submitted, update with a submission time.
+
     if (newState === 'Submitted') {
       await db('assessment_submissions')
         .update({
@@ -1603,7 +1596,6 @@ export const updateCurriculumAssessment = async (
     false
   );
 
-  // Determine which questions are new, updated, or deleted.
   const newQuestions: Question[] = [];
   const updatedQuestions: Question[] = [];
 

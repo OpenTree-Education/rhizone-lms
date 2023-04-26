@@ -27,7 +27,6 @@ const AssessmentsListPage = () => {
     isNeither: false,
   });
 
-  // We have to retrieve the data from the backend
   const {
     data: assessmentsList,
     error,
@@ -41,7 +40,6 @@ const AssessmentsListPage = () => {
   useEffect(() => {
     if (!assessmentsList) return;
 
-    // Determine if user is a facilitator, participant, both, or neither:
     const isFacilitator =
       assessmentsList.filter(
         assessment => assessment.principal_program_role === 'Facilitator'
@@ -57,7 +55,6 @@ const AssessmentsListPage = () => {
 
     switch (currentStatusTab) {
       case 1:
-        // Active Assessments
         setAssessmentListSubset(
           assessmentsList.filter(
             assessment =>
@@ -69,7 +66,6 @@ const AssessmentsListPage = () => {
         );
         break;
       case 2:
-        // Past Assessments
         setAssessmentListSubset(
           assessmentsList.filter(
             assessment =>
@@ -79,7 +75,6 @@ const AssessmentsListPage = () => {
         );
         break;
       case 3:
-        // Upcoming Assessments
         setAssessmentListSubset(
           assessmentsList.filter(
             assessment =>
@@ -89,7 +84,6 @@ const AssessmentsListPage = () => {
         );
         break;
       default:
-        // All Assessments
         setAssessmentListSubset(assessmentsList);
         break;
     }
@@ -103,7 +97,6 @@ const AssessmentsListPage = () => {
     setCurrentStatusTab(newCurrentStatusTab);
   };
 
-  // We have to deal with the state where the API request is still loading
   if (isLoading) {
     return (
       <Stack
@@ -116,7 +109,6 @@ const AssessmentsListPage = () => {
     );
   }
 
-  // We have to deal with the state where no data is returned
   if (error) {
     return (
       <Container>

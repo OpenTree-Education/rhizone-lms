@@ -61,24 +61,21 @@ const AssessmentDetailPage = () => {
     sendCredentials: true,
   });
 
-  const {
-    data: assessmentSubmission,
-    error: putError,
-    // isLoading: isLoadingPut,
-  } = useApiData<AssessmentSubmission>({
-    body: assessmentState?.submission,
-    deps: [apiPath, assessmentState],
-    method: 'PUT',
-    path: `/assessments/${apiPath}`,
-    sendCredentials: true,
-    shouldFetch: () => {
-      return (
-        typeof assessmentState !== 'undefined' &&
-        assessmentState.submission &&
-        typeof assessmentState.submission !== 'undefined'
-      );
-    },
-  });
+  const { data: assessmentSubmission, error: putError } =
+    useApiData<AssessmentSubmission>({
+      body: assessmentState?.submission,
+      deps: [apiPath, assessmentState],
+      method: 'PUT',
+      path: `/assessments/${apiPath}`,
+      sendCredentials: true,
+      shouldFetch: () => {
+        return (
+          typeof assessmentState !== 'undefined' &&
+          assessmentState.submission &&
+          typeof assessmentState.submission !== 'undefined'
+        );
+      },
+    });
 
   useEffect(() => {
     if (
@@ -167,8 +164,6 @@ const AssessmentDetailPage = () => {
     }
   }, [assessmentSubmission, assessmentState]);
 
-  // COUNTDOWN TIMER LOGIC -----------------------------------------------------
-
   const requestRef = useRef<number>();
   const previousTimeRef = useRef<number>();
 
@@ -214,9 +209,6 @@ const AssessmentDetailPage = () => {
     };
   });
 
-  // END COUNTDOWN TIMER LOGIC -------------------------------------------------
-
-  // Behavior to execute when responding to a question in the assessment
   const handleUpdatedResponse = (
     questionId: number,
     answerId?: number,
@@ -274,7 +266,6 @@ const AssessmentDetailPage = () => {
     setAssessmentState(assessmentWithUpdatedResponses);
   };
 
-  // Behavior to handle what should happen when we press the submit button
   const handleSubmit = (event?: React.SyntheticEvent) => {
     if (event) {
       event.preventDefault();

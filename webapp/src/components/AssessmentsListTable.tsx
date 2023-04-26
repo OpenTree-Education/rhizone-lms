@@ -188,42 +188,6 @@ interface AssessmentListTableProps {
   userRoles: PrincipalProgramRole;
 }
 
-// For Participants:
-//   For All Assessments Tab:
-//     - Assessment Name, Type, Due Date, Score, State, Action
-//   For Active Assessments Tab:
-//     - Assessment Name, Type, Due Date, State, Action
-//   For Past Assessments Tab:
-//     - Assessment Name, Type, Due Date, Submitted Date, Score, State, Action
-//   For Upcoming Assessments Tab:
-//     - Assessment Name, Type, Available Date, Due Date
-
-// For Facilitators:
-//   For All Assessments Tab:
-//     - Assessment Name, Type, Due Date, Num Submissions, Ungraded, Action
-//   For Active Assessments Tab:
-//     - Assessment Name, Type, Due Date, Num Submissions, Action
-//   For Past Assessments Tab:
-//     - Assessment Name, Type, Due Date, Num Submissions, Ungraded, Action
-//   For Upcoming Assessments Tab:
-//     - Assessment Name, Type, Available Date, Due Date, Action
-
-// Combined:
-//   For All Assessments Tab:
-//     - Assessment Name, Type, Due Date, Num Submissions (F), Score (P), Ungraded (F), State (P), Action
-//   For Active Assessments Tab:
-//     - Assessment Name, Type, Due Date, Num Submissions (F), State (P), Action
-//   For Past Assessments Tab:
-//     - Assessment Name, Type, Due Date, Submitted Date (P), Num Submissions (F), Score (P), Ungraded (F), State (P), Action
-//   For Upcoming Assessments Tab:
-//     - Assessment Name, Type, Available Date, Due Date, Action
-
-// Total Combined
-//     - Assessment Name, Type, Available Date, Due Date, Submitted Date (P), Num Submissions (F), Score (P), Ungraded (F), State (P), Action
-
-// For the Num Submissions, Ungraded Columns:
-//    "3 (of 8)", aka "num ungraded/p with sub (of total num participants)"
-
 const AssessmentsListTable = ({
   currentStatusTab,
   matchingAssessmentList,

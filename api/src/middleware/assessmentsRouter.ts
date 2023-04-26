@@ -45,7 +45,6 @@ import {
 
 const assessmentsRouter = Router();
 
-// List all AssessmentWithSummary to which the user has access
 assessmentsRouter.get('/', async (req, res, next) => {
   const { principalId } = req.session;
 
@@ -108,13 +107,11 @@ assessmentsRouter.get('/', async (req, res, next) => {
   }
 });
 
-// Get details of a specific CurriculumAssessment
 assessmentsRouter.get(
   '/curriculum/:curriculumAssessmentId',
   async (req, res, next) => {
     const { principalId } = req.session;
     const { curriculumAssessmentId } = req.params;
-
     const curriculumAssessmentIdParsed = Number(curriculumAssessmentId);
 
     if (
@@ -150,9 +147,6 @@ assessmentsRouter.get(
         curriculumAssessment.curriculum_id
       );
 
-      // If there are no matching program assessments with this curriculum ID,
-      // then we are not facilitator of any programs where we can modify this
-      // CurriculumAssessment, so let's return an error to the user.
       if (matchingProgramIds.length === 0) {
         throw new UnauthorizedError(
           `Not allowed to access curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
@@ -167,7 +161,6 @@ assessmentsRouter.get(
   }
 );
 
-// Create a new CurriculumAssessment
 assessmentsRouter.post('/curriculum', async (req, res, next) => {
   const { principalId } = req.session;
   const curriculumAssessmentFromUser = req.body;
@@ -205,18 +198,11 @@ assessmentsRouter.post('/curriculum', async (req, res, next) => {
   }
 });
 
-// Update an existing CurriculumAssessment
 assessmentsRouter.put(
   '/curriculum/:curriculumAssessmentId',
   async (req, res, next) => {
-    // step 1: get the principal ID number
     const { principalId } = req.session;
-
-    // step 2: get the curriculum assessment ID number from the URL parameters
     const { curriculumAssessmentId } = req.params;
-
-    // step 3: parse the curriculum assessment ID number
-    // to ensure it's an integer
     const curriculumAssessmentIdParsed = Number(curriculumAssessmentId);
 
     if (
@@ -231,8 +217,6 @@ assessmentsRouter.put(
       return;
     }
 
-    // step 4: get the curriculum assessment that we receive
-    // through the request body
     const curriculumAssessmentFromUser = req.body;
 
     const isACurriculumAssessment = (
@@ -247,9 +231,6 @@ assessmentsRouter.put(
     }
 
     try {
-      // step 5: check to make sure the curriculum assessment already exists
-      // because our route is in charge of updating an *existing* curriculum
-      // assessment, so error out if the curriculum assessment doesn't exist
       const curriculumAssessmentExisting = await getCurriculumAssessment(
         curriculumAssessmentIdParsed
       );
@@ -260,29 +241,21 @@ assessmentsRouter.put(
         );
       }
 
-      // step 6: make sure the user is the facilitator of a program that uses
-      // this curriculum assessment
       const matchingProgramAssessments =
         await facilitatorProgramIdsMatchingCurriculum(
           principalId,
           curriculumAssessmentExisting.curriculum_id
         );
 
-      // If there are no matching program assessments with this curriculum ID,
-      // then we are not facilitator of any programs where we can modify this
-      // CurriculumAssessment, so let's return an error to the user.
       if (matchingProgramAssessments.length === 0) {
         throw new UnauthorizedError(
           `Not allowed to make modifications to curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
         );
       }
 
-      // step 7: update the curriculum assessment, its questions, and its answers
       const updatedCurriculumAssessment: CurriculumAssessment =
         await updateCurriculumAssessment(curriculumAssessmentFromUser);
 
-      // step 8: return the updated curriculum assessment to the user,
-      // including questions and answers
       if (!updatedCurriculumAssessment) {
         throw new InternalServerError(
           `Could not update curriculum assessment with ID ${curriculumAssessmentIdParsed}.`
@@ -297,7 +270,6 @@ assessmentsRouter.put(
   }
 );
 
-// Delete an existing CurriculumAssessment
 assessmentsRouter.delete(
   '/curriculum/:curriculumAssessmentId',
   async (req, res, next) => {
@@ -353,15 +325,10 @@ assessmentsRouter.delete(
   }
 );
 
-// Get a specific AssessmentDetails
 assessmentsRouter.get(
   '/program/:programAssessmentId',
   async (req, res, next) => {
     const { principalId } = req.session;
-
-    // get and parse the program assessment row ID number
-    // error out if we were passed an invalid program assessment row ID number
-
     const { programAssessmentId } = req.params;
     const programAssessmentIdParsed = Number(programAssessmentId);
 
@@ -382,51 +349,37 @@ assessmentsRouter.get(
         programAssessmentIdParsed
       );
 
-      // if programAssessment is null
-      // programAssessment.nil?
       if (!programAssessment) {
         throw new NotFoundError(
           `Could not find program assessment with ID ${programAssessmentIdParsed}.`
         );
       }
 
-      // get the principal program role
       const programRole = await getPrincipalProgramRole(
         principalId,
         programAssessment.program_id
       );
 
-      // if the program role is null/falsy, that means the user is not enrolled in
-      // the program. send an error back to the user.
       if (programRole !== 'Facilitator') {
         throw new UnauthorizedError(
           `Could not access assessment with Program Assessment ID ${programAssessmentIdParsed}.`
         );
       }
 
-      // for this route, we always want to return the questions and all answer
-      // options in all cases.
       const includeQuestionsAndAllAnswers = true;
-
-      // if the program role is facilitator, we should always return the correct
-      // answers. otherwise, return the correct answers only if the submission has
-      // been graded.
       const includeQuestionsAndCorrectAnswers = true;
 
-      // get the curriculum assessment
       const curriculumAssessment = await getCurriculumAssessment(
         programAssessment.assessment_id,
         includeQuestionsAndAllAnswers,
         includeQuestionsAndCorrectAnswers
       );
 
-      // let's construct our return value
       const assessmentDetails: AssessmentDetails = {
         curriculum_assessment: curriculumAssessment,
         program_assessment: programAssessment,
       };
 
-      // let's return that to the user
       res.json(itemEnvelope(assessmentDetails));
     } catch (err) {
       next(err);
@@ -435,7 +388,6 @@ assessmentsRouter.get(
   }
 );
 
-// Create a new ProgramAssessment
 assessmentsRouter.post('/program', async (req, res, next) => {
   const { principalId } = req.session;
   const programAssessmentFromUser = req.body;
@@ -452,14 +404,11 @@ assessmentsRouter.post('/program', async (req, res, next) => {
       throw new BadRequestError(`Was not given a valid program assessment.`);
     }
 
-    // get the principal program role
     const programRole = await getPrincipalProgramRole(
       principalId,
       programAssessmentFromUser.program_id
     );
 
-    // if the program role is null/falsy, that means the user is not enrolled in
-    // the program. send an error back to the user.
     if (programRole !== 'Facilitator') {
       throw new UnauthorizedError(
         `User is not allowed to create new program assessments for this program.`
@@ -476,7 +425,6 @@ assessmentsRouter.post('/program', async (req, res, next) => {
   }
 });
 
-// Update an existing ProgramAssessment
 assessmentsRouter.put(
   '/program/:programAssessmentId',
   async (req, res, next) => {
@@ -484,6 +432,7 @@ assessmentsRouter.put(
     const { principalId } = req.session;
     const programAssessmentFromUser = req.body;
     const programAssessmentIdParsed = Number(programAssessmentId);
+
     if (
       !Number.isInteger(programAssessmentIdParsed) ||
       programAssessmentIdParsed < 1
@@ -495,6 +444,7 @@ assessmentsRouter.put(
       );
       return;
     }
+
     let updatedPrgramAssessment;
     try {
       const programAssessment = await findProgramAssessment(
@@ -507,14 +457,11 @@ assessmentsRouter.put(
         );
       }
 
-      // get the principal program role
       const programRole = await getPrincipalProgramRole(
         principalId,
         programAssessment.program_id
       );
 
-      // if the program role is null/falsy, that means the user is not enrolled in
-      // the program. send an error back to the user.
       if (programRole !== 'Facilitator') {
         next(
           new UnauthorizedError(
@@ -546,17 +493,11 @@ assessmentsRouter.put(
   }
 );
 
-// Delete an existing ProgramAssessment
 assessmentsRouter.delete(
   '/program/:programAssessmentId',
   async (req, res, next) => {
-    // get the principal ID of the logged in user
     const { principalId } = req.session;
-
-    // get the program assessment ID from the URL parameters
     const { programAssessmentId } = req.params;
-
-    // make sure the program assessment ID is a number/integer
     const programAssessmentIdParsed = Number(programAssessmentId);
 
     if (
@@ -572,7 +513,6 @@ assessmentsRouter.delete(
     }
 
     try {
-      // get the program assessment so we can get the program ID
       const matchingProgramAssessment = await findProgramAssessment(
         programAssessmentIdParsed
       );
@@ -583,7 +523,6 @@ assessmentsRouter.delete(
         );
       }
 
-      // check the user has permission to delete the program assessment
       const programRole = await getPrincipalProgramRole(
         principalId,
         matchingProgramAssessment.program_id
@@ -595,7 +534,6 @@ assessmentsRouter.delete(
         );
       }
 
-      // if they do, delete the program assessment
       await deleteProgramAssessment(programAssessmentIdParsed).catch(() => {
         throw new ConflictError(
           `Cannot delete a program assessment that has participant submissions.`
@@ -610,7 +548,6 @@ assessmentsRouter.delete(
   }
 );
 
-// Get an AssessmentWithSubmissions
 assessmentsRouter.get(
   '/program/:programAssessmentId/submissions',
   async (req, res, next) => {
@@ -635,7 +572,6 @@ assessmentsRouter.get(
     let submissions: AssessmentSubmission[];
 
     try {
-      // retrieve programAssessment data
       programAssessment = await findProgramAssessment(
         programAssessmentIdParsed
       );
@@ -646,7 +582,6 @@ assessmentsRouter.get(
         );
       }
 
-      // getting the role of participant of current principal
       const programRole = await getPrincipalProgramRole(
         principalId,
         programAssessment.program_id
@@ -654,7 +589,6 @@ assessmentsRouter.get(
 
       switch (programRole) {
         case 'Participant':
-          //retrieve list of submissions from the specified assessment of the participant their own
           submissions = await listParticipantProgramAssessmentSubmissions(
             principalId,
             programAssessment.id
@@ -676,7 +610,6 @@ assessmentsRouter.get(
       const includeQuestionsAndAllAnswers = false;
       const includeQuestionsAndCorrectAnswers = false;
 
-      //retrieve curriculumAssessment
       curriculumAssessment = await getCurriculumAssessment(
         programAssessment.assessment_id,
         includeQuestionsAndAllAnswers,
@@ -698,16 +631,11 @@ assessmentsRouter.get(
   }
 );
 
-// Start a new AssessmentSubmission
 assessmentsRouter.get(
   '/program/:programAssessmentId/submissions/new',
   async (req, res, next) => {
-    // get the principal row ID number
     const { principalId } = req.session;
-
-    // get and parse the program assessment row ID number
     const { programAssessmentId } = req.params;
-
     const programAssessmentIdParsed = Number(programAssessmentId);
 
     if (
@@ -764,7 +692,6 @@ assessmentsRouter.get(
         );
       }
 
-      // get the curriculum assessment, without its answer and correct answers.
       const includeQuestionsAndAllAnswers = true;
       const includeQuestionsAndCorrectAnswers = false;
       const curriculumAssessment = await getCurriculumAssessment(
@@ -772,15 +699,12 @@ assessmentsRouter.get(
         includeQuestionsAndAllAnswers,
         includeQuestionsAndCorrectAnswers
       );
-      // console.log("2-3",curriculumAssessment,programAssessment.assessment_id)
-      //  console.log("first step" ,curriculumAssessment )
-      // get the list of the programm assessment submission
+
       const existingAssessmentSubmissions =
         await listParticipantProgramAssessmentSubmissions(
           principalId,
           programAssessment.id
         );
-      // console.log("3-3",curriculumAssessment,programAssessment.id)
 
       let assessmentSubmission: AssessmentSubmission;
 
@@ -790,7 +714,6 @@ assessmentsRouter.get(
           programAssessmentIdParsed,
           programAssessment.assessment_id
         );
-        // console.log("2",assessmentSubmission)
       } else {
         const inProgressSubmissions: AssessmentSubmission[] =
           existingAssessmentSubmissions.filter(assessmentSubmission =>
@@ -798,21 +721,17 @@ assessmentsRouter.get(
               assessmentSubmission.assessment_submission_state
             )
           );
-        // console.log("3",inProgressSubmissions)
         if (inProgressSubmissions.length !== 0) {
           assessmentSubmission = await getAssessmentSubmission(
             inProgressSubmissions[0].id,
             true,
             false
           );
-          // console.log("4",assessmentSubmission)
         } else if (
           existingAssessmentSubmissions.length >=
             curriculumAssessment.max_num_submissions &&
           inProgressSubmissions.length === 0
         ) {
-          //If the participant has no currently "Opened" or "In Progress" submission and reach the submission limit.
-          //Return Forbidden Error.
           throw new ForbiddenError(
             `Could not create a new submission as you have reached the maximum number of submissions for this assessment.`
           );
@@ -822,7 +741,6 @@ assessmentsRouter.get(
             programAssessmentIdParsed,
             programAssessment.assessment_id
           );
-          // console.log("5",assessmentSubmission)
         }
       }
 
@@ -832,7 +750,6 @@ assessmentsRouter.get(
         principal_program_role: programRole,
         submission: assessmentSubmission,
       };
-      // console.log("what is goig on modified ",assessmentWithSubmission)
 
       res.json(itemEnvelope(assessmentWithSubmission));
     } catch (err) {
@@ -842,15 +759,9 @@ assessmentsRouter.get(
   }
 );
 
-// Get details of a specific SavedAssessment
 assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
-  // get the principal row ID number
   const { principalId } = req.session;
-
-  // get and parse the assessment submission row ID number
-  // error out if we were passed an invalid assessment submission row ID number
   const { submissionId } = req.params;
-
   const submissionIdParsed = Number(submissionId);
 
   if (!Number.isInteger(submissionIdParsed) || submissionIdParsed < 1) {
@@ -863,14 +774,11 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
   }
 
   try {
-    // get the assessment submission and responses
     const assessmentSubmission = await getAssessmentSubmission(
       submissionIdParsed,
       true
     );
 
-    // if the assessment submission is null/falsy, that means there's no matching
-    // assessment submission. send an error back to the user.
     if (!assessmentSubmission) {
       next(
         new NotFoundError(
@@ -880,19 +788,14 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
       return;
     }
 
-    // get the program assessment, which should be guaranteed to exist.
     const programAssessmentId = assessmentSubmission.assessment_id;
-
     const programAssessment = await findProgramAssessment(programAssessmentId);
 
-    // get the principal program role
     const programRole = await getPrincipalProgramRole(
       principalId,
       programAssessment.program_id
     );
 
-    // if the program role is null/falsy, that means the user is not enrolled in
-    // the program. send an error back to the user.
     if (!programRole) {
       next(
         new UnauthorizedError(
@@ -902,9 +805,6 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
       return;
     }
 
-    // also, if the program role is "Participant" and the principal ID of the
-    // AssessmentSubmission doesn't match the logged-in principal ID, we should
-    // return an error to the user.
     if (programRole === 'Participant') {
       if (principalId !== assessmentSubmission.principal_id) {
         next(
@@ -916,33 +816,23 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
       }
     }
 
-    // for this route, we always want to return the questions and all answer
-    // options in all cases.
     const includeQuestionsAndAllAnswers = true;
-
-    // if the program role is facilitator, we should always return the correct
-    // answers. otherwise, return the correct answers only if the submission has
-    // been graded.
     const includeQuestionsAndCorrectAnswers =
       programRole === 'Facilitator' ||
       assessmentSubmission.assessment_submission_state === 'Graded';
 
-    // get the curriculum assessment
     const curriculumAssessment = await getCurriculumAssessment(
       programAssessment.assessment_id,
       includeQuestionsAndAllAnswers,
       includeQuestionsAndCorrectAnswers
     );
 
-    // let's construct our return value
     const assessmentWithSubmission: SavedAssessment = {
       curriculum_assessment: curriculumAssessment,
       program_assessment: programAssessment,
       principal_program_role: programRole,
       submission: assessmentSubmission,
     };
-
-    // let's return that to the user
 
     res.json(itemEnvelope(assessmentWithSubmission));
   } catch (err) {
@@ -951,9 +841,7 @@ assessmentsRouter.get('/submissions/:submissionId', async (req, res, next) => {
   }
 });
 
-// Update details of a specific AssessmentSubmission
 assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
-  // get the principal row ID number
   const { principalId } = req.session;
   const { submissionId } = req.params;
   const submissionIdParsed = Number(submissionId);
@@ -966,7 +854,6 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       );
     }
 
-    // make sure it is a valid submission from body with an id.
     const isSubmission = (
       possibleSubmission: unknown
     ): possibleSubmission is AssessmentSubmission => {
@@ -977,32 +864,27 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       throw new ValidationError(`Was not given a valid assessment submission.`);
     }
 
-    // make sure the submssion id from param is the same from request body
     if (submissionFromUser.id !== submissionIdParsed) {
       throw new BadRequestError(
         `The submission id in the parameter(${submissionIdParsed}) is not the same id as in the request body (${submissionFromUser.id}).`
       );
     }
 
-    // get the submission and responses
     const existingAssessmentSubmission = await getAssessmentSubmission(
       submissionIdParsed,
       true
     );
 
-    // if the submission is null/falsy, that means there's no matching submission. send an error back to the user.
     if (!existingAssessmentSubmission) {
       throw new NotFoundError(
         `Could not find submission with ID ${submissionIdParsed}.`
       );
     }
 
-    // get program assessment
     const programAssessment = await findProgramAssessment(
       submissionFromUser.assessment_id
     );
 
-    // Get program assessment role
     const programRole = await getPrincipalProgramRole(
       principalId,
       programAssessment.program_id
@@ -1014,7 +896,6 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       );
     }
 
-    // make sure the principal id from session is the same from request body
     if (
       submissionFromUser.principal_id !== principalId &&
       programRole !== 'Facilitator'
@@ -1027,7 +908,6 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
     let updatedSubmission: AssessmentSubmission;
 
     if (programRole === 'Facilitator') {
-      // for facilitator, they are able to grade and override the state, scores.
       updatedSubmission = await updateAssessmentSubmission(
         submissionFromUser,
         programRole === 'Facilitator'
