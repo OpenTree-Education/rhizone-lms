@@ -1,4 +1,18 @@
 import { DateTime, Settings } from 'luxon';
+
+import {
+  Answer,
+  AssessmentDetails,
+  AssessmentResponse,
+  AssessmentSubmission,
+  AssessmentWithSubmissions,
+  CurriculumAssessment,
+  FacilitatorAssessmentSubmissionsSummary,
+  ParticipantAssessmentSubmissionsSummary,
+  ProgramAssessment,
+  Question,
+  SavedAssessment,
+} from '../../models';
 import { mockQuery } from '../mockDb';
 
 import {
@@ -24,89 +38,838 @@ import {
   updateProgramAssessment,
 } from '../assessmentsService';
 
-import {
-  assessmentSubmissionId,
-  assessmentSubmissionResponseFRId,
-  assessmentSubmissionResponseSCId,
-  curriculumAssessmentId,
-  exampleAssessmentSubmissionExpired,
-  exampleAssessmentSubmissionExpiredPlusWeek,
-  exampleAssessmentSubmissionFRInProgress,
-  exampleAssessmentSubmissionGraded,
-  exampleAssessmentSubmissionGradedNoResponses,
-  exampleAssessmentSubmissionGradedRemovedGrades,
-  exampleAssessmentSubmissionInProgress,
-  exampleAssessmentSubmissionInProgressSCFR,
-  exampleAssessmentSubmissionInProgressSCFRLateStart,
-  exampleAssessmentSubmissionOpened,
-  exampleAssessmentSubmissionOpenedWithResponse,
-  exampleAssessmentSubmissionPastDueDate,
-  exampleAssessmentSubmissionSubmitted,
-  exampleCurriculumAssessment,
-  exampleCurriculumAssessmentWithFRCorrectAnswers,
-  exampleCurriculumAssessmentWithSCCorrectAnswers,
-  exampleCurriculumAssessmentWithUpdatedSCCorrectAnswer,
-  exampleFacilitatorAssessmentSubmissionsSummary,
-  exampleOtherAssessmentSubmissionSubmitted,
-  exampleParticipantAssessmentSubmissionsActive,
-  exampleParticipantAssessmentSubmissionsInactive,
-  exampleParticipantAssessmentSubmissionsPastDue,
-  exampleParticipantAssessmentSubmissionsSummary,
-  exampleProgramAssessment,
-  exampleProgramAssessmentNotAvailable,
-  exampleProgramAssessmentPastDue,
-  facilitatorPrincipalId,
-  freeResponseCorrectAnswerId,
-  freeResponseQuestionId,
-  matchingAssessmentAnswersSCRow,
-  matchingAssessmentQuestionsFRRow,
-  matchingAssessmentQuestionsSCRow,
-  matchingAssessmentResponsesRowFRInProgress,
-  matchingAssessmentResponsesRowFROpened,
-  matchingAssessmentResponsesRowSCGraded,
-  matchingAssessmentResponsesRowSCInProgress,
-  matchingAssessmentResponsesRowSCOpened,
-  matchingAssessmentResponsesRowSCSubmitted,
-  matchingAssessmentSubmissionExpiredRow,
-  matchingAssessmentSubmissionInProgressRow,
-  matchingAssessmentSubmissionOpenedRow,
-  matchingAssessmentSubmissionsRowGraded,
-  matchingAssessmentSubmissionsSubmittedRow,
-  matchingCurriculumAssessmentRow,
-  matchingOtherAssessmentSubmissionSubmittedRow,
-  matchingProgramAssessmentPastDueRow,
-  matchingProgramAssessmentsRow,
-  matchingProgramParticipantRoleFacilitatorRow,
-  matchingProgramParticipantRoleParticipantRow,
-  matchingProgramRow,
-  newProgramAssessmentsRow,
-  participantPrincipalId,
-  programAssessmentId,
-  sentCurriculumAssessmentWithNewSCQuestion,
-  sentCurriculumAssessmentWithNewSCQuestion2,
-  sentCurriculumAssessmentWithSCQuestionNewAnswer,
-  sentNewCurriculumAssessment,
-  sentNewCurriculumAssessmentPostInsert,
-  sentNewCurriculumAssessmentWithFRQuestion,
-  sentNewCurriculumAssessmentWithFRQuestionPostInsert,
-  sentNewCurriculumAssessmentWithSCQuestion,
-  sentNewCurriculumAssessmentWithSCQuestionPostInsert,
-  sentNewFRAssessmentAnswer,
-  sentNewFRAssessmentQuestion,
-  sentNewFRAssessmentResponse,
-  sentNewProgramAssessment,
-  sentNewSCAssessmentAnswer,
-  sentNewSCAssessmentQuestion,
-  sentUpdatedAssessmentSubmissionChangedFRResponse,
-  sentUpdatedAssessmentSubmissionChangedResponse,
-  sentUpdatedAssessmentSubmissionWithNewFRResponse,
-  sentUpdatedAssessmentSubmissionWithNewSCResponse,
-  singleChoiceAnswerId,
-  singleChoiceQuestionId,
-  unenrolledPrincipalId,
-  updatedAssessmentAnswersSCRow,
-  updatedProgramAssessmentsRow,
-} from '../../assets/data';
+const administratorPrincipalId = 3;
+const participantPrincipalId = 30;
+const unenrolledPrincipalId = 31;
+const otherParticipantPrincipalId = 32;
+const facilitatorPrincipalId = 300;
+
+const curriculumId = 4;
+const curriculumAssessmentId = 8;
+const sentCurriculumAssessmentId = 9;
+const programId = 12;
+const programAssessmentId = 16;
+const sentProgramAssessmentId = 17;
+const activityId = 20;
+const sentCAActivityId = 200;
+const singleChoiceQuestionId = 24;
+const freeResponseQuestionId = 24;
+const singleChoiceAnswerId = 28;
+const newSingleChoiceAnswerId = 280;
+const freeResponseCorrectAnswerId = 29;
+const assessmentSubmissionId = 32;
+const assessmentSubmissionWrongId = 33;
+const assessmentSubmissionByOtherParticipantId = 36;
+const assessmentSubmissionResponseSCId = 320;
+const assessmentSubmissionResponseFRId = 321;
+
+const facilitatorProgramIdsThatMatchCurriculum = [programId, 20, 30];
+const facilitatorProgramIdsNotMatchingCurriculum = [40, 50];
+
+const programParticipantRolesRows = [
+  {
+    id: 1,
+    title: 'Facilitator',
+  },
+  {
+    id: 2,
+    title: 'Participant',
+  },
+];
+
+const matchingCurriculumAssessmentRow = {
+  id: curriculumAssessmentId,
+  title: 'Assignment 1: React',
+  description: 'Your assignment for week 1 learning.',
+  max_score: 10,
+  max_num_submissions: 1,
+  time_limit: 120,
+  curriculum_id: curriculumId,
+  activity_id: activityId,
+  principal_id: administratorPrincipalId,
+};
+
+const matchingAssessmentQuestionsSCRow = {
+  id: singleChoiceQuestionId,
+  assessment_id: curriculumAssessmentId,
+  title: 'What is React?',
+  description: null as string,
+  question_type: 'single choice',
+  correct_answer_id: singleChoiceAnswerId,
+  max_score: 1,
+  sort_order: 1,
+};
+
+const matchingAssessmentQuestionsFRRow = {
+  id: freeResponseQuestionId,
+  assessment_id: curriculumAssessmentId,
+  title:
+    'What is the correct HTML syntax for a paragraph with the text "Hello, World!"?',
+  description: null as string,
+  question_type: 'free response',
+  correct_answer_id: freeResponseCorrectAnswerId,
+  max_score: 1,
+  sort_order: 1,
+};
+
+const matchingAssessmentAnswersSCRow = {
+  id: singleChoiceAnswerId,
+  question_id: singleChoiceQuestionId,
+  title: 'A relational database management system',
+  description: null as string,
+  sort_order: 1,
+  correct_answer: true,
+};
+
+const matchingAssessmentAnswersFRRow = {
+  id: freeResponseCorrectAnswerId,
+  question_id: freeResponseQuestionId,
+  title: '<p>Hello, World!</p>',
+  description: null as string,
+  sort_order: 1,
+  correct_answer: true,
+};
+
+const matchingProgramRow = {
+  id: programId,
+  title: 'Cohort 4',
+  start_date: '2022-10-24',
+  end_date: '2022-12-16',
+  time_zone: 'America/Vancouver',
+  curriculum_id: curriculumId,
+};
+
+const matchingProgramAssessmentsRow = {
+  id: programAssessmentId,
+  program_id: programId,
+  assessment_id: curriculumAssessmentId,
+  available_after: '2023-02-06 00:00:00',
+  due_date: '2050-06-24 00:00:00',
+};
+
+const matchingProgramAssessmentPastDueRow = {
+  ...matchingProgramAssessmentsRow,
+  due_date: '2023-02-10 00:00:00',
+};
+
+const matchingProgramAssessmentNotAvailableRow = {
+  ...matchingProgramAssessmentsRow,
+  available_after: '2050-06-24 00:00:00',
+  due_date: '2050-06-23 00:00:00',
+};
+
+const matchingAssessmentSubmissionOpenedRow = {
+  id: assessmentSubmissionId,
+  assessment_id: programAssessmentId,
+  principal_id: participantPrincipalId,
+  assessment_submission_state: 'Opened',
+  opened_at: '2023-02-09 12:00:00',
+  submitted_at: null as string,
+  updated_at: '2023-02-09 12:00:00',
+  score: null as number,
+};
+
+const matchingAssessmentSubmissionInProgressRow = {
+  ...matchingAssessmentSubmissionOpenedRow,
+  assessment_submission_state: 'In Progress',
+};
+
+const matchingAssessmentSubmissionExpiredRow = {
+  ...matchingAssessmentSubmissionOpenedRow,
+  assessment_submission_state: 'Expired',
+  updated_at: '2023-02-09 14:00:00',
+};
+
+const matchingAssessmentSubmissionsSubmittedRow = {
+  ...matchingAssessmentSubmissionOpenedRow,
+  assessment_submission_state: 'Submitted',
+  submitted_at: '2023-02-09 13:23:45',
+  updated_at: '2023-02-09 13:23:45',
+};
+
+const matchingOtherAssessmentSubmissionSubmittedRow = {
+  id: assessmentSubmissionByOtherParticipantId,
+  assessment_id: programAssessmentId,
+  principal_id: otherParticipantPrincipalId,
+  assessment_submission_state: 'Submitted',
+  opened_at: '2023-02-09 12:01:00',
+  last_modified: '2023-02-09 12:01:00',
+  submitted_at: '2023-02-09 13:23:45',
+  updated_at: '2023-02-09 13:23:45',
+  score: null as number,
+};
+
+const matchingAssessmentSubmissionsRowGraded = {
+  ...matchingAssessmentSubmissionsSubmittedRow,
+  assessment_submission_state: 'Graded',
+  score: 4,
+};
+
+const matchingAssessmentResponsesRowSCOpened = {
+  id: assessmentSubmissionResponseSCId,
+  assessment_id: programAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: singleChoiceQuestionId,
+  answer_id: null as number,
+  response: null as string,
+  score: null as number,
+  grader_response: null as string,
+};
+
+const matchingAssessmentResponsesRowSCInProgress = {
+  id: assessmentSubmissionResponseSCId,
+  assessment_id: programAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: singleChoiceQuestionId,
+  answer_id: singleChoiceAnswerId,
+  response: null as string,
+  score: null as number,
+  grader_response: null as string,
+};
+
+const matchingAssessmentResponsesRowSCSubmitted = {
+  ...matchingAssessmentResponsesRowSCInProgress,
+};
+
+const matchingAssessmentResponsesRowSCGraded = {
+  ...matchingAssessmentResponsesRowSCInProgress,
+  score: 1,
+  grader_response: 'Well done!',
+};
+
+const matchingAssessmentResponsesRowFROpened = {
+  id: assessmentSubmissionResponseFRId,
+  assessment_id: programAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: freeResponseQuestionId,
+  answer_id: null as string,
+  response: null as string,
+};
+
+const matchingAssessmentResponsesRowFRInProgress = {
+  ...matchingAssessmentResponsesRowFROpened,
+  response: '<div>Hello world!</div>',
+};
+
+const matchingAssessmentResponsesRowFRGraded = {
+  ...matchingAssessmentResponsesRowFRInProgress,
+  score: 0,
+  grader_response: 'Very close!',
+};
+
+const exampleCurriculumAssessment: CurriculumAssessment = {
+  id: curriculumAssessmentId,
+  title: matchingCurriculumAssessmentRow.title,
+  assessment_type: 'test',
+  description: matchingCurriculumAssessmentRow.description,
+  max_score: matchingCurriculumAssessmentRow.max_score,
+  max_num_submissions: matchingCurriculumAssessmentRow.max_num_submissions,
+  time_limit: matchingCurriculumAssessmentRow.time_limit,
+  curriculum_id: curriculumId,
+  activity_id: activityId,
+  principal_id: administratorPrincipalId,
+};
+
+const exampleAssessmentSCAnswerWithoutCorrectAnswer: Answer = {
+  id: singleChoiceAnswerId,
+  question_id: singleChoiceQuestionId,
+  description: matchingAssessmentAnswersSCRow.description,
+  title: matchingAssessmentAnswersSCRow.title,
+  sort_order: matchingAssessmentAnswersSCRow.sort_order,
+};
+
+const exampleAssessmentSCAnswerWithCorrectAnswer: Answer = {
+  ...exampleAssessmentSCAnswerWithoutCorrectAnswer,
+  correct_answer: matchingAssessmentAnswersSCRow.correct_answer,
+};
+
+const exampleAssessmentFRAnswerWithoutCorrectAnswer: Answer = {
+  id: freeResponseCorrectAnswerId,
+  question_id: freeResponseQuestionId,
+  description: matchingAssessmentAnswersFRRow.description,
+  title: matchingAssessmentAnswersFRRow.title,
+  sort_order: matchingAssessmentAnswersFRRow.sort_order,
+};
+
+const exampleAssessmentFRAnswerWithCorrectAnswer: Answer = {
+  ...exampleAssessmentFRAnswerWithoutCorrectAnswer,
+  id: freeResponseCorrectAnswerId,
+  correct_answer: true,
+};
+
+const exampleAssessmentQuestionSCBase: Question = {
+  id: singleChoiceQuestionId,
+  assessment_id: curriculumAssessmentId,
+  title: matchingAssessmentQuestionsSCRow.title,
+  description: matchingAssessmentQuestionsSCRow.description,
+  question_type: matchingAssessmentQuestionsSCRow.question_type,
+  max_score: matchingAssessmentQuestionsSCRow.max_score,
+  sort_order: matchingAssessmentQuestionsSCRow.sort_order,
+};
+
+const exampleAssessmentQuestionSCWithoutCorrectAnswers: Question = {
+  ...exampleAssessmentQuestionSCBase,
+  answers: [exampleAssessmentSCAnswerWithoutCorrectAnswer],
+};
+
+const exampleAssessmentQuestionSCWithCorrectAnswers: Question = {
+  ...exampleAssessmentQuestionSCBase,
+  answers: [exampleAssessmentSCAnswerWithCorrectAnswer],
+  correct_answer_id: exampleAssessmentSCAnswerWithCorrectAnswer.id,
+};
+
+const exampleAssessmentQuestionFRWithCorrectAnswers: Question = {
+  id: freeResponseQuestionId,
+  assessment_id: curriculumAssessmentId,
+  title: matchingAssessmentQuestionsFRRow.title,
+  description: matchingAssessmentQuestionsFRRow.description,
+  question_type: matchingAssessmentQuestionsFRRow.question_type,
+  answers: [exampleAssessmentFRAnswerWithCorrectAnswer],
+  correct_answer_id: freeResponseCorrectAnswerId,
+  max_score: matchingAssessmentQuestionsFRRow.max_score,
+  sort_order: matchingAssessmentQuestionsFRRow.sort_order,
+};
+
+const exampleCurriculumAssessmentWithSCQuestions: CurriculumAssessment = {
+  ...exampleCurriculumAssessment,
+  questions: [exampleAssessmentQuestionSCWithoutCorrectAnswers],
+};
+
+const exampleCurriculumAssessmentMultipleSubmissionsWithQuestions: CurriculumAssessment =
+  {
+    ...exampleCurriculumAssessment,
+    questions: [exampleAssessmentQuestionSCWithCorrectAnswers],
+    max_num_submissions: 3,
+  };
+
+const exampleCurriculumAssessmentWithSCCorrectAnswers: CurriculumAssessment = {
+  ...exampleCurriculumAssessment,
+  questions: [exampleAssessmentQuestionSCWithCorrectAnswers],
+};
+
+const exampleCurriculumAssessmentWithFRCorrectAnswers: CurriculumAssessment = {
+  ...exampleCurriculumAssessment,
+  questions: [exampleAssessmentQuestionFRWithCorrectAnswers],
+};
+
+const exampleProgramAssessment: ProgramAssessment = {
+  id: programAssessmentId,
+  program_id: programId,
+  assessment_id: curriculumAssessmentId,
+  available_after: '2023-02-06T00:00:00.000-08:00',
+  due_date: '2050-06-24T00:00:00.000-07:00',
+};
+
+const exampleProgramAssessmentPastDue: ProgramAssessment = {
+  id: programAssessmentId,
+  program_id: programId,
+  assessment_id: curriculumAssessmentId,
+  available_after: '2023-02-06T00:00:00.000-08:00',
+  due_date: '2023-02-10T00:00:00.000-08:00',
+};
+
+const exampleProgramAssessmentNotAvailable: ProgramAssessment = {
+  id: programAssessmentId,
+  program_id: programId,
+  assessment_id: curriculumAssessmentId,
+  available_after: '2050-06-24T00:00:00.000-07:00',
+  due_date: '2050-06-23T00:00:00.000-07:00',
+};
+
+const exampleAssessmentWithSCCorrectAnswersDetails: AssessmentDetails = {
+  curriculum_assessment: exampleCurriculumAssessmentWithSCCorrectAnswers,
+  program_assessment: exampleProgramAssessment,
+};
+
+const exampleParticipantAssessmentSubmissionsInactive: ParticipantAssessmentSubmissionsSummary =
+  {
+    principal_id: participantPrincipalId,
+    highest_state: 'Inactive',
+    total_num_submissions: 0,
+  };
+
+const exampleParticipantAssessmentSubmissionsPastDue: ParticipantAssessmentSubmissionsSummary =
+  {
+    principal_id: participantPrincipalId,
+    highest_state: 'Expired',
+    total_num_submissions: 1,
+  };
+
+const exampleParticipantAssessmentSubmissionsActive: ParticipantAssessmentSubmissionsSummary =
+  {
+    principal_id: participantPrincipalId,
+    highest_state: 'Active',
+    total_num_submissions: 0,
+  };
+
+const exampleParticipantAssessmentSubmissionsSummary: ParticipantAssessmentSubmissionsSummary =
+  {
+    principal_id: participantPrincipalId,
+    highest_state: 'Graded',
+    most_recent_submitted_date: '2023-02-09T13:23:45.000Z',
+    total_num_submissions: 1,
+    highest_score: 4,
+  };
+
+const exampleFacilitatorAssessmentSubmissionsSummary: FacilitatorAssessmentSubmissionsSummary =
+  {
+    num_participants_with_submissions: 8,
+    num_program_participants: 12,
+    num_ungraded_submissions: 6,
+  };
+
+const exampleAssessmentSubmissionOpened: AssessmentSubmission = {
+  id: assessmentSubmissionId,
+  assessment_id: programAssessmentId,
+  principal_id: participantPrincipalId,
+  assessment_submission_state: 'Opened',
+  opened_at: '2023-02-09T12:00:00.000Z',
+  last_modified: '2023-02-09T12:00:00.000Z',
+};
+
+const exampleAssessmentResponseSCUnanswered: AssessmentResponse = {
+  id: assessmentSubmissionResponseSCId,
+  assessment_id: programAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: singleChoiceQuestionId,
+};
+
+const exampleAssessmentResponseSCAnswered: AssessmentResponse = {
+  ...exampleAssessmentResponseSCUnanswered,
+  answer_id: singleChoiceAnswerId,
+};
+
+const exampleAssessmentResponseSCGraded: AssessmentResponse = {
+  ...exampleAssessmentResponseSCAnswered,
+  score: 1,
+  grader_response: 'Well done!',
+};
+
+const exampleAssessmentResponseFRUnanswered: AssessmentResponse = {
+  id: assessmentSubmissionResponseFRId,
+  assessment_id: programAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: freeResponseQuestionId,
+};
+
+const exampleAssessmentResponseFRAnswered: AssessmentResponse = {
+  ...exampleAssessmentResponseFRUnanswered,
+  response_text: matchingAssessmentResponsesRowFRInProgress.response,
+};
+
+const exampleAssessmentResponseFRGraded: AssessmentResponse = {
+  ...exampleAssessmentResponseFRAnswered,
+  score: 0,
+  grader_response: 'Very close!',
+};
+
+const exampleAssessmentSubmissionOpenedWithResponse: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  responses: [exampleAssessmentResponseSCUnanswered],
+};
+
+const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'In Progress',
+  last_modified: '2023-02-09T12:05:00.000Z',
+  responses: [exampleAssessmentResponseSCAnswered],
+};
+const exampleAssessmentSubmissionFRInProgress: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'In Progress',
+  last_modified: '2023-02-09T12:05:00.000Z',
+  responses: [exampleAssessmentResponseFRAnswered],
+};
+
+const exampleAssessmentSubmissionInProgressSCFR: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'In Progress',
+  last_modified: '2023-02-09T12:05:00.000Z',
+  responses: [
+    exampleAssessmentResponseSCAnswered,
+    exampleAssessmentResponseFRAnswered,
+  ],
+};
+
+const exampleAssessmentSubmissionInProgressSCFRLateStart: AssessmentSubmission =
+  {
+    ...exampleAssessmentSubmissionOpened,
+    assessment_submission_state: 'In Progress',
+    opened_at: '2023-02-10T07:00:00.000Z',
+    last_modified: '2023-02-10T07:05:00.000Z',
+    responses: [
+      exampleAssessmentResponseSCAnswered,
+      exampleAssessmentResponseFRAnswered,
+    ],
+  };
+
+const exampleAssessmentSubmissionPastDueDate: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'Expired',
+  opened_at: '2023-02-10T07:00:00.000Z',
+  last_modified: '2023-02-17T08:00:10.000Z',
+  responses: [
+    exampleAssessmentResponseSCAnswered,
+    exampleAssessmentResponseFRAnswered,
+  ],
+};
+
+const exampleAssessmentSubmissionExpired: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'Expired',
+  last_modified: '2023-02-09T14:00:00.000Z',
+  responses: [exampleAssessmentResponseSCAnswered],
+};
+
+const exampleAssessmentSubmissionExpiredPlusWeek: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'Expired',
+  last_modified: '2023-02-16T14:00:10.000Z',
+  responses: [exampleAssessmentResponseSCAnswered],
+};
+
+const exampleAssessmentSubmissionSubmitted: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'Submitted',
+  submitted_at: '2023-02-09T13:23:45.000Z',
+  last_modified: '2023-02-09T13:23:45.000Z',
+  responses: [exampleAssessmentResponseSCAnswered],
+};
+const exampleAssessmentSubmissionFRSubmitted: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'Submitted',
+  submitted_at: '2023-02-09T13:23:45.000Z',
+  last_modified: '2023-02-09T13:23:45.000Z',
+  responses: [exampleAssessmentResponseFRAnswered],
+};
+
+const exampleOtherAssessmentSubmissionSubmitted: AssessmentSubmission = {
+  id: assessmentSubmissionByOtherParticipantId,
+  assessment_id: programAssessmentId,
+  principal_id: otherParticipantPrincipalId,
+  assessment_submission_state: 'Submitted',
+  opened_at: '2023-02-09T12:01:00.000Z',
+  submitted_at: '2023-02-09T13:23:45.000Z',
+  last_modified: '2023-02-09T13:23:45.000Z',
+};
+
+const exampleAssessmentSubmissionGradedNoResponses: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  submitted_at: '2023-02-09T13:23:45.000Z',
+  last_modified: '2023-02-09T13:23:45.000Z',
+  assessment_submission_state: 'Graded',
+  score: 4,
+};
+
+const exampleAssessmentSubmissionGraded: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'Graded',
+  submitted_at: '2023-02-09T13:23:45.000Z',
+  last_modified: '2023-02-09T13:23:45.000Z',
+  score: 4,
+  responses: [exampleAssessmentResponseSCGraded],
+};
+
+const exampleAssessmentSubmissionGradedRemovedGrades: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'Graded',
+  submitted_at: '2023-02-09T13:23:45.000Z',
+  last_modified: '2023-02-09T13:23:45.000Z',
+  responses: [exampleAssessmentResponseSCAnswered],
+};
+
+const exampleParticipantAssessmentWithSubmissions: AssessmentWithSubmissions = {
+  curriculum_assessment: exampleCurriculumAssessment,
+  program_assessment: exampleProgramAssessment,
+  principal_program_role: 'Participant',
+  submissions: [exampleAssessmentSubmissionInProgress],
+};
+
+const exampleParticipantOpenedSavedAssessment: SavedAssessment = {
+  curriculum_assessment: exampleCurriculumAssessmentWithSCQuestions,
+  program_assessment: exampleProgramAssessment,
+  principal_program_role: 'Participant',
+  submission: exampleAssessmentSubmissionOpened,
+};
+
+const exampleParticipantOpenedSavedMultipleSubmissionsAssessment: SavedAssessment =
+  {
+    curriculum_assessment:
+      exampleCurriculumAssessmentMultipleSubmissionsWithQuestions,
+    program_assessment: exampleProgramAssessment,
+    principal_program_role: 'Participant',
+    submission: exampleAssessmentSubmissionOpened,
+  };
+
+const exampleFacilitatorAssessmentWithSubmissions: AssessmentWithSubmissions = {
+  curriculum_assessment: exampleCurriculumAssessment,
+  program_assessment: exampleProgramAssessment,
+  principal_program_role: 'Facilitator',
+  submissions: [
+    exampleAssessmentSubmissionInProgress,
+    exampleOtherAssessmentSubmissionSubmitted,
+  ],
+};
+
+const updatedAssessmentAnswersSCRow = {
+  id: singleChoiceAnswerId,
+  question_id: singleChoiceQuestionId,
+  title: 'A relational database management system',
+  description: 'Also known as a DBMS.',
+  sort_order: 1,
+  correct_answer: true,
+};
+
+const updatedProgramAssessmentsRow = {
+  ...matchingProgramAssessmentsRow,
+  due_date: '2050-06-26 00:00:00',
+};
+
+const updatedAssessmentResponsesSCGradedRow = {
+  id: assessmentSubmissionResponseSCId,
+  assessment_id: programAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: singleChoiceQuestionId,
+  answer_id: singleChoiceAnswerId,
+  score: null as number,
+  grader_response: 'Well done!',
+};
+
+const updatedAssessmentResponsesFRGradedRow = {
+  id: assessmentSubmissionResponseFRId,
+  assessment_id: programAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: freeResponseQuestionId,
+  response: '<div>Hello world!</div>',
+  score: 0,
+  grader_response: 'Very close!',
+};
+
+const updatedAssessmentSubmissionsRow = {
+  ...matchingAssessmentSubmissionInProgressRow,
+  assessment_submission_state: 'Submitted',
+  submitted_at: '2023-02-09 13:23:45',
+  last_modified: '2023-02-09 13:23:45',
+};
+
+const newCurriculumAssessmentsRow = {
+  id: sentCurriculumAssessmentId,
+  title: 'New Curriculum Quiz',
+  description: null as string,
+  max_score: 42,
+  max_num_submissions: 13,
+  time_limit: 60,
+  curriculum_id: curriculumId,
+  activity_id: sentCAActivityId,
+  principal_id: facilitatorPrincipalId,
+};
+
+const newProgramAssessmentsRow = {
+  ...matchingProgramAssessmentsRow,
+  id: programAssessmentId,
+};
+
+const sentNewCurriculumAssessment: CurriculumAssessment = {
+  title: newCurriculumAssessmentsRow.title,
+  assessment_type: 'quiz',
+  description: newCurriculumAssessmentsRow.description,
+  max_score: newCurriculumAssessmentsRow.max_score,
+  max_num_submissions: newCurriculumAssessmentsRow.max_num_submissions,
+  time_limit: newCurriculumAssessmentsRow.time_limit,
+  curriculum_id: curriculumId,
+  activity_id: sentCAActivityId,
+  principal_id: facilitatorPrincipalId,
+};
+
+const sentNewSCAssessmentAnswer: Answer = {
+  description: matchingAssessmentAnswersSCRow.description,
+  title: matchingAssessmentAnswersSCRow.title,
+  sort_order: matchingAssessmentAnswersSCRow.sort_order,
+  correct_answer: true,
+};
+
+const sentNewSCAssessmentQuestion: Question = {
+  assessment_id: curriculumAssessmentId,
+  title: matchingAssessmentQuestionsSCRow.title,
+  description: matchingAssessmentQuestionsSCRow.description,
+  question_type: matchingAssessmentQuestionsSCRow.question_type,
+  answers: [sentNewSCAssessmentAnswer],
+  max_score: matchingAssessmentQuestionsSCRow.max_score,
+  sort_order: matchingAssessmentQuestionsSCRow.sort_order,
+};
+
+const sentNewFRAssessmentAnswer: Answer = {
+  description: matchingAssessmentAnswersFRRow.description,
+  title: matchingAssessmentAnswersFRRow.title,
+  sort_order: matchingAssessmentAnswersFRRow.sort_order,
+  correct_answer: true,
+};
+
+const sentNewFRAssessmentQuestion: Question = {
+  assessment_id: curriculumAssessmentId,
+  title: matchingAssessmentQuestionsFRRow.title,
+  description: matchingAssessmentQuestionsFRRow.description,
+  question_type: matchingAssessmentQuestionsFRRow.question_type,
+  answers: [sentNewFRAssessmentAnswer],
+  max_score: matchingAssessmentQuestionsFRRow.max_score,
+  sort_order: matchingAssessmentQuestionsFRRow.sort_order,
+};
+
+const sentNewCurriculumAssessmentWithSCQuestion: CurriculumAssessment = {
+  ...sentNewCurriculumAssessment,
+  questions: [sentNewSCAssessmentQuestion],
+};
+
+const sentNewCurriculumAssessmentWithFRQuestion: CurriculumAssessment = {
+  ...sentNewCurriculumAssessment,
+  questions: [sentNewFRAssessmentQuestion],
+};
+
+const sentUpdatedCurriculumAssessment: CurriculumAssessment = {
+  ...exampleCurriculumAssessment,
+  time_limit: 121,
+};
+
+const sentCurriculumAssessmentWithNewSCQuestion: CurriculumAssessment = {
+  ...exampleCurriculumAssessment,
+  questions: [sentNewSCAssessmentQuestion],
+};
+
+const sentCurriculumAssessmentWithNewSCQuestion2: CurriculumAssessment = {
+  ...exampleCurriculumAssessment,
+  questions: [sentNewSCAssessmentQuestion],
+};
+
+const sentAssessmentSCQuestionNewAnswer: Question = {
+  ...exampleAssessmentQuestionSCBase,
+  answers: [sentNewSCAssessmentAnswer],
+};
+
+const sentCurriculumAssessmentWithSCQuestionNewAnswer: CurriculumAssessment = {
+  ...exampleCurriculumAssessment,
+  questions: [sentAssessmentSCQuestionNewAnswer],
+};
+
+const sentNewProgramAssessment: ProgramAssessment = {
+  program_id: programId,
+  assessment_id: curriculumAssessmentId,
+  available_after: '2023-02-06 00:00:00',
+  due_date: '2050-06-24 00:00:00',
+};
+
+const sentNewSCAssessmentResponse: AssessmentResponse = {
+  assessment_id: programAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: singleChoiceQuestionId,
+  answer_id: singleChoiceAnswerId,
+};
+
+const sentNewFRAssessmentResponse: AssessmentResponse = {
+  assessment_id: programAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: freeResponseQuestionId,
+  response_text: '<div>Hello world!</div>',
+};
+
+const sentAssessmentSCAnswerWithUpdatedCorrectAnswer: Answer = {
+  ...exampleAssessmentSCAnswerWithCorrectAnswer,
+  description: updatedAssessmentAnswersSCRow.description,
+};
+
+const sentAssessmentQuestionSCWithUpdatedCorrectAnswer: Question = {
+  ...exampleAssessmentQuestionSCWithCorrectAnswers,
+  answers: [sentAssessmentSCAnswerWithUpdatedCorrectAnswer],
+};
+
+const exampleCurriculumAssessmentWithUpdatedSCCorrectAnswer: CurriculumAssessment =
+  {
+    ...exampleCurriculumAssessment,
+    questions: [sentAssessmentQuestionSCWithUpdatedCorrectAnswer],
+  };
+
+const sentUpdatedAssessmentSubmissionSCResponseSubmitted: AssessmentResponse = {
+  ...sentNewSCAssessmentResponse,
+  id: assessmentSubmissionResponseSCId,
+  score: null as number,
+  grader_response: null as string,
+};
+const sentUpdatedAssessmentSubmissionFRResponseSubmitted: AssessmentResponse = {
+  ...sentNewFRAssessmentResponse,
+  id: assessmentSubmissionResponseFRId,
+  score: null as number,
+  grader_response: null as string,
+};
+
+const sentUpdatedAssessmentSubmissionSCResponseGraded: AssessmentResponse = {
+  ...sentUpdatedAssessmentSubmissionSCResponseSubmitted,
+  score: 1,
+  grader_response: 'Well done!',
+};
+
+const sentUpdatedAssessmentSubmissionFRResponseGraded: AssessmentResponse = {
+  id: assessmentSubmissionResponseFRId,
+  assessment_id: programAssessmentId,
+  submission_id: assessmentSubmissionId,
+  question_id: freeResponseQuestionId,
+  response_text: '<div>Hello world!</div>',
+  score: 0,
+  grader_response: 'Very close!',
+};
+
+const sentUpdatedAssessmentSubmissionWithNewSCResponse: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  last_modified: '2023-02-09T12:05:00.000Z',
+  responses: [sentNewSCAssessmentResponse],
+};
+const sentUpdatedAssessmentSubmissionWithNewFRResponse: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  last_modified: '2023-02-09T12:05:00.000Z',
+  responses: [sentNewFRAssessmentResponse],
+};
+
+const sentUpdatedAssessmentSubmissionChangedResponse: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'Submitted',
+  submitted_at: '2023-02-09T13:23:45.000Z',
+  last_modified: '2023-02-10T13:23:45.000Z',
+  responses: [sentUpdatedAssessmentSubmissionSCResponseSubmitted],
+};
+const sentUpdatedAssessmentSubmissionChangedFRResponse: AssessmentSubmission = {
+  ...exampleAssessmentSubmissionOpened,
+  assessment_submission_state: 'Submitted',
+  submitted_at: '2023-02-09T13:23:45.000Z',
+  last_modified: '2023-02-10T13:23:45.000Z',
+  responses: [sentUpdatedAssessmentSubmissionFRResponseSubmitted],
+};
+
+const sentUpdatedAssessmentSubmissionChangedResponseWithWrongID: AssessmentSubmission =
+  {
+    ...exampleAssessmentSubmissionOpened,
+    id: assessmentSubmissionWrongId,
+    assessment_submission_state: 'Submitted',
+    submitted_at: '2023-02-09T13:23:45.000Z',
+    last_modified: '2023-02-10T13:23:45.000Z',
+    responses: [sentUpdatedAssessmentSubmissionSCResponseSubmitted],
+  };
+
+const sentNewCurriculumAssessmentPostInsert: CurriculumAssessment = {
+  ...sentNewCurriculumAssessment,
+  id: sentCurriculumAssessmentId,
+};
+
+const sentNewCurriculumAssessmentWithSCQuestionPostInsert: CurriculumAssessment =
+  {
+    ...sentNewCurriculumAssessment,
+    id: sentCurriculumAssessmentId,
+    questions: [exampleAssessmentQuestionSCWithCorrectAnswers],
+  };
+
+const sentNewCurriculumAssessmentWithFRQuestionPostInsert: CurriculumAssessment =
+  {
+    ...sentNewCurriculumAssessment,
+    id: sentCurriculumAssessmentId,
+    questions: [exampleAssessmentQuestionFRWithCorrectAnswers],
+  };
 
 describe('constructFacilitatorAssessmentSummary', () => {
   it('should gather the relevant information for constructing a FacilitatorAssessmentSubmissionsSummary for a given program assessment', async () => {
@@ -694,7 +1457,7 @@ describe('getPrincipalProgramRole', () => {
     mockQuery(
       'select `program_participant_roles`.`title` from `program_participant_roles` inner join `program_participants` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
       [facilitatorPrincipalId, exampleProgramAssessment.program_id],
-      [matchingProgramParticipantRoleFacilitatorRow]
+      [programParticipantRolesRows[0]]
     );
 
     expect(
@@ -709,7 +1472,7 @@ describe('getPrincipalProgramRole', () => {
     mockQuery(
       'select `program_participant_roles`.`title` from `program_participant_roles` inner join `program_participants` on `program_participant_roles`.`id` = `program_participants`.`role_id` where `principal_id` = ? and `program_id` = ?',
       [participantPrincipalId, exampleProgramAssessment.program_id],
-      [matchingProgramParticipantRoleParticipantRow]
+      [programParticipantRolesRows[1]]
     );
 
     expect(
