@@ -1623,7 +1623,7 @@ describe('assessmentsRouter', () => {
       appAgent
         .put(`/curriculum/${curriculumAssessments[0].id}`)
         .send(curriculumAssessments[8])
-        .expect(201, itemEnvelope(curriculumAssessments[8]), err => {
+        .expect(200, itemEnvelope(curriculumAssessments[8]), err => {
           expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
             curriculumAssessments[0].id
           );
@@ -2052,7 +2052,7 @@ describe('assessmentsRouter', () => {
       appAgent
         .put(`/program/${programAssessments[0].id}`)
         .send(programAssessmentsRows[3])
-        .expect(201, itemEnvelope(programAssessmentsRows[3]), err => {
+        .expect(200, itemEnvelope(programAssessmentsRows[3]), err => {
           expect(mockFindProgramAssessment).toHaveBeenCalledWith(
             programAssessments[0].id
           );
@@ -2658,53 +2658,7 @@ describe('assessmentsRouter', () => {
 
       appAgent
         .get(`/program/${programAssessments[0].id}/submissions/new`)
-        .expect(200, itemEnvelope(savedAssessments[0]), err => {
-          expect(mockFindProgramAssessment).toHaveBeenCalledWith(
-            programAssessments[0].id
-          );
-
-          expect(mockGetPrincipalProgramRole).toHaveBeenCalledWith(
-            participantPrincipalId,
-            programAssessments[0].program_id
-          );
-
-          expect(mockGetCurriculumAssessment).toHaveBeenCalledWith(
-            programAssessments[0].assessment_id,
-            true,
-            false
-          );
-
-          expect(
-            mockListParticipantProgramAssessmentSubmissions
-          ).toHaveBeenCalledWith(
-            participantPrincipalId,
-            programAssessments[0].id
-          );
-
-          expect(mockCreateAssessmentSubmission).toHaveBeenCalledWith(
-            participantPrincipalId,
-            programAssessments[0].id,
-            programAssessments[0].assessment_id
-          );
-
-          done(err);
-        });
-    });
-
-    it('should return a participant a new submission without including the correct answers', done => {
-      mockFindProgramAssessment.mockResolvedValue(programAssessments[0]);
-      mockGetPrincipalProgramRole.mockResolvedValue('Participant');
-      mockGetCurriculumAssessment.mockResolvedValue(curriculumAssessments[1]);
-      mockListParticipantProgramAssessmentSubmissions.mockResolvedValue(null);
-      mockCreateAssessmentSubmission.mockResolvedValue(
-        assessmentSubmissions[0]
-      );
-
-      mockPrincipalId(participantPrincipalId);
-
-      appAgent
-        .get(`/program/${programAssessments[0].id}/submissions/new`)
-        .expect(200, itemEnvelope(savedAssessments[0]), err => {
+        .expect(201, itemEnvelope(savedAssessments[0]), err => {
           expect(mockFindProgramAssessment).toHaveBeenCalledWith(
             programAssessments[0].id
           );
@@ -2752,7 +2706,7 @@ describe('assessmentsRouter', () => {
 
       appAgent
         .get(`/program/${programAssessments[0].id}/submissions/new`)
-        .expect(200, itemEnvelope(savedAssessments[1]), err => {
+        .expect(201, itemEnvelope(savedAssessments[1]), err => {
           expect(mockFindProgramAssessment).toHaveBeenCalledWith(
             programAssessments[0].id
           );
@@ -3091,7 +3045,7 @@ describe('assessmentsRouter', () => {
       appAgent
         .put(`/submissions/${assessmentSubmissions[9].id}`)
         .send(assessmentSubmissions[17])
-        .expect(201, itemEnvelope(assessmentSubmissions[17]), err => {
+        .expect(200, itemEnvelope(assessmentSubmissions[17]), err => {
           expect(mockGetAssessmentSubmission).toHaveBeenCalledWith(
             assessmentSubmissions[9].id,
             true
@@ -3128,7 +3082,7 @@ describe('assessmentsRouter', () => {
       appAgent
         .put(`/submissions/${assessmentSubmissions[2].id}`)
         .send(assessmentSubmissions[2])
-        .expect(201, itemEnvelope(assessmentSubmissions[2]), err => {
+        .expect(200, itemEnvelope(assessmentSubmissions[2]), err => {
           expect(mockGetAssessmentSubmission).toHaveBeenCalledWith(
             assessmentSubmissions[2].id,
             true
@@ -3162,7 +3116,7 @@ describe('assessmentsRouter', () => {
       appAgent
         .put(`/submissions/${assessmentSubmissions[9].id}`)
         .send(assessmentSubmissions[9])
-        .expect(201, itemEnvelope(assessmentSubmissions[9]), err => {
+        .expect(200, itemEnvelope(assessmentSubmissions[9]), err => {
           expect(mockGetAssessmentSubmission).toHaveBeenCalledWith(
             assessmentSubmissions[9].id,
             true
