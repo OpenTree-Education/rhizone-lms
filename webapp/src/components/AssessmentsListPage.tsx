@@ -120,9 +120,7 @@ const AssessmentsListPage = () => {
           <h1>Assessments</h1>
         </Stack>
 
-        <div style={{ padding: '20px' }}>
-          There was an error loading the assessments list.
-        </div>
+        <p>There was an error loading the assessments list.</p>
       </Container>
     );
   }
@@ -138,9 +136,15 @@ const AssessmentsListPage = () => {
           <h1>Assessments</h1>
         </Stack>
 
-        <div style={{ padding: '20px' }}>
-          You have no available assessments at this time.
-        </div>
+        <p>
+          You have no available assessments at this time.{' '}
+          <a
+            href={`${process.env.REACT_APP_API_ORIGIN}/assessments/demo/participant`}
+          >
+            Enroll in a demo program as a participant
+          </a>{' '}
+          to see an example assessments list.
+        </p>
       </Container>
     );
   }
@@ -160,11 +164,18 @@ const AssessmentsListPage = () => {
         currentStatusTab={currentStatusTab}
         handleChangeTab={handleChangeTab}
       />
-      <AssessmentsListTable
-        currentStatusTab={currentStatusTab}
-        matchingAssessmentList={assessmentsListSubset}
-        userRoles={userRoles}
-      />
+      {assessmentsListSubset.length > 0 ? (
+        <AssessmentsListTable
+          currentStatusTab={currentStatusTab}
+          matchingAssessmentList={assessmentsListSubset}
+          userRoles={userRoles}
+        />
+      ) : (
+        <p>
+          There are no {StatusTab[currentStatusTab].toLowerCase()} assessments
+          to show at this time.
+        </p>
+      )}
     </Container>
   );
 };

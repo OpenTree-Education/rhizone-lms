@@ -24,6 +24,8 @@ import {
   createProgramAssessment,
   deleteCurriculumAssessment,
   deleteProgramAssessment,
+  enrollFacilitator,
+  enrollParticipant,
   facilitatorProgramIdsMatchingCurriculum,
   findProgramAssessment,
   getAssessmentSubmission,
@@ -54,6 +56,8 @@ const mockCreateProgramAssessment = jest.mocked(createProgramAssessment);
 const mockDeleteCurriculumAssessment = jest.mocked(deleteCurriculumAssessment);
 const mockDeleteProgramAssessment = jest.mocked(deleteProgramAssessment);
 const mockFindProgramAssessment = jest.mocked(findProgramAssessment);
+const mockEnrollFacilitator = jest.mocked(enrollFacilitator);
+const mockEnrollParticipant = jest.mocked(enrollParticipant);
 const mockGetAssessmentSubmission = jest.mocked(getAssessmentSubmission);
 const mockGetCurriculumAssessment = jest.mocked(getCurriculumAssessment);
 const mockFacilitatorProgramIdsMatchingCurriculum = jest.mocked(
@@ -1439,6 +1443,58 @@ describe('assessmentsRouter', () => {
       mockPrincipalId(facilitatorPrincipalId);
 
       appAgent.get('/').expect(500, done);
+    });
+  });
+
+  describe('GET /demo/facilitator', () => {
+    it('should enroll a user as a facilitator in a program, then redirect to assessments list page', done => {
+      mockEnrollFacilitator.mockResolvedValue(true);
+
+      mockPrincipalId(facilitatorPrincipalId);
+
+      appAgent.get(`/demo/facilitator`).expect(302, done);
+    });
+
+    it('should do nothing if the user is already a facilitator', done => {
+      mockEnrollFacilitator.mockResolvedValue(false);
+
+      mockPrincipalId(facilitatorPrincipalId);
+
+      appAgent.get(`/demo/facilitator`).expect(204, done);
+    });
+
+    it('should throw an error if a database error was encountered', done => {
+      mockEnrollFacilitator.mockRejectedValue(new Error());
+
+      mockPrincipalId(facilitatorPrincipalId);
+
+      appAgent.get(`/demo/facilitator`).expect(500, done);
+    });
+  });
+
+  describe('GET /demo/participant', () => {
+    it('should enroll a user as a participant in a program, then redirect to assessments list page', done => {
+      mockEnrollParticipant.mockResolvedValue(true);
+
+      mockPrincipalId(participantPrincipalId);
+
+      appAgent.get(`/demo/participant`).expect(302, done);
+    });
+
+    it('should do nothing if the user is already a participant', done => {
+      mockEnrollParticipant.mockResolvedValue(false);
+
+      mockPrincipalId(participantPrincipalId);
+
+      appAgent.get(`/demo/participant`).expect(204, done);
+    });
+
+    it('should throw an error if a database error was encountered', done => {
+      mockEnrollParticipant.mockRejectedValue(new Error());
+
+      mockPrincipalId(participantPrincipalId);
+
+      appAgent.get(`/demo/participant`).expect(500, done);
     });
   });
 

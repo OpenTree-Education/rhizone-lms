@@ -20,6 +20,8 @@ import {
   createProgramAssessment,
   deleteCurriculumAssessment,
   deleteProgramAssessment,
+  enrollFacilitator,
+  enrollParticipant,
   facilitatorProgramIdsMatchingCurriculum,
   findProgramAssessment,
   getAssessmentSubmission,
@@ -1855,6 +1857,120 @@ describe('deleteProgramAssessment', () => {
     );
 
     expect(await deleteProgramAssessment(programAssessmentId)).toEqual([1]);
+  });
+});
+
+describe('enrollFacilitator', () => {
+  it('should enroll a principal ID into a program as a facilitator', async () => {
+    mockQuery(
+      'select `role_id` from `program_participants` where `principal_id` = ? and `program_id` = ?',
+      [facilitatorPrincipalId, programAssessments[0].program_id],
+      []
+    );
+    mockQuery(
+      'insert into `program_participants` (`principal_id`, `program_id`, `role_id`) values (?, ?, ?)',
+      [facilitatorPrincipalId, programAssessments[0].program_id, 1],
+      [1]
+    );
+
+    expect(
+      await enrollFacilitator(
+        facilitatorPrincipalId,
+        programAssessments[0].program_id
+      )
+    ).toEqual(true);
+  });
+
+  it('should switch a participant role ID into a facilitator for a given program', async () => {
+    mockQuery(
+      'select `role_id` from `program_participants` where `principal_id` = ? and `program_id` = ?',
+      [facilitatorPrincipalId, programAssessments[0].program_id],
+      [{ role_id: 2 }]
+    );
+    mockQuery(
+      'update `program_participants` set `role_id` = ? where `principal_id` = ? and `program_id` = ?',
+      [1, facilitatorPrincipalId, programAssessments[0].program_id],
+      [1]
+    );
+
+    expect(
+      await enrollFacilitator(
+        facilitatorPrincipalId,
+        programAssessments[0].program_id
+      )
+    ).toEqual(true);
+  });
+
+  it('should do nothing if the user is already a facilitator of that program', async () => {
+    mockQuery(
+      'select `role_id` from `program_participants` where `principal_id` = ? and `program_id` = ?',
+      [facilitatorPrincipalId, programAssessments[0].program_id],
+      [{ role_id: 1 }]
+    );
+
+    expect(
+      await enrollFacilitator(
+        facilitatorPrincipalId,
+        programAssessments[0].program_id
+      )
+    ).toEqual(false);
+  });
+});
+
+describe('enrollParticipant', () => {
+  it('should enroll a principal ID into a program as a participant', async () => {
+    mockQuery(
+      'select `role_id` from `program_participants` where `principal_id` = ? and `program_id` = ?',
+      [participantPrincipalId, programAssessments[0].program_id],
+      []
+    );
+    mockQuery(
+      'insert into `program_participants` (`principal_id`, `program_id`, `role_id`) values (?, ?, ?)',
+      [participantPrincipalId, programAssessments[0].program_id, 2],
+      [1]
+    );
+
+    expect(
+      await enrollParticipant(
+        participantPrincipalId,
+        programAssessments[0].program_id
+      )
+    ).toEqual(true);
+  });
+
+  it('should switch a facilitator role ID into a participant for a given program', async () => {
+    mockQuery(
+      'select `role_id` from `program_participants` where `principal_id` = ? and `program_id` = ?',
+      [participantPrincipalId, programAssessments[0].program_id],
+      [{ role_id: 1 }]
+    );
+    mockQuery(
+      'update `program_participants` set `role_id` = ? where `principal_id` = ? and `program_id` = ?',
+      [2, participantPrincipalId, programAssessments[0].program_id],
+      [1]
+    );
+
+    expect(
+      await enrollParticipant(
+        participantPrincipalId,
+        programAssessments[0].program_id
+      )
+    ).toEqual(true);
+  });
+
+  it('should do nothing if the user is already a facilitator of that program', async () => {
+    mockQuery(
+      'select `role_id` from `program_participants` where `principal_id` = ? and `program_id` = ?',
+      [participantPrincipalId, programAssessments[0].program_id],
+      [{ role_id: 2 }]
+    );
+
+    expect(
+      await enrollParticipant(
+        participantPrincipalId,
+        programAssessments[0].program_id
+      )
+    ).toEqual(false);
   });
 });
 

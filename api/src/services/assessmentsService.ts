@@ -912,6 +912,92 @@ export const deleteProgramAssessment = async (
 };
 
 /**
+ * For demonstration purposes only and should be removed from the shipping
+ * product. Enrolls a facilitator in a program so that the assessments list
+ * feature can be demonstrated.
+ *
+ * @param {number} principalId - The row ID of the principals table
+ *   corresponding with the user to enroll as a facilitator in a program.
+ * @param {number} programId - The row ID of the programs table corresponding
+ *   with the program into which the facilitator should be enrolled.
+ * @returns {Promise<boolean>} Returns `true` if the user was successfully
+ *   enrolled in the program as a facilitator or if the user was switched to the
+ *   facilitator role; returns `false` if the user was already a facilitator in
+ *   the program.
+ */
+export const enrollFacilitator = async (
+  principalId: number,
+  programId: number
+): Promise<boolean> => {
+  const isEnrolled = await db('program_participants')
+    .where({
+      principal_id: principalId,
+      program_id: programId,
+    })
+    .select('role_id');
+
+  if (isEnrolled.length > 0) {
+    if (isEnrolled[0].role_id !== 1) {
+      await db('program_participants')
+        .where({ principal_id: principalId, program_id: programId })
+        .update({ role_id: 1 });
+      return true;
+    }
+    return false;
+  } else {
+    await db('program_participants').insert({
+      principal_id: principalId,
+      program_id: programId,
+      role_id: 1,
+    });
+    return true;
+  }
+};
+
+/**
+ * For demonstration purposes only and should be removed from the shipping
+ * product. Enrolls a participant in a program so that the assessments list
+ * feature can be demonstrated.
+ *
+ * @param {number} principalId - The row ID of the principals table
+ *   corresponding with the user to enroll as a participant in a program.
+ * @param {number} programId - The row ID of the programs table corresponding
+ *   with the program into which the participant should be enrolled.
+ * @returns {Promise<boolean>} Returns `true` if the user was successfully
+ *   enrolled in the program as a participant or if the user was switched to the
+ *   participant role; returns `false` if the user was already a participant in
+ *   the program.
+ */
+export const enrollParticipant = async (
+  principalId: number,
+  programId: number
+): Promise<boolean> => {
+  const isEnrolled = await db('program_participants')
+    .where({
+      principal_id: principalId,
+      program_id: programId,
+    })
+    .select('role_id');
+
+  if (isEnrolled.length > 0) {
+    if (isEnrolled[0].role_id !== 2) {
+      await db('program_participants')
+        .where({ principal_id: principalId, program_id: programId })
+        .update({ role_id: 2 });
+      return true;
+    }
+    return false;
+  } else {
+    await db('program_participants').insert({
+      principal_id: principalId,
+      program_id: programId,
+      role_id: 2,
+    });
+    return true;
+  }
+};
+
+/**
  * Finds a single program assessment by its row ID, if it exists in the
  * program_assessments table.
  *

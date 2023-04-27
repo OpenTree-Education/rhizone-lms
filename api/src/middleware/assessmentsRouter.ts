@@ -29,6 +29,8 @@ import {
   createProgramAssessment,
   deleteCurriculumAssessment,
   deleteProgramAssessment,
+  enrollFacilitator,
+  enrollParticipant,
   facilitatorProgramIdsMatchingCurriculum,
   findProgramAssessment,
   getAssessmentSubmission,
@@ -42,6 +44,7 @@ import {
   updateCurriculumAssessment,
   updateProgramAssessment,
 } from '../services/assessmentsService';
+import { findConfig } from '../services/configService';
 
 const assessmentsRouter = Router();
 
@@ -101,6 +104,36 @@ assessmentsRouter.get('/', async (req, res, next) => {
     res.json(
       collectionEnvelope(assessmentsSummaryList, assessmentsSummaryList.length)
     );
+  } catch (error) {
+    next(error);
+    return;
+  }
+});
+
+assessmentsRouter.get('/demo/facilitator', async (req, res, next) => {
+  const { principalId } = req.session;
+
+  try {
+    if (await enrollFacilitator(principalId, 2)) {
+      res.redirect(findConfig('WEBAPP_ORIGIN', '') + '/assessments');
+    } else {
+      res.status(204).send();
+    }
+  } catch (error) {
+    next(error);
+    return;
+  }
+});
+
+assessmentsRouter.get('/demo/participant', async (req, res, next) => {
+  const { principalId } = req.session;
+
+  try {
+    if (await enrollParticipant(principalId, 2)) {
+      res.redirect(findConfig('WEBAPP_ORIGIN', '') + '/assessments');
+    } else {
+      res.status(204).send();
+    }
   } catch (error) {
     next(error);
     return;
