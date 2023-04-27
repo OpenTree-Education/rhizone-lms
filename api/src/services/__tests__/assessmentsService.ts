@@ -1847,7 +1847,7 @@ describe('deleteCurriculumAssessment', () => {
 });
 
 describe('deleteProgramAssessment', () => {
-  it('should delete a ProgramAssessment from  the database', async () => {
+  it('should delete a ProgramAssessment from the database', async () => {
     mockQuery(
       'delete from `program_assessments` where `id` = ?',
       [programAssessmentId],
@@ -2168,7 +2168,8 @@ describe('listParticipantProgramAssessmentSubmissions', () => {
 
 describe('listPrincipalEnrolledProgramIds', () => {
   const enrolledProgramsList = [{ program_id: 2 }];
-  it('should return program Id list for  which a principal is ficilitator ', async () => {
+
+  it('should return program ID list for which a principal is facilitator', async () => {
     mockQuery(
       'select `program_id` from `program_participants` where `principal_id` = ?',
       [facilitatorPrincipalId],
@@ -2178,7 +2179,8 @@ describe('listPrincipalEnrolledProgramIds', () => {
       await listPrincipalEnrolledProgramIds(facilitatorPrincipalId)
     ).toEqual([enrolledProgramsList[0].program_id]);
   });
-  it('should return program Id list for  which a principal is participant enrolloed in program ', async () => {
+
+  it('should return program ID list for which a principal is participant', async () => {
     mockQuery(
       'select `program_id` from `program_participants` where `principal_id` = ?',
       [participantPrincipalId],

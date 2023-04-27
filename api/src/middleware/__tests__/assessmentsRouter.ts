@@ -1310,6 +1310,7 @@ const savedAssessments: SavedAssessment[] = [
 
 describe('assessmentsRouter', () => {
   const appAgent = createAppAgentForRouter(assessmentsRouter);
+
   describe('GET /', () => {
     it('should respond with an empty list for a user not enrolled in any programs', done => {
       mockListPrincipalEnrolledProgramIds.mockResolvedValue([]);
@@ -1500,7 +1501,7 @@ describe('assessmentsRouter', () => {
         );
     });
 
-    it('should respond with an BadRequestError if the curriculum assessment ID is not a number.', done => {
+    it('should respond with an BadRequestError if the curriculum assessment ID is not a number', done => {
       mockPrincipalId(facilitatorPrincipalId);
 
       appAgent
@@ -1568,7 +1569,7 @@ describe('assessmentsRouter', () => {
         });
     });
 
-    it('should respond with an Unauthorized Error if the logged-in principal id is not the facilitator', done => {
+    it('should respond with an Unauthorized Error if the logged-in principal ID is not the facilitator', done => {
       mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue([]);
       mockPrincipalId(participantPrincipalId);
 
@@ -1638,7 +1639,7 @@ describe('assessmentsRouter', () => {
         });
     });
 
-    it('should respond with a BadRequestError if the curriculumAssessment ID is not a valid number.', done => {
+    it('should respond with a BadRequestError if the curriculumAssessment ID is not a valid number', done => {
       const curriculumAssessmentIdInvalid = 0;
       mockPrincipalId(facilitatorPrincipalId);
 
@@ -1810,7 +1811,7 @@ describe('assessmentsRouter', () => {
         );
     });
 
-    it('should respond with a BadRequestError if the curriculumAssessment ID is not a valid number.', done => {
+    it('should respond with a BadRequestError if the curriculumAssessment ID is not a valid number', done => {
       const curriculumId = 'test';
       mockPrincipalId(facilitatorPrincipalId);
 
@@ -1846,7 +1847,8 @@ describe('assessmentsRouter', () => {
           }
         );
     });
-    it('should respond with a ConflictError if trying to delete curriculum Assessment ID that. ', done => {
+
+    it('should respond with a ConflictError if trying to delete curriculum Assessment ID that has participant submissions', done => {
       mockGetCurriculumAssessment.mockResolvedValue(curriculumAssessments[0]);
       mockFacilitatorProgramIdsMatchingCurriculum.mockResolvedValue(
         facilitatorProgramIdsThatMatchCurriculum
@@ -1907,7 +1909,7 @@ describe('assessmentsRouter', () => {
         });
     });
 
-    it('should respond with an Unauthorized Error if the logged-in principal id is not the facilitator', done => {
+    it('should respond with an Unauthorized Error if the logged-in principal ID is not the facilitator', done => {
       mockFindProgramAssessment.mockResolvedValue(programAssessments[0]);
       mockGetPrincipalProgramRole.mockResolvedValue(null);
 
@@ -1935,7 +1937,7 @@ describe('assessmentsRouter', () => {
         );
     });
 
-    it('should respond with an BadRequestError if the program assessment ID is not a number.', done => {
+    it('should respond with an BadRequestError if the program assessment ID is not a number', done => {
       const exampleAssessmentFromUser = 'test';
 
       mockPrincipalId(otherParticipantPrincipalId);
@@ -2001,7 +2003,7 @@ describe('assessmentsRouter', () => {
         });
     });
 
-    it('should respond with an Unauthorized Error if the logged-in principal id is not the facilitator', done => {
+    it('should respond with an Unauthorized Error if the logged-in principal ID is not the facilitator', done => {
       mockGetPrincipalProgramRole.mockResolvedValue('Participant');
 
       mockPrincipalId(participantPrincipalId);
@@ -2070,7 +2072,7 @@ describe('assessmentsRouter', () => {
         });
     });
 
-    it('should respond with an Unauthorized Error if the logged-in principal id is not the facilitator', done => {
+    it('should respond with an Unauthorized Error if the logged-in principal ID is not the facilitator', done => {
       mockFindProgramAssessment.mockResolvedValue(programAssessments[0]);
       mockGetPrincipalProgramRole.mockResolvedValue(null);
 
@@ -2099,7 +2101,7 @@ describe('assessmentsRouter', () => {
         );
     });
 
-    it('should respond with an BadRequestError if the program assessment ID is not a number.', done => {
+    it('should respond with an BadRequestError if the program assessment ID is not a number', done => {
       const exampleAssessmentFromUser = 'test';
 
       mockPrincipalId(otherParticipantPrincipalId);
@@ -2118,7 +2120,7 @@ describe('assessmentsRouter', () => {
         );
     });
 
-    it('should respond with an BadRequestError if not given a valid program assessment.', done => {
+    it('should respond with an BadRequestError if not given a valid program assessment', done => {
       const exampleAssessmentFormUser = 'test';
 
       mockFindProgramAssessment.mockResolvedValue(programAssessments[0]);
@@ -2253,7 +2255,7 @@ describe('assessmentsRouter', () => {
           }
         );
     });
-    it('should respond with a ConflictError if trying to delete program assessment that has participant submissions. ', done => {
+    it('should respond with a ConflictError if trying to delete program assessment that has participant submissions', done => {
       mockFindProgramAssessment.mockResolvedValue(programAssessments[0]);
       mockGetPrincipalProgramRole.mockResolvedValue('Facilitator');
       mockDeleteProgramAssessment.mockRejectedValue(new Error());
@@ -2935,7 +2937,7 @@ describe('assessmentsRouter', () => {
         );
     });
 
-    it('should respond with a NotFoundError if the submission id was not found in the database ', done => {
+    it('should respond with a NotFoundError if the submission ID was not found in the database', done => {
       const submissionId = 8;
       mockGetAssessmentSubmission.mockResolvedValue(null);
 
@@ -2957,7 +2959,7 @@ describe('assessmentsRouter', () => {
         );
     });
 
-    it('should respond with an Unauthorized Error if the logged-in principal id is not the same as the principal id of the submission id and is not the principal id of the program facilitator', done => {
+    it('should respond with an Unauthorized Error if the logged-in principal ID is not the same as the principal ID of the submission ID and is not the principal ID of the program facilitator', done => {
       mockGetAssessmentSubmission.mockResolvedValue(assessmentSubmissions[9]);
       mockFindProgramAssessment.mockResolvedValue(programAssessments[0]);
       mockGetPrincipalProgramRole.mockResolvedValue('Participant');
@@ -2991,7 +2993,7 @@ describe('assessmentsRouter', () => {
         );
     });
 
-    it('should respond with an Unauthorized Error if logged-in principal id is not enrolled in the program', done => {
+    it('should respond with an Unauthorized Error if logged-in principal ID is not enrolled in the program', done => {
       const programId = 12;
       mockGetAssessmentSubmission.mockResolvedValue(assessmentSubmissions[9]);
       mockFindProgramAssessment.mockResolvedValue(programAssessments[0]);
@@ -3169,7 +3171,7 @@ describe('assessmentsRouter', () => {
         );
     });
 
-    it('should respond with a NotFoundError if the submission id was not found in the database', done => {
+    it('should respond with a NotFoundError if the submission ID was not found in the database', done => {
       mockGetAssessmentSubmission.mockResolvedValue(null);
 
       mockPrincipalId(participantPrincipalId);
@@ -3259,7 +3261,7 @@ describe('assessmentsRouter', () => {
         );
     });
 
-    it('should respond with a BadRequestError if submssion id from param is not the same from request body.', done => {
+    it('should respond with a BadRequestError if submssion ID from param is not the same from request body', done => {
       mockPrincipalId(participantPrincipalId);
 
       appAgent
@@ -3268,7 +3270,7 @@ describe('assessmentsRouter', () => {
         .expect(
           400,
           errorEnvelope(
-            `The submission id in the parameter(${assessmentSubmissionId}) is not the same id as in the request body (${assessmentSubmissions[19].id}).`
+            `The submission ID in the parameter (${assessmentSubmissionId}) is not the same ID as in the request body (${assessmentSubmissions[19].id}).`
           ),
           err => {
             done(err);

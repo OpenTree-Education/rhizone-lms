@@ -13,12 +13,12 @@ import {
 import { collectionEnvelope, itemEnvelope } from './responseEnvelope';
 
 import {
+  AssessmentDetails,
   AssessmentSubmission,
   AssessmentWithSubmissions,
+  AssessmentWithSummary,
   CurriculumAssessment,
   ProgramAssessment,
-  AssessmentWithSummary,
-  AssessmentDetails,
   SavedAssessment,
 } from '../models';
 import {
@@ -873,7 +873,7 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
 
     if (submissionFromUser.id !== submissionIdParsed) {
       throw new BadRequestError(
-        `The submission id in the parameter(${submissionIdParsed}) is not the same id as in the request body (${submissionFromUser.id}).`
+        `The submission ID in the parameter (${submissionIdParsed}) is not the same ID as in the request body (${submissionFromUser.id}).`
       );
     }
 
