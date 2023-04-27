@@ -20,7 +20,7 @@ import LightbulbIcon from '@mui/icons-material/Lightbulb';
 
 import { SavedAssessment } from '../types/api.d';
 import { formatDateTime } from '../helpers/dateTime';
-import { DateTime } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 
 interface AssessmentMetadataBarProps {
   assessment: SavedAssessment;
@@ -223,7 +223,9 @@ const AssessmentMetadataBar = ({
                 primary={
                   showTimer
                     ? secondsRemaining !== null
-                      ? formatTimeRemaining(secondsRemaining)
+                      ? Duration.fromObject({ seconds: secondsRemaining })
+                          .rescale()
+                          .toHuman({ unitDisplay: 'short' })
                       : 0
                     : formatDateTime(endTime.toISO()!)
                 }
