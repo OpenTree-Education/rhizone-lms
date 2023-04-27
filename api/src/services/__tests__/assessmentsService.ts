@@ -38,12 +38,13 @@ import {
   updateProgramAssessment,
 } from '../assessmentsService';
 
+/* EXAMPLE DATA: Variables */
+
 const administratorPrincipalId = 3;
 const participantPrincipalId = 30;
 const unenrolledPrincipalId = 31;
 const otherParticipantPrincipalId = 32;
 const facilitatorPrincipalId = 300;
-
 const curriculumId = 4;
 const curriculumAssessmentId = 8;
 const sentCurriculumAssessmentId = 9;
@@ -62,814 +63,1834 @@ const assessmentSubmissionWrongId = 33;
 const assessmentSubmissionByOtherParticipantId = 36;
 const assessmentSubmissionResponseSCId = 320;
 const assessmentSubmissionResponseFRId = 321;
-
-const facilitatorProgramIdsThatMatchCurriculum = [programId, 20, 30];
+const facilitatorProgramIdsThatMatchCurriculum = [12, 20, 30];
 const facilitatorProgramIdsNotMatchingCurriculum = [40, 50];
 
+/* EXAMPLE DATA: Database Rows */
+
 const programParticipantRolesRows = [
+  { id: 1, title: 'Facilitator' },
+  { id: 2, title: 'Participant' },
+];
+
+const curriculumAssessmentsRows = [
   {
-    id: 1,
-    title: 'Facilitator',
+    id: 8,
+    title: 'Assignment 1: React',
+    description: 'Your assignment for week 1 learning.',
+    max_score: 10,
+    max_num_submissions: 1,
+    time_limit: 120,
+    curriculum_id: 4,
+    activity_id: 20,
+    principal_id: 3,
   },
   {
-    id: 2,
-    title: 'Participant',
+    id: 9,
+    title: 'New Curriculum Quiz',
+    description: null as string,
+    max_score: 42,
+    max_num_submissions: 13,
+    time_limit: 60,
+    curriculum_id: 4,
+    activity_id: 200,
+    principal_id: 300,
   },
 ];
 
-const matchingCurriculumAssessmentRow = {
-  id: curriculumAssessmentId,
-  title: 'Assignment 1: React',
-  description: 'Your assignment for week 1 learning.',
-  max_score: 10,
-  max_num_submissions: 1,
-  time_limit: 120,
-  curriculum_id: curriculumId,
-  activity_id: activityId,
-  principal_id: administratorPrincipalId,
-};
-
-const matchingAssessmentQuestionsSCRow = {
-  id: singleChoiceQuestionId,
-  assessment_id: curriculumAssessmentId,
-  title: 'What is React?',
-  description: null as string,
-  question_type: 'single choice',
-  correct_answer_id: singleChoiceAnswerId,
-  max_score: 1,
-  sort_order: 1,
-};
-
-const matchingAssessmentQuestionsFRRow = {
-  id: freeResponseQuestionId,
-  assessment_id: curriculumAssessmentId,
-  title:
-    'What is the correct HTML syntax for a paragraph with the text "Hello, World!"?',
-  description: null as string,
-  question_type: 'free response',
-  correct_answer_id: freeResponseCorrectAnswerId,
-  max_score: 1,
-  sort_order: 1,
-};
-
-const matchingAssessmentAnswersSCRow = {
-  id: singleChoiceAnswerId,
-  question_id: singleChoiceQuestionId,
-  title: 'A relational database management system',
-  description: null as string,
-  sort_order: 1,
-  correct_answer: true,
-};
-
-const matchingAssessmentAnswersFRRow = {
-  id: freeResponseCorrectAnswerId,
-  question_id: freeResponseQuestionId,
-  title: '<p>Hello, World!</p>',
-  description: null as string,
-  sort_order: 1,
-  correct_answer: true,
-};
-
-const matchingProgramRow = {
-  id: programId,
-  title: 'Cohort 4',
-  start_date: '2022-10-24',
-  end_date: '2022-12-16',
-  time_zone: 'America/Vancouver',
-  curriculum_id: curriculumId,
-};
-
-const matchingProgramAssessmentsRow = {
-  id: programAssessmentId,
-  program_id: programId,
-  assessment_id: curriculumAssessmentId,
-  available_after: '2023-02-06 00:00:00',
-  due_date: '2050-06-24 00:00:00',
-};
-
-const matchingProgramAssessmentPastDueRow = {
-  ...matchingProgramAssessmentsRow,
-  due_date: '2023-02-10 00:00:00',
-};
-
-const matchingProgramAssessmentNotAvailableRow = {
-  ...matchingProgramAssessmentsRow,
-  available_after: '2050-06-24 00:00:00',
-  due_date: '2050-06-23 00:00:00',
-};
-
-const matchingAssessmentSubmissionOpenedRow = {
-  id: assessmentSubmissionId,
-  assessment_id: programAssessmentId,
-  principal_id: participantPrincipalId,
-  assessment_submission_state: 'Opened',
-  opened_at: '2023-02-09 12:00:00',
-  submitted_at: null as string,
-  updated_at: '2023-02-09 12:00:00',
-  score: null as number,
-};
-
-const matchingAssessmentSubmissionInProgressRow = {
-  ...matchingAssessmentSubmissionOpenedRow,
-  assessment_submission_state: 'In Progress',
-};
-
-const matchingAssessmentSubmissionExpiredRow = {
-  ...matchingAssessmentSubmissionOpenedRow,
-  assessment_submission_state: 'Expired',
-  updated_at: '2023-02-09 14:00:00',
-};
-
-const matchingAssessmentSubmissionsSubmittedRow = {
-  ...matchingAssessmentSubmissionOpenedRow,
-  assessment_submission_state: 'Submitted',
-  submitted_at: '2023-02-09 13:23:45',
-  updated_at: '2023-02-09 13:23:45',
-};
-
-const matchingOtherAssessmentSubmissionSubmittedRow = {
-  id: assessmentSubmissionByOtherParticipantId,
-  assessment_id: programAssessmentId,
-  principal_id: otherParticipantPrincipalId,
-  assessment_submission_state: 'Submitted',
-  opened_at: '2023-02-09 12:01:00',
-  last_modified: '2023-02-09 12:01:00',
-  submitted_at: '2023-02-09 13:23:45',
-  updated_at: '2023-02-09 13:23:45',
-  score: null as number,
-};
-
-const matchingAssessmentSubmissionsRowGraded = {
-  ...matchingAssessmentSubmissionsSubmittedRow,
-  assessment_submission_state: 'Graded',
-  score: 4,
-};
-
-const matchingAssessmentResponsesRowSCOpened = {
-  id: assessmentSubmissionResponseSCId,
-  assessment_id: programAssessmentId,
-  submission_id: assessmentSubmissionId,
-  question_id: singleChoiceQuestionId,
-  answer_id: null as number,
-  response: null as string,
-  score: null as number,
-  grader_response: null as string,
-};
-
-const matchingAssessmentResponsesRowSCInProgress = {
-  id: assessmentSubmissionResponseSCId,
-  assessment_id: programAssessmentId,
-  submission_id: assessmentSubmissionId,
-  question_id: singleChoiceQuestionId,
-  answer_id: singleChoiceAnswerId,
-  response: null as string,
-  score: null as number,
-  grader_response: null as string,
-};
-
-const matchingAssessmentResponsesRowSCSubmitted = {
-  ...matchingAssessmentResponsesRowSCInProgress,
-};
-
-const matchingAssessmentResponsesRowSCGraded = {
-  ...matchingAssessmentResponsesRowSCInProgress,
-  score: 1,
-  grader_response: 'Well done!',
-};
-
-const matchingAssessmentResponsesRowFROpened = {
-  id: assessmentSubmissionResponseFRId,
-  assessment_id: programAssessmentId,
-  submission_id: assessmentSubmissionId,
-  question_id: freeResponseQuestionId,
-  answer_id: null as string,
-  response: null as string,
-};
-
-const matchingAssessmentResponsesRowFRInProgress = {
-  ...matchingAssessmentResponsesRowFROpened,
-  response: '<div>Hello world!</div>',
-};
-
-const matchingAssessmentResponsesRowFRGraded = {
-  ...matchingAssessmentResponsesRowFRInProgress,
-  score: 0,
-  grader_response: 'Very close!',
-};
-
-const exampleCurriculumAssessment: CurriculumAssessment = {
-  id: curriculumAssessmentId,
-  title: matchingCurriculumAssessmentRow.title,
-  assessment_type: 'test',
-  description: matchingCurriculumAssessmentRow.description,
-  max_score: matchingCurriculumAssessmentRow.max_score,
-  max_num_submissions: matchingCurriculumAssessmentRow.max_num_submissions,
-  time_limit: matchingCurriculumAssessmentRow.time_limit,
-  curriculum_id: curriculumId,
-  activity_id: activityId,
-  principal_id: administratorPrincipalId,
-};
-
-const exampleAssessmentSCAnswerWithoutCorrectAnswer: Answer = {
-  id: singleChoiceAnswerId,
-  question_id: singleChoiceQuestionId,
-  description: matchingAssessmentAnswersSCRow.description,
-  title: matchingAssessmentAnswersSCRow.title,
-  sort_order: matchingAssessmentAnswersSCRow.sort_order,
-};
-
-const exampleAssessmentSCAnswerWithCorrectAnswer: Answer = {
-  ...exampleAssessmentSCAnswerWithoutCorrectAnswer,
-  correct_answer: matchingAssessmentAnswersSCRow.correct_answer,
-};
-
-const exampleAssessmentFRAnswerWithoutCorrectAnswer: Answer = {
-  id: freeResponseCorrectAnswerId,
-  question_id: freeResponseQuestionId,
-  description: matchingAssessmentAnswersFRRow.description,
-  title: matchingAssessmentAnswersFRRow.title,
-  sort_order: matchingAssessmentAnswersFRRow.sort_order,
-};
-
-const exampleAssessmentFRAnswerWithCorrectAnswer: Answer = {
-  ...exampleAssessmentFRAnswerWithoutCorrectAnswer,
-  id: freeResponseCorrectAnswerId,
-  correct_answer: true,
-};
-
-const exampleAssessmentQuestionSCBase: Question = {
-  id: singleChoiceQuestionId,
-  assessment_id: curriculumAssessmentId,
-  title: matchingAssessmentQuestionsSCRow.title,
-  description: matchingAssessmentQuestionsSCRow.description,
-  question_type: matchingAssessmentQuestionsSCRow.question_type,
-  max_score: matchingAssessmentQuestionsSCRow.max_score,
-  sort_order: matchingAssessmentQuestionsSCRow.sort_order,
-};
-
-const exampleAssessmentQuestionSCWithoutCorrectAnswers: Question = {
-  ...exampleAssessmentQuestionSCBase,
-  answers: [exampleAssessmentSCAnswerWithoutCorrectAnswer],
-};
-
-const exampleAssessmentQuestionSCWithCorrectAnswers: Question = {
-  ...exampleAssessmentQuestionSCBase,
-  answers: [exampleAssessmentSCAnswerWithCorrectAnswer],
-  correct_answer_id: exampleAssessmentSCAnswerWithCorrectAnswer.id,
-};
-
-const exampleAssessmentQuestionFRWithCorrectAnswers: Question = {
-  id: freeResponseQuestionId,
-  assessment_id: curriculumAssessmentId,
-  title: matchingAssessmentQuestionsFRRow.title,
-  description: matchingAssessmentQuestionsFRRow.description,
-  question_type: matchingAssessmentQuestionsFRRow.question_type,
-  answers: [exampleAssessmentFRAnswerWithCorrectAnswer],
-  correct_answer_id: freeResponseCorrectAnswerId,
-  max_score: matchingAssessmentQuestionsFRRow.max_score,
-  sort_order: matchingAssessmentQuestionsFRRow.sort_order,
-};
-
-const exampleCurriculumAssessmentWithSCQuestions: CurriculumAssessment = {
-  ...exampleCurriculumAssessment,
-  questions: [exampleAssessmentQuestionSCWithoutCorrectAnswers],
-};
-
-const exampleCurriculumAssessmentMultipleSubmissionsWithQuestions: CurriculumAssessment =
+const assessmentQuestionsRows = [
   {
-    ...exampleCurriculumAssessment,
-    questions: [exampleAssessmentQuestionSCWithCorrectAnswers],
+    id: 24,
+    assessment_id: 8,
+    title: 'What is React?',
+    description: null as string,
+    question_type: 'single choice',
+    correct_answer_id: 28,
+    max_score: 1,
+    sort_order: 1,
+  },
+  {
+    id: 24,
+    assessment_id: 8,
+    title:
+      'What is the correct HTML syntax for a paragraph with the text "Hello, World!"?',
+    description: null as string,
+    question_type: 'free response',
+    correct_answer_id: 29,
+    max_score: 1,
+    sort_order: 1,
+  },
+];
+
+const assessmentAnswersRows = [
+  {
+    id: 28,
+    question_id: 24,
+    title: 'A relational database management system',
+    description: null as string,
+    sort_order: 1,
+    correct_answer: true,
+  },
+  {
+    id: 29,
+    question_id: 24,
+    title: '<p>Hello, World!</p>',
+    description: null as string,
+    sort_order: 1,
+    correct_answer: true,
+  },
+  {
+    id: 28,
+    question_id: 24,
+    title: 'A relational database management system',
+    description: 'Also known as a DBMS.',
+    sort_order: 1,
+    correct_answer: true,
+  },
+];
+
+const programsRows = [
+  {
+    id: 12,
+    title: 'Cohort 4',
+    start_date: '2022-10-24',
+    end_date: '2022-12-16',
+    time_zone: 'America/Vancouver',
+    curriculum_id: 4,
+  },
+];
+
+const programAssessmentsRows = [
+  {
+    id: 16,
+    program_id: 12,
+    assessment_id: 8,
+    available_after: '2023-02-06 00:00:00',
+    due_date: '2050-06-24 00:00:00',
+  },
+  {
+    id: 16,
+    program_id: 12,
+    assessment_id: 8,
+    available_after: '2023-02-06 00:00:00',
+    due_date: '2023-02-10 00:00:00',
+  },
+  {
+    id: 16,
+    program_id: 12,
+    assessment_id: 8,
+    available_after: '2050-06-24 00:00:00',
+    due_date: '2050-06-23 00:00:00',
+  },
+  {
+    id: 16,
+    program_id: 12,
+    assessment_id: 8,
+    available_after: '2023-02-06 00:00:00',
+    due_date: '2050-06-26 00:00:00',
+  },
+  {
+    id: 16,
+    program_id: 12,
+    assessment_id: 8,
+    available_after: '2023-02-06 00:00:00',
+    due_date: '2050-06-24 00:00:00',
+  },
+];
+
+const assessmentSubmissionsRows = [
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Opened',
+    opened_at: '2023-02-09 12:00:00',
+    submitted_at: null as string,
+    updated_at: '2023-02-09 12:00:00',
+    score: null as number,
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'In Progress',
+    opened_at: '2023-02-09 12:00:00',
+    submitted_at: null as string,
+    updated_at: '2023-02-09 12:00:00',
+    score: null as number,
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Expired',
+    opened_at: '2023-02-09 12:00:00',
+    submitted_at: null as string,
+    updated_at: '2023-02-09 14:00:00',
+    score: null as number,
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Submitted',
+    opened_at: '2023-02-09 12:00:00',
+    submitted_at: '2023-02-09 13:23:45',
+    updated_at: '2023-02-09 13:23:45',
+    score: null as number,
+  },
+  {
+    id: 36,
+    assessment_id: 16,
+    principal_id: 32,
+    assessment_submission_state: 'Submitted',
+    opened_at: '2023-02-09 12:01:00',
+    last_modified: '2023-02-09 12:01:00',
+    submitted_at: '2023-02-09 13:23:45',
+    updated_at: '2023-02-09 13:23:45',
+    score: null as number,
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Graded',
+    opened_at: '2023-02-09 12:00:00',
+    submitted_at: '2023-02-09 13:23:45',
+    updated_at: '2023-02-09 13:23:45',
+    score: 4,
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Submitted',
+    opened_at: '2023-02-09 12:00:00',
+    submitted_at: '2023-02-09 13:23:45',
+    updated_at: '2023-02-09 12:00:00',
+    score: null as number,
+    last_modified: '2023-02-09 13:23:45',
+  },
+];
+
+const assessmentResponsesRows = [
+  {
+    id: 320,
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    answer_id: null as number,
+    response: null as string,
+    score: null as number,
+    grader_response: null as string,
+  },
+  {
+    id: 320,
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    answer_id: 28,
+    response: null as string,
+    score: null as number,
+    grader_response: null as string,
+  },
+  {
+    id: 320,
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    answer_id: 28,
+    response: null as string,
+    score: null as number,
+    grader_response: null as string,
+  },
+  {
+    id: 320,
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    answer_id: 28,
+    response: null as string,
+    score: 1,
+    grader_response: 'Well done!',
+  },
+  {
+    id: 321,
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    answer_id: null as number,
+    response: null as string,
+  },
+  {
+    id: 321,
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    answer_id: null as number,
+    response: '<div>Hello world!</div>',
+  },
+  {
+    id: 321,
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    answer_id: null as number,
+    response: '<div>Hello world!</div>',
+    score: 0,
+    grader_response: 'Very close!',
+  },
+  {
+    id: 320,
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    answer_id: 28,
+    score: null as number,
+    grader_response: 'Well done!',
+  },
+  {
+    id: 321,
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    response: '<div>Hello world!</div>',
+    score: 0,
+    grader_response: 'Very close!',
+  },
+];
+
+/* EXAMPLE DATA: Structured Data */
+
+const curriculumAssessments: CurriculumAssessment[] = [
+  {
+    id: 8,
+    title: 'Assignment 1: React',
+    assessment_type: 'test',
+    description: 'Your assignment for week 1 learning.',
+    max_score: 10,
+    max_num_submissions: 1,
+    time_limit: 120,
+    curriculum_id: 4,
+    activity_id: 20,
+    principal_id: 3,
+  },
+  {
+    id: 8,
+    title: 'Assignment 1: React',
+    assessment_type: 'test',
+    description: 'Your assignment for week 1 learning.',
+    max_score: 10,
+    max_num_submissions: 1,
+    time_limit: 120,
+    curriculum_id: 4,
+    activity_id: 20,
+    principal_id: 3,
+    questions: [
+      {
+        id: 24,
+        assessment_id: 8,
+        title: 'What is React?',
+        description: null,
+        question_type: 'single choice',
+        max_score: 1,
+        sort_order: 1,
+        answers: [
+          {
+            id: 28,
+            question_id: 24,
+            description: null,
+            title: 'A relational database management system',
+            sort_order: 1,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 8,
+    title: 'Assignment 1: React',
+    assessment_type: 'test',
+    description: 'Your assignment for week 1 learning.',
+    max_score: 10,
     max_num_submissions: 3,
-  };
-
-const exampleCurriculumAssessmentWithSCCorrectAnswers: CurriculumAssessment = {
-  ...exampleCurriculumAssessment,
-  questions: [exampleAssessmentQuestionSCWithCorrectAnswers],
-};
-
-const exampleCurriculumAssessmentWithFRCorrectAnswers: CurriculumAssessment = {
-  ...exampleCurriculumAssessment,
-  questions: [exampleAssessmentQuestionFRWithCorrectAnswers],
-};
-
-const exampleProgramAssessment: ProgramAssessment = {
-  id: programAssessmentId,
-  program_id: programId,
-  assessment_id: curriculumAssessmentId,
-  available_after: '2023-02-06T00:00:00.000-08:00',
-  due_date: '2050-06-24T00:00:00.000-07:00',
-};
-
-const exampleProgramAssessmentPastDue: ProgramAssessment = {
-  id: programAssessmentId,
-  program_id: programId,
-  assessment_id: curriculumAssessmentId,
-  available_after: '2023-02-06T00:00:00.000-08:00',
-  due_date: '2023-02-10T00:00:00.000-08:00',
-};
-
-const exampleProgramAssessmentNotAvailable: ProgramAssessment = {
-  id: programAssessmentId,
-  program_id: programId,
-  assessment_id: curriculumAssessmentId,
-  available_after: '2050-06-24T00:00:00.000-07:00',
-  due_date: '2050-06-23T00:00:00.000-07:00',
-};
-
-const exampleAssessmentWithSCCorrectAnswersDetails: AssessmentDetails = {
-  curriculum_assessment: exampleCurriculumAssessmentWithSCCorrectAnswers,
-  program_assessment: exampleProgramAssessment,
-};
-
-const exampleParticipantAssessmentSubmissionsInactive: ParticipantAssessmentSubmissionsSummary =
+    time_limit: 120,
+    curriculum_id: 4,
+    activity_id: 20,
+    principal_id: 3,
+    questions: [
+      {
+        id: 24,
+        assessment_id: 8,
+        title: 'What is React?',
+        description: null,
+        question_type: 'single choice',
+        max_score: 1,
+        sort_order: 1,
+        answers: [
+          {
+            id: 28,
+            question_id: 24,
+            description: null,
+            title: 'A relational database management system',
+            sort_order: 1,
+            correct_answer: true,
+          },
+        ],
+        correct_answer_id: 28,
+      },
+    ],
+  },
   {
-    principal_id: participantPrincipalId,
+    id: 8,
+    title: 'Assignment 1: React',
+    assessment_type: 'test',
+    description: 'Your assignment for week 1 learning.',
+    max_score: 10,
+    max_num_submissions: 1,
+    time_limit: 120,
+    curriculum_id: 4,
+    activity_id: 20,
+    principal_id: 3,
+    questions: [
+      {
+        id: 24,
+        assessment_id: 8,
+        title: 'What is React?',
+        description: null,
+        question_type: 'single choice',
+        max_score: 1,
+        sort_order: 1,
+        answers: [
+          {
+            id: 28,
+            question_id: 24,
+            description: null,
+            title: 'A relational database management system',
+            sort_order: 1,
+            correct_answer: true,
+          },
+        ],
+        correct_answer_id: 28,
+      },
+    ],
+  },
+  {
+    id: 8,
+    title: 'Assignment 1: React',
+    assessment_type: 'test',
+    description: 'Your assignment for week 1 learning.',
+    max_score: 10,
+    max_num_submissions: 1,
+    time_limit: 120,
+    curriculum_id: 4,
+    activity_id: 20,
+    principal_id: 3,
+    questions: [
+      {
+        id: 24,
+        assessment_id: 8,
+        title:
+          'What is the correct HTML syntax for a paragraph with the text "Hello, World!"?',
+        description: null,
+        question_type: 'free response',
+        answers: [
+          {
+            id: 29,
+            question_id: 24,
+            description: null,
+            title: '<p>Hello, World!</p>',
+            sort_order: 1,
+            correct_answer: true,
+          },
+        ],
+        correct_answer_id: 29,
+        max_score: 1,
+        sort_order: 1,
+      },
+    ],
+  },
+  {
+    title: 'New Curriculum Quiz',
+    assessment_type: 'quiz',
+    description: null as string,
+    max_score: 42,
+    max_num_submissions: 13,
+    time_limit: 60,
+    curriculum_id: 4,
+    activity_id: 200,
+    principal_id: 300,
+  },
+  {
+    title: 'New Curriculum Quiz',
+    assessment_type: 'quiz',
+    description: null,
+    max_score: 42,
+    max_num_submissions: 13,
+    time_limit: 60,
+    curriculum_id: 4,
+    activity_id: 200,
+    principal_id: 300,
+    questions: [
+      {
+        assessment_id: 8,
+        title: 'What is React?',
+        description: null,
+        question_type: 'single choice',
+        answers: [
+          {
+            description: null,
+            title: 'A relational database management system',
+            sort_order: 1,
+            correct_answer: true,
+          },
+        ],
+        max_score: 1,
+        sort_order: 1,
+      },
+    ],
+  },
+  {
+    title: 'New Curriculum Quiz',
+    assessment_type: 'quiz',
+    description: null,
+    max_score: 42,
+    max_num_submissions: 13,
+    time_limit: 60,
+    curriculum_id: 4,
+    activity_id: 200,
+    principal_id: 300,
+    questions: [
+      {
+        assessment_id: 8,
+        title:
+          'What is the correct HTML syntax for a paragraph with the text "Hello, World!"?',
+        description: null,
+        question_type: 'free response',
+        answers: [
+          {
+            description: null,
+            title: '<p>Hello, World!</p>',
+            sort_order: 1,
+            correct_answer: true,
+          },
+        ],
+        max_score: 1,
+        sort_order: 1,
+      },
+    ],
+  },
+  {
+    id: 8,
+    title: 'Assignment 1: React',
+    assessment_type: 'test',
+    description: 'Your assignment for week 1 learning.',
+    max_score: 10,
+    max_num_submissions: 1,
+    time_limit: 121,
+    curriculum_id: 4,
+    activity_id: 20,
+    principal_id: 3,
+  },
+  {
+    id: 8,
+    title: 'Assignment 1: React',
+    assessment_type: 'test',
+    description: 'Your assignment for week 1 learning.',
+    max_score: 10,
+    max_num_submissions: 1,
+    time_limit: 120,
+    curriculum_id: 4,
+    activity_id: 20,
+    principal_id: 3,
+    questions: [
+      {
+        assessment_id: 8,
+        title: 'What is React?',
+        description: null,
+        question_type: 'single choice',
+        answers: [
+          {
+            description: null,
+            title: 'A relational database management system',
+            sort_order: 1,
+            correct_answer: true,
+          },
+        ],
+        max_score: 1,
+        sort_order: 1,
+      },
+    ],
+  },
+  {
+    id: 8,
+    title: 'Assignment 1: React',
+    assessment_type: 'test',
+    description: 'Your assignment for week 1 learning.',
+    max_score: 10,
+    max_num_submissions: 1,
+    time_limit: 120,
+    curriculum_id: 4,
+    activity_id: 20,
+    principal_id: 3,
+    questions: [
+      {
+        assessment_id: 8,
+        title: 'What is React?',
+        description: null,
+        question_type: 'single choice',
+        answers: [
+          {
+            description: null,
+            title: 'A relational database management system',
+            sort_order: 1,
+            correct_answer: true,
+          },
+        ],
+        max_score: 1,
+        sort_order: 1,
+      },
+    ],
+  },
+  {
+    id: 8,
+    title: 'Assignment 1: React',
+    assessment_type: 'test',
+    description: 'Your assignment for week 1 learning.',
+    max_score: 10,
+    max_num_submissions: 1,
+    time_limit: 120,
+    curriculum_id: 4,
+    activity_id: 20,
+    principal_id: 3,
+    questions: [
+      {
+        id: 24,
+        assessment_id: 8,
+        title: 'What is React?',
+        description: null,
+        question_type: 'single choice',
+        max_score: 1,
+        sort_order: 1,
+        answers: [
+          {
+            description: null,
+            title: 'A relational database management system',
+            sort_order: 1,
+            correct_answer: true,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 8,
+    title: 'Assignment 1: React',
+    assessment_type: 'test',
+    description: 'Your assignment for week 1 learning.',
+    max_score: 10,
+    max_num_submissions: 1,
+    time_limit: 120,
+    curriculum_id: 4,
+    activity_id: 20,
+    principal_id: 3,
+    questions: [
+      {
+        id: 24,
+        assessment_id: 8,
+        title: 'What is React?',
+        description: null,
+        question_type: 'single choice',
+        max_score: 1,
+        sort_order: 1,
+        answers: [
+          {
+            id: 28,
+            question_id: 24,
+            description: 'Also known as a DBMS.',
+            title: 'A relational database management system',
+            sort_order: 1,
+            correct_answer: true,
+          },
+        ],
+        correct_answer_id: 28,
+      },
+    ],
+  },
+  {
+    title: 'New Curriculum Quiz',
+    assessment_type: 'quiz',
+    description: null as string,
+    max_score: 42,
+    max_num_submissions: 13,
+    time_limit: 60,
+    curriculum_id: 4,
+    activity_id: 200,
+    principal_id: 300,
+    id: 9,
+  },
+  {
+    title: 'New Curriculum Quiz',
+    assessment_type: 'quiz',
+    description: null,
+    max_score: 42,
+    max_num_submissions: 13,
+    time_limit: 60,
+    curriculum_id: 4,
+    activity_id: 200,
+    principal_id: 300,
+    id: 9,
+    questions: [
+      {
+        id: 24,
+        assessment_id: 8,
+        title: 'What is React?',
+        description: null,
+        question_type: 'single choice',
+        max_score: 1,
+        sort_order: 1,
+        answers: [
+          {
+            id: 28,
+            question_id: 24,
+            description: null,
+            title: 'A relational database management system',
+            sort_order: 1,
+            correct_answer: true,
+          },
+        ],
+        correct_answer_id: 28,
+      },
+    ],
+  },
+  {
+    title: 'New Curriculum Quiz',
+    assessment_type: 'quiz',
+    description: null,
+    max_score: 42,
+    max_num_submissions: 13,
+    time_limit: 60,
+    curriculum_id: 4,
+    activity_id: 200,
+    principal_id: 300,
+    id: 9,
+    questions: [
+      {
+        id: 24,
+        assessment_id: 8,
+        title:
+          'What is the correct HTML syntax for a paragraph with the text "Hello, World!"?',
+        description: null,
+        question_type: 'free response',
+        answers: [
+          {
+            id: 29,
+            question_id: 24,
+            description: null,
+            title: '<p>Hello, World!</p>',
+            sort_order: 1,
+            correct_answer: true,
+          },
+        ],
+        correct_answer_id: 29,
+        max_score: 1,
+        sort_order: 1,
+      },
+    ],
+  },
+];
+
+const answers: Answer[] = [
+  {
+    id: 28,
+    question_id: 24,
+    description: null as string,
+    title: 'A relational database management system',
+    sort_order: 1,
+  },
+  {
+    id: 28,
+    question_id: 24,
+    description: null as string,
+    title: 'A relational database management system',
+    sort_order: 1,
+    correct_answer: true,
+  },
+  {
+    id: 29,
+    question_id: 24,
+    description: null as string,
+    title: '<p>Hello, World!</p>',
+    sort_order: 1,
+  },
+  {
+    id: 29,
+    question_id: 24,
+    description: null as string,
+    title: '<p>Hello, World!</p>',
+    sort_order: 1,
+    correct_answer: true,
+  },
+  {
+    description: null as string,
+    title: 'A relational database management system',
+    sort_order: 1,
+    correct_answer: true,
+  },
+  {
+    description: null as string,
+    title: '<p>Hello, World!</p>',
+    sort_order: 1,
+    correct_answer: true,
+  },
+  {
+    id: 28,
+    question_id: 24,
+    description: 'Also known as a DBMS.',
+    title: 'A relational database management system',
+    sort_order: 1,
+    correct_answer: true,
+  },
+];
+
+const questions: Question[] = [
+  {
+    id: 24,
+    assessment_id: 8,
+    title: 'What is React?',
+    description: null as string,
+    question_type: 'single choice',
+    max_score: 1,
+    sort_order: 1,
+  },
+  {
+    id: 24,
+    assessment_id: 8,
+    title: 'What is React?',
+    description: null as string,
+    question_type: 'single choice',
+    max_score: 1,
+    sort_order: 1,
+    answers: [
+      {
+        id: 28,
+        question_id: 24,
+        description: null as string,
+        title: 'A relational database management system',
+        sort_order: 1,
+      },
+    ],
+  },
+  {
+    id: 24,
+    assessment_id: 8,
+    title: 'What is React?',
+    description: null as string,
+    question_type: 'single choice',
+    max_score: 1,
+    sort_order: 1,
+    answers: [
+      {
+        id: 28,
+        question_id: 24,
+        description: null as string,
+        title: 'A relational database management system',
+        sort_order: 1,
+        correct_answer: true,
+      },
+    ],
+    correct_answer_id: 28,
+  },
+  {
+    id: 24,
+    assessment_id: 8,
+    title:
+      'What is the correct HTML syntax for a paragraph with the text "Hello, World!"?',
+    description: null as string,
+    question_type: 'free response',
+    answers: [
+      {
+        id: 29,
+        question_id: 24,
+        description: null as string,
+        title: '<p>Hello, World!</p>',
+        sort_order: 1,
+        correct_answer: true,
+      },
+    ],
+    correct_answer_id: 29,
+    max_score: 1,
+    sort_order: 1,
+  },
+  {
+    assessment_id: 8,
+    title: 'What is React?',
+    description: null as string,
+    question_type: 'single choice',
+    answers: [
+      {
+        description: null as string,
+        title: 'A relational database management system',
+        sort_order: 1,
+        correct_answer: true,
+      },
+    ],
+    max_score: 1,
+    sort_order: 1,
+  },
+  {
+    assessment_id: 8,
+    title:
+      'What is the correct HTML syntax for a paragraph with the text "Hello, World!"?',
+    description: null as string,
+    question_type: 'free response',
+    answers: [
+      {
+        description: null as string,
+        title: '<p>Hello, World!</p>',
+        sort_order: 1,
+        correct_answer: true,
+      },
+    ],
+    max_score: 1,
+    sort_order: 1,
+  },
+  {
+    id: 24,
+    assessment_id: 8,
+    title: 'What is React?',
+    description: null as string,
+    question_type: 'single choice',
+    max_score: 1,
+    sort_order: 1,
+    answers: [
+      {
+        description: null as string,
+        title: 'A relational database management system',
+        sort_order: 1,
+        correct_answer: true,
+      },
+    ],
+  },
+  {
+    id: 24,
+    assessment_id: 8,
+    title: 'What is React?',
+    description: null as string,
+    question_type: 'single choice',
+    max_score: 1,
+    sort_order: 1,
+    answers: [
+      {
+        id: 28,
+        question_id: 24,
+        description: 'Also known as a DBMS.',
+        title: 'A relational database management system',
+        sort_order: 1,
+        correct_answer: true,
+      },
+    ],
+    correct_answer_id: 28,
+  },
+];
+
+const programAssessments: ProgramAssessment[] = [
+  {
+    id: 16,
+    program_id: 12,
+    assessment_id: 8,
+    available_after: '2023-02-06T00:00:00.000-08:00',
+    due_date: '2050-06-24T00:00:00.000-07:00',
+  },
+  {
+    id: 16,
+    program_id: 12,
+    assessment_id: 8,
+    available_after: '2023-02-06T00:00:00.000-08:00',
+    due_date: '2023-02-10T00:00:00.000-08:00',
+  },
+  {
+    id: 16,
+    program_id: 12,
+    assessment_id: 8,
+    available_after: '2050-06-24T00:00:00.000-07:00',
+    due_date: '2050-06-23T00:00:00.000-07:00',
+  },
+  {
+    program_id: 12,
+    assessment_id: 8,
+    available_after: '2023-02-06 00:00:00',
+    due_date: '2050-06-24 00:00:00',
+  },
+];
+
+const assessmentDetails: AssessmentDetails[] = [
+  {
+    curriculum_assessment: {
+      id: 8,
+      title: 'Assignment 1: React',
+      assessment_type: 'test',
+      description: 'Your assignment for week 1 learning.',
+      max_score: 10,
+      max_num_submissions: 1,
+      time_limit: 120,
+      curriculum_id: 4,
+      activity_id: 20,
+      principal_id: 3,
+      questions: [
+        {
+          id: 24,
+          assessment_id: 8,
+          title: 'What is React?',
+          description: null,
+          question_type: 'single choice',
+          max_score: 1,
+          sort_order: 1,
+          answers: [
+            {
+              id: 28,
+              question_id: 24,
+              description: null,
+              title: 'A relational database management system',
+              sort_order: 1,
+              correct_answer: true,
+            },
+          ],
+          correct_answer_id: 28,
+        },
+      ],
+    },
+    program_assessment: {
+      id: 16,
+      program_id: 12,
+      assessment_id: 8,
+      available_after: '2023-02-06T00:00:00.000-08:00',
+      due_date: '2050-06-24T00:00:00.000-07:00',
+    },
+  },
+];
+
+const participantSummaries: ParticipantAssessmentSubmissionsSummary[] = [
+  {
+    principal_id: 30,
     highest_state: 'Inactive',
     total_num_submissions: 0,
-  };
-
-const exampleParticipantAssessmentSubmissionsPastDue: ParticipantAssessmentSubmissionsSummary =
+  },
   {
-    principal_id: participantPrincipalId,
+    principal_id: 30,
     highest_state: 'Expired',
     total_num_submissions: 1,
-  };
-
-const exampleParticipantAssessmentSubmissionsActive: ParticipantAssessmentSubmissionsSummary =
+  },
   {
-    principal_id: participantPrincipalId,
+    principal_id: 30,
     highest_state: 'Active',
     total_num_submissions: 0,
-  };
-
-const exampleParticipantAssessmentSubmissionsSummary: ParticipantAssessmentSubmissionsSummary =
+  },
   {
-    principal_id: participantPrincipalId,
+    principal_id: 30,
     highest_state: 'Graded',
     most_recent_submitted_date: '2023-02-09T13:23:45.000Z',
     total_num_submissions: 1,
     highest_score: 4,
-  };
+  },
+];
 
-const exampleFacilitatorAssessmentSubmissionsSummary: FacilitatorAssessmentSubmissionsSummary =
+const facilitatorSummaries: FacilitatorAssessmentSubmissionsSummary[] = [
   {
     num_participants_with_submissions: 8,
     num_program_participants: 12,
     num_ungraded_submissions: 6,
-  };
+  },
+];
 
-const exampleAssessmentSubmissionOpened: AssessmentSubmission = {
-  id: assessmentSubmissionId,
-  assessment_id: programAssessmentId,
-  principal_id: participantPrincipalId,
-  assessment_submission_state: 'Opened',
-  opened_at: '2023-02-09T12:00:00.000Z',
-  last_modified: '2023-02-09T12:00:00.000Z',
-};
-
-const exampleAssessmentResponseSCUnanswered: AssessmentResponse = {
-  id: assessmentSubmissionResponseSCId,
-  assessment_id: programAssessmentId,
-  submission_id: assessmentSubmissionId,
-  question_id: singleChoiceQuestionId,
-};
-
-const exampleAssessmentResponseSCAnswered: AssessmentResponse = {
-  ...exampleAssessmentResponseSCUnanswered,
-  answer_id: singleChoiceAnswerId,
-};
-
-const exampleAssessmentResponseSCGraded: AssessmentResponse = {
-  ...exampleAssessmentResponseSCAnswered,
-  score: 1,
-  grader_response: 'Well done!',
-};
-
-const exampleAssessmentResponseFRUnanswered: AssessmentResponse = {
-  id: assessmentSubmissionResponseFRId,
-  assessment_id: programAssessmentId,
-  submission_id: assessmentSubmissionId,
-  question_id: freeResponseQuestionId,
-};
-
-const exampleAssessmentResponseFRAnswered: AssessmentResponse = {
-  ...exampleAssessmentResponseFRUnanswered,
-  response_text: matchingAssessmentResponsesRowFRInProgress.response,
-};
-
-const exampleAssessmentResponseFRGraded: AssessmentResponse = {
-  ...exampleAssessmentResponseFRAnswered,
-  score: 0,
-  grader_response: 'Very close!',
-};
-
-const exampleAssessmentSubmissionOpenedWithResponse: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionOpened,
-  responses: [exampleAssessmentResponseSCUnanswered],
-};
-
-const exampleAssessmentSubmissionInProgress: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionOpened,
-  assessment_submission_state: 'In Progress',
-  last_modified: '2023-02-09T12:05:00.000Z',
-  responses: [exampleAssessmentResponseSCAnswered],
-};
-const exampleAssessmentSubmissionFRInProgress: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionOpened,
-  assessment_submission_state: 'In Progress',
-  last_modified: '2023-02-09T12:05:00.000Z',
-  responses: [exampleAssessmentResponseFRAnswered],
-};
-
-const exampleAssessmentSubmissionInProgressSCFR: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionOpened,
-  assessment_submission_state: 'In Progress',
-  last_modified: '2023-02-09T12:05:00.000Z',
-  responses: [
-    exampleAssessmentResponseSCAnswered,
-    exampleAssessmentResponseFRAnswered,
-  ],
-};
-
-const exampleAssessmentSubmissionInProgressSCFRLateStart: AssessmentSubmission =
+const assessmentResponses: AssessmentResponse[] = [
   {
-    ...exampleAssessmentSubmissionOpened,
+    id: 320,
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+  },
+  {
+    id: 320,
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    answer_id: 28,
+  },
+  {
+    id: 320,
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    answer_id: 28,
+    score: 1,
+    grader_response: 'Well done!',
+  },
+  {
+    id: 321,
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+  },
+  {
+    id: 321,
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    response_text: '<div>Hello world!</div>',
+  },
+  {
+    id: 321,
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    response_text: '<div>Hello world!</div>',
+    score: 0,
+    grader_response: 'Very close!',
+  },
+  {
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    answer_id: 28,
+  },
+  {
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    response_text: '<div>Hello world!</div>',
+  },
+  {
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    answer_id: 28,
+    id: 320,
+    score: null as number,
+    grader_response: null as string,
+  },
+  {
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    response_text: '<div>Hello world!</div>',
+    id: 321,
+    score: null as number,
+    grader_response: null as string,
+  },
+  {
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    answer_id: 28,
+    id: 320,
+    score: 1,
+    grader_response: 'Well done!',
+  },
+  {
+    id: 321,
+    assessment_id: 16,
+    submission_id: 32,
+    question_id: 24,
+    response_text: '<div>Hello world!</div>',
+    score: 0,
+    grader_response: 'Very close!',
+  },
+];
+
+const assessmentSubmissions: AssessmentSubmission[] = [
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Opened',
+    opened_at: '2023-02-09T12:00:00.000Z',
+    last_modified: '2023-02-09T12:00:00.000Z',
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Opened',
+    opened_at: '2023-02-09T12:00:00.000Z',
+    last_modified: '2023-02-09T12:00:00.000Z',
+    responses: [
+      { id: 320, assessment_id: 16, submission_id: 32, question_id: 24 },
+    ],
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'In Progress',
+    opened_at: '2023-02-09T12:00:00.000Z',
+    last_modified: '2023-02-09T12:05:00.000Z',
+    responses: [
+      {
+        id: 320,
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        answer_id: 28,
+      },
+    ],
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'In Progress',
+    opened_at: '2023-02-09T12:00:00.000Z',
+    last_modified: '2023-02-09T12:05:00.000Z',
+    responses: [
+      {
+        id: 321,
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        response_text: '<div>Hello world!</div>',
+      },
+    ],
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'In Progress',
+    opened_at: '2023-02-09T12:00:00.000Z',
+    last_modified: '2023-02-09T12:05:00.000Z',
+    responses: [
+      {
+        id: 320,
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        answer_id: 28,
+      },
+      {
+        id: 321,
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        response_text: '<div>Hello world!</div>',
+      },
+    ],
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
     assessment_submission_state: 'In Progress',
     opened_at: '2023-02-10T07:00:00.000Z',
     last_modified: '2023-02-10T07:05:00.000Z',
     responses: [
-      exampleAssessmentResponseSCAnswered,
-      exampleAssessmentResponseFRAnswered,
+      {
+        id: 320,
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        answer_id: 28,
+      },
+      {
+        id: 321,
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        response_text: '<div>Hello world!</div>',
+      },
     ],
-  };
-
-const exampleAssessmentSubmissionPastDueDate: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionOpened,
-  assessment_submission_state: 'Expired',
-  opened_at: '2023-02-10T07:00:00.000Z',
-  last_modified: '2023-02-17T08:00:10.000Z',
-  responses: [
-    exampleAssessmentResponseSCAnswered,
-    exampleAssessmentResponseFRAnswered,
-  ],
-};
-
-const exampleAssessmentSubmissionExpired: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionOpened,
-  assessment_submission_state: 'Expired',
-  last_modified: '2023-02-09T14:00:00.000Z',
-  responses: [exampleAssessmentResponseSCAnswered],
-};
-
-const exampleAssessmentSubmissionExpiredPlusWeek: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionOpened,
-  assessment_submission_state: 'Expired',
-  last_modified: '2023-02-16T14:00:10.000Z',
-  responses: [exampleAssessmentResponseSCAnswered],
-};
-
-const exampleAssessmentSubmissionSubmitted: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionOpened,
-  assessment_submission_state: 'Submitted',
-  submitted_at: '2023-02-09T13:23:45.000Z',
-  last_modified: '2023-02-09T13:23:45.000Z',
-  responses: [exampleAssessmentResponseSCAnswered],
-};
-const exampleAssessmentSubmissionFRSubmitted: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionOpened,
-  assessment_submission_state: 'Submitted',
-  submitted_at: '2023-02-09T13:23:45.000Z',
-  last_modified: '2023-02-09T13:23:45.000Z',
-  responses: [exampleAssessmentResponseFRAnswered],
-};
-
-const exampleOtherAssessmentSubmissionSubmitted: AssessmentSubmission = {
-  id: assessmentSubmissionByOtherParticipantId,
-  assessment_id: programAssessmentId,
-  principal_id: otherParticipantPrincipalId,
-  assessment_submission_state: 'Submitted',
-  opened_at: '2023-02-09T12:01:00.000Z',
-  submitted_at: '2023-02-09T13:23:45.000Z',
-  last_modified: '2023-02-09T13:23:45.000Z',
-};
-
-const exampleAssessmentSubmissionGradedNoResponses: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionOpened,
-  submitted_at: '2023-02-09T13:23:45.000Z',
-  last_modified: '2023-02-09T13:23:45.000Z',
-  assessment_submission_state: 'Graded',
-  score: 4,
-};
-
-const exampleAssessmentSubmissionGraded: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionOpened,
-  assessment_submission_state: 'Graded',
-  submitted_at: '2023-02-09T13:23:45.000Z',
-  last_modified: '2023-02-09T13:23:45.000Z',
-  score: 4,
-  responses: [exampleAssessmentResponseSCGraded],
-};
-
-const exampleAssessmentSubmissionGradedRemovedGrades: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionOpened,
-  assessment_submission_state: 'Graded',
-  submitted_at: '2023-02-09T13:23:45.000Z',
-  last_modified: '2023-02-09T13:23:45.000Z',
-  responses: [exampleAssessmentResponseSCAnswered],
-};
-
-const exampleParticipantAssessmentWithSubmissions: AssessmentWithSubmissions = {
-  curriculum_assessment: exampleCurriculumAssessment,
-  program_assessment: exampleProgramAssessment,
-  principal_program_role: 'Participant',
-  submissions: [exampleAssessmentSubmissionInProgress],
-};
-
-const exampleParticipantOpenedSavedAssessment: SavedAssessment = {
-  curriculum_assessment: exampleCurriculumAssessmentWithSCQuestions,
-  program_assessment: exampleProgramAssessment,
-  principal_program_role: 'Participant',
-  submission: exampleAssessmentSubmissionOpened,
-};
-
-const exampleParticipantOpenedSavedMultipleSubmissionsAssessment: SavedAssessment =
+  },
   {
-    curriculum_assessment:
-      exampleCurriculumAssessmentMultipleSubmissionsWithQuestions,
-    program_assessment: exampleProgramAssessment,
-    principal_program_role: 'Participant',
-    submission: exampleAssessmentSubmissionOpened,
-  };
-
-const exampleFacilitatorAssessmentWithSubmissions: AssessmentWithSubmissions = {
-  curriculum_assessment: exampleCurriculumAssessment,
-  program_assessment: exampleProgramAssessment,
-  principal_program_role: 'Facilitator',
-  submissions: [
-    exampleAssessmentSubmissionInProgress,
-    exampleOtherAssessmentSubmissionSubmitted,
-  ],
-};
-
-const updatedAssessmentAnswersSCRow = {
-  id: singleChoiceAnswerId,
-  question_id: singleChoiceQuestionId,
-  title: 'A relational database management system',
-  description: 'Also known as a DBMS.',
-  sort_order: 1,
-  correct_answer: true,
-};
-
-const updatedProgramAssessmentsRow = {
-  ...matchingProgramAssessmentsRow,
-  due_date: '2050-06-26 00:00:00',
-};
-
-const updatedAssessmentResponsesSCGradedRow = {
-  id: assessmentSubmissionResponseSCId,
-  assessment_id: programAssessmentId,
-  submission_id: assessmentSubmissionId,
-  question_id: singleChoiceQuestionId,
-  answer_id: singleChoiceAnswerId,
-  score: null as number,
-  grader_response: 'Well done!',
-};
-
-const updatedAssessmentResponsesFRGradedRow = {
-  id: assessmentSubmissionResponseFRId,
-  assessment_id: programAssessmentId,
-  submission_id: assessmentSubmissionId,
-  question_id: freeResponseQuestionId,
-  response: '<div>Hello world!</div>',
-  score: 0,
-  grader_response: 'Very close!',
-};
-
-const updatedAssessmentSubmissionsRow = {
-  ...matchingAssessmentSubmissionInProgressRow,
-  assessment_submission_state: 'Submitted',
-  submitted_at: '2023-02-09 13:23:45',
-  last_modified: '2023-02-09 13:23:45',
-};
-
-const newCurriculumAssessmentsRow = {
-  id: sentCurriculumAssessmentId,
-  title: 'New Curriculum Quiz',
-  description: null as string,
-  max_score: 42,
-  max_num_submissions: 13,
-  time_limit: 60,
-  curriculum_id: curriculumId,
-  activity_id: sentCAActivityId,
-  principal_id: facilitatorPrincipalId,
-};
-
-const newProgramAssessmentsRow = {
-  ...matchingProgramAssessmentsRow,
-  id: programAssessmentId,
-};
-
-const sentNewCurriculumAssessment: CurriculumAssessment = {
-  title: newCurriculumAssessmentsRow.title,
-  assessment_type: 'quiz',
-  description: newCurriculumAssessmentsRow.description,
-  max_score: newCurriculumAssessmentsRow.max_score,
-  max_num_submissions: newCurriculumAssessmentsRow.max_num_submissions,
-  time_limit: newCurriculumAssessmentsRow.time_limit,
-  curriculum_id: curriculumId,
-  activity_id: sentCAActivityId,
-  principal_id: facilitatorPrincipalId,
-};
-
-const sentNewSCAssessmentAnswer: Answer = {
-  description: matchingAssessmentAnswersSCRow.description,
-  title: matchingAssessmentAnswersSCRow.title,
-  sort_order: matchingAssessmentAnswersSCRow.sort_order,
-  correct_answer: true,
-};
-
-const sentNewSCAssessmentQuestion: Question = {
-  assessment_id: curriculumAssessmentId,
-  title: matchingAssessmentQuestionsSCRow.title,
-  description: matchingAssessmentQuestionsSCRow.description,
-  question_type: matchingAssessmentQuestionsSCRow.question_type,
-  answers: [sentNewSCAssessmentAnswer],
-  max_score: matchingAssessmentQuestionsSCRow.max_score,
-  sort_order: matchingAssessmentQuestionsSCRow.sort_order,
-};
-
-const sentNewFRAssessmentAnswer: Answer = {
-  description: matchingAssessmentAnswersFRRow.description,
-  title: matchingAssessmentAnswersFRRow.title,
-  sort_order: matchingAssessmentAnswersFRRow.sort_order,
-  correct_answer: true,
-};
-
-const sentNewFRAssessmentQuestion: Question = {
-  assessment_id: curriculumAssessmentId,
-  title: matchingAssessmentQuestionsFRRow.title,
-  description: matchingAssessmentQuestionsFRRow.description,
-  question_type: matchingAssessmentQuestionsFRRow.question_type,
-  answers: [sentNewFRAssessmentAnswer],
-  max_score: matchingAssessmentQuestionsFRRow.max_score,
-  sort_order: matchingAssessmentQuestionsFRRow.sort_order,
-};
-
-const sentNewCurriculumAssessmentWithSCQuestion: CurriculumAssessment = {
-  ...sentNewCurriculumAssessment,
-  questions: [sentNewSCAssessmentQuestion],
-};
-
-const sentNewCurriculumAssessmentWithFRQuestion: CurriculumAssessment = {
-  ...sentNewCurriculumAssessment,
-  questions: [sentNewFRAssessmentQuestion],
-};
-
-const sentUpdatedCurriculumAssessment: CurriculumAssessment = {
-  ...exampleCurriculumAssessment,
-  time_limit: 121,
-};
-
-const sentCurriculumAssessmentWithNewSCQuestion: CurriculumAssessment = {
-  ...exampleCurriculumAssessment,
-  questions: [sentNewSCAssessmentQuestion],
-};
-
-const sentCurriculumAssessmentWithNewSCQuestion2: CurriculumAssessment = {
-  ...exampleCurriculumAssessment,
-  questions: [sentNewSCAssessmentQuestion],
-};
-
-const sentAssessmentSCQuestionNewAnswer: Question = {
-  ...exampleAssessmentQuestionSCBase,
-  answers: [sentNewSCAssessmentAnswer],
-};
-
-const sentCurriculumAssessmentWithSCQuestionNewAnswer: CurriculumAssessment = {
-  ...exampleCurriculumAssessment,
-  questions: [sentAssessmentSCQuestionNewAnswer],
-};
-
-const sentNewProgramAssessment: ProgramAssessment = {
-  program_id: programId,
-  assessment_id: curriculumAssessmentId,
-  available_after: '2023-02-06 00:00:00',
-  due_date: '2050-06-24 00:00:00',
-};
-
-const sentNewSCAssessmentResponse: AssessmentResponse = {
-  assessment_id: programAssessmentId,
-  submission_id: assessmentSubmissionId,
-  question_id: singleChoiceQuestionId,
-  answer_id: singleChoiceAnswerId,
-};
-
-const sentNewFRAssessmentResponse: AssessmentResponse = {
-  assessment_id: programAssessmentId,
-  submission_id: assessmentSubmissionId,
-  question_id: freeResponseQuestionId,
-  response_text: '<div>Hello world!</div>',
-};
-
-const sentAssessmentSCAnswerWithUpdatedCorrectAnswer: Answer = {
-  ...exampleAssessmentSCAnswerWithCorrectAnswer,
-  description: updatedAssessmentAnswersSCRow.description,
-};
-
-const sentAssessmentQuestionSCWithUpdatedCorrectAnswer: Question = {
-  ...exampleAssessmentQuestionSCWithCorrectAnswers,
-  answers: [sentAssessmentSCAnswerWithUpdatedCorrectAnswer],
-};
-
-const exampleCurriculumAssessmentWithUpdatedSCCorrectAnswer: CurriculumAssessment =
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Expired',
+    opened_at: '2023-02-10T07:00:00.000Z',
+    last_modified: '2023-02-17T08:00:10.000Z',
+    responses: [
+      {
+        id: 320,
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        answer_id: 28,
+      },
+      {
+        id: 321,
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        response_text: '<div>Hello world!</div>',
+      },
+    ],
+  },
   {
-    ...exampleCurriculumAssessment,
-    questions: [sentAssessmentQuestionSCWithUpdatedCorrectAnswer],
-  };
-
-const sentUpdatedAssessmentSubmissionSCResponseSubmitted: AssessmentResponse = {
-  ...sentNewSCAssessmentResponse,
-  id: assessmentSubmissionResponseSCId,
-  score: null as number,
-  grader_response: null as string,
-};
-const sentUpdatedAssessmentSubmissionFRResponseSubmitted: AssessmentResponse = {
-  ...sentNewFRAssessmentResponse,
-  id: assessmentSubmissionResponseFRId,
-  score: null as number,
-  grader_response: null as string,
-};
-
-const sentUpdatedAssessmentSubmissionSCResponseGraded: AssessmentResponse = {
-  ...sentUpdatedAssessmentSubmissionSCResponseSubmitted,
-  score: 1,
-  grader_response: 'Well done!',
-};
-
-const sentUpdatedAssessmentSubmissionFRResponseGraded: AssessmentResponse = {
-  id: assessmentSubmissionResponseFRId,
-  assessment_id: programAssessmentId,
-  submission_id: assessmentSubmissionId,
-  question_id: freeResponseQuestionId,
-  response_text: '<div>Hello world!</div>',
-  score: 0,
-  grader_response: 'Very close!',
-};
-
-const sentUpdatedAssessmentSubmissionWithNewSCResponse: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionOpened,
-  last_modified: '2023-02-09T12:05:00.000Z',
-  responses: [sentNewSCAssessmentResponse],
-};
-const sentUpdatedAssessmentSubmissionWithNewFRResponse: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionOpened,
-  last_modified: '2023-02-09T12:05:00.000Z',
-  responses: [sentNewFRAssessmentResponse],
-};
-
-const sentUpdatedAssessmentSubmissionChangedResponse: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionOpened,
-  assessment_submission_state: 'Submitted',
-  submitted_at: '2023-02-09T13:23:45.000Z',
-  last_modified: '2023-02-10T13:23:45.000Z',
-  responses: [sentUpdatedAssessmentSubmissionSCResponseSubmitted],
-};
-const sentUpdatedAssessmentSubmissionChangedFRResponse: AssessmentSubmission = {
-  ...exampleAssessmentSubmissionOpened,
-  assessment_submission_state: 'Submitted',
-  submitted_at: '2023-02-09T13:23:45.000Z',
-  last_modified: '2023-02-10T13:23:45.000Z',
-  responses: [sentUpdatedAssessmentSubmissionFRResponseSubmitted],
-};
-
-const sentUpdatedAssessmentSubmissionChangedResponseWithWrongID: AssessmentSubmission =
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Expired',
+    opened_at: '2023-02-09T12:00:00.000Z',
+    last_modified: '2023-02-09T14:00:00.000Z',
+    responses: [
+      {
+        id: 320,
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        answer_id: 28,
+      },
+    ],
+  },
   {
-    ...exampleAssessmentSubmissionOpened,
-    id: assessmentSubmissionWrongId,
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Expired',
+    opened_at: '2023-02-09T12:00:00.000Z',
+    last_modified: '2023-02-16T14:00:10.000Z',
+    responses: [
+      {
+        id: 320,
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        answer_id: 28,
+      },
+    ],
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
     assessment_submission_state: 'Submitted',
+    opened_at: '2023-02-09T12:00:00.000Z',
+    last_modified: '2023-02-09T13:23:45.000Z',
     submitted_at: '2023-02-09T13:23:45.000Z',
+    responses: [
+      {
+        id: 320,
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        answer_id: 28,
+      },
+    ],
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Submitted',
+    opened_at: '2023-02-09T12:00:00.000Z',
+    last_modified: '2023-02-09T13:23:45.000Z',
+    submitted_at: '2023-02-09T13:23:45.000Z',
+    responses: [
+      {
+        id: 321,
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        response_text: '<div>Hello world!</div>',
+      },
+    ],
+  },
+  {
+    id: 36,
+    assessment_id: 16,
+    principal_id: 32,
+    assessment_submission_state: 'Submitted',
+    opened_at: '2023-02-09T12:01:00.000Z',
+    submitted_at: '2023-02-09T13:23:45.000Z',
+    last_modified: '2023-02-09T13:23:45.000Z',
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Graded',
+    opened_at: '2023-02-09T12:00:00.000Z',
+    last_modified: '2023-02-09T13:23:45.000Z',
+    submitted_at: '2023-02-09T13:23:45.000Z',
+    score: 4,
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Graded',
+    opened_at: '2023-02-09T12:00:00.000Z',
+    last_modified: '2023-02-09T13:23:45.000Z',
+    submitted_at: '2023-02-09T13:23:45.000Z',
+    score: 4,
+    responses: [
+      {
+        id: 320,
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        answer_id: 28,
+        score: 1,
+        grader_response: 'Well done!',
+      },
+    ],
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Graded',
+    opened_at: '2023-02-09T12:00:00.000Z',
+    last_modified: '2023-02-09T13:23:45.000Z',
+    submitted_at: '2023-02-09T13:23:45.000Z',
+    responses: [
+      {
+        id: 320,
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        answer_id: 28,
+      },
+    ],
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Opened',
+    opened_at: '2023-02-09T12:00:00.000Z',
+    last_modified: '2023-02-09T12:05:00.000Z',
+    responses: [
+      {
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        answer_id: 28,
+      },
+    ],
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Opened',
+    opened_at: '2023-02-09T12:00:00.000Z',
+    last_modified: '2023-02-09T12:05:00.000Z',
+    responses: [
+      {
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        response_text: '<div>Hello world!</div>',
+      },
+    ],
+  },
+  {
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Submitted',
+    opened_at: '2023-02-09T12:00:00.000Z',
     last_modified: '2023-02-10T13:23:45.000Z',
-    responses: [sentUpdatedAssessmentSubmissionSCResponseSubmitted],
-  };
-
-const sentNewCurriculumAssessmentPostInsert: CurriculumAssessment = {
-  ...sentNewCurriculumAssessment,
-  id: sentCurriculumAssessmentId,
-};
-
-const sentNewCurriculumAssessmentWithSCQuestionPostInsert: CurriculumAssessment =
+    submitted_at: '2023-02-09T13:23:45.000Z',
+    responses: [
+      {
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        answer_id: 28,
+        id: 320,
+        score: null as number,
+        grader_response: null as string,
+      },
+    ],
+  },
   {
-    ...sentNewCurriculumAssessment,
-    id: sentCurriculumAssessmentId,
-    questions: [exampleAssessmentQuestionSCWithCorrectAnswers],
-  };
-
-const sentNewCurriculumAssessmentWithFRQuestionPostInsert: CurriculumAssessment =
+    id: 32,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Submitted',
+    opened_at: '2023-02-09T12:00:00.000Z',
+    last_modified: '2023-02-10T13:23:45.000Z',
+    submitted_at: '2023-02-09T13:23:45.000Z',
+    responses: [
+      {
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        response_text: '<div>Hello world!</div>',
+        id: 321,
+        score: null as number,
+        grader_response: null as string,
+      },
+    ],
+  },
   {
-    ...sentNewCurriculumAssessment,
-    id: sentCurriculumAssessmentId,
-    questions: [exampleAssessmentQuestionFRWithCorrectAnswers],
-  };
+    id: 33,
+    assessment_id: 16,
+    principal_id: 30,
+    assessment_submission_state: 'Submitted',
+    opened_at: '2023-02-09T12:00:00.000Z',
+    last_modified: '2023-02-10T13:23:45.000Z',
+    submitted_at: '2023-02-09T13:23:45.000Z',
+    responses: [
+      {
+        assessment_id: 16,
+        submission_id: 32,
+        question_id: 24,
+        answer_id: 28,
+        id: 320,
+        score: null as number,
+        grader_response: null as string,
+      },
+    ],
+  },
+];
+
+const assessmentsWithSubmissions: AssessmentWithSubmissions[] = [
+  {
+    curriculum_assessment: {
+      id: 8,
+      title: 'Assignment 1: React',
+      assessment_type: 'test',
+      description: 'Your assignment for week 1 learning.',
+      max_score: 10,
+      max_num_submissions: 1,
+      time_limit: 120,
+      curriculum_id: 4,
+      activity_id: 20,
+      principal_id: 3,
+    },
+    program_assessment: {
+      id: 16,
+      program_id: 12,
+      assessment_id: 8,
+      available_after: '2023-02-06T00:00:00.000-08:00',
+      due_date: '2050-06-24T00:00:00.000-07:00',
+    },
+    principal_program_role: 'Participant',
+    submissions: [
+      {
+        id: 32,
+        assessment_id: 16,
+        principal_id: 30,
+        assessment_submission_state: 'In Progress',
+        opened_at: '2023-02-09T12:00:00.000Z',
+        last_modified: '2023-02-09T12:05:00.000Z',
+        responses: [
+          {
+            id: 320,
+            assessment_id: 16,
+            submission_id: 32,
+            question_id: 24,
+            answer_id: 28,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    curriculum_assessment: {
+      id: 8,
+      title: 'Assignment 1: React',
+      assessment_type: 'test',
+      description: 'Your assignment for week 1 learning.',
+      max_score: 10,
+      max_num_submissions: 1,
+      time_limit: 120,
+      curriculum_id: 4,
+      activity_id: 20,
+      principal_id: 3,
+    },
+    program_assessment: {
+      id: 16,
+      program_id: 12,
+      assessment_id: 8,
+      available_after: '2023-02-06T00:00:00.000-08:00',
+      due_date: '2050-06-24T00:00:00.000-07:00',
+    },
+    principal_program_role: 'Facilitator',
+    submissions: [
+      {
+        id: 32,
+        assessment_id: 16,
+        principal_id: 30,
+        assessment_submission_state: 'In Progress',
+        opened_at: '2023-02-09T12:00:00.000Z',
+        last_modified: '2023-02-09T12:05:00.000Z',
+        responses: [
+          {
+            id: 320,
+            assessment_id: 16,
+            submission_id: 32,
+            question_id: 24,
+            answer_id: 28,
+          },
+        ],
+      },
+      {
+        id: 36,
+        assessment_id: 16,
+        principal_id: 32,
+        assessment_submission_state: 'Submitted',
+        opened_at: '2023-02-09T12:01:00.000Z',
+        submitted_at: '2023-02-09T13:23:45.000Z',
+        last_modified: '2023-02-09T13:23:45.000Z',
+      },
+    ],
+  },
+];
+
+const savedAssessments: SavedAssessment[] = [
+  {
+    curriculum_assessment: {
+      id: 8,
+      title: 'Assignment 1: React',
+      assessment_type: 'test',
+      description: 'Your assignment for week 1 learning.',
+      max_score: 10,
+      max_num_submissions: 1,
+      time_limit: 120,
+      curriculum_id: 4,
+      activity_id: 20,
+      principal_id: 3,
+      questions: [
+        {
+          id: 24,
+          assessment_id: 8,
+          title: 'What is React?',
+          description: null,
+          question_type: 'single choice',
+          max_score: 1,
+          sort_order: 1,
+          answers: [
+            {
+              id: 28,
+              question_id: 24,
+              description: null,
+              title: 'A relational database management system',
+              sort_order: 1,
+            },
+          ],
+        },
+      ],
+    },
+    program_assessment: {
+      id: 16,
+      program_id: 12,
+      assessment_id: 8,
+      available_after: '2023-02-06T00:00:00.000-08:00',
+      due_date: '2050-06-24T00:00:00.000-07:00',
+    },
+    principal_program_role: 'Participant',
+    submission: {
+      id: 32,
+      assessment_id: 16,
+      principal_id: 30,
+      assessment_submission_state: 'Opened',
+      opened_at: '2023-02-09T12:00:00.000Z',
+      last_modified: '2023-02-09T12:00:00.000Z',
+    },
+  },
+  {
+    curriculum_assessment: {
+      id: 8,
+      title: 'Assignment 1: React',
+      assessment_type: 'test',
+      description: 'Your assignment for week 1 learning.',
+      max_score: 10,
+      max_num_submissions: 3,
+      time_limit: 120,
+      curriculum_id: 4,
+      activity_id: 20,
+      principal_id: 3,
+      questions: [
+        {
+          id: 24,
+          assessment_id: 8,
+          title: 'What is React?',
+          description: null,
+          question_type: 'single choice',
+          max_score: 1,
+          sort_order: 1,
+          answers: [
+            {
+              id: 28,
+              question_id: 24,
+              description: null,
+              title: 'A relational database management system',
+              sort_order: 1,
+              correct_answer: true,
+            },
+          ],
+          correct_answer_id: 28,
+        },
+      ],
+    },
+    program_assessment: {
+      id: 16,
+      program_id: 12,
+      assessment_id: 8,
+      available_after: '2023-02-06T00:00:00.000-08:00',
+      due_date: '2050-06-24T00:00:00.000-07:00',
+    },
+    principal_program_role: 'Participant',
+    submission: {
+      id: 32,
+      assessment_id: 16,
+      principal_id: 30,
+      assessment_submission_state: 'Opened',
+      opened_at: '2023-02-09T12:00:00.000Z',
+      last_modified: '2023-02-09T12:00:00.000Z',
+    },
+  },
+];
+
+/* EXAMPLE DATA: Friendly Names */
+
+/* eslint-disable prefer-destructuring */
+const matchingCurriculumAssessmentRow = curriculumAssessmentsRows[0];
+const newCurriculumAssessmentsRow = curriculumAssessmentsRows[1];
+
+const matchingAssessmentQuestionsSCRow = assessmentQuestionsRows[0];
+const matchingAssessmentQuestionsFRRow = assessmentQuestionsRows[1];
+
+const matchingAssessmentAnswersSCRow = assessmentAnswersRows[0];
+const matchingAssessmentAnswersFRRow = assessmentAnswersRows[1];
+const updatedAssessmentAnswersSCRow = assessmentAnswersRows[2];
+
+const matchingProgramAssessmentsRow = programAssessmentsRows[0];
+const matchingProgramAssessmentPastDueRow = programAssessmentsRows[1];
+const matchingProgramAssessmentNotAvailableRow = programAssessmentsRows[2];
+const updatedProgramAssessmentsRow = programAssessmentsRows[3];
+const newProgramAssessmentsRow = programAssessmentsRows[4];
+
+const matchingAssessmentSubmissionOpenedRow = assessmentSubmissionsRows[0];
+const matchingAssessmentSubmissionInProgressRow = assessmentSubmissionsRows[1];
+const matchingAssessmentSubmissionExpiredRow = assessmentSubmissionsRows[2];
+const matchingAssessmentSubmissionsSubmittedRow = assessmentSubmissionsRows[3];
+const matchingOtherAssessmentSubmissionSubmittedRow =
+  assessmentSubmissionsRows[4];
+const matchingAssessmentSubmissionsRowGraded = assessmentSubmissionsRows[5];
+const updatedAssessmentSubmissionsRow = assessmentSubmissionsRows[6];
+
+const matchingAssessmentResponsesRowSCOpened = assessmentResponsesRows[0];
+const matchingAssessmentResponsesRowSCInProgress = assessmentResponsesRows[1];
+const matchingAssessmentResponsesRowSCSubmitted = assessmentResponsesRows[2];
+const matchingAssessmentResponsesRowSCGraded = assessmentResponsesRows[3];
+const matchingAssessmentResponsesRowFROpened = assessmentResponsesRows[4];
+const matchingAssessmentResponsesRowFRInProgress = assessmentResponsesRows[5];
+const matchingAssessmentResponsesRowFRGraded = assessmentResponsesRows[6];
+const updatedAssessmentResponsesSCGradedRow = assessmentResponsesRows[7];
+const updatedAssessmentResponsesFRGradedRow = assessmentResponsesRows[8];
+
+const matchingProgramRow = programsRows[0];
+
+const exampleAssessmentQuestionSCBase = questions[0];
+const exampleAssessmentQuestionSCWithoutCorrectAnswers = questions[1];
+const exampleAssessmentQuestionSCWithCorrectAnswers = questions[2];
+const exampleAssessmentQuestionFRWithCorrectAnswers = questions[3];
+const sentNewSCAssessmentQuestion = questions[4];
+const sentNewFRAssessmentQuestion = questions[5];
+const sentAssessmentSCQuestionNewAnswer = questions[6];
+const sentAssessmentQuestionSCWithUpdatedCorrectAnswer = questions[7];
+
+const exampleCurriculumAssessment = curriculumAssessments[0];
+const exampleCurriculumAssessmentWithSCQuestions = curriculumAssessments[1];
+const exampleCurriculumAssessmentMultipleSubmissionsWithQuestions =
+  curriculumAssessments[2];
+const exampleCurriculumAssessmentWithSCCorrectAnswers =
+  curriculumAssessments[3];
+const exampleCurriculumAssessmentWithFRCorrectAnswers =
+  curriculumAssessments[4];
+const sentNewCurriculumAssessment = curriculumAssessments[5];
+const sentNewCurriculumAssessmentWithSCQuestion = curriculumAssessments[6];
+const sentNewCurriculumAssessmentWithFRQuestion = curriculumAssessments[7];
+const sentUpdatedCurriculumAssessment = curriculumAssessments[8];
+const sentCurriculumAssessmentWithNewSCQuestion = curriculumAssessments[9];
+const sentCurriculumAssessmentWithNewSCQuestion2 = curriculumAssessments[10];
+const sentCurriculumAssessmentWithSCQuestionNewAnswer =
+  curriculumAssessments[11];
+const exampleCurriculumAssessmentWithUpdatedSCCorrectAnswer =
+  curriculumAssessments[12];
+const sentNewCurriculumAssessmentPostInsert = curriculumAssessments[13];
+const sentNewCurriculumAssessmentWithSCQuestionPostInsert =
+  curriculumAssessments[14];
+const sentNewCurriculumAssessmentWithFRQuestionPostInsert =
+  curriculumAssessments[15];
+
+const exampleProgramAssessment = programAssessments[0];
+const exampleProgramAssessmentPastDue = programAssessments[1];
+const exampleProgramAssessmentNotAvailable = programAssessments[2];
+const sentNewProgramAssessment = programAssessments[3];
+
+const exampleAssessmentWithSCCorrectAnswersDetails = assessmentDetails[0];
+
+const exampleParticipantAssessmentSubmissionsInactive = participantSummaries[0];
+const exampleParticipantAssessmentSubmissionsPastDue = participantSummaries[1];
+const exampleParticipantAssessmentSubmissionsActive = participantSummaries[2];
+const exampleParticipantAssessmentSubmissionsSummary = participantSummaries[3];
+
+const exampleFacilitatorAssessmentSubmissionsSummary = facilitatorSummaries[0];
+
+const exampleAssessmentResponseSCUnanswered = assessmentResponses[0];
+const exampleAssessmentResponseSCAnswered = assessmentResponses[1];
+const exampleAssessmentResponseSCGraded = assessmentResponses[2];
+const exampleAssessmentResponseFRUnanswered = assessmentResponses[3];
+const exampleAssessmentResponseFRAnswered = assessmentResponses[4];
+const exampleAssessmentResponseFRGraded = assessmentResponses[5];
+const sentNewSCAssessmentResponse = assessmentResponses[6];
+const sentNewFRAssessmentResponse = assessmentResponses[7];
+const sentUpdatedAssessmentSubmissionSCResponseSubmitted =
+  assessmentResponses[8];
+const sentUpdatedAssessmentSubmissionFRResponseSubmitted =
+  assessmentResponses[9];
+const sentUpdatedAssessmentSubmissionSCResponseGraded = assessmentResponses[10];
+const sentUpdatedAssessmentSubmissionFRResponseGraded = assessmentResponses[11];
+
+const exampleAssessmentSubmissionOpened = assessmentSubmissions[0];
+const exampleAssessmentSubmissionOpenedWithResponse = assessmentSubmissions[1];
+const exampleAssessmentSubmissionInProgress = assessmentSubmissions[2];
+const exampleAssessmentSubmissionFRInProgress = assessmentSubmissions[3];
+const exampleAssessmentSubmissionInProgressSCFR = assessmentSubmissions[4];
+const exampleAssessmentSubmissionInProgressSCFRLateStart =
+  assessmentSubmissions[5];
+const exampleAssessmentSubmissionPastDueDate = assessmentSubmissions[6];
+const exampleAssessmentSubmissionExpired = assessmentSubmissions[7];
+const exampleAssessmentSubmissionExpiredPlusWeek = assessmentSubmissions[8];
+const exampleAssessmentSubmissionSubmitted = assessmentSubmissions[9];
+const exampleAssessmentSubmissionFRSubmitted = assessmentSubmissions[10];
+const exampleOtherAssessmentSubmissionSubmitted = assessmentSubmissions[11];
+const exampleAssessmentSubmissionGradedNoResponses = assessmentSubmissions[12];
+const exampleAssessmentSubmissionGraded = assessmentSubmissions[13];
+const exampleAssessmentSubmissionGradedRemovedGrades =
+  assessmentSubmissions[14];
+const sentUpdatedAssessmentSubmissionWithNewSCResponse =
+  assessmentSubmissions[15];
+const sentUpdatedAssessmentSubmissionWithNewFRResponse =
+  assessmentSubmissions[16];
+const sentUpdatedAssessmentSubmissionChangedResponse =
+  assessmentSubmissions[17];
+const sentUpdatedAssessmentSubmissionChangedFRResponse =
+  assessmentSubmissions[18];
+const sentUpdatedAssessmentSubmissionChangedResponseWithWrongID =
+  assessmentSubmissions[19];
+
+const exampleParticipantAssessmentWithSubmissions =
+  assessmentsWithSubmissions[0];
+const exampleFacilitatorAssessmentWithSubmissions =
+  assessmentsWithSubmissions[1];
+
+const exampleParticipantOpenedSavedAssessment = savedAssessments[0];
+const exampleParticipantOpenedSavedMultipleSubmissionsAssessment =
+  savedAssessments[1];
+
+const exampleAssessmentSCAnswerWithoutCorrectAnswer = answers[0];
+const exampleAssessmentSCAnswerWithCorrectAnswer = answers[1];
+const exampleAssessmentFRAnswerWithoutCorrectAnswer = answers[2];
+const exampleAssessmentFRAnswerWithCorrectAnswer = answers[3];
+const sentNewSCAssessmentAnswer = answers[4];
+const sentNewFRAssessmentAnswer = answers[5];
+const sentAssessmentSCAnswerWithUpdatedCorrectAnswer = answers[6];
 
 describe('constructFacilitatorAssessmentSummary', () => {
   it('should gather the relevant information for constructing a FacilitatorAssessmentSubmissionsSummary for a given program assessment', async () => {
