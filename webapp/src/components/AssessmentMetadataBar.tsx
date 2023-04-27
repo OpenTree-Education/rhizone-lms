@@ -29,19 +29,6 @@ interface AssessmentMetadataBarProps {
   submissionDisabled: boolean;
 }
 
-const formatTimeRemaining = (totalSeconds: number) => {
-  const minutesRemaining = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  const hours = Math.floor(minutesRemaining / 60);
-  const minutes = minutesRemaining % 60;
-  return (
-    (hours > 0 ? hours + 'h ' : '') +
-    (minutes > 0 ? minutes + 'm ' : '') +
-    seconds +
-    's '
-  );
-};
-
 const AssessmentMetadataBar = ({
   assessment,
   endTime,
