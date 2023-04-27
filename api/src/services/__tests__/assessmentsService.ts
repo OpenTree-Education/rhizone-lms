@@ -2,16 +2,13 @@ import { DateTime, Settings } from 'luxon';
 
 import {
   Answer,
-  AssessmentDetails,
   AssessmentResponse,
   AssessmentSubmission,
-  AssessmentWithSubmissions,
   CurriculumAssessment,
   FacilitatorAssessmentSubmissionsSummary,
   ParticipantAssessmentSubmissionsSummary,
   ProgramAssessment,
   Question,
-  SavedAssessment,
 } from '../../models';
 import { mockQuery } from '../mockDb';
 
@@ -40,31 +37,18 @@ import {
 
 /* EXAMPLE DATA: Variables */
 
-const administratorPrincipalId = 3;
 const participantPrincipalId = 30;
 const unenrolledPrincipalId = 31;
-const otherParticipantPrincipalId = 32;
 const facilitatorPrincipalId = 300;
-const curriculumId = 4;
 const curriculumAssessmentId = 8;
-const sentCurriculumAssessmentId = 9;
-const programId = 12;
 const programAssessmentId = 16;
-const sentProgramAssessmentId = 17;
-const activityId = 20;
-const sentCAActivityId = 200;
 const singleChoiceQuestionId = 24;
 const freeResponseQuestionId = 24;
 const singleChoiceAnswerId = 28;
-const newSingleChoiceAnswerId = 280;
 const freeResponseCorrectAnswerId = 29;
 const assessmentSubmissionId = 32;
-const assessmentSubmissionWrongId = 33;
-const assessmentSubmissionByOtherParticipantId = 36;
 const assessmentSubmissionResponseSCId = 320;
 const assessmentSubmissionResponseFRId = 321;
-const facilitatorProgramIdsThatMatchCurriculum = [12, 20, 30];
-const facilitatorProgramIdsNotMatchingCurriculum = [40, 50];
 
 /* EXAMPLE DATA: Database Rows */
 
@@ -1024,52 +1008,6 @@ const programAssessments: ProgramAssessment[] = [
   },
 ];
 
-const assessmentDetails: AssessmentDetails[] = [
-  {
-    curriculum_assessment: {
-      id: 8,
-      title: 'Assignment 1: React',
-      assessment_type: 'test',
-      description: 'Your assignment for week 1 learning.',
-      max_score: 10,
-      max_num_submissions: 1,
-      time_limit: 120,
-      curriculum_id: 4,
-      activity_id: 20,
-      principal_id: 3,
-      questions: [
-        {
-          id: 24,
-          assessment_id: 8,
-          title: 'What is React?',
-          description: null,
-          question_type: 'single choice',
-          max_score: 1,
-          sort_order: 1,
-          answers: [
-            {
-              id: 28,
-              question_id: 24,
-              description: null,
-              title: 'A relational database management system',
-              sort_order: 1,
-              correct_answer: true,
-            },
-          ],
-          correct_answer_id: 28,
-        },
-      ],
-    },
-    program_assessment: {
-      id: 16,
-      program_id: 12,
-      assessment_id: 8,
-      available_after: '2023-02-06T00:00:00.000-08:00',
-      due_date: '2050-06-24T00:00:00.000-07:00',
-    },
-  },
-];
-
 const participantSummaries: ParticipantAssessmentSubmissionsSummary[] = [
   {
     principal_id: 30,
@@ -1543,205 +1481,6 @@ const assessmentSubmissions: AssessmentSubmission[] = [
         grader_response: null as string,
       },
     ],
-  },
-];
-
-const assessmentsWithSubmissions: AssessmentWithSubmissions[] = [
-  {
-    curriculum_assessment: {
-      id: 8,
-      title: 'Assignment 1: React',
-      assessment_type: 'test',
-      description: 'Your assignment for week 1 learning.',
-      max_score: 10,
-      max_num_submissions: 1,
-      time_limit: 120,
-      curriculum_id: 4,
-      activity_id: 20,
-      principal_id: 3,
-    },
-    program_assessment: {
-      id: 16,
-      program_id: 12,
-      assessment_id: 8,
-      available_after: '2023-02-06T00:00:00.000-08:00',
-      due_date: '2050-06-24T00:00:00.000-07:00',
-    },
-    principal_program_role: 'Participant',
-    submissions: [
-      {
-        id: 32,
-        assessment_id: 16,
-        principal_id: 30,
-        assessment_submission_state: 'In Progress',
-        opened_at: '2023-02-09T12:00:00.000Z',
-        last_modified: '2023-02-09T12:05:00.000Z',
-        responses: [
-          {
-            id: 320,
-            assessment_id: 16,
-            submission_id: 32,
-            question_id: 24,
-            answer_id: 28,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    curriculum_assessment: {
-      id: 8,
-      title: 'Assignment 1: React',
-      assessment_type: 'test',
-      description: 'Your assignment for week 1 learning.',
-      max_score: 10,
-      max_num_submissions: 1,
-      time_limit: 120,
-      curriculum_id: 4,
-      activity_id: 20,
-      principal_id: 3,
-    },
-    program_assessment: {
-      id: 16,
-      program_id: 12,
-      assessment_id: 8,
-      available_after: '2023-02-06T00:00:00.000-08:00',
-      due_date: '2050-06-24T00:00:00.000-07:00',
-    },
-    principal_program_role: 'Facilitator',
-    submissions: [
-      {
-        id: 32,
-        assessment_id: 16,
-        principal_id: 30,
-        assessment_submission_state: 'In Progress',
-        opened_at: '2023-02-09T12:00:00.000Z',
-        last_modified: '2023-02-09T12:05:00.000Z',
-        responses: [
-          {
-            id: 320,
-            assessment_id: 16,
-            submission_id: 32,
-            question_id: 24,
-            answer_id: 28,
-          },
-        ],
-      },
-      {
-        id: 36,
-        assessment_id: 16,
-        principal_id: 32,
-        assessment_submission_state: 'Submitted',
-        opened_at: '2023-02-09T12:01:00.000Z',
-        submitted_at: '2023-02-09T13:23:45.000Z',
-        last_modified: '2023-02-09T13:23:45.000Z',
-      },
-    ],
-  },
-];
-
-const savedAssessments: SavedAssessment[] = [
-  {
-    curriculum_assessment: {
-      id: 8,
-      title: 'Assignment 1: React',
-      assessment_type: 'test',
-      description: 'Your assignment for week 1 learning.',
-      max_score: 10,
-      max_num_submissions: 1,
-      time_limit: 120,
-      curriculum_id: 4,
-      activity_id: 20,
-      principal_id: 3,
-      questions: [
-        {
-          id: 24,
-          assessment_id: 8,
-          title: 'What is React?',
-          description: null,
-          question_type: 'single choice',
-          max_score: 1,
-          sort_order: 1,
-          answers: [
-            {
-              id: 28,
-              question_id: 24,
-              description: null,
-              title: 'A relational database management system',
-              sort_order: 1,
-            },
-          ],
-        },
-      ],
-    },
-    program_assessment: {
-      id: 16,
-      program_id: 12,
-      assessment_id: 8,
-      available_after: '2023-02-06T00:00:00.000-08:00',
-      due_date: '2050-06-24T00:00:00.000-07:00',
-    },
-    principal_program_role: 'Participant',
-    submission: {
-      id: 32,
-      assessment_id: 16,
-      principal_id: 30,
-      assessment_submission_state: 'Opened',
-      opened_at: '2023-02-09T12:00:00.000Z',
-      last_modified: '2023-02-09T12:00:00.000Z',
-    },
-  },
-  {
-    curriculum_assessment: {
-      id: 8,
-      title: 'Assignment 1: React',
-      assessment_type: 'test',
-      description: 'Your assignment for week 1 learning.',
-      max_score: 10,
-      max_num_submissions: 3,
-      time_limit: 120,
-      curriculum_id: 4,
-      activity_id: 20,
-      principal_id: 3,
-      questions: [
-        {
-          id: 24,
-          assessment_id: 8,
-          title: 'What is React?',
-          description: null,
-          question_type: 'single choice',
-          max_score: 1,
-          sort_order: 1,
-          answers: [
-            {
-              id: 28,
-              question_id: 24,
-              description: null,
-              title: 'A relational database management system',
-              sort_order: 1,
-              correct_answer: true,
-            },
-          ],
-          correct_answer_id: 28,
-        },
-      ],
-    },
-    program_assessment: {
-      id: 16,
-      program_id: 12,
-      assessment_id: 8,
-      available_after: '2023-02-06T00:00:00.000-08:00',
-      due_date: '2050-06-24T00:00:00.000-07:00',
-    },
-    principal_program_role: 'Participant',
-    submission: {
-      id: 32,
-      assessment_id: 16,
-      principal_id: 30,
-      assessment_submission_state: 'Opened',
-      opened_at: '2023-02-09T12:00:00.000Z',
-      last_modified: '2023-02-09T12:00:00.000Z',
-    },
   },
 ];
 

@@ -6,9 +6,7 @@ import {
 import { createAppAgentForRouter, mockPrincipalId } from '../routerTestUtils';
 
 import {
-  Answer,
   AssessmentDetails,
-  AssessmentResponse,
   AssessmentSubmission,
   AssessmentWithSubmissions,
   AssessmentWithSummary,
@@ -16,7 +14,6 @@ import {
   FacilitatorAssessmentSubmissionsSummary,
   ParticipantAssessmentSubmissionsSummary,
   ProgramAssessment,
-  Question,
   SavedAssessment,
 } from '../../models';
 import {
@@ -79,125 +76,16 @@ const mockUpdateProgramAssessment = jest.mocked(updateProgramAssessment);
 
 /* EXAMPLE DATA: Variables */
 
-const administratorPrincipalId = 3;
 const participantPrincipalId = 30;
 const unenrolledPrincipalId = 31;
 const otherParticipantPrincipalId = 32;
 const facilitatorPrincipalId = 300;
 const curriculumId = 4;
 const curriculumAssessmentId = 8;
-const sentCurriculumAssessmentId = 9;
-const programId = 12;
-const programAssessmentId = 16;
-const sentProgramAssessmentId = 17;
-const activityId = 20;
-const sentCAActivityId = 200;
-const singleChoiceQuestionId = 24;
-const freeResponseQuestionId = 24;
-const singleChoiceAnswerId = 28;
-const newSingleChoiceAnswerId = 280;
-const freeResponseCorrectAnswerId = 29;
 const assessmentSubmissionId = 32;
-const assessmentSubmissionWrongId = 33;
-const assessmentSubmissionByOtherParticipantId = 36;
-const assessmentSubmissionResponseSCId = 320;
-const assessmentSubmissionResponseFRId = 321;
 const facilitatorProgramIdsThatMatchCurriculum = [12, 20, 30];
-const facilitatorProgramIdsNotMatchingCurriculum = [40, 50];
 
 /* EXAMPLE DATA: Database Rows */
-
-const programParticipantRolesRows = [
-  { id: 1, title: 'Facilitator' },
-  { id: 2, title: 'Participant' },
-];
-
-const curriculumAssessmentsRows = [
-  {
-    id: 8,
-    title: 'Assignment 1: React',
-    description: 'Your assignment for week 1 learning.',
-    max_score: 10,
-    max_num_submissions: 1,
-    time_limit: 120,
-    curriculum_id: 4,
-    activity_id: 20,
-    principal_id: 3,
-  },
-  {
-    id: 9,
-    title: 'New Curriculum Quiz',
-    description: null as string,
-    max_score: 42,
-    max_num_submissions: 13,
-    time_limit: 60,
-    curriculum_id: 4,
-    activity_id: 200,
-    principal_id: 300,
-  },
-];
-
-const assessmentQuestionsRows = [
-  {
-    id: 24,
-    assessment_id: 8,
-    title: 'What is React?',
-    description: null as string,
-    question_type: 'single choice',
-    correct_answer_id: 28,
-    max_score: 1,
-    sort_order: 1,
-  },
-  {
-    id: 24,
-    assessment_id: 8,
-    title:
-      'What is the correct HTML syntax for a paragraph with the text "Hello, World!"?',
-    description: null as string,
-    question_type: 'free response',
-    correct_answer_id: 29,
-    max_score: 1,
-    sort_order: 1,
-  },
-];
-
-const assessmentAnswersRows = [
-  {
-    id: 28,
-    question_id: 24,
-    title: 'A relational database management system',
-    description: null as string,
-    sort_order: 1,
-    correct_answer: true,
-  },
-  {
-    id: 29,
-    question_id: 24,
-    title: '<p>Hello, World!</p>',
-    description: null as string,
-    sort_order: 1,
-    correct_answer: true,
-  },
-  {
-    id: 28,
-    question_id: 24,
-    title: 'A relational database management system',
-    description: 'Also known as a DBMS.',
-    sort_order: 1,
-    correct_answer: true,
-  },
-];
-
-const programsRows = [
-  {
-    id: 12,
-    title: 'Cohort 4',
-    start_date: '2022-10-24',
-    end_date: '2022-12-16',
-    time_zone: 'America/Vancouver',
-    curriculum_id: 4,
-  },
-];
 
 const programAssessmentsRows = [
   {
@@ -234,81 +122,6 @@ const programAssessmentsRows = [
     assessment_id: 8,
     available_after: '2023-02-06 00:00:00',
     due_date: '2050-06-24 00:00:00',
-  },
-];
-
-const assessmentSubmissionsRows = [
-  {
-    id: 32,
-    assessment_id: 16,
-    principal_id: 30,
-    assessment_submission_state: 'Opened',
-    opened_at: '2023-02-09 12:00:00',
-    submitted_at: null as string,
-    updated_at: '2023-02-09 12:00:00',
-    score: null as number,
-  },
-  {
-    id: 32,
-    assessment_id: 16,
-    principal_id: 30,
-    assessment_submission_state: 'In Progress',
-    opened_at: '2023-02-09 12:00:00',
-    submitted_at: null as string,
-    updated_at: '2023-02-09 12:00:00',
-    score: null as number,
-  },
-  {
-    id: 32,
-    assessment_id: 16,
-    principal_id: 30,
-    assessment_submission_state: 'Expired',
-    opened_at: '2023-02-09 12:00:00',
-    submitted_at: null as string,
-    updated_at: '2023-02-09 14:00:00',
-    score: null as number,
-  },
-  {
-    id: 32,
-    assessment_id: 16,
-    principal_id: 30,
-    assessment_submission_state: 'Submitted',
-    opened_at: '2023-02-09 12:00:00',
-    submitted_at: '2023-02-09 13:23:45',
-    updated_at: '2023-02-09 13:23:45',
-    score: null as number,
-  },
-  {
-    id: 36,
-    assessment_id: 16,
-    principal_id: 32,
-    assessment_submission_state: 'Submitted',
-    opened_at: '2023-02-09 12:01:00',
-    last_modified: '2023-02-09 12:01:00',
-    submitted_at: '2023-02-09 13:23:45',
-    updated_at: '2023-02-09 13:23:45',
-    score: null as number,
-  },
-  {
-    id: 32,
-    assessment_id: 16,
-    principal_id: 30,
-    assessment_submission_state: 'Graded',
-    opened_at: '2023-02-09 12:00:00',
-    submitted_at: '2023-02-09 13:23:45',
-    updated_at: '2023-02-09 13:23:45',
-    score: 4,
-  },
-  {
-    id: 32,
-    assessment_id: 16,
-    principal_id: 30,
-    assessment_submission_state: 'Submitted',
-    opened_at: '2023-02-09 12:00:00',
-    submitted_at: '2023-02-09 13:23:45',
-    updated_at: '2023-02-09 12:00:00',
-    score: null as number,
-    last_modified: '2023-02-09 13:23:45',
   },
 ];
 
@@ -839,200 +652,6 @@ const curriculumAssessments: CurriculumAssessment[] = [
   },
 ];
 
-const answers: Answer[] = [
-  {
-    id: 28,
-    question_id: 24,
-    description: null as string,
-    title: 'A relational database management system',
-    sort_order: 1,
-  },
-  {
-    id: 28,
-    question_id: 24,
-    description: null as string,
-    title: 'A relational database management system',
-    sort_order: 1,
-    correct_answer: true,
-  },
-  {
-    id: 29,
-    question_id: 24,
-    description: null as string,
-    title: '<p>Hello, World!</p>',
-    sort_order: 1,
-  },
-  {
-    id: 29,
-    question_id: 24,
-    description: null as string,
-    title: '<p>Hello, World!</p>',
-    sort_order: 1,
-    correct_answer: true,
-  },
-  {
-    description: null as string,
-    title: 'A relational database management system',
-    sort_order: 1,
-    correct_answer: true,
-  },
-  {
-    description: null as string,
-    title: '<p>Hello, World!</p>',
-    sort_order: 1,
-    correct_answer: true,
-  },
-  {
-    id: 28,
-    question_id: 24,
-    description: 'Also known as a DBMS.',
-    title: 'A relational database management system',
-    sort_order: 1,
-    correct_answer: true,
-  },
-];
-
-const questions: Question[] = [
-  {
-    id: 24,
-    assessment_id: 8,
-    title: 'What is React?',
-    description: null as string,
-    question_type: 'single choice',
-    max_score: 1,
-    sort_order: 1,
-  },
-  {
-    id: 24,
-    assessment_id: 8,
-    title: 'What is React?',
-    description: null as string,
-    question_type: 'single choice',
-    max_score: 1,
-    sort_order: 1,
-    answers: [
-      {
-        id: 28,
-        question_id: 24,
-        description: null as string,
-        title: 'A relational database management system',
-        sort_order: 1,
-      },
-    ],
-  },
-  {
-    id: 24,
-    assessment_id: 8,
-    title: 'What is React?',
-    description: null as string,
-    question_type: 'single choice',
-    max_score: 1,
-    sort_order: 1,
-    answers: [
-      {
-        id: 28,
-        question_id: 24,
-        description: null as string,
-        title: 'A relational database management system',
-        sort_order: 1,
-        correct_answer: true,
-      },
-    ],
-    correct_answer_id: 28,
-  },
-  {
-    id: 24,
-    assessment_id: 8,
-    title:
-      'What is the correct HTML syntax for a paragraph with the text "Hello, World!"?',
-    description: null as string,
-    question_type: 'free response',
-    answers: [
-      {
-        id: 29,
-        question_id: 24,
-        description: null as string,
-        title: '<p>Hello, World!</p>',
-        sort_order: 1,
-        correct_answer: true,
-      },
-    ],
-    correct_answer_id: 29,
-    max_score: 1,
-    sort_order: 1,
-  },
-  {
-    assessment_id: 8,
-    title: 'What is React?',
-    description: null as string,
-    question_type: 'single choice',
-    answers: [
-      {
-        description: null as string,
-        title: 'A relational database management system',
-        sort_order: 1,
-        correct_answer: true,
-      },
-    ],
-    max_score: 1,
-    sort_order: 1,
-  },
-  {
-    assessment_id: 8,
-    title:
-      'What is the correct HTML syntax for a paragraph with the text "Hello, World!"?',
-    description: null as string,
-    question_type: 'free response',
-    answers: [
-      {
-        description: null as string,
-        title: '<p>Hello, World!</p>',
-        sort_order: 1,
-        correct_answer: true,
-      },
-    ],
-    max_score: 1,
-    sort_order: 1,
-  },
-  {
-    id: 24,
-    assessment_id: 8,
-    title: 'What is React?',
-    description: null as string,
-    question_type: 'single choice',
-    max_score: 1,
-    sort_order: 1,
-    answers: [
-      {
-        description: null as string,
-        title: 'A relational database management system',
-        sort_order: 1,
-        correct_answer: true,
-      },
-    ],
-  },
-  {
-    id: 24,
-    assessment_id: 8,
-    title: 'What is React?',
-    description: null as string,
-    question_type: 'single choice',
-    max_score: 1,
-    sort_order: 1,
-    answers: [
-      {
-        id: 28,
-        question_id: 24,
-        description: 'Also known as a DBMS.',
-        title: 'A relational database management system',
-        sort_order: 1,
-        correct_answer: true,
-      },
-    ],
-    correct_answer_id: 28,
-  },
-];
-
 const programAssessments: ProgramAssessment[] = [
   {
     id: 16,
@@ -1139,101 +758,6 @@ const facilitatorSummaries: FacilitatorAssessmentSubmissionsSummary[] = [
     num_participants_with_submissions: 8,
     num_program_participants: 12,
     num_ungraded_submissions: 6,
-  },
-];
-
-const assessmentResponses: AssessmentResponse[] = [
-  {
-    id: 320,
-    assessment_id: 16,
-    submission_id: 32,
-    question_id: 24,
-  },
-  {
-    id: 320,
-    assessment_id: 16,
-    submission_id: 32,
-    question_id: 24,
-    answer_id: 28,
-  },
-  {
-    id: 320,
-    assessment_id: 16,
-    submission_id: 32,
-    question_id: 24,
-    answer_id: 28,
-    score: 1,
-    grader_response: 'Well done!',
-  },
-  {
-    id: 321,
-    assessment_id: 16,
-    submission_id: 32,
-    question_id: 24,
-  },
-  {
-    id: 321,
-    assessment_id: 16,
-    submission_id: 32,
-    question_id: 24,
-    response_text: '<div>Hello world!</div>',
-  },
-  {
-    id: 321,
-    assessment_id: 16,
-    submission_id: 32,
-    question_id: 24,
-    response_text: '<div>Hello world!</div>',
-    score: 0,
-    grader_response: 'Very close!',
-  },
-  {
-    assessment_id: 16,
-    submission_id: 32,
-    question_id: 24,
-    answer_id: 28,
-  },
-  {
-    assessment_id: 16,
-    submission_id: 32,
-    question_id: 24,
-    response_text: '<div>Hello world!</div>',
-  },
-  {
-    assessment_id: 16,
-    submission_id: 32,
-    question_id: 24,
-    answer_id: 28,
-    id: 320,
-    score: null as number,
-    grader_response: null as string,
-  },
-  {
-    assessment_id: 16,
-    submission_id: 32,
-    question_id: 24,
-    response_text: '<div>Hello world!</div>',
-    id: 321,
-    score: null as number,
-    grader_response: null as string,
-  },
-  {
-    assessment_id: 16,
-    submission_id: 32,
-    question_id: 24,
-    answer_id: 28,
-    id: 320,
-    score: 1,
-    grader_response: 'Well done!',
-  },
-  {
-    id: 321,
-    assessment_id: 16,
-    submission_id: 32,
-    question_id: 24,
-    response_text: '<div>Hello world!</div>',
-    score: 0,
-    grader_response: 'Very close!',
   },
 ];
 
