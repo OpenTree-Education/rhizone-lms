@@ -56,7 +56,7 @@ assessmentsRouter.get('/', async (req, res, next) => {
 
     const assessmentsSummaryList: AssessmentWithSummary[] = [];
 
-    if (programIds.length === 0) {
+    if (!programIds || programIds.length === 0) {
       res.json(collectionEnvelope(assessmentsSummaryList, 0));
       return;
     }
