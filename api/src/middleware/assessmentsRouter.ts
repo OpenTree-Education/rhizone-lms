@@ -262,7 +262,7 @@ assessmentsRouter.put(
         );
       }
 
-      res.status(201).json(itemEnvelope(updatedCurriculumAssessment));
+      res.json(itemEnvelope(updatedCurriculumAssessment));
     } catch (err) {
       next(err);
       return;
@@ -485,7 +485,7 @@ assessmentsRouter.put(
       updatedPrgramAssessment = await updateProgramAssessment(
         programAssessmentFromUser
       );
-      res.status(201).json(itemEnvelope(updatedPrgramAssessment));
+      res.json(itemEnvelope(updatedPrgramAssessment));
     } catch (error) {
       next(error);
       return;
@@ -707,6 +707,7 @@ assessmentsRouter.get(
         );
 
       let assessmentSubmission: AssessmentSubmission;
+      let submissionCreated = false;
 
       if (!existingAssessmentSubmissions) {
         assessmentSubmission = await createAssessmentSubmission(
@@ -714,6 +715,7 @@ assessmentsRouter.get(
           programAssessmentIdParsed,
           programAssessment.assessment_id
         );
+        submissionCreated = true;
       } else {
         const inProgressSubmissions: AssessmentSubmission[] =
           existingAssessmentSubmissions.filter(assessmentSubmission =>
@@ -741,6 +743,7 @@ assessmentsRouter.get(
             programAssessmentIdParsed,
             programAssessment.assessment_id
           );
+          submissionCreated = true;
         }
       }
 
@@ -751,7 +754,11 @@ assessmentsRouter.get(
         submission: assessmentSubmission,
       };
 
-      res.json(itemEnvelope(assessmentWithSubmission));
+      if (submissionCreated === true) {
+        res.status(201).json(itemEnvelope(assessmentWithSubmission));
+      } else {
+        res.json(itemEnvelope(assessmentWithSubmission));
+      }
     } catch (err) {
       next(err);
       return;
@@ -929,7 +936,7 @@ assessmentsRouter.put('/submissions/:submissionId', async (req, res, next) => {
       );
     }
 
-    res.status(201).json(itemEnvelope(updatedSubmission));
+    res.json(itemEnvelope(updatedSubmission));
   } catch (err) {
     next(err);
     return;
