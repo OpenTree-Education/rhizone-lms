@@ -44,11 +44,6 @@ const useApiData = <ResponseDataType>({
           : null;
       const controller = new AbortController();
       const { signal } = controller;
-      console.debug(
-        `Initiating a request to the backend:\nPath: ${path} (${method})\nBody: ${body}\nSerialized Body: ${
-          body && JSON.stringify(serializedBody, null, 2)
-        }`
-      );
       fetch(`${process.env.REACT_APP_API_ORIGIN}${path}`, {
         credentials: sendCredentials ? 'include' : 'omit',
         method,
