@@ -14,17 +14,17 @@ describe('questionnairesService', () => {
       };
       const options = [{ id: 3, label: 'option label', prompt_id: promptId }];
       mockQuery(
-        'select `id` from `questionnaires` where `id` = ?',
+        'select `id` from `surveys` where `id` = ?',
         [questionnaireId],
         [questionnaire]
       );
       mockQuery(
-        'select `id`, `label`, `query_text` from `prompts` where `questionnaire_id` = ? order by `sort_order` asc',
+        'select `id`, `label`, `query_text` from `survey_questions` where `questionnaire_id` = ? order by `sort_order` asc',
         [questionnaireId],
         [prompt]
       );
       mockQuery(
-        'select `id`, `label`, `prompt_id` from `options` where `prompt_id` in (?) order by `prompt_id` asc',
+        'select `id`, `label`, `prompt_id` from `survey_answers` where `prompt_id` in (?) order by `prompt_id` asc',
         [promptId],
         options
       );
@@ -37,7 +37,7 @@ describe('questionnairesService', () => {
     it('should return null if no questionnaire was found with the given id', async () => {
       const questionnaireId = 1;
       mockQuery(
-        'select `id` from `questionnaires` where `id` = ?',
+        'select `id` from `surveys` where `id` = ?',
         [questionnaireId],
         []
       );

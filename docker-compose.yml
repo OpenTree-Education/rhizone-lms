@@ -18,7 +18,7 @@ services:
       - SESSION_SECRET
       - WEBAPP_ORIGIN
   mysql:
-    command: --default-authentication-plugin=mysql_native_password
+    command: --skip-name-resolve
     environment:
       - MYSQL_DATABASE
       - MYSQL_PASSWORD
@@ -29,9 +29,10 @@ services:
       - "3306:3306"
     healthcheck:
       test: mysql ${MYSQL_DATABASE} --user=${MYSQL_USER} --password='${MYSQL_PASSWORD}' --silent --execute "SELECT 1;"
-      interval: 10s
-      timeout: 10s
-      retries: 12
+      interval: 3s
+      timeout: 3s
+      start_period: 60s
+      retries: 180
   flyway:
     build: ./db/
     command: migrate
@@ -56,7 +57,7 @@ services:
     ports:
       - "80:80"
   redis:
-    image: redis:6.2-alpine
+    image: redis:7-alpine
     ports:
       - "6379:6379"
   webapp:

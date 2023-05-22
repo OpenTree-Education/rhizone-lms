@@ -1,13 +1,13 @@
 import db from './db';
 
 export const findQuestionnaire = async (questionnaireId: number) => {
-  const [questionnaire] = await db('questionnaires')
+  const [questionnaire] = await db('surveys')
     .select('id')
     .where({ id: questionnaireId });
   if (!questionnaire) {
     return null;
   }
-  const prompts = await db('prompts')
+  const prompts = await db('survey_questions')
     .select('id', 'label', 'query_text')
     .where({
       questionnaire_id: questionnaireId,
@@ -17,7 +17,7 @@ export const findQuestionnaire = async (questionnaireId: number) => {
   const promptsById = new Map();
   let options;
   if (promptIds.length) {
-    options = await db('options')
+    options = await db('survey_answers')
       .select('id', 'label', 'prompt_id')
       .whereIn('prompt_id', promptIds)
       .orderBy('prompt_id', 'sort_order');

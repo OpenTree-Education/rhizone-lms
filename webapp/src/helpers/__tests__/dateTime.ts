@@ -30,13 +30,13 @@ describe('dateTime', () => {
     it('should return a string containing time in en-CA format', () => {
       const result = formatTime('2021-11-04T10:00:00.000Z', 'en-CA');
 
-      expect(result).toBe('10:00 a.m.');
+      expect(result).toBe('10:00 a.m.');
     });
 
     it('should return a string containing time in en-US format', () => {
       const result = formatTime('2021-11-04T10:00:00.000Z', 'en-US');
 
-      expect(result).toBe('10:00 AM');
+      expect(result).toBe('10:00 AM');
     });
 
     it('should return a string containing time in fr-CA format', () => {
@@ -55,13 +55,13 @@ describe('dateTime', () => {
     it('should return a string containing date and time in en-CA format', () => {
       const result = formatDateTime('2021-11-04T10:00:00.000Z', 'en-CA');
 
-      expect(result).toBe('November 4, 2021, 10:00 a.m.');
+      expect(result).toBe('November 4, 2021, 10:00 a.m.');
     });
 
     it('should return a string containing date and time in en-US format', () => {
       const result = formatDateTime('2021-11-04T10:00:00.000Z', 'en-US');
 
-      expect(result).toBe('November 4, 2021, 10:00 AM');
+      expect(result).toBe('November 4, 2021, 10:00 AM');
     });
 
     it('should return a string containing date and time in fr-CA format', () => {

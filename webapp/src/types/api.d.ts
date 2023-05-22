@@ -135,3 +135,105 @@ export interface ParticipantActivityForProgram {
   program_id: number;
   participant_activities: ParticipantActivityCompletionStatus[];
 }
+
+export interface ProgramParticipantCompletionSummary {
+  program: Program;
+  principal_id: number;
+  total_score: number;
+}
+
+export interface Answer extends Entity {
+  question_id?: number;
+  title: string;
+  description?: string;
+  sort_order: number;
+  correct_answer?: boolean;
+}
+
+export interface Question extends Entity {
+  assessment_id?: number;
+  title: string;
+  description?: string;
+  question_type: string;
+  answers?: Answer[];
+  correct_answer_id?: number;
+  max_score: number;
+  sort_order: number;
+}
+
+export interface AssessmentResponse extends Entity {
+  assessment_id: number;
+  submission_id: number;
+  question_id: number;
+  answer_id?: number;
+  response_text?: string;
+  score?: number;
+  grader_response?: string;
+}
+
+export interface AssessmentSubmission extends Entity {
+  assessment_id: number;
+  principal_id: number;
+  assessment_submission_state: string;
+  score?: number;
+  opened_at: string;
+  submitted_at?: string;
+  last_modified: string;
+  responses?: AssessmentResponse[];
+}
+
+export interface ParticipantAssessmentSubmissionsSummary {
+  principal_id: number;
+  highest_state: string;
+  total_num_submissions: number;
+  most_recent_submitted_date?: string;
+  highest_score?: number;
+}
+
+export interface FacilitatorAssessmentSubmissionsSummary {
+  num_participants_with_submissions: number;
+  num_program_participants: number;
+  num_ungraded_submissions: number;
+}
+
+export interface CurriculumAssessment extends Entity {
+  title: string;
+  assessment_type: string;
+  description?: string;
+  max_score: number;
+  max_num_submissions: number;
+  time_limit?: number;
+  curriculum_id: number;
+  activity_id: number;
+  principal_id: number;
+  questions?: Question[];
+}
+
+export interface ProgramAssessment extends Entity {
+  program_id: number;
+  assessment_id?: number;
+  available_after: string;
+  due_date: string;
+}
+
+export interface AssessmentDetails {
+  curriculum_assessment: CurriculumAssessment;
+  program_assessment: ProgramAssessment;
+}
+
+interface AssessmentWithRole extends AssessmentDetails {
+  principal_program_role: string;
+}
+
+export interface AssessmentWithSummary extends AssessmentWithRole {
+  participant_submissions_summary?: ParticipantAssessmentSubmissionsSummary;
+  facilitator_submissions_summary?: FacilitatorAssessmentSubmissionsSummary;
+}
+
+export interface SavedAssessment extends AssessmentWithRole {
+  submission: AssessmentSubmission;
+}
+
+export interface AssessmentWithSubmissions extends AssessmentWithRole {
+  submissions: AssessmentSubmission[];
+}

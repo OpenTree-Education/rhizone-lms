@@ -4,6 +4,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import HomeIcon from '@mui/icons-material/Home';
 import PeopleIcon from '@mui/icons-material/People';
 import EngineeringIcon from '@mui/icons-material/Engineering';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import { Button, Grid, IconButton, Tooltip } from '@mui/material';
 import styled from '@emotion/styled';
 
@@ -51,11 +52,19 @@ const Navbar = () => {
             </IconButton>
           </Link>
         </Tooltip>
+        <Tooltip title="Assessments">
+          <Link to="/assessments">
+            <IconButton sx={{ mr: 1 }}>
+              <AssessmentIcon />
+            </IconButton>
+          </Link>
+        </Tooltip>
         <Tooltip title="Meetings">
           <IconButton sx={{ mr: 1 }} onClick={openMeetingsDrawer}>
             <PeopleIcon />
           </IconButton>
         </Tooltip>
+
         <Button
           component="a"
           href={`${process.env.REACT_APP_API_ORIGIN}/auth/logout`}
